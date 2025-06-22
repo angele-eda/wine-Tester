@@ -1,11 +1,12 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wine Tester</title>
+  <title>와인 테스터</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: '맑은 고딕', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f9f9f9;
@@ -57,20 +58,23 @@
 </head>
 <body>
   <div class="container">
-    <h1>Wine Tester</h1>
-    <p>Upload a photo of a wine label to identify the wine and determine its vintage.</p>
+    <h1>와인 테스터</h1>
+    <p>와인 라벨의 사진을 업로드하여 와인을 식별하고 빈티지를 확인합니다.</p>
     <div class="upload-box">
-      <label for="fileInput">Choose File</label>
+      <label for="fileInput">파일 선택</label>
       <input type="file" id="fileInput" accept="image/*" onchange="showResult()" />
     </div>
     <div class="result" id="result" style="display: none;">
-      <img src="https://images.unsplash.com/photo-1589820296151-b303ecb7a63c" alt="Wine Bottle" class="wine-image">
-      <p><strong>Wine:</strong> Château Mouton Rothschild</p>
-      <p><strong>Vintage:</strong> 2015</p>
+      <img src="KakaoTalk_20250622_222953758.jpg" alt="와인 병" class="wine-image">
+      <p><strong>포도주:</strong> Château Mouton 로쉴드</p>
+      <p><strong>빈티지:</strong> 2015</p>
     </div>
-  </div>  <script>
+  </div>
+
+  <script>
     function showResult() {
       document.getElementById('result').style.display = 'block';
     }
-  </script></body>
+  </script>
+</body>
 </html>
