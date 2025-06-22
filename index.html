@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wine Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .upload-box {
+      border: 2px dashed #ccc;
+      padding: 30px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    .upload-box input {
+      display: none;
+    }
+    .upload-box label {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .result {
+      text-align: left;
+      margin-top: 20px;
+    }
+    .wine-image {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Wine Tester</h1>
+    <p>Upload a photo of a wine label to identify the wine and determine its vintage.</p>
+    <div class="upload-box">
+      <label for="fileInput">Choose File</label>
+      <input type="file" id="fileInput" accept="image/*" onchange="showResult()" />
+    </div>
+    <div class="result" id="result" style="display: none;">
+      <img src="https://images.unsplash.com/photo-1589820296151-b303ecb7a63c" alt="Wine Bottle" class="wine-image">
+      <p><strong>Wine:</strong> Château Mouton Rothschild</p>
+      <p><strong>Vintage:</strong> 2015</p>
+    </div>
+  </div>  <script>
+    function showResult() {
+      document.getElementById('result').style.display = 'block';
+    }
+  </script></body>
+</html>
