@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카카오맵 다중 경로 플래너</title>
-    <!-- 
-        [수정됨] 초기 API 키 로딩 부분을 제거합니다. 
-        사용자가 직접 입력한 키로 스크립트를 동적으로 로드할 것입니다.
-    -->
+    <title>카카오맵 다중 경로 플래너 (수정 완료)</title>
     <style>
         * {
             margin: 0;
@@ -216,7 +212,6 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            /* [수정됨] 초기에는 flex로 설정하여 보이도록 함 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -343,7 +338,6 @@
         let markers = [];
         let polylines = [];
         
-        // [수정됨] setApiKey 함수 로직 변경
         function setApiKey() {
             const apiKey = document.getElementById('apiKeyField').value.trim();
             if (!apiKey) {
@@ -355,7 +349,6 @@
             script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services&autoload=false`;
             
             script.onload = function() {
-                // 스크립트 로딩이 성공하면 kakao.maps.load를 통해 지도 초기화
                 kakao.maps.load(function() {
                     document.getElementById('apiKeyInput').style.display = 'none';
                     initializeMap();
@@ -373,7 +366,7 @@
             try {
                 const container = document.getElementById('map');
                 const options = {
-                    center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울 중심
+                    center: new kakao.maps.LatLng(37.566826, 126.9786567),
                     level: 5
                 };
                 
@@ -415,10 +408,8 @@
         function updateDestinationNumbers() {
             const items = document.querySelectorAll('.destination-item');
             items.forEach((item, index) => {
-                const numberDiv = item.querySelector('.destination-number');
-                const input = item.querySelector('input');
-                numberDiv.textContent = index + 1;
-                input.placeholder = `${index + 1}번째 목적지 주소`;
+                item.querySelector('.destination-number').textContent = index + 1;
+                item.querySelector('input').placeholder = `${index + 1}번째 목적지 주소`;
             });
         }
         
@@ -434,12 +425,12 @@
         
         function clearAll() {
             document.getElementById('startAddress').value = '';
-            // 첫 번째 목적지 입력 필드를 제외하고 모두 삭제
-            const destinationInputs = document.querySelectorAll('.destination-item');
-            for(let i = destinationInputs.length - 1; i > 0; i--) {
-                destinationInputs[i].remove();
+            
+            const destinationList = document.getElementById('destinationList');
+            while (destinationList.children.length > 1) {
+                destinationList.removeChild(destinationList.lastChild);
             }
-            document.querySelector('.destination-item input').value = '';
+            destinationList.querySelector('input').value = '';
             updateDestinationNumbers();
             
             document.getElementById('routeInfo').style.display = 'none';
@@ -471,7 +462,7 @@
         }
         
         function calculateDistance(lat1, lng1, lat2, lng2) {
-            const R = 6371; // 지구 반지름 (km)
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLng = (lng2 - lng1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -488,18 +479,12 @@
             
             while (remaining.length > 0) {
                 let nearestIndex = 0;
-                let nearestDistance = calculateDistance(
-                    current.lat, current.lng,
-                    remaining[0].lat, remaining[0].lng
-                );
+                let minDistance = calculateDistance(current.lat, current.lng, remaining[0].lat, remaining[0].lng);
                 
                 for (let i = 1; i < remaining.length; i++) {
-                    const distance = calculateDistance(
-                        current.lat, current.lng,
-                        remaining[i].lat, remaining[i].lng
-                    );
-                    if (distance < nearestDistance) {
-                        nearestDistance = distance;
+                    const distance = calculateDistance(current.lat, current.lng, remaining[i].lat, remaining[i].lng);
+                    if (distance < minDistance) {
+                        minDistance = distance;
                         nearestIndex = i;
                     }
                 }
@@ -508,17 +493,13 @@
                 route.push(current);
                 remaining.splice(nearestIndex, 1);
             }
-            
             return route;
         }
         
         function createMarker(position, title, isStart = false, index = 0) {
-            let imageSrc;
-            if (isStart) {
-                imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png';
-            } else {
-                imageSrc = `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_${index}.png`;
-            }
+            const imageSrc = isStart ? 
+                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png' :
+                `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_${index}.png`;
             
             const imageSize = new kakao.maps.Size(36, 37);
             const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
@@ -533,7 +514,7 @@
             markers.push(marker);
             
             const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;font-size:12px;width:auto;">${title}</div>`,
+                content: `<div style="padding:5px;font-size:12px;width:auto;">${title.split(': ')[1]}</div>`,
                 removable: true
             });
             
@@ -547,20 +528,13 @@
             const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
             
             for (let i = 0; i < route.length - 1; i++) {
-                const start = route[i];
-                const end = route[i + 1];
-                
                 const polyline = new kakao.maps.Polyline({
-                    path: [
-                        new kakao.maps.LatLng(start.lat, start.lng),
-                        new kakao.maps.LatLng(end.lat, end.lng)
-                    ],
+                    path: [ new kakao.maps.LatLng(route[i].lat, route[i].lng), new kakao.maps.LatLng(route[i+1].lat, route[i+1].lng) ],
                     strokeWeight: 5,
                     strokeColor: colors[i % colors.length],
                     strokeOpacity: 0.9,
                     strokeStyle: 'solid'
                 });
-                
                 polyline.setMap(map);
                 polylines.push(polyline);
             }
@@ -577,19 +551,18 @@
                 const start = route[i];
                 const end = route[i + 1];
                 const distance = calculateDistance(start.lat, start.lng, end.lat, end.lng);
-                
                 totalDistance += distance;
                 
                 html += `
                     <div class="route-step">
                         <strong>${i === 0 ? '출발' : `경유 ${i}`}</strong> → <strong>${i === route.length - 2 ? '최종 목적지' : `경유 ${i+1}`}</strong><br>
-                        ${start.address || start.title} → ${end.address || end.title}<br>
+                        <small>${start.address} → ${end.address}</small><br>
                         <small>직선거리: ${distance.toFixed(2)}km</small>
                     </div>
                 `;
             }
             
-            const estimatedTime = totalDistance * 2.5; // 예: 시속 24km 기준(자전거+도보 평균)
+            const estimatedTime = totalDistance * 2.5;
             
             routeStepsEl.innerHTML = html;
             totalInfoEl.innerHTML = `
@@ -597,8 +570,6 @@
                 총 직선거리: ${totalDistance.toFixed(2)}km<br>
                 예상 소요시간: 약 ${Math.round(estimatedTime)}분
             `;
-            
-            document.getElementById('routeInfo').style.display = 'block';
         }
         
         async function planRoute() {
@@ -610,6 +581,10 @@
             const startAddress = document.getElementById('startAddress').value.trim();
             const destinationInputs = document.querySelectorAll('.destination-item input');
             
+            const routeInfoEl = document.getElementById('routeInfo');
+            const routeStepsEl = document.getElementById('routeSteps');
+            const totalInfoEl = document.getElementById('totalInfo');
+
             if (!startAddress) {
                 alert('시작 주소를 입력해주세요.');
                 return;
@@ -617,7 +592,7 @@
             
             const destinationAddresses = Array.from(destinationInputs)
                 .map(input => input.value.trim())
-                .filter(Boolean); // 비어있는 입력은 제외
+                .filter(Boolean);
             
             if (destinationAddresses.length === 0) {
                 alert('최소 하나의 목적지를 입력해주세요.');
@@ -625,12 +600,11 @@
             }
             
             try {
-                const routeInfoEl = document.getElementById('routeInfo');
-                routeInfoEl.innerHTML = '<div class="loading">경로를 계산하고 있습니다...</div>';
-                routeInfoEl.style.display = 'block';
-                
                 clearMarkers();
                 clearPolylines();
+                routeStepsEl.innerHTML = '<div class="loading">경로를 계산하고 있습니다...</div>';
+                totalInfoEl.innerHTML = '';
+                routeInfoEl.style.display = 'block';
                 
                 const startCoord = await geocodeAddress(startAddress);
                 startCoord.title = `출발: ${startAddress}`;
@@ -645,9 +619,7 @@
                 
                 const optimizedRoute = optimizeRoute(startCoord, destinationCoords);
                 
-                // 마커 생성 및 지도 범위 재설정
                 const bounds = new kakao.maps.LatLngBounds();
-                
                 optimizedRoute.forEach((point, i) => {
                     createMarker(point, point.title, i === 0, i);
                     bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
@@ -660,18 +632,14 @@
                 
             } catch (error) {
                 alert('오류가 발생했습니다: ' + error.message);
-                const routeInfoEl = document.getElementById('routeInfo');
                 routeInfoEl.style.display = 'none';
-                routeInfoEl.innerHTML = `<h3>📋 경로 정보</h3><div id="routeSteps"></div><div id="totalInfo" class="total-info"></div>`; // 초기 상태로 복원
             }
         }
         
-        // [수정됨] 페이지 로드 시, API 키 입력창을 보여줌
         window.onload = function() {
             document.getElementById('apiKeyInput').style.display = 'flex';
         };
         
-        // Enter 키 이벤트 처리
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const activeElement = document.activeElement;
