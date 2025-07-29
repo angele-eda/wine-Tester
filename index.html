@@ -3,193 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카카오맵 내비게이션 경로 플래너</title>
+    <title>카카오맵 내비게이션 경로 플래너 (주소명 표시)</title>
     <style>
-        /* CSS는 이전과 동일하므로 생략합니다. 필요시 이전 코드의 style 태그를 그대로 사용하세요. */
-        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Malgun Gothic', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 1400px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); overflow: hidden; backdrop-filter: blur(10px); } .header { background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; padding: 30px; text-align: center; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); } .header p { font-size: 1.1rem; opacity: 0.9; } .main-content { display: flex; min-height: 70vh; } .control-panel { width: 400px; padding: 30px; background: #f8f9fa; border-right: 1px solid #e9ecef; overflow-y: auto; } .map-container { flex: 1; position: relative; } #map { width: 100%; height: 100%; min-height: 600px; } .input-group { margin-bottom: 20px; } .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #495057; font-size: 0.9rem; } .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 14px; transition: all 0.3s ease; } .input-group input:focus { outline: none; border-color: #4ECDC4; box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1); } .destinations { margin-bottom: 20px; } .destination-item { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); } .destination-item input { flex: 1; border: 1px solid #e9ecef; margin-right: 10px; } .destination-number { width: 30px; height: 30px; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; font-size: 0.9rem; } .btn { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s ease; margin: 5px; } .btn-primary { background: linear-gradient(135deg, #4ECDC4, #44A08D); color: white; } .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4); } .btn-secondary { background: #6c757d; color: white; } .btn-danger { background: #FF6B6B; color: white; padding: 8px 12px; font-size: 12px; } .btn-add { background: linear-gradient(135deg, #667eea, #764ba2); color: white; width: 100%; } .route-info { margin-top: 20px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); } .route-info h3 { color: #495057; margin-bottom: 15px; font-size: 1.2rem; } .route-step { padding: 12px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #4ECDC4; } .route-step strong { color: #495057; } .total-info { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; } .api-key-input { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; } .api-key-modal { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); text-align: center; max-width: 500px; width: 90%; } .api-key-modal h2 { margin-bottom: 10px; color: #495057; } .api-key-modal p { margin-bottom: 20px; font-size: 14px; color: #6c757d; } .api-key-modal input { width: 100%; padding: 15px; margin: 8px 0; border: 2px solid #e9ecef; border-radius: 10px; font-size: 16px; } .loading { text-align: center; padding: 20px; color: #6c757d; } .loading::after { content: ''; display: inline-block; width: 20px; height: 20px; border: 2px solid #4ECDC4; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-left: 10px; } @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 768px) { .main-content { flex-direction: column; } .control-panel { width: 100%; max-height: 40vh; } .header h1 { font-size: 2rem; } }
+        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Malgun Gothic', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 1400px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); overflow: hidden; backdrop-filter: blur(10px); } .header { background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; padding: 30px; text-align: center; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); } .header p { font-size: 1.1rem; opacity: 0.9; } .main-content { display: flex; min-height: 70vh; } .control-panel { width: 400px; padding: 30px; background: #f8f9fa; border-right: 1px solid #e9ecef; overflow-y: auto; } .map-container { flex: 1; position: relative; } #map { width: 100%; height: 100%; min-height: 600px; } .input-group { margin-bottom: 20px; } .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #495057; font-size: 0.9rem; } .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 14px; transition: all 0.3s ease; } .input-group input:focus { outline: none; border-color: #4ECDC4; box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1); } .destinations { margin-bottom: 20px; } .destination-item { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); } .destination-item input { flex: 1; border: 1px solid #e9ecef; margin-right: 10px; } .destination-number { width: 30px; height: 30px; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; font-size: 0.9rem; } .btn { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s ease; margin: 5px; } .btn-primary { background: linear-gradient(135deg, #4ECDC4, #44A08D); color: white; } .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4); } .btn-secondary { background: #6c757d; color: white; } .btn-danger { background: #FF6B6B; color: white; padding: 8px 12px; font-size: 12px; } .btn-add { background: linear-gradient(135deg, #667eea, #764ba2); color: white; width: 100%; } .route-info { margin-top: 20px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); } .route-info h3 { color: #495057; margin-bottom: 15px; font-size: 1.2rem; } .route-step { padding: 12px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #4ECDC4; } .route-step strong { color: #495057; } .total-info { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; } .api-key-input { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; } .api-key-modal { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); text-align: center; max-width: 500px; width: 90%; } .api-key-modal h2 { margin-bottom: 10px; color: #495057; } .api-key-modal p { margin-bottom: 20px; font-size: 14px; color: #6c757d; } .api-key-modal input { width: 100%; padding: 15px; margin: 8px 0; border: 2px solid #e9ecef; border-radius: 10px; font-size: 16px; } .loading { text-align: center; padding: 20px; color: #6c757d; } .loading::after { content: ''; display: inline-block; width: 20px; height: 20px; border: 2px solid #4ECDC4; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-left: 10px; }
+        /* [신규] 커스텀 오버레이(텍스트 라벨) 스타일 */
+        .label { margin-bottom: 96px; }
+        .label .left { float: left; border-radius: 5px 0 0 5px; background: white; border: 1px solid #ccc; border-right: none; }
+        .label .center { float: left; padding: 6px 10px; font-size: 12px; font-weight: bold; background: white; border: 1px solid #ccc; border-left: none; border-right: none; white-space: nowrap; }
+        .label .right { float: left; border-radius: 0 5px 5px 0; background: white; border: 1px solid #ccc; border-left: none; }
+        .label:after { content: ""; position: absolute; bottom: 0; left: 50%; width: 0; height: 0; border: 10px solid transparent; border-top-color: #CCC; border-bottom: 0; margin-left: -10px; margin-bottom: -10px; }
+        @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 768px) { .main-content { flex-direction: column; } .control-panel { width: 100%; max-height: 40vh; } .header h1 { font-size: 2rem; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🗺️ 카카오내비 경로 플래너</h1>
-            <p>시작점에서 여러 목적지까지의 실제 주행 경로를 계획하고 지도에서 확인하세요</p>
-        </div>
-        
-        <div class="main-content">
-            <div class="control-panel">
-                <div class="input-group">
-                    <label for="startAddress">🏠 시작 주소 또는 장소</label>
-                    <input type="text" id="startAddress" placeholder="예: 대구시청, 서울역">
-                </div>
-                
-                <div class="destinations">
-                    <label>📍 목적지 주소 또는 장소</label>
-                    <div id="destinationList">
-                        <div class="destination-item">
-                            <div class="destination-number">1</div>
-                            <input type="text" placeholder="첫 번째 목적지">
-                            <button class="btn btn-danger" onclick="removeDestination(this)">×</button>
-                        </div>
-                    </div>
-                    <button class="btn btn-add" onclick="addDestination()">+ 목적지 추가</button>
-                </div>
-                
-                <div class="input-group">
-                    <button class="btn btn-primary" onclick="planRoute()" style="width: 100%;">🚗 경로 계획하기</button>
-                    <button class="btn btn-secondary" onclick="clearAll()" style="width: 100%;">🗑️ 전체 초기화</button>
-                </div>
-                
-                <div id="routeInfo" class="route-info" style="display: none;">
-                    <h3>📋 경로 정보</h3>
-                    <div id="routeSteps"></div>
-                    <div id="totalInfo" class="total-info"></div>
-                </div>
-            </div>
-            
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
-        </div>
+        <!-- HTML 부분은 변경 없음 -->
+        <div class="header"><h1>🗺️ 카카오내비 경로 플래너</h1><p>시작점에서 여러 목적지까지의 실제 주행 경로를 계획하고 지도에서 확인하세요</p></div><div class="main-content"><div class="control-panel"><div class="input-group"><label for="startAddress">🏠 시작 주소 또는 장소</label><input type="text" id="startAddress" placeholder="예: 대구시청, 서울역"></div><div class="destinations"><label>📍 목적지 주소 또는 장소</label><div id="destinationList"><div class="destination-item"><div class="destination-number">1</div><input type="text" placeholder="첫 번째 목적지"><button class="btn btn-danger" onclick="removeDestination(this)">×</button></div></div><button class="btn btn-add" onclick="addDestination()">+ 목적지 추가</button></div><div class="input-group"><button class="btn btn-primary" onclick="planRoute()" style="width: 100%;">🚗 경로 계획하기</button><button class="btn btn-secondary" onclick="clearAll()" style="width: 100%;">🗑️ 전체 초기화</button></div><div id="routeInfo" class="route-info" style="display: none;"><h3>📋 경로 정보</h3><div id="routeSteps"></div><div id="totalInfo" class="total-info"></div></div></div><div class="map-container"><div id="map"></div></div></div>
     </div>
-    
     <div id="apiKeyInput" class="api-key-input">
-        <div class="api-key-modal">
-            <h2>🔑 API 키 입력</h2>
-            <p>카카오 디벨로퍼스에서 발급받은 키를 입력해주세요.</p>
-            <input type="text" id="jsKeyField" placeholder="JavaScript 키를 입력하세요">
-            <input type="text" id="restKeyField" placeholder="REST API 키를 입력하세요">
-            <button class="btn btn-primary" onclick="setApiKeys()">설정하기</button>
-        </div>
+        <div class="api-key-modal"><h2>🔑 API 키 입력</h2><p>카카오 디벨로퍼스에서 발급받은 키를 입력해주세요.</p><input type="text" id="jsKeyField" placeholder="JavaScript 키를 입력하세요"><input type="text" id="restKeyField" placeholder="REST API 키를 입력하세요"><button class="btn btn-primary" onclick="setApiKeys()">설정하기</button></div>
     </div>
 
     <script>
         let map, ps;
-        let jsKey, restKey; // [수정] 두 종류의 키를 저장할 변수
+        let jsKey, restKey;
         let markers = [];
         let polylines = [];
-        
-        // [수정] 두 개의 키를 모두 설정하는 함수
-        function setApiKeys() {
-            jsKey = document.getElementById('jsKeyField').value.trim();
-            restKey = document.getElementById('restKeyField').value.trim();
-            
-            if (!jsKey || !restKey) {
-                alert('JavaScript 키와 REST API 키를 모두 입력해주세요.');
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey}&libraries=services&autoload=false`;
-            
-            script.onload = () => {
-                kakao.maps.load(() => {
-                    document.getElementById('apiKeyInput').style.display = 'none';
-                    initializeMap();
-                });
-            };
-            
-            script.onerror = () => alert('JavaScript 키가 올바르지 않거나 네트워크 오류가 발생했습니다.');
-            
-            document.head.appendChild(script);
-        }
-        
-        function initializeMap() {
-            const container = document.getElementById('map');
-            const options = { center: new kakao.maps.LatLng(37.566826, 126.9786567), level: 5 };
-            map = new kakao.maps.Map(container, options);
-            ps = new kakao.maps.services.Places();
-        }
-        
-        // [신규] 카카오내비 API를 호출하여 길찾기 결과를 가져오는 함수
-        async function getNavigationRoute(routePoints) {
-            if (routePoints.length < 2) return null;
+        let customOverlays = []; // [신규] 커스텀 오버레이를 관리할 배열
 
-            const origin = `${routePoints[0].lng},${routePoints[0].lat}`;
-            const destination = `${routePoints[routePoints.length - 1].lng},${routePoints[routePoints.length - 1].lat}`;
-            
-            let waypoints = '';
-            if (routePoints.length > 2) {
-                waypoints = routePoints.slice(1, -1).map(p => `${p.lng},${p.lat}`).join('|');
-            }
-
-            const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${origin}&destination=${destination}&waypoints=${waypoints}`;
-            
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `KakaoAK ${restKey}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.msg || `카카오내비 API 호출에 실패했습니다. (HTTP ${response.status})`);
-                }
-
-                const data = await response.json();
-                return data;
-
-            } catch (error) {
-                console.error("내비게이션 API 오류:", error);
-                throw error; // 오류를 다시 던져서 planRoute에서 잡을 수 있게 함
-            }
+        // [수정] 지도 위 모든 요소를 지우는 함수
+        function clearMap() {
+            markers.forEach(m => m.setMap(null));
+            polylines.forEach(p => p.setMap(null));
+            customOverlays.forEach(o => o.setMap(null)); // 오버레이도 지우도록 추가
+            markers = [];
+            polylines = [];
+            customOverlays = [];
         }
 
-        // [신규] 내비게이션 경로 데이터를 지도에 그릴 Polyline 형태로 변환하는 함수
-        function parseRoutePath(naviData) {
-            const path = [];
-            if (naviData.routes && naviData.routes.length > 0) {
-                const sections = naviData.routes[0].sections;
-                sections.forEach(section => {
-                    section.roads.forEach(road => {
-                        for (let i = 0; i < road.vertexes.length; i += 2) {
-                            path.push(new kakao.maps.LatLng(road.vertexes[i+1], road.vertexes[i]));
-                        }
+        // [수정] 출발지는 마커, 목적지는 커스텀 오버레이(주소명)를 그리는 함수
+        function drawOverlays(points) {
+            points.forEach((point, i) => {
+                const position = new kakao.maps.LatLng(point.lat, point.lng);
+                
+                if (i === 0) { // 출발지만 마커로 표시
+                    const marker = new kakao.maps.Marker({
+                        position: position,
+                        image: new kakao.maps.MarkerImage('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png', new kakao.maps.Size(36, 37)),
+                        title: point.name
                     });
-                });
-            }
-            return path;
-        }
-
-        // [수정] 실제 주행 거리와 시간을 표시하도록 변경
-        function displayRouteInfo(naviData) {
-            if (!naviData.routes || naviData.routes.length === 0) return;
-
-            const route = naviData.routes[0];
-            const summary = route.summary;
-
-            // 거리(m)를 km로, 시간(초)을 분/시간으로 변환
-            const distanceInKm = (summary.distance / 1000).toFixed(2);
-            const durationInMinutes = Math.round(summary.duration / 60);
-            let durationText = `${durationInMinutes}분`;
-            if (durationInMinutes >= 60) {
-                const hours = Math.floor(durationInMinutes / 60);
-                const minutes = durationInMinutes % 60;
-                durationText = `${hours}시간 ${minutes}분`;
-            }
-
-            let html = ``;
-            route.sections.forEach((section, index) => {
-                html += `
-                    <div class="route-step">
-                        <strong>구간 ${index + 1}</strong><br>
-                        <small>${section.guides[0].name || '출발지'} → ${section.guides[section.guides.length-1].name || '도착지'}</small><br>
-                        <small>거리: ${(section.distance / 1000).toFixed(2)}km, 소요시간: ${Math.round(section.duration / 60)}분</small>
-                    </div>
-                `;
+                    marker.setMap(map);
+                    markers.push(marker);
+                } else { // 목적지는 커스텀 오버레이로 표시
+                    const content = `<div class="label"><span class="left"></span><span class="center">${point.name}</span><span class="right"></span></div>`;
+                    
+                    const customOverlay = new kakao.maps.CustomOverlay({
+                        position: position,
+                        content: content,
+                        yAnchor: 2.2 // 라벨이 좌표보다 위쪽에 표시되도록 y축 위치 조정
+                    });
+                    customOverlay.setMap(map);
+                    customOverlays.push(customOverlay);
+                }
             });
-
-            document.getElementById('routeSteps').innerHTML = html;
-            
-            document.getElementById('totalInfo').innerHTML = `
-                <strong>전체 경로 요약</strong><br>
-                총 거리: ${distanceInKm}km, 예상 소요시간: ${durationText}<br>
-                <small>택시 요금: 약 ${summary.fare.taxi.toLocaleString()}원</small>
-            `;
         }
-        
+
         async function planRoute() {
             if (!map || !ps || !restKey) {
                 alert('지도가 초기화되지 않았거나 REST API 키가 설정되지 않았습니다.');
@@ -213,34 +91,33 @@
             clearMap();
             
             try {
-                // 1. 장소 검색을 통해 모든 지점의 좌표를 얻음
+                // 1. 모든 지점의 좌표 얻기
                 const startPoint = await searchPlace(startKeyword);
                 const destinationPoints = await Promise.all(destinationKeywords.map(searchPlace));
                 const allPoints = [startPoint, ...destinationPoints];
 
-                // 2. [신규] 카카오내비 API를 호출하여 실제 경로 데이터 받기
+                // 2. 카카오내비 API로 경로 데이터 받기
                 const naviData = await getNavigationRoute(allPoints);
 
-                // 3. [신규] 받은 경로 데이터를 지도에 그릴 수 있는 형태로 변환
+                // 3. 지도에 경로선 그리기
                 const routePath = parseRoutePath(naviData);
-                
-                // 4. 지도에 경로(Polyline)와 마커 표시
                 const naviPolyline = new kakao.maps.Polyline({
                     path: routePath,
                     strokeWeight: 6,
-                    strokeColor: '#0000FF',
+                    strokeColor: '#0033FF',
                     strokeOpacity: 0.8,
                     strokeStyle: 'solid'
                 });
                 naviPolyline.setMap(map);
                 polylines.push(naviPolyline);
 
-                drawMarkers(allPoints);
+                // 4. [수정] 마커 대신 커스텀 오버레이 그리기
+                drawOverlays(allPoints);
                 
                 // 5. 경로 정보창 업데이트
                 displayRouteInfo(naviData);
 
-                // 6. 지도를 경로에 맞게 재조정
+                // 6. 지도 범위 재조정
                 const bounds = new kakao.maps.LatLngBounds();
                 routePath.forEach(point => bounds.extend(point));
                 map.setBounds(bounds);
@@ -251,91 +128,20 @@
             }
         }
         
-        // --- 아래는 변경이 거의 없는 보조 함수들 ---
-
-        function drawMarkers(points) {
-            points.forEach((point, i) => {
-                const imageSrc = (i === 0) ? 
-                    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png' :
-                    `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_${i}.png`;
-                
-                const marker = new kakao.maps.Marker({
-                    position: new kakao.maps.LatLng(point.lat, point.lng),
-                    image: new kakao.maps.MarkerImage(imageSrc, new kakao.maps.Size(36, 37)),
-                    title: point.name
-                });
-                marker.setMap(map);
-                markers.push(marker);
-
-                const infowindow = new kakao.maps.InfoWindow({ content: `<div style="padding:5px;font-size:12px;">${point.name}</div>`, removable: true });
-                kakao.maps.event.addListener(marker, 'click', () => infowindow.open(map, marker));
-            });
-        }
+        // --- 아래는 변경이 없는 핵심 및 보조 함수들 ---
         
-        function searchPlace(keyword) {
-            return new Promise((resolve, reject) => {
-                ps.keywordSearch(keyword, (data, status) => {
-                    if (status === kakao.maps.services.Status.OK) {
-                        const p = data[0];
-                        resolve({ lat: parseFloat(p.y), lng: parseFloat(p.x), name: p.place_name });
-                    } else {
-                        reject(new Error(`'${keyword}' 검색 실패`));
-                    }
-                });
-            });
-        }
-
-        function clearMap() {
-            markers.forEach(m => m.setMap(null));
-            polylines.forEach(p => p.setMap(null));
-            markers = [];
-            polylines = [];
-        }
-
-        function clearAll() {
-            document.getElementById('startAddress').value = '';
-            const list = document.getElementById('destinationList');
-            while (list.children.length > 1) list.removeChild(list.lastChild);
-            list.querySelector('input').value = '';
-            updateDestinationNumbers();
-            document.getElementById('routeInfo').style.display = 'none';
-            clearMap();
-        }
-
-        function addDestination() {
-            const list = document.getElementById('destinationList');
-            const count = list.children.length + 1;
-            const item = document.createElement('div');
-            item.className = 'destination-item';
-            item.innerHTML = `<div class="destination-number">${count}</div><input type="text" placeholder="${count}번째 목적지"><button class="btn btn-danger" onclick="removeDestination(this)">×</button>`;
-            list.appendChild(item);
-        }
-
-        function removeDestination(button) {
-            const list = document.getElementById('destinationList');
-            if (list.children.length > 1) {
-                button.parentElement.remove();
-                updateDestinationNumbers();
-            } else {
-                alert('최소 하나의 목적지는 남겨두어야 합니다.');
-            }
-        }
-
-        function updateDestinationNumbers() {
-            document.querySelectorAll('.destination-item').forEach((item, i) => {
-                item.querySelector('.destination-number').textContent = i + 1;
-                item.querySelector('input').placeholder = `${i + 1}번째 목적지`;
-            });
-        }
-
+        function setApiKeys() { jsKey = document.getElementById('jsKeyField').value.trim(); restKey = document.getElementById('restKeyField').value.trim(); if (!jsKey || !restKey) { alert('JavaScript 키와 REST API 키를 모두 입력해주세요.'); return; } const script = document.createElement('script'); script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${jsKey}&libraries=services&autoload=false`; script.onload = () => { kakao.maps.load(() => { document.getElementById('apiKeyInput').style.display = 'none'; initializeMap(); }); }; script.onerror = () => alert('JavaScript 키가 올바르지 않거나 네트워크 오류가 발생했습니다.'); document.head.appendChild(script); }
+        function initializeMap() { const container = document.getElementById('map'); const options = { center: new kakao.maps.LatLng(37.566826, 126.9786567), level: 5 }; map = new kakao.maps.Map(container, options); ps = new kakao.maps.services.Places(); }
+        async function getNavigationRoute(routePoints) { if (routePoints.length < 2) return null; const origin = `${routePoints[0].lng},${routePoints[0].lat}`; const destination = `${routePoints[routePoints.length - 1].lng},${routePoints[routePoints.length - 1].lat}`; let waypoints = ''; if (routePoints.length > 2) { waypoints = routePoints.slice(1, -1).map(p => `${p.lng},${p.lat}`).join('|'); } const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${origin}&destination=${destination}&waypoints=${waypoints}`; const response = await fetch(url, { method: 'GET', headers: { 'Authorization': `KakaoAK ${restKey}` } }); if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.msg || `카카오내비 API 호출 실패 (HTTP ${response.status})`); } return await response.json(); }
+        function parseRoutePath(naviData) { const path = []; if (naviData.routes && naviData.routes.length > 0) { const sections = naviData.routes[0].sections; sections.forEach(section => { section.roads.forEach(road => { for (let i = 0; i < road.vertexes.length; i += 2) { path.push(new kakao.maps.LatLng(road.vertexes[i+1], road.vertexes[i])); } }); }); } return path; }
+        function displayRouteInfo(naviData) { if (!naviData.routes || naviData.routes.length === 0) return; const route = naviData.routes[0]; const summary = route.summary; const distanceInKm = (summary.distance / 1000).toFixed(2); const durationInMinutes = Math.round(summary.duration / 60); let durationText = `${durationInMinutes}분`; if (durationInMinutes >= 60) { const hours = Math.floor(durationInMinutes / 60); const minutes = durationInMinutes % 60; durationText = `${hours}시간 ${minutes}분`; } let html = ``; route.sections.forEach((section, index) => { html += `<div class="route-step"><strong>구간 ${index + 1}</strong><br><small>${section.guides[0].name || '출발지'} → ${section.guides[section.guides.length-1].name || '도착지'}</small><br><small>거리: ${(section.distance / 1000).toFixed(2)}km, 소요시간: ${Math.round(section.duration / 60)}분</small></div>`; }); document.getElementById('routeSteps').innerHTML = html; document.getElementById('totalInfo').innerHTML = `<strong>전체 경로 요약</strong><br>총 거리: ${distanceInKm}km, 예상 소요시간: ${durationText}<br><small>택시 요금: 약 ${summary.fare.taxi.toLocaleString()}원</small>`; }
+        function searchPlace(keyword) { return new Promise((resolve, reject) => { ps.keywordSearch(keyword, (data, status) => { if (status === kakao.maps.services.Status.OK) { const p = data[0]; resolve({ lat: parseFloat(p.y), lng: parseFloat(p.x), name: p.place_name }); } else { reject(new Error(`'${keyword}' 검색 실패`)); } }); }); }
+        function clearAll() { document.getElementById('startAddress').value = ''; const list = document.getElementById('destinationList'); while (list.children.length > 1) list.removeChild(list.lastChild); list.querySelector('input').value = ''; updateDestinationNumbers(); document.getElementById('routeInfo').style.display = 'none'; clearMap(); }
+        function addDestination() { const list = document.getElementById('destinationList'); const count = list.children.length + 1; const item = document.createElement('div'); item.className = 'destination-item'; item.innerHTML = `<div class="destination-number">${count}</div><input type="text" placeholder="${count}번째 목적지"><button class="btn btn-danger" onclick="removeDestination(this)">×</button>`; list.appendChild(item); }
+        function removeDestination(button) { const list = document.getElementById('destinationList'); if (list.children.length > 1) { button.parentElement.remove(); updateDestinationNumbers(); } else { alert('최소 하나의 목적지는 남겨두어야 합니다.'); } }
+        function updateDestinationNumbers() { document.querySelectorAll('.destination-item').forEach((item, i) => { item.querySelector('.destination-number').textContent = i + 1; item.querySelector('input').placeholder = `${i + 1}번째 목적지`; }); }
         window.onload = () => document.getElementById('apiKeyInput').style.display = 'flex';
-        document.addEventListener('keypress', e => {
-            if (e.key === 'Enter') {
-                const activeEl = document.activeElement;
-                if (activeEl.id.includes('KeyField')) setApiKeys();
-                else if (activeEl.tagName === 'INPUT' && activeEl.type === 'text') planRoute();
-            }
-        });
+        document.addEventListener('keypress', e => { if (e.key === 'Enter') { const activeEl = document.activeElement; if (activeEl.id.includes('KeyField')) setApiKeys(); else if (activeEl.tagName === 'INPUT' && activeEl.type === 'text') planRoute(); } });
     </script>
 </body>
 </html>
