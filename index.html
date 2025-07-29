@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카카오맵 다중 경로 플래너 (수정 완료)</title>
+    <title>카카오맵 다중 경로 플래너 (장소 검색 적용)</title>
     <style>
         * {
             margin: 0;
@@ -290,16 +290,16 @@
         <div class="main-content">
             <div class="control-panel">
                 <div class="input-group">
-                    <label for="startAddress">🏠 시작 주소</label>
-                    <input type="text" id="startAddress" placeholder="예: 서울시 강남구 역삼동">
+                    <label for="startAddress">🏠 시작 주소 또는 장소</label>
+                    <input type="text" id="startAddress" placeholder="예: 대구시청, 서울역">
                 </div>
                 
                 <div class="destinations">
-                    <label>📍 목적지 주소들</label>
+                    <label>📍 목적지 주소 또는 장소</label>
                     <div id="destinationList">
                         <div class="destination-item">
                             <div class="destination-number">1</div>
-                            <input type="text" placeholder="첫 번째 목적지 주소">
+                            <input type="text" placeholder="첫 번째 목적지">
                             <button class="btn btn-danger" onclick="removeDestination(this)">×</button>
                         </div>
                     </div>
@@ -334,7 +334,8 @@
     </div>
 
     <script>
-        let map, geocoder;
+        // [수정] 장소 검색 객체를 추가합니다.
+        let map, ps; 
         let markers = [];
         let polylines = [];
         
@@ -371,7 +372,8 @@
                 };
                 
                 map = new kakao.maps.Map(container, options);
-                geocoder = new kakao.maps.services.Geocoder();
+                // [수정] 장소 검색 객체를 생성합니다.
+                ps = new kakao.maps.services.Places();
                 
                 console.log('카카오맵이 성공적으로 초기화되었습니다.');
             } catch (error) {
@@ -388,7 +390,7 @@
             destinationItem.className = 'destination-item';
             destinationItem.innerHTML = `
                 <div class="destination-number">${count}</div>
-                <input type="text" placeholder="${count}번째 목적지 주소">
+                <input type="text" placeholder="${count}번째 목적지">
                 <button class="btn btn-danger" onclick="removeDestination(this)">×</button>
             `;
             
@@ -409,7 +411,7 @@
             const items = document.querySelectorAll('.destination-item');
             items.forEach((item, index) => {
                 item.querySelector('.destination-number').textContent = index + 1;
-                item.querySelector('input').placeholder = `${index + 1}번째 목적지 주소`;
+                item.querySelector('input').placeholder = `${index + 1}번째 목적지`;
             });
         }
         
@@ -441,21 +443,30 @@
             clearPolylines();
         }
         
-        function geocodeAddress(address) {
+        // [수정] geocodeAddress 함수를 장소 검색(keywordSearch)으로 변경합니다.
+        function geocodeAddress(keyword) {
             return new Promise((resolve, reject) => {
-                if (!geocoder) {
+                if (!ps) {
                     reject(new Error('지도가 초기화되지 않았습니다. API 키를 확인해주세요.'));
                     return;
                 }
-                geocoder.addressSearch(address, function(result, status) {
+                
+                // 장소 검색 객체를 통해 키워드로 장소를 검색합니다.
+                ps.keywordSearch(keyword, function(data, status, pagination) {
                     if (status === kakao.maps.services.Status.OK) {
+                        // 검색된 장소의 첫 번째 결과를 사용합니다.
+                        const place = data[0];
                         resolve({
-                            lat: parseFloat(result[0].y),
-                            lng: parseFloat(result[0].x),
-                            address: result[0].address_name
+                            lat: parseFloat(place.y),
+                            lng: parseFloat(place.x),
+                            // 장소 이름과 주소를 모두 저장하여 활용도를 높입니다.
+                            name: place.place_name,
+                            address: place.road_address_name || place.address_name
                         });
+                    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+                        reject(new Error(`검색 결과가 없습니다: ${keyword}`));
                     } else {
-                        reject(new Error(`주소를 찾을 수 없습니다: ${address}`));
+                        reject(new Error(`장소 검색 중 오류가 발생했습니다: ${keyword}`));
                     }
                 });
             });
@@ -514,7 +525,7 @@
             markers.push(marker);
             
             const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;font-size:12px;width:auto;">${title.split(': ')[1]}</div>`,
+                content: `<div style="padding:5px;font-size:12px;width:auto;">${title}</div>`,
                 removable: true
             });
             
@@ -556,7 +567,7 @@
                 html += `
                     <div class="route-step">
                         <strong>${i === 0 ? '출발' : `경유 ${i}`}</strong> → <strong>${i === route.length - 2 ? '최종 목적지' : `경유 ${i+1}`}</strong><br>
-                        <small>${start.address} → ${end.address}</small><br>
+                        <small>${start.name} → ${end.name}</small><br>
                         <small>직선거리: ${distance.toFixed(2)}km</small>
                     </div>
                 `;
@@ -573,28 +584,28 @@
         }
         
         async function planRoute() {
-            if (!map || !geocoder) {
+            if (!map || !ps) {
                 alert('지도가 초기화되지 않았습니다. 페이지를 새로고침하고 API 키를 확인해주세요.');
                 return;
             }
 
-            const startAddress = document.getElementById('startAddress').value.trim();
+            const startKeyword = document.getElementById('startAddress').value.trim();
             const destinationInputs = document.querySelectorAll('.destination-item input');
             
             const routeInfoEl = document.getElementById('routeInfo');
             const routeStepsEl = document.getElementById('routeSteps');
             const totalInfoEl = document.getElementById('totalInfo');
 
-            if (!startAddress) {
-                alert('시작 주소를 입력해주세요.');
+            if (!startKeyword) {
+                alert('시작 주소 또는 장소를 입력해주세요.');
                 return;
             }
             
-            const destinationAddresses = Array.from(destinationInputs)
+            const destinationKeywords = Array.from(destinationInputs)
                 .map(input => input.value.trim())
                 .filter(Boolean);
             
-            if (destinationAddresses.length === 0) {
+            if (destinationKeywords.length === 0) {
                 alert('최소 하나의 목적지를 입력해주세요.');
                 return;
             }
@@ -606,22 +617,17 @@
                 totalInfoEl.innerHTML = '';
                 routeInfoEl.style.display = 'block';
                 
-                const startCoord = await geocodeAddress(startAddress);
-                startCoord.title = `출발: ${startAddress}`;
+                const startCoord = await geocodeAddress(startKeyword);
                 
                 const destinationCoords = await Promise.all(
-                    destinationAddresses.map(async (addr, i) => {
-                        const coord = await geocodeAddress(addr);
-                        coord.title = `목적지 ${i + 1}: ${addr}`;
-                        return coord;
-                    })
+                    destinationKeywords.map(keyword => geocodeAddress(keyword))
                 );
                 
                 const optimizedRoute = optimizeRoute(startCoord, destinationCoords);
                 
                 const bounds = new kakao.maps.LatLngBounds();
                 optimizedRoute.forEach((point, i) => {
-                    createMarker(point, point.title, i === 0, i);
+                    createMarker(point, point.name, i === 0, i);
                     bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
                 });
                 
