@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카카오맵 다중 경로 플래너 (장소 검색 적용)</title>
+    <title>카카오맵 다중 경로 플래너 (오류 수정 완료)</title>
     <style>
         * {
             margin: 0;
@@ -334,8 +334,7 @@
     </div>
 
     <script>
-        // [수정] 장소 검색 객체를 추가합니다.
-        let map, ps; 
+        let map, ps;
         let markers = [];
         let polylines = [];
         
@@ -349,14 +348,14 @@
             const script = document.createElement('script');
             script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services&autoload=false`;
             
-            script.onload = function() {
-                kakao.maps.load(function() {
+            script.onload = () => {
+                kakao.maps.load(() => {
                     document.getElementById('apiKeyInput').style.display = 'none';
                     initializeMap();
                 });
             };
             
-            script.onerror = function() {
+            script.onerror = () => {
                 alert('API 키가 올바르지 않거나 네트워크 오류가 발생했습니다. 키를 확인 후 다시 시도해주세요.');
             };
             
@@ -370,11 +369,8 @@
                     center: new kakao.maps.LatLng(37.566826, 126.9786567),
                     level: 5
                 };
-                
                 map = new kakao.maps.Map(container, options);
-                // [수정] 장소 검색 객체를 생성합니다.
                 ps = new kakao.maps.services.Places();
-                
                 console.log('카카오맵이 성공적으로 초기화되었습니다.');
             } catch (error) {
                 console.error('카카오맵 초기화 실패:', error);
@@ -383,23 +379,21 @@
         }
         
         function addDestination() {
-            const destinationList = document.getElementById('destinationList');
-            const count = destinationList.children.length + 1;
-            
-            const destinationItem = document.createElement('div');
-            destinationItem.className = 'destination-item';
-            destinationItem.innerHTML = `
+            const list = document.getElementById('destinationList');
+            const count = list.children.length + 1;
+            const item = document.createElement('div');
+            item.className = 'destination-item';
+            item.innerHTML = `
                 <div class="destination-number">${count}</div>
                 <input type="text" placeholder="${count}번째 목적지">
                 <button class="btn btn-danger" onclick="removeDestination(this)">×</button>
             `;
-            
-            destinationList.appendChild(destinationItem);
+            list.appendChild(item);
         }
         
         function removeDestination(button) {
-            const destinationList = document.getElementById('destinationList');
-            if (destinationList.children.length > 1) {
+            const list = document.getElementById('destinationList');
+            if (list.children.length > 1) {
                 button.parentElement.remove();
                 updateDestinationNumbers();
             } else {
@@ -408,76 +402,60 @@
         }
         
         function updateDestinationNumbers() {
-            const items = document.querySelectorAll('.destination-item');
-            items.forEach((item, index) => {
+            document.querySelectorAll('.destination-item').forEach((item, index) => {
                 item.querySelector('.destination-number').textContent = index + 1;
                 item.querySelector('input').placeholder = `${index + 1}번째 목적지`;
             });
         }
         
-        function clearMarkers() {
+        function clearMap() {
             markers.forEach(marker => marker.setMap(null));
-            markers = [];
-        }
-        
-        function clearPolylines() {
             polylines.forEach(polyline => polyline.setMap(null));
+            markers = [];
             polylines = [];
         }
         
         function clearAll() {
             document.getElementById('startAddress').value = '';
-            
-            const destinationList = document.getElementById('destinationList');
-            while (destinationList.children.length > 1) {
-                destinationList.removeChild(destinationList.lastChild);
+            const list = document.getElementById('destinationList');
+            while (list.children.length > 1) {
+                list.removeChild(list.lastChild);
             }
-            destinationList.querySelector('input').value = '';
+            list.querySelector('input').value = '';
             updateDestinationNumbers();
             
             document.getElementById('routeInfo').style.display = 'none';
-            document.getElementById('routeSteps').innerHTML = '';
-            document.getElementById('totalInfo').innerHTML = '';
-            
-            clearMarkers();
-            clearPolylines();
+            clearMap();
         }
         
-        // [수정] geocodeAddress 함수를 장소 검색(keywordSearch)으로 변경합니다.
-        function geocodeAddress(keyword) {
+        function searchPlace(keyword) {
             return new Promise((resolve, reject) => {
-                if (!ps) {
-                    reject(new Error('지도가 초기화되지 않았습니다. API 키를 확인해주세요.'));
-                    return;
-                }
+                if (!ps) return reject(new Error('지도가 초기화되지 않았습니다.'));
                 
-                // 장소 검색 객체를 통해 키워드로 장소를 검색합니다.
-                ps.keywordSearch(keyword, function(data, status, pagination) {
+                ps.keywordSearch(keyword, (data, status) => {
                     if (status === kakao.maps.services.Status.OK) {
-                        // 검색된 장소의 첫 번째 결과를 사용합니다.
                         const place = data[0];
                         resolve({
                             lat: parseFloat(place.y),
                             lng: parseFloat(place.x),
-                            // 장소 이름과 주소를 모두 저장하여 활용도를 높입니다.
                             name: place.place_name,
                             address: place.road_address_name || place.address_name
                         });
                     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
                         reject(new Error(`검색 결과가 없습니다: ${keyword}`));
                     } else {
-                        reject(new Error(`장소 검색 중 오류가 발생했습니다: ${keyword}`));
+                        reject(new Error(`장소 검색 중 오류 발생: ${keyword}`));
                     }
                 });
             });
         }
         
-        function calculateDistance(lat1, lng1, lat2, lng2) {
+        function calculateDistance(p1, p2) {
             const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const dLat = (p2.lat - p1.lat) * Math.PI / 180;
+            const dLng = (p2.lng - p1.lng) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.cos(p1.lat * Math.PI / 180) * Math.cos(p2.lat * Math.PI / 180) *
                     Math.sin(dLng/2) * Math.sin(dLng/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             return R * c;
@@ -485,15 +463,15 @@
         
         function optimizeRoute(start, destinations) {
             const route = [start];
-            const remaining = [...destinations];
+            let remaining = [...destinations];
             let current = start;
             
             while (remaining.length > 0) {
-                let nearestIndex = 0;
-                let minDistance = calculateDistance(current.lat, current.lng, remaining[0].lat, remaining[0].lng);
-                
-                for (let i = 1; i < remaining.length; i++) {
-                    const distance = calculateDistance(current.lat, current.lng, remaining[i].lat, remaining[i].lng);
+                let nearestIndex = -1;
+                let minDistance = Infinity;
+
+                for (let i = 0; i < remaining.length; i++) {
+                    const distance = calculateDistance(current, remaining[i]);
                     if (distance < minDistance) {
                         minDistance = distance;
                         nearestIndex = i;
@@ -506,46 +484,52 @@
             }
             return route;
         }
-        
-        function createMarker(position, title, isStart = false, index = 0) {
-            const imageSrc = isStart ? 
-                'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png' :
-                `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_${index}.png`;
-            
-            const imageSize = new kakao.maps.Size(36, 37);
-            const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
-            
-            const marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(position.lat, position.lng),
-                image: markerImage,
-                title: title
-            });
-            
-            marker.setMap(map);
-            markers.push(marker);
-            
-            const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;font-size:12px;width:auto;">${title}</div>`,
-                removable: true
-            });
-            
-            kakao.maps.event.addListener(marker, 'click', function() {
-                infowindow.open(map, marker);
+
+        // [수정] 마커와 경로를 그리는 함수들을 분리하여 명확하게 만듭니다.
+        function drawMarkers(route) {
+            route.forEach((point, i) => {
+                const isStart = (i === 0);
+                const imageSrc = isStart ? 
+                    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png' :
+                    `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_${i}.png`;
+                
+                const imageSize = new kakao.maps.Size(36, 37);
+                const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+                
+                const marker = new kakao.maps.Marker({
+                    position: new kakao.maps.LatLng(point.lat, point.lng),
+                    image: markerImage,
+                    title: point.name
+                });
+                
+                marker.setMap(map);
+                markers.push(marker);
+
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px;font-size:12px;width:auto;">${point.name}</div>`,
+                    removable: true
+                });
+
+                kakao.maps.event.addListener(marker, 'click', () => infowindow.open(map, marker));
             });
         }
-        
-        function drawRoute(route) {
-            clearPolylines();
+
+        function drawPolylines(route) {
             const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-            
             for (let i = 0; i < route.length - 1; i++) {
+                const linePath = [
+                    new kakao.maps.LatLng(route[i].lat, route[i].lng),
+                    new kakao.maps.LatLng(route[i+1].lat, route[i+1].lng)
+                ];
+                
                 const polyline = new kakao.maps.Polyline({
-                    path: [ new kakao.maps.LatLng(route[i].lat, route[i].lng), new kakao.maps.LatLng(route[i+1].lat, route[i+1].lng) ],
+                    path: linePath,
                     strokeWeight: 5,
                     strokeColor: colors[i % colors.length],
                     strokeOpacity: 0.9,
                     strokeStyle: 'solid'
                 });
+                
                 polyline.setMap(map);
                 polylines.push(polyline);
             }
@@ -561,7 +545,7 @@
             for (let i = 0; i < route.length - 1; i++) {
                 const start = route[i];
                 const end = route[i + 1];
-                const distance = calculateDistance(start.lat, start.lng, end.lat, end.lng);
+                const distance = calculateDistance(start, end);
                 totalDistance += distance;
                 
                 html += `
@@ -585,56 +569,40 @@
         
         async function planRoute() {
             if (!map || !ps) {
-                alert('지도가 초기화되지 않았습니다. 페이지를 새로고침하고 API 키를 확인해주세요.');
+                alert('지도가 초기화되지 않았습니다.');
                 return;
             }
 
             const startKeyword = document.getElementById('startAddress').value.trim();
-            const destinationInputs = document.querySelectorAll('.destination-item input');
+            const destinationKeywords = Array.from(document.querySelectorAll('.destination-item input'))
+                .map(input => input.value.trim()).filter(Boolean);
+            
+            if (!startKeyword || destinationKeywords.length === 0) {
+                alert('출발지와 목적지를 모두 입력해주세요.');
+                return;
+            }
             
             const routeInfoEl = document.getElementById('routeInfo');
-            const routeStepsEl = document.getElementById('routeSteps');
-            const totalInfoEl = document.getElementById('totalInfo');
-
-            if (!startKeyword) {
-                alert('시작 주소 또는 장소를 입력해주세요.');
-                return;
-            }
+            routeInfoEl.style.display = 'block';
+            routeInfoEl.querySelector('#routeSteps').innerHTML = '<div class="loading">경로를 계산하고 있습니다...</div>';
+            routeInfoEl.querySelector('#totalInfo').innerHTML = '';
             
-            const destinationKeywords = Array.from(destinationInputs)
-                .map(input => input.value.trim())
-                .filter(Boolean);
-            
-            if (destinationKeywords.length === 0) {
-                alert('최소 하나의 목적지를 입력해주세요.');
-                return;
-            }
+            clearMap();
             
             try {
-                clearMarkers();
-                clearPolylines();
-                routeStepsEl.innerHTML = '<div class="loading">경로를 계산하고 있습니다...</div>';
-                totalInfoEl.innerHTML = '';
-                routeInfoEl.style.display = 'block';
+                const startPoint = await searchPlace(startKeyword);
+                const destinationPoints = await Promise.all(destinationKeywords.map(searchPlace));
                 
-                const startCoord = await geocodeAddress(startKeyword);
+                const optimizedRoute = optimizeRoute(startPoint, destinationPoints);
                 
-                const destinationCoords = await Promise.all(
-                    destinationKeywords.map(keyword => geocodeAddress(keyword))
-                );
-                
-                const optimizedRoute = optimizeRoute(startCoord, destinationCoords);
-                
-                const bounds = new kakao.maps.LatLngBounds();
-                optimizedRoute.forEach((point, i) => {
-                    createMarker(point, point.name, i === 0, i);
-                    bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
-                });
-                
-                map.setBounds(bounds);
-                
-                drawRoute(optimizedRoute);
+                // [수정] 지도에 그리는 순서를 명확히 합니다.
+                drawMarkers(optimizedRoute);
+                drawPolylines(optimizedRoute);
                 displayRouteInfo(optimizedRoute);
+
+                const bounds = new kakao.maps.LatLngBounds();
+                optimizedRoute.forEach(point => bounds.extend(new kakao.maps.LatLng(point.lat, point.lng)));
+                map.setBounds(bounds);
                 
             } catch (error) {
                 alert('오류가 발생했습니다: ' + error.message);
@@ -642,18 +610,15 @@
             }
         }
         
-        window.onload = function() {
+        window.onload = () => {
             document.getElementById('apiKeyInput').style.display = 'flex';
         };
         
-        document.addEventListener('keypress', function(e) {
+        document.addEventListener('keypress', e => {
             if (e.key === 'Enter') {
-                const activeElement = document.activeElement;
-                if (activeElement.id === 'apiKeyField') {
-                    setApiKey();
-                } else if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
-                    planRoute();
-                }
+                const activeEl = document.activeElement;
+                if (activeEl.id === 'apiKeyField') setApiKey();
+                else if (activeEl.tagName === 'INPUT' && activeEl.type === 'text') planRoute();
             }
         });
     </script>
