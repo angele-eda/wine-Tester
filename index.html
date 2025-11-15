@@ -2,319 +2,615 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>멋재이 아침 루틴 리마인더</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>멋재이 진액 루틴 체크</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.json" />
 
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg-gradient: linear-gradient(135deg, #f0f4ff, #ffeef5);
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --text-main: #222;
-      --accent: #ff6b81;
-      --accent-soft: rgba(255, 107, 129, 0.15);
-      --shadow-soft: 0 18px 35px rgba(15, 23, 42, 0.18);
-    }
-
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
-      margin: 0;
       min-height: 100vh;
+      background: #f5f5f7;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
-        -system-ui, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-main);
     }
 
-    .card {
+    .app {
       width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
+      max-width: 420px;
+      background: #ffffff;
       border-radius: 18px;
-      padding: 22px 18px 20px;
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 20px 18px 18px;
     }
 
-    header {
+    .header {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
     }
 
-    .emoji {
-      font-size: clamp(1.8rem, 8vw, 2.1rem);
+    .icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #e5f0ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(1.4rem, 6vw, 1.7rem);
-      line-height: 1.3;
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
     }
 
     .subtitle {
-      margin: 6px 0 14px;
-      font-size: 0.92rem;
-      line-height: 1.5;
-      color: #555;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 12px;
     }
 
-    .time-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: #d7264e;
-      margin-bottom: 6px;
+    .status-bar {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .time-tag span {
-      font-weight: 600;
+    .status-box {
+      background: #f7f9fc;
+      border-radius: 12px;
+      padding: 10px;
     }
 
-    /* 🔥 회전 모래시계 */
-    .hourglass {
-      display: inline-block;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    button#playBtn {
-      margin-top: 4px;
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 999px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-      box-shadow: 0 10px 24px rgba(255, 107, 129, 0.45);
-    }
-
-    button#playBtn:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(255, 107, 129, 0.6);
-    }
-
-    button#playBtn:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow: 0 6px 18px rgba(255, 107, 129, 0.5);
-    }
-
-    button#playBtn:disabled {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    .timers-wrap {
-      margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(248, 250, 252, 0.9);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-    }
-
-    .timers-title {
-      font-size: 0.88rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #444;
-    }
-
-    .timer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      padding: 3px 0;
-    }
-
-    .timer-step {
-      font-weight: 500;
-    }
-
-    .timer-status {
-      font-variant-numeric: tabular-nums;
-      margin-left: 8px;
-    }
-
-    .list-wrap {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(148, 163, 184, 0.08);
-      max-height: min(360px, 55vh);
-      overflow-y: auto;
-    }
-
-    .list-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #444;
-    }
-
-    ol#stepList {
-      margin: 0;
-      padding-left: 20px;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    ol#stepList li {
+    .status-label {
+      font-size: 11px;
+      color: #888;
       margin-bottom: 4px;
     }
 
-    .footnote {
-      margin-top: 8px;
-      font-size: 0.76rem;
+    .status-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .status-value.small {
+      font-size: 13px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #playPauseBtn {
+      flex: 1.3;
+      background: #2563eb;
+      color: #fff;
+    }
+
+    #resetBtn {
+      flex: 1;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .hourglass-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .hourglass-label {
+      font-size: 12px;
       color: #777;
+    }
+
+    .hourglass {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f3f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: transform 0.4s ease;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+      margin-top: 4px;
+    }
+
+    ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .step {
+      border-radius: 12px;
+      padding: 10px;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .step.timed.current {
+      border: 1px solid #2563eb;
+      background: #eef3ff;
+    }
+
+    .step.timed.done {
+      background: #e0fce4;
+    }
+
+    .step.note {
+      background: #fdf5e6;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .step-title-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-index {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      background: #e5e7eb;
+      border-radius: 999px;
+      padding: 2px 7px;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .step-status {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    .step-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .step-time {
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .step-tip {
+      font-size: 11px;
+      color: #9b6b00;
+      text-align: right;
+      flex: 1;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    @media (max-width: 380px) {
+      .app {
+        padding: 16px 14px 14px;
+      }
+      h1 {
+        font-size: 18px;
+      }
+      .subtitle {
+        font-size: 12px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <header>
-      <div class="emoji">⏰</div>
+  <div class="app">
+    <div class="header">
+      <div class="icon-circle">✅</div>
       <div>
-        <div class="time-tag">
-          <span>06:20</span> 기상 루틴
-        </div>
-        <h1>멋재이 아침 루틴 리마인더</h1>
+        <h1>멋재이 진액 루틴 체크</h1>
+        <p class="subtitle">06:20 기상 기준 아침 루틴 + DGL + 저녁 진액 티</p>
       </div>
-    </header>
+    </div>
 
-    <p class="subtitle">
-      06:20에 기상해서 이 페이지를 열고<br />
-      아래 버튼을 누르면, 단계별로 음성 안내가 나와요.
-    </p>
+    <div class="status-bar">
+      <div class="status-box">
+        <div class="status-label">현재 단계</div>
+        <div class="status-value" id="currentStepLabel">대기중</div>
+      </div>
+      <div class="status-box">
+        <div class="status-label">아침 타이머 남은 시간</div>
+        <div class="status-value small" id="totalRemainingTime">-</div>
+      </div>
+    </div>
 
-    <button id="playBtn" type="button">아침 루틴 재생 ▶</button>
+    <div class="controls">
+      <button id="playPauseBtn">아침 루틴 재생 ▶</button>
+      <button id="resetBtn">처음부터 ⟳</button>
+    </div>
 
-    <section class="timers-wrap" aria-labelledby="timersTitle">
-      <div id="timersTitle" class="timers-title">각 루틴까지 남은 시간</div>
-      <div id="timers"></div>
-    </section>
+    <div class="hourglass-wrap">
+      <span class="hourglass-label">모래시계 (단계 넘어갈 때마다 180° 회전)</span>
+      <div class="hourglass" id="hourglass">⏳</div>
+    </div>
 
-    <section class="list-wrap" aria-labelledby="listTitle">
-      <div id="listTitle" class="list-title">진행 순서</div>
-      <ol id="stepList">
-        <li>기상 + 소금물 150~200ml 마시기</li>
-        <li>전력 런닝 5분</li>
-        <li>런닝 후 10분 휴식</li>
-        <li>DGL 1정 녹여 먹기</li>
-        <li>유당분해제 1정</li>
-        <li>칼로리 몬스터 1/2만 마시기</li>
-        <li>칼로리 몬스터 나머지 1/2 + 류신 1정</li>
-      </ol>
-      <p class="footnote">
-        버튼을 다시 누르면 처음부터 다시 진행돼요.
-      </p>
-    </section>
-  </main>
+    <p class="section-title">체크리스트</p>
+    <ol id="stepList"></ol>
+
+    <p class="footer-note">※ 1~4번은 타이머, 5~6번은 시간대 안내용 체크</p>
+  </div>
 
   <script>
+    // ---- 루틴 정의 (멋재이 맞춤) ----
+    // duration: 초 단위 (원하면 여기 숫자만 바꿔도 됨)
     const steps = [
-      "지금은 기상 후, 소금물 150에서 200밀리리터를 마실 시간입니다.",
-      "이제 전력 런닝을 5분간 해 주세요.",
-      "런닝이 끝났습니다. 10분 동안 가볍게 쉬어 주세요.",
-      "이제 디지엘, 디지엘 1정을 입에서 천천히 녹여 드세요.",
-      "이제 유당 분해제를 1정 드세요.",
-      "이제 칼로리 몬스터를 절반만 마셔 주세요.",
-      "이제 칼로리 몬스터 나머지 절반을 마시고, 류신 1정을 함께 드세요."
+      {
+        id: 1,
+        title: "기상 + 소금물 150~200ml 마시기",
+        duration: 180, // 3분
+        type: "timed"
+      },
+      {
+        id: 2,
+        title: "전력 런닝 5분",
+        duration: 300, // 5분
+        type: "timed"
+      },
+      {
+        id: 3,
+        title: "런닝 후 휴식 10분",
+        duration: 600, // 10분
+        type: "timed"
+      },
+      {
+        id: 4,
+        title: "황기/맥문동 + 유산균 + 칼로리 몬스터 정리해서 섭취",
+        duration: 300, // 5분
+        type: "timed"
+      },
+      {
+        id: 5,
+        title: "점심 30분 전 DGL 1정 (위 점막 보호)",
+        duration: 0,
+        type: "note",
+        tip: "점심시간 전에 이 단계 직접 체크해줘."
+      },
+      {
+        id: 6,
+        title: "저녁 진액 티 루틴 (배+도라지+대추 또는 맥문동차)",
+        duration: 0,
+        type: "note",
+        tip: "저녁 식후/자기 전 루틴으로 체크."
+      }
     ];
 
-    const delaysMinutes = [0, 5, 10, 20, 25, 30, 35];
+    const stepListEl = document.getElementById("stepList");
+    const currentStepLabelEl = document.getElementById("currentStepLabel");
+    const totalRemainingTimeEl = document.getElementById("totalRemainingTime");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const hourglassEl = document.getElementById("hourglass");
 
-    const timersDiv = document.getElementById("timers");
-    const playBtn = document.getElementById("playBtn");
+    let currentIndex = -1;  // steps 배열 인덱스 (0부터)
+    let remainingSeconds = 0;
+    let timerId = null;
+    let isRunning = false;
+    let hourglassAngle = 0;
 
-    let tickerId = null;
+    // ---- 화면에 루틴 그리기 ----
+    function renderSteps() {
+      stepListEl.innerHTML = "";
+      steps.forEach((step, idx) => {
+        const li = document.createElement("li");
+        li.classList.add("step");
+        li.classList.add(step.type);
+        li.dataset.index = idx;
 
-    function speak(text) {
-      if ("speechSynthesis" in window) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = "ko-KR";
-        window.speechSynthesis.speak(utter);
-      } else {
-        alert(text);
-      }
+        const header = document.createElement("div");
+        header.classList.add("step-header");
+
+        const titleBox = document.createElement("div");
+        titleBox.classList.add("step-title-box");
+
+        const indexSpan = document.createElement("span");
+        indexSpan.classList.add("step-index");
+        indexSpan.textContent = step.id;
+
+        const titleSpan = document.createElement("span");
+        titleSpan.classList.add("step-title");
+        titleSpan.textContent = step.title;
+
+        titleBox.appendChild(indexSpan);
+        titleBox.appendChild(titleSpan);
+
+        const statusSpan = document.createElement("span");
+        statusSpan.classList.add("step-status");
+        statusSpan.id = `status-${step.id}`;
+        statusSpan.textContent = step.type === "timed" ? "대기중" : "체크용";
+
+        header.appendChild(titleBox);
+        header.appendChild(statusSpan);
+
+        const body = document.createElement("div");
+        body.classList.add("step-body");
+
+        const timeSpan = document.createElement("span");
+        timeSpan.classList.add("step-time");
+        timeSpan.id = `time-${step.id}`;
+        if (step.type === "timed") {
+          timeSpan.textContent = `예정 시간: ${formatTime(step.duration)}`;
+        } else {
+          timeSpan.textContent = `권장 시간대 안내`;
+        }
+        body.appendChild(timeSpan);
+
+        if (step.tip) {
+          const tipSpan = document.createElement("span");
+          tipSpan.classList.add("step-tip");
+          tipSpan.textContent = step.tip;
+          body.appendChild(tipSpan);
+        }
+
+        li.appendChild(header);
+        li.appendChild(body);
+        stepListEl.appendChild(li);
+      });
     }
 
-    function startTimers(startTime) {
-      if (tickerId) clearInterval(tickerId);
-
-      function render() {
-        const now = Date.now();
-        let html = "";
-
-        delaysMinutes.forEach((min, idx) => {
-          const offsetMs = min * 60 * 1000;
-          const diff = offsetMs - (now - startTime);
-
-          let status;
-          if (diff <= -60 * 1000) {
-            status = "✅ 완료";
-          } else if (diff <= 0) {
-            status = `<span class="hourglass">⏳</span> 진행 중`;
-          } else {
-            const sec = Math.floor(diff / 1000);
-            const mm = Math.floor(sec / 60);
-            const ss = String(sec % 60).padStart(2, "0");
-            status = `${mm}분 ${ss}초 남음`;
-          }
-
-          html += `
-            <div class="timer-row">
-              <span class="timer-step">${idx + 1}단계</span>
-              <span class="timer-status">${status}</span>
-            </div>`;
-        });
-
-        timersDiv.innerHTML = html;
-      }
-
-      render();
-      tickerId = setInterval(render, 1000);
+    function formatTime(seconds) {
+      if (seconds <= 0) return "00:00";
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     }
 
-    playBtn.addEventListener("click", () => {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      if (tickerId) clearInterval(tickerId);
+    function updateTotalRemainingTime() {
+      let total = 0;
+      steps.forEach((step, idx) => {
+        if (step.type !== "timed") return;
+        if (idx < currentIndex) return;
+        if (idx === currentIndex) {
+          total += remainingSeconds;
+        } else {
+          total += step.duration;
+        }
+      });
+      totalRemainingTimeEl.textContent = total > 0 ? formatTime(total) : "완료";
+    }
 
-      playBtn.disabled = true;
-      playBtn.innerHTML = `루틴 진행 중… <span class="hourglass">⏳</span>`;
+    function setCurrentStep(idx) {
+      currentIndex = idx;
 
-      const startTime = Date.now();
-      startTimers(startTime);
-
-      delaysMinutes.forEach((min, index) => {
-        setTimeout(() => speak(steps[index]), min * 60 * 1000);
+      // 스타일 리셋
+      document.querySelectorAll(".step.timed").forEach(el => {
+        el.classList.remove("current");
       });
 
-      setTimeout(() => {
-        playBtn.disabled = false;
-        playBtn.innerHTML = `아침 루틴 다시 재생 ▶`;
-      }, 40 * 60 * 1000);
+      if (idx === -1) {
+        currentStepLabelEl.textContent = "대기중";
+        updateTotalRemainingTime();
+        return;
+      }
+
+      const step = steps[idx];
+      const li = stepListEl.querySelector(`.step[data-index="${idx}"]`);
+      if (li && step.type === "timed") {
+        li.classList.add("current");
+      }
+      currentStepLabelEl.textContent = `${step.id}단계 · ${step.title}`;
+      remainingSeconds = step.duration;
+      const timeEl = document.getElementById(`time-${step.id}`);
+      if (timeEl) timeEl.textContent = `남은 시간: ${formatTime(remainingSeconds)}`;
+
+      const statusEl = document.getElementById(`status-${step.id}`);
+      if (statusEl) statusEl.textContent = "진행중";
+      updateTotalRemainingTime();
+    }
+
+    function moveToNextTimedStep() {
+      let nextIdx = currentIndex;
+      const len = steps.length;
+      while (true) {
+        nextIdx++;
+        if (nextIdx >= len) {
+          return -1;
+        }
+        if (steps[nextIdx].type === "timed") {
+          return nextIdx;
+        }
+      }
+    }
+
+    function rotateHourglass() {
+      hourglassAngle += 180;
+      hourglassEl.style.transform = `rotate(${hourglassAngle}deg)`;
+    }
+
+    function markCurrentAsDone() {
+      if (currentIndex < 0) return;
+      const step = steps[currentIndex];
+
+      const li = stepListEl.querySelector(`.step[data-index="${currentIndex}"]`);
+      if (li && step.type === "timed") {
+        li.classList.remove("current");
+        li.classList.add("done");
+      }
+      const statusEl = document.getElementById(`status-${step.id}`);
+      if (statusEl) statusEl.textContent = "완료";
+      const timeEl = document.getElementById(`time-${step.id}`);
+      if (timeEl) timeEl.textContent = `완료됨`;
+    }
+
+    function tick() {
+      if (!isRunning || currentIndex === -1) return;
+
+      if (remainingSeconds > 0) {
+        remainingSeconds--;
+        const step = steps[currentIndex];
+        const timeEl = document.getElementById(`time-${step.id}`);
+        if (timeEl) {
+          timeEl.textContent = `남은 시간: ${formatTime(remainingSeconds)}`;
+        }
+        updateTotalRemainingTime();
+      }
+
+      if (remainingSeconds <= 0) {
+        // 이 단계 끝
+        markCurrentAsDone();
+        rotateHourglass();
+
+        const nextIdx = moveToNextTimedStep();
+        if (nextIdx === -1) {
+          // 모든 아침 타이머 끝
+          isRunning = false;
+          clearInterval(timerId);
+          timerId = null;
+          playPauseBtn.textContent = "아침 루틴 완료 🎉";
+          currentStepLabelEl.textContent = "아침 루틴 모두 완료!";
+          updateTotalRemainingTime();
+          return;
+        } else {
+          setCurrentStep(nextIdx);
+        }
+      }
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+
+      // 아직 시작 안 했으면 첫 타이머 단계 찾기
+      if (currentIndex === -1) {
+        const firstIdx = steps.findIndex(s => s.type === "timed");
+        if (firstIdx === -1) return;
+        setCurrentStep(firstIdx);
+      }
+
+      isRunning = true;
+      playPauseBtn.textContent = "일시정지 ⏸";
+      if (!timerId) {
+        timerId = setInterval(tick, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      playPauseBtn.textContent = "아침 루틴 재생 ▶";
+    }
+
+    function resetAll() {
+      // 타이머 정지
+      isRunning = false;
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      currentIndex = -1;
+      remainingSeconds = 0;
+      hourglassAngle = 0;
+      hourglassEl.style.transform = "rotate(0deg)";
+      playPauseBtn.textContent = "아침 루틴 재생 ▶";
+      currentStepLabelEl.textContent = "대기중";
+
+      // 모든 표시 리셋
+      steps.forEach(step => {
+        const statusEl = document.getElementById(`status-${step.id}`);
+        const timeEl = document.getElementById(`time-${step.id}`);
+        const li = stepListEl.querySelector(`.step[data-index="${step.id - 1}"]`);
+        if (li && step.type === "timed") {
+          li.classList.remove("current", "done");
+        }
+
+        if (statusEl) {
+          statusEl.textContent = step.type === "timed" ? "대기중" : "체크용";
+        }
+        if (timeEl) {
+          if (step.type === "timed") {
+            timeEl.textContent = `예정 시간: ${formatTime(step.duration)}`;
+          } else {
+            timeEl.textContent = `권장 시간대 안내`;
+          }
+        }
+      });
+
+      updateTotalRemainingTime();
+    }
+
+    // ---- 이벤트 연결 ----
+    playPauseBtn.addEventListener("click", () => {
+      if (isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
     });
+
+    resetBtn.addEventListener("click", resetAll);
+
+    // 초기 렌더링
+    renderSteps();
+    updateTotalRemainingTime();
+
+    // PWA용 서비스워커 등록 (있는 경우에만)
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {
+          // 실패해도 앱 동작에는 문제 없음
+        });
+      });
+    }
   </script>
 </body>
 </html>
