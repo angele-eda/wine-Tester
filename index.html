@@ -67,7 +67,7 @@
       display: grid;
       grid-template-columns: 1.3fr 1fr;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .status-box {
@@ -90,6 +90,49 @@
 
     .status-value.small {
       font-size: 13px;
+    }
+
+    .voice-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .voice-row label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .voice-toggle {
+      width: 42px;
+      height: 22px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .voice-toggle-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .voice-toggle.on {
+      background: #2563eb;
+    }
+
+    .voice-toggle.on .voice-toggle-circle {
+      transform: translateX(20px);
     }
 
     .controls {
@@ -277,13 +320,20 @@
       </div>
     </div>
 
+    <div class="voice-row">
+      <label for="voiceToggle">음성 안내</label>
+      <div id="voiceToggle" class="voice-toggle on">
+        <div class="voice-toggle-circle"></div>
+      </div>
+    </div>
+
     <div class="controls">
       <button id="playPauseBtn">아침 루틴 재생 ▶</button>
       <button id="resetBtn">처음부터 ⟳</button>
     </div>
 
     <div class="hourglass-wrap">
-      <span class="hourglass-label">모래시계 (단계 넘어갈 때마다 180° 회전)</span>
+      <span class="hourglass-label">모래시계 (단계 넘어갈 때마다 180° 회전 + 음성 안내)</span>
       <div class="hourglass" id="hourglass">⏳</div>
     </div>
 
@@ -295,45 +345,48 @@
 
   <script>
     // ---- 루틴 정의 (멋재이 맞춤) ----
-    // duration: 초 단위 (원하면 여기 숫자만 바꿔도 됨)
     const steps = [
       {
         id: 1,
         title: "기상 + 소금물 150~200ml 마시기",
-        duration: 180, // 3분
-        type: "timed"
+        duration: 180,
+        type: "timed",
+        speakText: "1단계, 기상 후 소금물 150에서 200 밀리리터 마시기 시작합니다."
       },
       {
         id: 2,
         title: "전력 런닝 5분",
-        duration: 300, // 5분
-        type: "timed"
+        duration: 300,
+        type: "timed",
+        speakText: "2단계, 전력 런닝 5분 시작합니다. 무리하지 말고 호흡에 집중해 주세요."
       },
       {
         id: 3,
         title: "런닝 후 휴식 10분",
-        duration: 600, // 10분
-        type: "timed"
+        duration: 600,
+        type: "timed",
+        speakText: "3단계, 런닝 후 휴식 10분입니다. 심장이 진정될 때까지 편하게 쉬어 주세요."
       },
       {
         id: 4,
-        title: "황기/맥문동 + 유산균 + 칼로리 몬스터 정리해서 섭취",
-        duration: 300, // 5분
-        type: "timed"
+        title: "황기·맥문동 + 유산균 + 칼로리 몬스터 정리해서 섭취",
+        duration: 300,
+        type: "timed",
+        speakText: "4단계, 황기 또는 맥문동 차, 유산균, 그리고 칼로리 몬스터를 정리해서 섭취합니다."
       },
       {
         id: 5,
         title: "점심 30분 전 DGL 1정 (위 점막 보호)",
         duration: 0,
         type: "note",
-        tip: "점심시간 전에 이 단계 직접 체크해줘."
+        tip: "점심 시간 전에 이 단계를 직접 체크해 줘."
       },
       {
         id: 6,
         title: "저녁 진액 티 루틴 (배+도라지+대추 또는 맥문동차)",
         duration: 0,
         type: "note",
-        tip: "저녁 식후/자기 전 루틴으로 체크."
+        tip: "저녁 식후 또는 자기 전 진액 티 루틴으로 체크."
       }
     ];
 
@@ -343,14 +396,46 @@
     const playPauseBtn = document.getElementById("playPauseBtn");
     const resetBtn = document.getElementById("resetBtn");
     const hourglassEl = document.getElementById("hourglass");
+    const voiceToggleEl = document.getElementById("voiceToggle");
 
-    let currentIndex = -1;  // steps 배열 인덱스 (0부터)
+    let currentIndex = -1;
     let remainingSeconds = 0;
     let timerId = null;
     let isRunning = false;
     let hourglassAngle = 0;
 
-    // ---- 화면에 루틴 그리기 ----
+    // ---- 음성 안내 기능 ----
+    function isVoiceOn() {
+      return voiceToggleEl.classList.contains("on");
+    }
+
+    function speak(text) {
+      if (!isVoiceOn()) return;
+      if (!("speechSynthesis" in window)) return;
+
+      // 이전 말 중지
+      window.speechSynthesis.cancel();
+
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "ko-KR";
+
+      const voices = window.speechSynthesis.getVoices();
+      const koVoices = voices.filter(v => v.lang && v.lang.startsWith("ko"));
+      if (koVoices.length > 0) {
+        // 보통 여성처럼 들리는 첫 한국어 음성 선택
+        utter.voice = koVoices[0];
+      }
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    function speakStepStart(step) {
+      if (step.type !== "timed") return;
+      const text = step.speakText || `${step.id}단계, ${step.title} 시작합니다.`;
+      speak(text);
+    }
+
+    // ---- 화면 그리기 ----
     function renderSteps() {
       stepListEl.innerHTML = "";
       steps.forEach((step, idx) => {
@@ -434,7 +519,6 @@
     function setCurrentStep(idx) {
       currentIndex = idx;
 
-      // 스타일 리셋
       document.querySelectorAll(".step.timed").forEach(el => {
         el.classList.remove("current");
       });
@@ -452,11 +536,13 @@
       }
       currentStepLabelEl.textContent = `${step.id}단계 · ${step.title}`;
       remainingSeconds = step.duration;
+
       const timeEl = document.getElementById(`time-${step.id}`);
       if (timeEl) timeEl.textContent = `남은 시간: ${formatTime(remainingSeconds)}`;
 
       const statusEl = document.getElementById(`status-${step.id}`);
       if (statusEl) statusEl.textContent = "진행중";
+
       updateTotalRemainingTime();
     }
 
@@ -508,22 +594,22 @@
       }
 
       if (remainingSeconds <= 0) {
-        // 이 단계 끝
         markCurrentAsDone();
         rotateHourglass();
 
         const nextIdx = moveToNextTimedStep();
         if (nextIdx === -1) {
-          // 모든 아침 타이머 끝
           isRunning = false;
           clearInterval(timerId);
           timerId = null;
           playPauseBtn.textContent = "아침 루틴 완료 🎉";
           currentStepLabelEl.textContent = "아침 루틴 모두 완료!";
           updateTotalRemainingTime();
+          speak("멋재이, 아침 루틴 모두 완료되었습니다. 수고했어.");
           return;
         } else {
           setCurrentStep(nextIdx);
+          speakStepStart(steps[nextIdx]);
         }
       }
     }
@@ -531,11 +617,12 @@
     function startTimer() {
       if (isRunning) return;
 
-      // 아직 시작 안 했으면 첫 타이머 단계 찾기
       if (currentIndex === -1) {
         const firstIdx = steps.findIndex(s => s.type === "timed");
         if (firstIdx === -1) return;
         setCurrentStep(firstIdx);
+        speak("멋재이, 아침 루틴을 시작합니다.");
+        speakStepStart(steps[firstIdx]);
       }
 
       isRunning = true;
@@ -548,10 +635,13 @@
     function pauseTimer() {
       isRunning = false;
       playPauseBtn.textContent = "아침 루틴 재생 ▶";
+      // 말도 잠시 멈춤
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
     }
 
     function resetAll() {
-      // 타이머 정지
       isRunning = false;
       if (timerId) {
         clearInterval(timerId);
@@ -564,7 +654,10 @@
       playPauseBtn.textContent = "아침 루틴 재생 ▶";
       currentStepLabelEl.textContent = "대기중";
 
-      // 모든 표시 리셋
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
       steps.forEach(step => {
         const statusEl = document.getElementById(`status-${step.id}`);
         const timeEl = document.getElementById(`time-${step.id}`);
@@ -588,7 +681,7 @@
       updateTotalRemainingTime();
     }
 
-    // ---- 이벤트 연결 ----
+    // ---- 이벤트 ----
     playPauseBtn.addEventListener("click", () => {
       if (isRunning) {
         pauseTimer();
@@ -599,17 +692,30 @@
 
     resetBtn.addEventListener("click", resetAll);
 
+    voiceToggleEl.addEventListener("click", () => {
+      voiceToggleEl.classList.toggle("on");
+      if (!isVoiceOn() && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
+
     // 초기 렌더링
     renderSteps();
     updateTotalRemainingTime();
 
-    // PWA용 서비스워커 등록 (있는 경우에만)
+    // PWA용 서비스워커 등록
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("service-worker.js").catch(() => {
-          // 실패해도 앱 동작에는 문제 없음
-        });
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
       });
+    }
+
+    // 일부 브라우저에서 한국어 음성 목록 로딩용
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
     }
   </script>
 </body>
