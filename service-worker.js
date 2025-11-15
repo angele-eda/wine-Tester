@@ -1,4 +1,4 @@
-const CACHE_NAME = "jin-aek-routine-v1";
+const CACHE_NAME = "jin-aek-routine-v3";
 const URLS_TO_CACHE = [
   "./",
   "./index.html",
