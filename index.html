@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>멋재이 아침 루틴 리마인더</title>
-  <!-- 반응형 뷰포트 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -115,8 +114,40 @@
       box-shadow: none;
     }
 
+    .timers-wrap {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(248, 250, 252, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .timers-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .timer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      padding: 3px 0;
+    }
+
+    .timer-step {
+      font-weight: 500;
+    }
+
+    .timer-status {
+      font-variant-numeric: tabular-nums;
+      margin-left: 8px;
+    }
+
     .list-wrap {
-      margin-top: 16px;
+      margin-top: 12px;
       padding: 10px 12px;
       border-radius: 14px;
       background: rgba(148, 163, 184, 0.08);
@@ -148,12 +179,10 @@
       color: #777;
     }
 
-    /* 더 작은 기기 대응 */
     @media (max-width: 360px) {
       .card {
         padding: 18px 14px 16px;
       }
-
       .list-wrap {
         padding: 8px 10px;
       }
@@ -178,6 +207,12 @@
     </p>
 
     <button id="playBtn" type="button">아침 루틴 재생 ▶</button>
+
+    <!-- 남은 시간 표시 영역 -->
+    <section class="timers-wrap" aria-labelledby="timersTitle">
+      <div id="timersTitle" class="timers-title">각 루틴까지 남은 시간</div>
+      <div id="timers"></div>
+    </section>
 
     <section class="list-wrap" aria-labelledby="listTitle">
       <div id="listTitle" class="list-title">진행 순서</div>
@@ -212,6 +247,11 @@
     // 0분, 5분, 10분, 20분, 25분, 30분, 35분
     const delaysMinutes = [0, 5, 10, 20, 25, 30, 35];
 
+    const timersDiv = document.getElementById("timers");
+    const playBtn = document.getElementById("playBtn");
+
+    let tickerId = null;
+
     function speak(text) {
       if ("speechSynthesis" in window) {
         const utter = new SpeechSynthesisUtterance(text);
@@ -222,17 +262,66 @@
       }
     }
 
-    document.getElementById("playBtn").addEventListener("click", () => {
-      const btn = document.getElementById("playBtn");
+    // 남은 시간 / 완료 상태 렌더링
+    function startTimers(startTime) {
+      if (tickerId) {
+        clearInterval(tickerId);
+        tickerId = null;
+      }
 
-      // 기존 재생 중이면 새로 시작할 수 있게, 남은 음성 큐 삭제
+      function render() {
+        const now = Date.now();
+        let html = "";
+
+        delaysMinutes.forEach((min, idx) => {
+          const offsetMs = min * 60 * 1000;
+          const diff = offsetMs - (now - startTime);
+
+          let status;
+          if (diff <= -60 * 1000) {
+            // 예정 시점 + 1분이 지나면 완료로 간주
+            status = "✅ 완료";
+          } else if (diff <= 0) {
+            status = "⏳ 진행 중";
+          } else {
+            const totalSec = Math.floor(diff / 1000);
+            const m = Math.floor(totalSec / 60);
+            const s = totalSec % 60;
+            status = `${m}분 ${s.toString().padStart(2, "0")}초 남음`;
+          }
+
+          html += `
+            <div class="timer-row">
+              <span class="timer-step">${idx + 1}단계</span>
+              <span class="timer-status">${status}</span>
+            </div>
+          `;
+        });
+
+        timersDiv.innerHTML = html;
+      }
+
+      render();
+      tickerId = setInterval(render, 1000);
+    }
+
+    playBtn.addEventListener("click", () => {
+      // 이전 음성/타이머 리셋
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      if (tickerId) {
+        clearInterval(tickerId);
+        tickerId = null;
+      }
 
-      btn.disabled = true;
-      btn.textContent = "루틴 진행 중… ⏳";
+      playBtn.disabled = true;
+      playBtn.textContent = "루틴 진행 중… ⏳";
 
+      const startTime = Date.now();
+      startTimers(startTime);
+
+      // 음성 안내 예약
       delaysMinutes.forEach((min, index) => {
         const delayMs = min * 60 * 1000;
         setTimeout(() => {
@@ -242,10 +331,10 @@
         }, delayMs);
       });
 
-      // 마지막 단계 후 버튼 다시 활성화 (여유 있게 40분 후)
+      // 대략 마지막 단계 후 버튼 다시 활성화 (여유 있게 40분 후)
       setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = "아침 루틴 다시 재생 ▶";
+        playBtn.disabled = false;
+        playBtn.textContent = "아침 루틴 다시 재생 ▶";
       }, 40 * 60 * 1000);
     });
   </script>
