@@ -83,6 +83,16 @@
       font-weight: 600;
     }
 
+    /* 🔥 회전 모래시계 */
+    .hourglass {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
     button#playBtn {
       margin-top: 4px;
       width: 100%;
@@ -178,15 +188,6 @@
       font-size: 0.76rem;
       color: #777;
     }
-
-    @media (max-width: 360px) {
-      .card {
-        padding: 18px 14px 16px;
-      }
-      .list-wrap {
-        padding: 8px 10px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -208,7 +209,6 @@
 
     <button id="playBtn" type="button">아침 루틴 재생 ▶</button>
 
-    <!-- 남은 시간 표시 영역 -->
     <section class="timers-wrap" aria-labelledby="timersTitle">
       <div id="timersTitle" class="timers-title">각 루틴까지 남은 시간</div>
       <div id="timers"></div>
@@ -232,19 +232,16 @@
   </main>
 
   <script>
-    // 각 단계 안내 문구
     const steps = [
       "지금은 기상 후, 소금물 150에서 200밀리리터를 마실 시간입니다.",
       "이제 전력 런닝을 5분간 해 주세요.",
       "런닝이 끝났습니다. 10분 동안 가볍게 쉬어 주세요.",
       "이제 디지엘, 디지엘 1정을 입에서 천천히 녹여 드세요.",
-      "이제 유당 분해제를 1정 드세요. 곧 칼로리 몬스터를 마실 준비입니다.",
+      "이제 유당 분해제를 1정 드세요.",
       "이제 칼로리 몬스터를 절반만 마셔 주세요.",
       "이제 칼로리 몬스터 나머지 절반을 마시고, 류신 1정을 함께 드세요."
     ];
 
-    // 버튼을 누른 시점을 기준으로 '몇 분 뒤'에 안내할지 (분 단위)
-    // 0분, 5분, 10분, 20분, 25분, 30분, 35분
     const delaysMinutes = [0, 5, 10, 20, 25, 30, 35];
 
     const timersDiv = document.getElementById("timers");
@@ -262,12 +259,8 @@
       }
     }
 
-    // 남은 시간 / 완료 상태 렌더링
     function startTimers(startTime) {
-      if (tickerId) {
-        clearInterval(tickerId);
-        tickerId = null;
-      }
+      if (tickerId) clearInterval(tickerId);
 
       function render() {
         const now = Date.now();
@@ -279,23 +272,21 @@
 
           let status;
           if (diff <= -60 * 1000) {
-            // 예정 시점 + 1분이 지나면 완료로 간주
             status = "✅ 완료";
           } else if (diff <= 0) {
-            status = "⏳ 진행 중";
+            status = `<span class="hourglass">⏳</span> 진행 중`;
           } else {
-            const totalSec = Math.floor(diff / 1000);
-            const m = Math.floor(totalSec / 60);
-            const s = totalSec % 60;
-            status = `${m}분 ${s.toString().padStart(2, "0")}초 남음`;
+            const sec = Math.floor(diff / 1000);
+            const mm = Math.floor(sec / 60);
+            const ss = String(sec % 60).padStart(2, "0");
+            status = `${mm}분 ${ss}초 남음`;
           }
 
           html += `
             <div class="timer-row">
               <span class="timer-step">${idx + 1}단계</span>
               <span class="timer-status">${status}</span>
-            </div>
-          `;
+            </div>`;
         });
 
         timersDiv.innerHTML = html;
@@ -306,35 +297,22 @@
     }
 
     playBtn.addEventListener("click", () => {
-      // 이전 음성/타이머 리셋
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-      if (tickerId) {
-        clearInterval(tickerId);
-        tickerId = null;
-      }
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      if (tickerId) clearInterval(tickerId);
 
       playBtn.disabled = true;
-      playBtn.textContent = "루틴 진행 중… ⏳";
+      playBtn.innerHTML = `루틴 진행 중… <span class="hourglass">⏳</span>`;
 
       const startTime = Date.now();
       startTimers(startTime);
 
-      // 음성 안내 예약
       delaysMinutes.forEach((min, index) => {
-        const delayMs = min * 60 * 1000;
-        setTimeout(() => {
-          const msg = steps[index];
-          console.log(`알림(${min}분 후): ${msg}`);
-          speak(msg);
-        }, delayMs);
+        setTimeout(() => speak(steps[index]), min * 60 * 1000);
       });
 
-      // 대략 마지막 단계 후 버튼 다시 활성화 (여유 있게 40분 후)
       setTimeout(() => {
         playBtn.disabled = false;
-        playBtn.textContent = "아침 루틴 다시 재생 ▶";
+        playBtn.innerHTML = `아침 루틴 다시 재생 ▶`;
       }, 40 * 60 * 1000);
     });
   </script>
