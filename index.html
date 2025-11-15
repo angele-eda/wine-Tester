@@ -3,22 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <title>멋재이 아침 루틴 리마인더</title>
+  <!-- 반응형 뷰포트 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg-gradient: linear-gradient(135deg, #f0f4ff, #ffeef5);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #222;
+      --accent: #ff6b81;
+      --accent-soft: rgba(255, 107, 129, 0.15);
+      --shadow-soft: 0 18px 35px rgba(15, 23, 42, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        -system-ui, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 22px 18px 20px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .emoji {
+      font-size: clamp(1.8rem, 8vw, 2.1rem);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 6vw, 1.7rem);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      margin: 6px 0 14px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .time-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #d7264e;
+      margin-bottom: 6px;
+    }
+
+    .time-tag span {
+      font-weight: 600;
+    }
+
+    button#playBtn {
+      margin-top: 4px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 10px 24px rgba(255, 107, 129, 0.45);
+    }
+
+    button#playBtn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(255, 107, 129, 0.6);
+    }
+
+    button#playBtn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(255, 107, 129, 0.5);
+    }
+
+    button#playBtn:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .list-wrap {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(148, 163, 184, 0.08);
+      max-height: min(360px, 55vh);
+      overflow-y: auto;
+    }
+
+    .list-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    ol#stepList {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    ol#stepList li {
+      margin-bottom: 4px;
+    }
+
+    .footnote {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      color: #777;
+    }
+
+    /* 더 작은 기기 대응 */
+    @media (max-width: 360px) {
+      .card {
+        padding: 18px 14px 16px;
+      }
+
+      .list-wrap {
+        padding: 8px 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>멋재이 아침 루틴 ⏰</h1>
-  <p>06:20에 기상해서 이 페이지를 열고 아래 버튼을 눌러줘.</p>
+  <main class="card">
+    <header>
+      <div class="emoji">⏰</div>
+      <div>
+        <div class="time-tag">
+          <span>06:20</span> 기상 루틴
+        </div>
+        <h1>멋재이 아침 루틴 리마인더</h1>
+      </div>
+    </header>
 
-  <button id="playBtn">아침 루틴 재생 ▶</button>
+    <p class="subtitle">
+      06:20에 기상해서 이 페이지를 열고<br />
+      아래 버튼을 누르면, 단계별로 음성 안내가 나와요.
+    </p>
 
-  <ol id="stepList">
-    <li>기상 + 소금물 150~200ml 마시기</li>
-    <li>전력 런닝 5분</li>
-    <li>런닝 후 10분 휴식</li>
-    <li>DGL 1정 녹여 먹기</li>
-    <li>유당분해제 1정</li>
-    <li>칼로리 몬스터 1/2만 마시기</li>
-    <li>칼로리 몬스터 나머지 1/2 + 류신 1정</li>
-  </ol>
+    <button id="playBtn" type="button">아침 루틴 재생 ▶</button>
+
+    <section class="list-wrap" aria-labelledby="listTitle">
+      <div id="listTitle" class="list-title">진행 순서</div>
+      <ol id="stepList">
+        <li>기상 + 소금물 150~200ml 마시기</li>
+        <li>전력 런닝 5분</li>
+        <li>런닝 후 10분 휴식</li>
+        <li>DGL 1정 녹여 먹기</li>
+        <li>유당분해제 1정</li>
+        <li>칼로리 몬스터 1/2만 마시기</li>
+        <li>칼로리 몬스터 나머지 1/2 + 류신 1정</li>
+      </ol>
+      <p class="footnote">
+        버튼을 다시 누르면 처음부터 다시 진행돼요.
+      </p>
+    </section>
+  </main>
 
   <script>
     // 각 단계 안내 문구
@@ -47,12 +223,15 @@
     }
 
     document.getElementById("playBtn").addEventListener("click", () => {
-      // 중복 실행 방지
       const btn = document.getElementById("playBtn");
+
+      // 기존 재생 중이면 새로 시작할 수 있게, 남은 음성 큐 삭제
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
       btn.disabled = true;
       btn.textContent = "루틴 진행 중… ⏳";
-
-      const start = Date.now();
 
       delaysMinutes.forEach((min, index) => {
         const delayMs = min * 60 * 1000;
@@ -63,7 +242,7 @@
         }, delayMs);
       });
 
-      // 대략 마지막 단계 후 버튼 다시 활성화 (여유 있게 40분 후)
+      // 마지막 단계 후 버튼 다시 활성화 (여유 있게 40분 후)
       setTimeout(() => {
         btn.disabled = false;
         btn.textContent = "아침 루틴 다시 재생 ▶";
