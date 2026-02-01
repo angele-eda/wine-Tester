@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ConvertFiles24 - 이미지 변환</title>
-  <meta name="description" content="이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요." />
+  <title>ConvertFiles24 - Image Converter</title>
+  <meta name="description" content="Upload an image, convert to JPG/PNG/WebP, and download instantly. Runs locally in your browser." />
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     body{
@@ -18,11 +18,21 @@
     }
     h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
-    .badge{
-      font-size:12px; color:#b8c6dc; border:var(--border); padding:8px 10px; border-radius:999px;
+
+    .langbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .langbtn{
+      font-size:12px; font-weight:700;
+      color:#b8c6dc; border:var(--border);
+      padding:9px 12px; border-radius:999px;
       background:rgba(255,255,255,.04);
-      display:inline-flex; align-items:center; gap:6px;
+      cursor:pointer; user-select:none;
     }
+    .langbtn.active{
+      color:#e9eef7;
+      background:rgba(47,109,246,.22);
+      border-color:rgba(47,109,246,.55);
+    }
+
     .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
     @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
     .card{
@@ -48,7 +58,7 @@
     .row > * { flex:1; min-width:160px; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     input[type="file"]{ display:none; }
-    select, input[type="number"], input[type="text"]{
+    select, input[type="number"]{
       width:100%; box-sizing:border-box; padding:12px 12px; border-radius:14px;
       background:rgba(255,255,255,.06); color:#e9eef7; border:var(--border);
       outline:none;
@@ -69,77 +79,46 @@
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
     .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
-    a{ color:#8fb8ff; text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-
-    /* language buttons */
-    .lang-switch { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
-    .lang-btn{
-      cursor:pointer;
-      user-select:none;
-      border:var(--border);
-      background:rgba(255,255,255,.04);
-      color:#b8c6dc;
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-    }
-    .lang-btn.active{
-      background:rgba(47,109,246,.25);
-      border-color:rgba(47,109,246,.55);
-      color:#dbe7ff;
-    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 data-i18n="title">ConvertFiles24</h1>
-        <p class="sub">
-          <span data-i18n="subtitle">
-            이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)
-          </span>
-        </p>
+        <h1>ConvertFiles24</h1>
+        <p class="sub" id="subtitle"></p>
       </div>
 
-      <div style="display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap; justify-content:flex-end;">
-        <div class="lang-switch" aria-label="Language switch">
-          <button class="lang-btn" type="button" data-lang="en">EN</button>
-          <button class="lang-btn" type="button" data-lang="ja">日本語</button>
-          <button class="lang-btn" type="button" data-lang="ko">KO</button>
-        </div>
-        <div class="badge" id="domainBadge" data-i18n="badge_domain">도메인 연결 중…</div>
+      <!-- ✅ 오른쪽 상단 언어 3개 (자동감지 + 저장) -->
+      <div class="langbar" aria-label="Language selector">
+        <div class="langbtn" data-lang="en">EN</div>
+        <div class="langbtn" data-lang="ja">日本語</div>
+        <div class="langbtn" data-lang="ko">KO</div>
       </div>
     </div>
 
     <div class="grid">
       <!-- Left: Upload & Preview -->
       <div class="card">
-        <h2 data-i18n="step1">1) 업로드</h2>
+        <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop">
           <div>
-            <div style="font-weight:700; margin-bottom:8px;" data-i18n="drop_text">여기에 파일을 끌어놓거나</div>
-
+            <div style="font-weight:700; margin-bottom:8px;" id="drop_title"></div>
             <label for="file" style="display:inline-block; cursor:pointer;">
-              <span class="btn secondary" style="display:inline-block; width:auto; padding:10px 14px;" data-i18n="btn_select">파일 선택</span>
+              <span class="btn secondary" style="display:inline-block; width:auto; padding:10px 14px;" id="pick_btn"></span>
             </label>
-
             <input id="file" type="file" accept="image/*" />
-
-            <div class="hint" data-i18n="support">지원: JPG, PNG, WebP 등 이미지 / 모바일에서도 선택 가능</div>
+            <div class="hint" id="drop_hint"></div>
           </div>
         </div>
 
         <div style="height:12px;"></div>
 
-        <h2 data-i18n="step2">2) 미리보기</h2>
+        <h2 id="h_preview"></h2>
         <div class="preview">
-          <div class="thumb" id="thumb"><span style="color:#90a3c1; font-size:12px;" data-i18n="thumb">미리보기</span></div>
-          <div class="meta" id="meta" data-i18n="meta_placeholder">
-            파일을 선택하면 정보가 표시됩니다.
-          </div>
+          <div class="thumb" id="thumb"><span style="color:#90a3c1; font-size:12px;" id="thumb_label"></span></div>
+          <div class="meta" id="meta"></div>
         </div>
 
         <div class="msg" id="msg"></div>
@@ -147,11 +126,11 @@
 
       <!-- Right: Settings -->
       <div class="card">
-        <h2 data-i18n="step3">3) 변환 설정</h2>
+        <h2 id="h_settings"></h2>
 
         <div class="row">
           <div>
-            <label data-i18n="label_format">출력 형식</label>
+            <label id="lbl_format"></label>
             <select id="format">
               <option value="image/jpeg">JPG</option>
               <option value="image/png">PNG</option>
@@ -159,12 +138,12 @@
             </select>
           </div>
           <div>
-            <label data-i18n="label_quality">품질 (JPG/WebP만)</label>
+            <label id="lbl_quality"></label>
             <select id="quality">
-              <option value="0.95" data-i18n="q_best">최고(0.95)</option>
-              <option value="0.9" selected data-i18n="q_high">높음(0.90)</option>
-              <option value="0.8" data-i18n="q_mid">보통(0.80)</option>
-              <option value="0.7" data-i18n="q_low">압축(0.70)</option>
+              <option value="0.95" id="q_095"></option>
+              <option value="0.9" selected id="q_090"></option>
+              <option value="0.8" id="q_080"></option>
+              <option value="0.7" id="q_070"></option>
             </select>
           </div>
         </div>
@@ -173,33 +152,30 @@
 
         <div class="row">
           <div>
-            <label data-i18n="label_w">가로(px) (비우면 원본)</label>
-            <input id="w" type="number" min="1" placeholder="예: 1200" />
+            <label id="lbl_w"></label>
+            <input id="w" type="number" min="1" />
           </div>
           <div>
-            <label data-i18n="label_h">세로(px) (비우면 원본)</label>
-            <input id="h" type="number" min="1" placeholder="예: 800" />
+            <label id="lbl_h"></label>
+            <input id="h" type="number" min="1" />
           </div>
         </div>
 
-        <div class="hint" data-i18n="hint_ratio">가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.</div>
+        <div class="hint" id="size_hint"></div>
 
         <div style="height:12px;"></div>
 
-        <h2 data-i18n="step4">4) 다운로드</h2>
-        <button class="btn" id="convert" disabled data-i18n="btn_convert">변환 & 다운로드</button>
+        <h2 id="h_download"></h2>
+        <button class="btn" id="convert" disabled></button>
         <div style="height:10px;"></div>
-        <button class="btn secondary" id="reset" disabled data-i18n="btn_reset">초기화</button>
+        <button class="btn secondary" id="reset" disabled></button>
 
-        <div class="hint">
-          <span data-i18n="privacy_line1">🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.</span><br/>
-          <span data-i18n="privacy_line2">⚠️ PDF 변환 등 “서버 처리”가 필요한 기능은 다음 단계에서 추가할 수 있어요.</span>
-        </div>
+        <div class="hint" id="privacy_hint"></div>
       </div>
     </div>
 
     <div class="footer">
-      © <span id="year"></span> ConvertFiles24 · <span data-i18n="powered">Powered by GitHub Pages</span>
+      © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages
     </div>
   </div>
 
@@ -207,196 +183,6 @@
 (() => {
   const $ = (id) => document.getElementById(id);
 
-  // ---------- i18n ----------
-  const i18n = {
-    en: {
-      title: "ConvertFiles24",
-      subtitle: "Upload an image and convert to <b>JPG / PNG / WebP</b>. Everything runs in your browser (no server upload).",
-      badge_domain: "Connecting domain…",
-      step1: "1) Upload",
-      drop_text: "Drop a file here or",
-      btn_select: "Select file",
-      support: "Supported: JPG, PNG, WebP (mobile supported)",
-      step2: "2) Preview",
-      thumb: "Preview",
-      meta_placeholder: "Select a file to see details.",
-      step3: "3) Convert settings",
-      label_format: "Output format",
-      label_quality: "Quality (JPG/WebP only)",
-      q_best: "Best (0.95)",
-      q_high: "High (0.90)",
-      q_mid: "Medium (0.80)",
-      q_low: "Smaller (0.70)",
-      label_w: "Width(px) (blank = original)",
-      label_h: "Height(px) (blank = original)",
-      hint_ratio: "If only one side is set, the other is calculated to keep aspect ratio.",
-      step4: "4) Download",
-      btn_convert: "Convert & Download",
-      btn_reset: "Reset",
-      privacy_line1: "🔒 Privacy: Your files are not uploaded to a server.",
-      privacy_line2: "⚠️ PDF conversion and other server-side features can be added later.",
-      powered: "Powered by GitHub Pages",
-
-      // runtime messages
-      msg_only_image: "Only image files are allowed.",
-      msg_loading: "Loading image…",
-      msg_ready: "Ready! Click the button to download.",
-      msg_process_fail: "Can't process this image. Try another file.",
-      msg_preview_fail: "Failed to preview the image.",
-      msg_upload_first: "Please upload an image first.",
-      msg_converting: "Converting…",
-      msg_convert_fail: "Conversion failed. Try other settings.",
-      msg_png_quality: "PNG is lossless, so quality setting doesn't apply.",
-      msg_download_start: "Download started: "
-    },
-    ja: {
-      title: "ConvertFiles24",
-      subtitle: "画像をアップロードして <b>JPG / PNG / WebP</b> に変換し、すぐにダウンロードできます（サーバー送信なし）。",
-      badge_domain: "ドメイン接続中…",
-      step1: "1) アップロード",
-      drop_text: "ここにファイルをドロップ、または",
-      btn_select: "ファイルを選択",
-      support: "対応: JPG / PNG / WebP（スマホ対応）",
-      step2: "2) プレビュー",
-      thumb: "プレビュー",
-      meta_placeholder: "ファイルを選択すると情報が表示されます。",
-      step3: "3) 変換設定",
-      label_format: "出力形式",
-      label_quality: "画質（JPG/WebPのみ）",
-      q_best: "最高 (0.95)",
-      q_high: "高 (0.90)",
-      q_mid: "標準 (0.80)",
-      q_low: "圧縮 (0.70)",
-      label_w: "幅(px)（空欄＝元サイズ）",
-      label_h: "高さ(px)（空欄＝元サイズ）",
-      hint_ratio: "片方だけ入力すると、比率を保って自動計算します。",
-      step4: "4) ダウンロード",
-      btn_convert: "変換してダウンロード",
-      btn_reset: "リセット",
-      privacy_line1: "🔒 プライバシー: ファイルはサーバーへ送信されません。",
-      privacy_line2: "⚠️ PDF変換などサーバー処理が必要な機能は後で追加できます。",
-      powered: "GitHub Pagesで提供",
-
-      // runtime messages
-      msg_only_image: "画像ファイルのみ対応しています。",
-      msg_loading: "画像を読み込み中…",
-      msg_ready: "準備完了！ボタンを押してダウンロードしてください。",
-      msg_process_fail: "この画像を処理できません。別の画像で試してください。",
-      msg_preview_fail: "プレビューに失敗しました。",
-      msg_upload_first: "先に画像をアップロードしてください。",
-      msg_converting: "変換中…",
-      msg_convert_fail: "変換に失敗しました。別の設定で試してください。",
-      msg_png_quality: "PNGはロスレスのため、画質設定は適用されません。",
-      msg_download_start: "ダウンロード開始: "
-    },
-    ko: {
-      title: "ConvertFiles24",
-      subtitle: "이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)",
-      badge_domain: "도메인 연결 중…",
-      step1: "1) 업로드",
-      drop_text: "여기에 파일을 끌어놓거나",
-      btn_select: "파일 선택",
-      support: "지원: JPG, PNG, WebP 등 이미지 / 모바일에서도 선택 가능",
-      step2: "2) 미리보기",
-      thumb: "미리보기",
-      meta_placeholder: "파일을 선택하면 정보가 표시됩니다.",
-      step3: "3) 변환 설정",
-      label_format: "출력 형식",
-      label_quality: "품질 (JPG/WebP만)",
-      q_best: "최고(0.95)",
-      q_high: "높음(0.90)",
-      q_mid: "보통(0.80)",
-      q_low: "압축(0.70)",
-      label_w: "가로(px) (비우면 원본)",
-      label_h: "세로(px) (비우면 원본)",
-      hint_ratio: "가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.",
-      step4: "4) 다운로드",
-      btn_convert: "변환 & 다운로드",
-      btn_reset: "초기화",
-      privacy_line1: "🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.",
-      privacy_line2: "⚠️ PDF 변환 등 “서버 처리”가 필요한 기능은 다음 단계에서 추가할 수 있어요.",
-      powered: "Powered by GitHub Pages",
-
-      // runtime messages
-      msg_only_image: "이미지 파일만 가능합니다.",
-      msg_loading: "이미지 로딩 중…",
-      msg_ready: "준비 완료! 변환 버튼을 눌러 다운로드하세요.",
-      msg_process_fail: "이미지를 처리할 수 없어요. 다른 이미지로 시도해 주세요.",
-      msg_preview_fail: "미리보기에 실패했어요.",
-      msg_upload_first: "먼저 이미지를 업로드하세요.",
-      msg_converting: "변환 중…",
-      msg_convert_fail: "변환 실패. 다른 옵션으로 다시 시도해 주세요.",
-      msg_png_quality: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
-      msg_download_start: "다운로드 시작: "
-    }
-  };
-
-  let currentLang = "ko";
-  const t = (key) => (i18n[currentLang] && i18n[currentLang][key]) ? i18n[currentLang][key] : (i18n.en[key] || "");
-
-  function setActiveLangButton(lang){
-    document.querySelectorAll(".lang-btn[data-lang]").forEach(btn => {
-      btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
-    });
-  }
-
-  function applyLang(lang){
-    currentLang = (i18n[lang] ? lang : "en");
-    document.documentElement.lang = currentLang;
-
-    // translate UI
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      const val = t(key);
-      // allow <b> in subtitle
-      el.innerHTML = val;
-    });
-
-    setActiveLangButton(currentLang);
-
-    // update <title> / meta description (SEO)
-    const titles = {
-      en: "ConvertFiles24 - Image Converter",
-      ja: "ConvertFiles24 - 画像変換",
-      ko: "ConvertFiles24 - 이미지 변환"
-    };
-    const descs = {
-      en: "Upload images and convert to JPG/PNG/WebP. Runs in your browser.",
-      ja: "画像をアップロードして JPG/PNG/WebP に変換し、すぐにダウンロード。",
-      ko: "이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요."
-    };
-    document.title = titles[currentLang] || titles.en;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if(metaDesc) metaDesc.setAttribute("content", descs[currentLang] || descs.en);
-
-    // remember
-    localStorage.setItem("lang", currentLang);
-
-    // refresh placeholder texts for inputs (optional)
-    const w = document.getElementById("w");
-    const h = document.getElementById("h");
-    if (w && !w.value) w.placeholder = (currentLang === "ja" ? "例: 1200" : currentLang === "en" ? "e.g. 1200" : "예: 1200");
-    if (h && !h.value) h.placeholder = (currentLang === "ja" ? "例: 800" : currentLang === "en" ? "e.g. 800" : "예: 800");
-  }
-
-  function detectLang(){
-    const saved = localStorage.getItem("lang");
-    if(saved && i18n[saved]) return saved;
-
-    const browser = (navigator.language || "en").toLowerCase();
-    if(browser.startsWith("ja")) return "ja";
-    if(browser.startsWith("ko")) return "ko";
-    return "en";
-  }
-
-  // language button click
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".lang-btn[data-lang]");
-    if(!btn) return;
-    applyLang(btn.getAttribute("data-lang"));
-  });
-
-  // ---------- original app logic ----------
   const fileInput = $("file");
   const drop = $("drop");
   const thumb = $("thumb");
@@ -408,16 +194,200 @@
   const selQuality = $("quality");
   const inW = $("w");
   const inH = $("h");
-  const domainBadge = $("domainBadge");
 
   $("year").textContent = new Date().getFullYear();
 
-  // Domain badge
-  try {
-    const host = location.host || "";
-    domainBadge.textContent = host ? ("접속: " + host) : "도메인 확인 불가";
-  } catch (e) {}
+  // =========================
+  // i18n (KO/EN/JA) + auto detect + remember
+  // =========================
+  const STR = {
+    ko: {
+      subtitle: '이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)',
+      h_upload: '1) 업로드',
+      drop_title: '여기에 파일을 끌어놓거나',
+      pick_btn: '파일 선택',
+      drop_hint: '지원: JPG, PNG, WebP 등 이미지 / 모바일에서도 선택 가능',
+      h_preview: '2) 미리보기',
+      thumb_label: '미리보기',
+      meta_idle: '파일을 선택하면 정보가 표시됩니다.',
+      h_settings: '3) 변환 설정',
+      lbl_format: '출력 형식',
+      lbl_quality: '품질 (JPG/WebP만)',
+      q_095: '최고(0.95)',
+      q_090: '높음(0.90)',
+      q_080: '보통(0.80)',
+      q_070: '압축(0.70)',
+      lbl_w: '가로(px) (비우면 원본)',
+      lbl_h: '세로(px) (비우면 원본)',
+      ph_w: '예: 1200',
+      ph_h: '예: 800',
+      size_hint: '가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.',
+      h_download: '4) 다운로드',
+      convert: '변환 & 다운로드',
+      reset: '초기화',
+      privacy_hint: '🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.<br/>⚠️ PDF 변환 등 “서버 처리”가 필요한 기능은 다음 단계에서 추가할 수 있어요.',
+      msg_loading: '이미지 로딩 중…',
+      msg_ready: '준비 완료! 변환 버튼을 눌러 다운로드하세요.',
+      msg_png_q: 'PNG는 무손실이라 품질 설정이 적용되지 않아요.',
+      err_only_img: '이미지 파일만 가능합니다.',
+      err_process: '이미지를 처리할 수 없어요. 다른 이미지로 시도해 주세요.',
+      err_preview: '미리보기에 실패했어요.',
+      err_upload_first: '먼저 이미지를 업로드하세요.',
+      converting: '변환 중…',
+      err_convert: '변환 실패. 다른 옵션으로 다시 시도해 주세요.',
+      dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
+      meta_tpl: (name, type, size, w, h) =>
+        `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`
+    },
+    en: {
+      subtitle: 'Upload an image, convert to <b>JPG / PNG / WebP</b>, and download instantly. (Processed locally in your browser)',
+      h_upload: '1) Upload',
+      drop_title: 'Drag & drop a file here, or',
+      pick_btn: 'Choose file',
+      drop_hint: 'Supports JPG, PNG, WebP / Works on mobile too',
+      h_preview: '2) Preview',
+      thumb_label: 'Preview',
+      meta_idle: 'Select a file to see details.',
+      h_settings: '3) Conversion settings',
+      lbl_format: 'Output format',
+      lbl_quality: 'Quality (JPG/WebP only)',
+      q_095: 'Max (0.95)',
+      q_090: 'High (0.90)',
+      q_080: 'Normal (0.80)',
+      q_070: 'Small (0.70)',
+      lbl_w: 'Width (px) (blank = original)',
+      lbl_h: 'Height (px) (blank = original)',
+      ph_w: 'e.g., 1200',
+      ph_h: 'e.g., 800',
+      size_hint: 'If you enter only one side, the aspect ratio is preserved automatically.',
+      h_download: '4) Download',
+      convert: 'Convert & Download',
+      reset: 'Reset',
+      privacy_hint: '🔒 Privacy: Your file is never uploaded to a server.<br/>⚠️ Server-required features (like PDF conversion) can be added next.',
+      msg_loading: 'Loading image…',
+      msg_ready: 'Ready! Click convert to download.',
+      msg_png_q: 'PNG is lossless, so the quality setting does not apply.',
+      err_only_img: 'Images only.',
+      err_process: 'Could not process this image. Try a different file.',
+      err_preview: 'Failed to preview the image.',
+      err_upload_first: 'Please upload an image first.',
+      converting: 'Converting…',
+      err_convert: 'Conversion failed. Try different options.',
+      dl_start: (name, size) => `Download started: ${name} (${size})`,
+      meta_tpl: (name, type, size, w, h) =>
+        `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`
+    },
+    ja: {
+      subtitle: '画像をアップロードして <b>JPG / PNG / WebP</b> に変換し、すぐにダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
+      h_upload: '1) アップロード',
+      drop_title: 'ここにファイルをドロップ、または',
+      pick_btn: 'ファイル選択',
+      drop_hint: '対応: JPG, PNG, WebP / スマホでも利用可能',
+      h_preview: '2) プレビュー',
+      thumb_label: 'プレビュー',
+      meta_idle: 'ファイルを選択すると情報が表示されます。',
+      h_settings: '3) 変換設定',
+      lbl_format: '出力形式',
+      lbl_quality: '品質（JPG/WebPのみ）',
+      q_095: '最高(0.95)',
+      q_090: '高(0.90)',
+      q_080: '標準(0.80)',
+      q_070: '圧縮(0.70)',
+      lbl_w: '幅(px)（空欄=元サイズ）',
+      lbl_h: '高さ(px)（空欄=元サイズ）',
+      ph_w: '例: 1200',
+      ph_h: '例: 800',
+      size_hint: '片方だけ入力すると、比率を維持して自動計算します。',
+      h_download: '4) ダウンロード',
+      convert: '変換してダウンロード',
+      reset: 'リセット',
+      privacy_hint: '🔒 プライバシー: ファイルはサーバーに送信されません。<br/>⚠️ PDF変換など「サーバー処理」が必要な機能は次の段階で追加できます。',
+      msg_loading: '画像を読み込み中…',
+      msg_ready: '準備完了！変換ボタンでダウンロードします。',
+      msg_png_q: 'PNGは無劣化のため、品質設定は適用されません。',
+      err_only_img: '画像ファイルのみ対応です。',
+      err_process: 'この画像を処理できません。別のファイルでお試しください。',
+      err_preview: 'プレビューに失敗しました。',
+      err_upload_first: '先に画像をアップロードしてください。',
+      converting: '変換中…',
+      err_convert: '変換に失敗しました。別の設定でお試しください。',
+      dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
+      meta_tpl: (name, type, size, w, h) =>
+        `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`
+    }
+  };
 
+  function detectLang(){
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("ko")) return "ko";
+    return "en";
+  }
+
+  let LANG = detectLang();
+
+  function setLang(lang){
+    if(!STR[lang]) return;
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+
+    // update html lang
+    document.documentElement.lang = lang;
+
+    // highlight buttons
+    document.querySelectorAll(".langbtn").forEach(b=>{
+      b.classList.toggle("active", b.dataset.lang === lang);
+    });
+
+    // fill texts
+    const t = STR[lang];
+    $("subtitle").innerHTML = t.subtitle;
+
+    $("h_upload").textContent = t.h_upload;
+    $("drop_title").textContent = t.drop_title;
+    $("pick_btn").textContent = t.pick_btn;
+    $("drop_hint").textContent = t.drop_hint;
+
+    $("h_preview").textContent = t.h_preview;
+    $("thumb_label").textContent = t.thumb_label;
+
+    $("h_settings").textContent = t.h_settings;
+    $("lbl_format").textContent = t.lbl_format;
+    $("lbl_quality").textContent = t.lbl_quality;
+    $("q_095").textContent = t.q_095;
+    $("q_090").textContent = t.q_090;
+    $("q_080").textContent = t.q_080;
+    $("q_070").textContent = t.q_070;
+
+    $("lbl_w").textContent = t.lbl_w;
+    $("lbl_h").textContent = t.lbl_h;
+    inW.placeholder = t.ph_w;
+    inH.placeholder = t.ph_h;
+    $("size_hint").textContent = t.size_hint;
+
+    $("h_download").textContent = t.h_download;
+    btnConvert.textContent = t.convert;
+    btnReset.textContent = t.reset;
+
+    $("privacy_hint").innerHTML = t.privacy_hint;
+
+    // meta idle if no file
+    if(!currentFile){
+      meta.textContent = t.meta_idle;
+      $("thumb").innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
+    }
+  }
+
+  document.querySelectorAll(".langbtn").forEach(b=>{
+    b.addEventListener("click", ()=> setLang(b.dataset.lang));
+  });
+
+  // =========================
+  // Converter logic (same as your original)
+  // =========================
   let currentFile = null;
   let imageBitmap = null;
   let originalInfo = { w: 0, h: 0 };
@@ -434,32 +404,37 @@
     msg.className = "msg " + (type || "");
   }
 
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
   function resetAll(){
     currentFile = null;
     imageBitmap = null;
     originalInfo = { w: 0, h: 0 };
     fileInput.value = "";
-    thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;" data-i18n="thumb">${t("thumb") || "미리보기"}</span>`;
-    meta.innerHTML = t("meta_placeholder") || "파일을 선택하면 정보가 표시됩니다.";
     btnConvert.disabled = true;
     btnReset.disabled = true;
     inW.value = "";
     inH.value = "";
     setMessage("");
+    meta.textContent = STR[LANG].meta_idle;
+    thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${STR[LANG].thumb_label}</span>`;
   }
 
   async function loadFile(file){
     if(!file) return;
     if(!file.type.startsWith("image/")){
-      setMessage(t("msg_only_image"), "err");
+      setMessage(STR[LANG].err_only_img, "err");
       return;
     }
 
     currentFile = file;
     btnReset.disabled = false;
-    setMessage(t("msg_loading"), "");
+    setMessage(STR[LANG].msg_loading, "");
 
-    // preview image
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = async () => {
@@ -471,31 +446,26 @@
       thumb.innerHTML = "";
       thumb.appendChild(img);
 
-      // localize meta labels
-      const L = {
-        ko: { name:"파일명", type:"형식", size:"크기", res:"해상도" },
-        en: { name:"Name",   type:"Type", size:"Size", res:"Resolution" },
-        ja: { name:"ファイル名", type:"形式", size:"サイズ", res:"解像度" }
-      }[currentLang] || { name:"Name", type:"Type", size:"Size", res:"Resolution" };
-
-      meta.innerHTML =
-        `${L.name}: <b>${escapeHtml(file.name)}</b><br/>` +
-        `${L.type}: <b>${escapeHtml(file.type || "unknown")}</b><br/>` +
-        `${L.size}: <b>${humanSize(file.size)}</b><br/>` +
-        `${L.res}: <b>${originalInfo.w} × ${originalInfo.h}</b>`;
+      meta.innerHTML = STR[LANG].meta_tpl(
+        escapeHtml(file.name),
+        escapeHtml(file.type || "unknown"),
+        humanSize(file.size),
+        originalInfo.w,
+        originalInfo.h
+      );
 
       try{
         imageBitmap = await createImageBitmap(file);
         btnConvert.disabled = false;
-        setMessage(t("msg_ready"), "ok");
+        setMessage(STR[LANG].msg_ready, "ok");
       }catch(e){
         btnConvert.disabled = true;
-        setMessage(t("msg_process_fail"), "err");
+        setMessage(STR[LANG].err_process, "err");
       }
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      setMessage(t("msg_preview_fail"), "err");
+      setMessage(STR[LANG].err_preview, "err");
     };
     img.src = url;
     img.style.width = "100%";
@@ -503,25 +473,13 @@
     img.style.objectFit = "cover";
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
-
   function getTargetSize(){
     const w = parseInt(inW.value, 10);
     const h = parseInt(inH.value, 10);
 
     if(!w && !h) return { w: originalInfo.w, h: originalInfo.h };
-
-    // keep aspect ratio if one missing
-    if(w && !h){
-      return { w, h: Math.round(w * (originalInfo.h / originalInfo.w)) };
-    }
-    if(!w && h){
-      return { w: Math.round(h * (originalInfo.w / originalInfo.h)), h };
-    }
+    if(w && !h) return { w, h: Math.round(w * (originalInfo.h / originalInfo.w)) };
+    if(!w && h) return { w: Math.round(h * (originalInfo.w / originalInfo.h)), h };
     return { w, h };
   }
 
@@ -553,18 +511,17 @@
 
   async function convertAndDownload(){
     if(!currentFile || !imageBitmap){
-      setMessage(t("msg_upload_first"), "err");
+      setMessage(STR[LANG].err_upload_first, "err");
       return;
     }
 
     btnConvert.disabled = true;
-    setMessage(t("msg_converting"), "");
+    setMessage(STR[LANG].converting, "");
 
     const mime = selFormat.value;
     const quality = parseFloat(selQuality.value);
     const { w, h } = getTargetSize();
 
-    // draw to canvas
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
@@ -573,7 +530,6 @@
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(imageBitmap, 0, 0, w, h);
 
-    // toBlob
     const blob = await new Promise((resolve) => {
       if(mime === "image/png"){
         canvas.toBlob(resolve, mime);
@@ -583,7 +539,7 @@
     });
 
     if(!blob){
-      setMessage(t("msg_convert_fail"), "err");
+      setMessage(STR[LANG].err_convert, "err");
       btnConvert.disabled = false;
       return;
     }
@@ -591,7 +547,7 @@
     const outName = buildOutputName();
     downloadBlob(blob, outName);
 
-    setMessage(`${t("msg_download_start")}${outName} (${humanSize(blob.size)})`, "ok");
+    setMessage(STR[LANG].dl_start(outName, humanSize(blob.size)), "ok");
     btnConvert.disabled = false;
   }
 
@@ -623,19 +579,18 @@
   btnConvert.addEventListener("click", convertAndDownload);
   btnReset.addEventListener("click", resetAll);
 
-  // If PNG selected, quality is irrelevant but keep UI; just hint message
   selFormat.addEventListener("change", () => {
     if(selFormat.value === "image/png"){
-      setMessage(t("msg_png_quality"), "");
+      setMessage(STR[LANG].msg_png_q, "");
     } else if(currentFile) {
-      setMessage(t("msg_ready"), "ok");
+      setMessage(STR[LANG].msg_ready, "ok");
     } else {
       setMessage("");
     }
   });
 
-  // init order: set language first, then reset UI texts
-  applyLang(detectLang());
+  // init
+  setLang(LANG);
   resetAll();
 })();
 </script>
