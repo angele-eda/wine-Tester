@@ -5,25 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- ✅ SEO 기본 -->
-  <title>ConvertFiles24 – Free Image Converter (JPG, PNG, WebP)</title>
-  <meta name="description" content="Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser." />
+  <title>ConvertFiles24 – Free Image Converter (JPG, PNG, WebP, PDF)</title>
+  <meta name="description" content="Upload an image, convert to JPG/PNG/WebP/PDF, and download instantly — processed locally in your browser." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- ✅ Canonical (도메인만 바꾸면 됨) -->
+  <!-- ✅ Canonical -->
   <link rel="canonical" href="https://convertfiles24.com/" />
 
   <!-- ✅ Open Graph (공유 미리보기) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="ConvertFiles24 - Image Converter" />
-  <meta property="og:description" content="Convert JPG/PNG/WebP instantly — processed locally in your browser." />
-  <meta property="og:url"
-content="https://convertfiles24.com/" />
+  <meta property="og:description" content="Convert JPG/PNG/WebP/PDF instantly — processed locally in your browser." />
+  <meta property="og:url" content="https://convertfiles24.com/" />
 
   <!-- ✅ Twitter card -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="ConvertFiles24 - Image Converter" />
-  <meta name="twitter:description" content="Convert JPG/PNG/WebP instantly — processed locally in your browser." />
+  <meta name="twitter:description" content="Convert JPG/PNG/WebP/PDF instantly — processed locally in your browser." />
 
   <!-- ✅ 구조화 데이터 (검색엔진 이해 도움) -->
   <script type="application/ld+json" id="jsonld">
@@ -34,9 +33,12 @@ content="https://convertfiles24.com/" />
     "applicationCategory":"MultimediaApplication",
     "operatingSystem":"Web",
     "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
-    "url":"https://YOUR-DOMAIN.com/"
+    "url":"https://convertfiles24.com/"
   }
   </script>
+
+  <!-- ✅ PDF 생성 라이브러리 (브라우저 로컬 처리) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
@@ -112,17 +114,17 @@ content="https://convertfiles24.com/" />
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
     .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
-/* ▼ select / option 가독성 수정 */
-select {
-  background-color: #0b0f17;
-  color: #e9eef7;
-  border: 1px solid rgba(255,255,255,.2);
-}
 
-option {
-  background-color: #0b0f17;
-  color: #e9eef7;
-}
+    /* ▼ select / option 가독성 수정 */
+    select {
+      background-color: #0b0f17;
+      color: #e9eef7;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    option {
+      background-color: #0b0f17;
+      color: #e9eef7;
+    }
   </style>
 </head>
 
@@ -180,6 +182,7 @@ option {
               <option value="image/jpeg">JPG</option>
               <option value="image/png">PNG</option>
               <option value="image/webp">WebP</option>
+              <option value="application/pdf">PDF</option>
             </select>
           </div>
           <div>
@@ -248,10 +251,10 @@ option {
   const STR = {
     ko: {
       seoTitle: "ConvertFiles24 - 이미지 변환",
-      seoDesc: "이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요. 브라우저에서 로컬 처리됩니다.",
+      seoDesc: "이미지 업로드 후 JPG/PNG/WebP/PDF로 변환하고 바로 다운로드하세요. 브라우저에서 로컬 처리됩니다.",
       ogTitle: "ConvertFiles24 - 이미지 변환",
-      ogDesc: "JPG/PNG/WebP로 빠르게 변환 — 서버 업로드 없이 브라우저에서 처리",
-      subtitle: '이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)',
+      ogDesc: "JPG/PNG/WebP/PDF로 빠르게 변환 — 서버 업로드 없이 브라우저에서 처리",
+      subtitle: '이미지를 업로드한 뒤 <b>JPG / PNG / WebP / PDF</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)',
       h_upload: '1) 업로드',
       drop_title: '여기에 파일을 끌어놓거나',
       pick_btn: '파일 선택',
@@ -274,7 +277,7 @@ option {
       h_download: '4) 다운로드',
       convert: '변환 & 다운로드',
       reset: '초기화',
-      privacy_hint: '🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.<br/>⚠️ PDF 변환 등 “서버 처리”가 필요한 기능은 다음 단계에서 추가할 수 있어요.',
+      privacy_hint: '🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.<br/>✅ JPG/PNG/WebP/PDF 변환은 브라우저에서 로컬 처리됩니다.',
       msg_loading: '이미지 로딩 중…',
       msg_ready: '준비 완료! 변환 버튼을 눌러 다운로드하세요.',
       msg_png_q: 'PNG는 무손실이라 품질 설정이 적용되지 않아요.',
@@ -290,10 +293,10 @@ option {
     },
     en: {
       seoTitle: "ConvertFiles24 - Image Converter",
-      seoDesc: "Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser.",
+      seoDesc: "Upload an image, convert to JPG/PNG/WebP/PDF, and download instantly — processed locally in your browser.",
       ogTitle: "ConvertFiles24 - Image Converter",
-      ogDesc: "Convert JPG/PNG/WebP instantly — processed locally in your browser.",
-      subtitle: 'Upload an image and instantly convert it to <b>JPG / PNG / WebP</b>. (Processed locally in your browser)',
+      ogDesc: "Convert JPG/PNG/WebP/PDF instantly — processed locally in your browser.",
+      subtitle: 'Upload an image and instantly convert it to <b>JPG / PNG / WebP / PDF</b>. (Processed locally in your browser)',
       h_upload: '1) Upload',
       drop_title: 'Drag & drop a file here, or',
       pick_btn: 'Choose file',
@@ -316,7 +319,7 @@ option {
       h_download: '4) Download',
       convert: 'Convert & Download',
       reset: 'Reset',
-      privacy_hint: '🔒 Privacy: Your file is never uploaded to a server.<br/>⚠️ Server-required features (like PDF conversion) can be added next.',
+      privacy_hint: '🔒 Privacy: Your file is never uploaded to a server.<br/>✅ JPG/PNG/WebP/PDF conversion runs locally in your browser.',
       msg_loading: 'Loading image…',
       msg_ready: 'Ready! Click convert to download.',
       msg_png_q: "PNG is lossless, so the quality setting doesn't apply.",
@@ -332,10 +335,10 @@ option {
     },
     ja: {
       seoTitle: "ConvertFiles24 - 画像変換",
-      seoDesc: "画像をアップロードして JPG/PNG/WebP に変換し、すぐにダウンロードできます。ブラウザ内でローカル処理します。",
+      seoDesc: "画像をアップロードして JPG/PNG/WebP/PDF に変換し、すぐにダウンロードできます。ブラウザ内でローカル処理します。",
       ogTitle: "ConvertFiles24 - 画像変換",
-      ogDesc: "JPG/PNG/WebPにすぐ変換 — ブラウザ内でローカル処理",
-      subtitle: '画像をアップロードするだけで <b>JPG / PNG / WebP</b> に変換してすぐダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
+      ogDesc: "JPG/PNG/WebP/PDFにすぐ変換 — ブラウザ内でローカル処理",
+      subtitle: '画像をアップロードするだけで <b>JPG / PNG / WebP / PDF</b> に変換してすぐダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
       h_upload: '1) アップロード',
       drop_title: 'ここにファイルをドロップ、または',
       pick_btn: 'ファイル選択',
@@ -358,7 +361,7 @@ option {
       h_download: '4) ダウンロード',
       convert: '変換してダウンロード',
       reset: 'リセット',
-      privacy_hint: '🔒 プライバシー: ファイルはサーバーに送信されません。<br/>⚠️ PDF変換など「サーバー処理」が必要な機能は次の段階で追加できます。',
+      privacy_hint: '🔒 プライバシー: ファイルはサーバーに送信されません。<br/>✅ JPG/PNG/WebP/PDF 変換はブラウザ内でローカル処理です。',
       msg_loading: '画像を読み込み中…',
       msg_ready: '準備完了！変換ボタンでダウンロードします。',
       msg_png_q: 'PNGは無劣化のため、品質設定は適用されません。',
@@ -413,7 +416,7 @@ option {
     if(TW_TITLE)  TW_TITLE.setAttribute("content", t.ogTitle);
     if(TW_DESC)   TW_DESC.setAttribute("content", t.ogDesc);
 
-    // JSON-LD도 언어에 맞게 약간만 갱신(이름 동일, 설명만 바꾸고 싶으면 확장 가능)
+    // JSON-LD도 갱신
     if(JSONLD){
       try{
         const obj = JSON.parse(JSONLD.textContent);
@@ -465,6 +468,7 @@ option {
     localStorage.setItem("cf24_lang", lang);
     setActiveLangButtons(lang);
     renderTexts();
+    updateQualityState(); // 언어 바뀌어도 상태 유지
   }
 
   document.querySelectorAll(".langbtn").forEach(b=>{
@@ -543,6 +547,7 @@ option {
       try{
         imageBitmap = await createImageBitmap(file);
         btnConvert.disabled = false;
+        updateQualityState();
         setMessage(STR[LANG].msg_ready, "ok");
       }catch(e){
         btnConvert.disabled = true;
@@ -575,6 +580,7 @@ option {
     if(mime === "image/jpeg") return "jpg";
     if(mime === "image/png") return "png";
     if(mime === "image/webp") return "webp";
+    if(mime === "application/pdf") return "pdf";
     return "bin";
   }
 
@@ -599,6 +605,13 @@ option {
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
+  function updateQualityState(){
+    const mime = selFormat.value;
+    const disableQuality = (mime === "image/png" || mime === "application/pdf");
+    selQuality.disabled = disableQuality;
+    selQuality.style.opacity = disableQuality ? ".6" : "1";
+  }
+
   async function convertAndDownload(){
     if(!currentFile || !imageBitmap){
       setMessage(STR[LANG].err_upload_first, "err");
@@ -620,13 +633,48 @@ option {
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(imageBitmap, 0, 0, w, h);
 
-    const blob = await new Promise((resolve) => {
-      if(mime === "image/png"){
-        canvas.toBlob(resolve, mime);
-      }else{
-        canvas.toBlob(resolve, mime, quality);
+    let blob = null;
+
+    if(mime === "application/pdf"){
+      try{
+        const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+        if(!pngBlob){
+          setMessage(STR[LANG].err_convert, "err");
+          btnConvert.disabled = false;
+          return;
+        }
+
+        const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
+        const { PDFDocument } = window.PDFLib;
+
+        const pdfDoc = await PDFDocument.create();
+        const imgEmbed = await pdfDoc.embedPng(pngBytes);
+
+        // 페이지 크기를 이미지 크기에 맞춤(픽셀=포인트처럼 사용)
+        const page = pdfDoc.addPage([w, h]);
+        page.drawImage(imgEmbed, { x: 0, y: 0, width: w, height: h });
+
+        const pdfBytes = await pdfDoc.save();
+        blob = new Blob([pdfBytes], { type: "application/pdf" });
+      }catch(e){
+        setMessage(
+          LANG==="ko" ? "PDF 변환 오류. 다시 시도해 주세요." :
+          LANG==="ja" ? "PDF変換エラー。もう一度お試しください。" :
+          "PDF conversion error. Please try again.",
+          "err"
+        );
+        btnConvert.disabled = false;
+        return;
       }
-    });
+    } else {
+      blob = await new Promise((resolve) => {
+        if(mime === "image/png"){
+          canvas.toBlob(resolve, mime);
+        }else{
+          canvas.toBlob(resolve, mime, quality);
+        }
+      });
+    }
 
     if(!blob){
       setMessage(STR[LANG].err_convert, "err");
@@ -669,8 +717,18 @@ option {
   btnReset.addEventListener("click", resetAll);
 
   selFormat.addEventListener("change", () => {
-    if(selFormat.value === "image/png"){
+    updateQualityState();
+
+    const mime = selFormat.value;
+    if(mime === "image/png"){
       setMessage(STR[LANG].msg_png_q, "");
+    } else if(mime === "application/pdf"){
+      setMessage(
+        LANG==="ko" ? "PDF는 1장으로 저장됩니다." :
+        LANG==="ja" ? "PDFは1ページで保存されます。" :
+        "PDF will be saved as a single page.",
+        ""
+      );
     } else if(currentFile) {
       setMessage(STR[LANG].msg_ready, "ok");
     } else {
@@ -685,3 +743,4 @@ option {
 </script>
 </body>
 </html>
+```0
