@@ -1,396 +1,411 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>멋재이 진액 루틴 체크</title>
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ConvertFiles24 - 이미지 변환</title>
+  <meta name="description" content="이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요." />
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f0f2f5;
-      margin: 0;
-      padding: 20px;
+    :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      background:#0b0f17; color:#e9eef7;
     }
-    .card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 20px;
-      max-width: 480px;
-      margin: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:14px;
     }
-    .title-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
+    h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
+    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+    .badge{
+      font-size:12px; color:#b8c6dc; border:var(--border); padding:8px 10px; border-radius:999px;
+      background:rgba(255,255,255,.04);
     }
-    .title-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: #e5f0ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
+    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
+    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
+    .card{
+      border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius);
+      padding:var(--pad);
     }
-    .title-text {
-      font-size: 18px;
-      font-weight: 700;
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
+    .drop{
+      border:1px dashed rgba(255,255,255,.18); border-radius:14px; padding:18px;
+      display:flex; align-items:center; justify-content:center; text-align:center;
+      background:rgba(255,255,255,.02);
     }
-    .subtitle {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 10px;
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:#2f6df6; color:white; font-weight:700;
+      padding:12px 14px; border-radius:14px; width:100%;
+      font-size:15px;
     }
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      font-size: 13px;
-      color: #333;
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+    .row > * { flex:1; min-width:160px; }
+    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+    input[type="file"]{ display:none; }
+    select, input[type="number"], input[type="text"]{
+      width:100%; box-sizing:border-box; padding:12px 12px; border-radius:14px;
+      background:rgba(255,255,255,.06); color:#e9eef7; border:var(--border);
+      outline:none;
     }
-    .hourglass {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #f3f4ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      transition: transform 0.4s ease;
+    .preview{
+      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
     }
-    .button {
-      background: #1a73e8;
-      color: #fff;
-      border: none;
-      padding: 14px;
-      width: 100%;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 14px;
+    .thumb{
+      width:140px; height:140px; border-radius:14px; border:var(--border);
+      background:rgba(255,255,255,.03); display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
     }
-    .button:active {
-      opacity: 0.9;
-    }
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .step {
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #f8f9fa;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 14px;
-    }
-    .step-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
-    .step-title {
-      font-weight: 600;
-    }
-    .step-time {
-      font-size: 12px;
-      color: #555;
-    }
-    .step-status {
-      font-size: 12px;
-      color: #777;
-    }
-    .step.highlight {
-      background: #fff7d6;
-    }
-    .step.timed.current {
-      border: 1px solid #1a73e8;
-      background: #eef3ff;
-    }
-    .step.timed.done {
-      background: #e7f9ea;
-    }
-    @media (max-width: 400px) {
-      .card { padding: 16px; }
-    }
+    .thumb img{ width:100%; height:100%; object-fit:cover; }
+    .meta{ color:#b7c3d9; font-size:13px; line-height:1.5; }
+    .meta b{ color:#e9eef7; }
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .err{ color:#ffb4b4; }
+    .ok{ color:#b8ffcc; }
+    .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
+    a{ color:#8fb8ff; text-decoration:none; }
+    a:hover{ text-decoration:underline; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title-row">
-      <div class="title-icon">📝</div>
-      <div class="title-text">멋재이 진액 루틴 체크</div>
-    </div>
-    <div class="subtitle">
-      06:20 기상 기준 · 아침 루틴 + DGL + 저녁 진액 티
-    </div>
-
-    <div class="status-row">
-      <div>현재 단계: <span id="currentStepLabel">대기중</span></div>
-      <div class="hourglass" id="hourglass">⏳</div>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>ConvertFiles24</h1>
+        <p class="sub">이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)</p>
+      </div>
+      <div class="badge" id="domainBadge">도메인 연결 중…</div>
     </div>
 
-    <button class="button" id="playBtn">아침 루틴 재생 ▶</button>
+    <div class="grid">
+      <!-- Left: Upload & Preview -->
+      <div class="card">
+        <h2>1) 업로드</h2>
 
-    <div class="steps" id="stepsContainer"></div>
+        <div class="drop" id="drop">
+          <div>
+            <div style="font-weight:700; margin-bottom:8px;">여기에 파일을 끌어놓거나</div>
+            <label for="file" style="display:inline-block; cursor:pointer;">
+              <span class="btn secondary" style="display:inline-block; width:auto; padding:10px 14px;">파일 선택</span>
+            </label>
+            <input id="file" type="file" accept="image/*" />
+            <div class="hint">지원: JPG, PNG, WebP 등 이미지 / 모바일에서도 선택 가능</div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <h2>2) 미리보기</h2>
+        <div class="preview">
+          <div class="thumb" id="thumb"><span style="color:#90a3c1; font-size:12px;">미리보기</span></div>
+          <div class="meta" id="meta">
+            파일을 선택하면 정보가 표시됩니다.
+          </div>
+        </div>
+
+        <div class="msg" id="msg"></div>
+      </div>
+
+      <!-- Right: Settings -->
+      <div class="card">
+        <h2>3) 변환 설정</h2>
+
+        <div class="row">
+          <div>
+            <label>출력 형식</label>
+            <select id="format">
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </div>
+          <div>
+            <label>품질 (JPG/WebP만)</label>
+            <select id="quality">
+              <option value="0.95">최고(0.95)</option>
+              <option value="0.9" selected>높음(0.90)</option>
+              <option value="0.8">보통(0.80)</option>
+              <option value="0.7">압축(0.70)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="row">
+          <div>
+            <label>가로(px) (비우면 원본)</label>
+            <input id="w" type="number" min="1" placeholder="예: 1200" />
+          </div>
+          <div>
+            <label>세로(px) (비우면 원본)</label>
+            <input id="h" type="number" min="1" placeholder="예: 800" />
+          </div>
+        </div>
+
+        <div class="hint">가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.</div>
+
+        <div style="height:12px;"></div>
+
+        <h2>4) 다운로드</h2>
+        <button class="btn" id="convert" disabled>변환 & 다운로드</button>
+        <div style="height:10px;"></div>
+        <button class="btn secondary" id="reset" disabled>초기화</button>
+
+        <div class="hint">
+          🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.<br/>
+          ⚠️ PDF 변환 등 “서버 처리”가 필요한 기능은 다음 단계에서 추가할 수 있어요.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages
+    </div>
   </div>
 
 <script>
-/*
-  🧩 1. 루틴 설정 (시간은 초단위)
-  -------------------------------- */
-const steps = [
-  { id: 1, text: "기상 후 소금물 150~200ml 마시기", duration: 180 }, // 3분
-  { id: 2, text: "전력 런닝 5분",                duration: 300 }, // 5분
-  { id: 3, text: "런닝 후 휴식 10분",             duration: 600 }, // 10분
-  { id: 4, text: "황기/맥문동 + 유산균 + 칼로리 몬스터", duration: 300 }, // 5분
-  { id: 5, text: "점심 30분 전 DGL 1정",          duration: 0 },   // 안내용
-  { id: 6, text: "저녁 진액 티(배+도라지+대추 또는 맥문동)", duration: 0 } // 안내용
-];
+(() => {
+  const $ = (id) => document.getElementById(id);
 
-const playBtn   = document.getElementById("playBtn");
-const stepsEl   = document.getElementById("stepsContainer");
-const currentStepLabel = document.getElementById("currentStepLabel");
-const hourglassEl = document.getElementById("hourglass");
+  const fileInput = $("file");
+  const drop = $("drop");
+  const thumb = $("thumb");
+  const meta = $("meta");
+  const msg = $("msg");
+  const btnConvert = $("convert");
+  const btnReset = $("reset");
+  const selFormat = $("format");
+  const selQuality = $("quality");
+  const inW = $("w");
+  const inH = $("h");
+  const domainBadge = $("domainBadge");
 
-let currentIndex = -1;      // 현재 진행 중인 step index
-let remainingSec = 0;       // 현재 단계 남은 시간
-let timerId = null;
-let isRunning = false;
-let hourglassAngle = 0;
+  $("year").textContent = new Date().getFullYear();
 
-/*
-  🧩 2. 화면에 스텝 목록 그리기
-  -------------------------------- */
-function renderSteps() {
-  stepsEl.innerHTML = "";
-  steps.forEach((step) => {
-    const div = document.createElement("div");
-    div.className = "step " + (step.duration > 0 ? "timed" : "highlight");
-    div.id = "step-" + step.id;
+  // Domain badge
+  try {
+    const host = location.host || "";
+    domainBadge.textContent = host ? ("접속: " + host) : "도메인 확인 불가";
+  } catch (e) {}
 
-    const header = document.createElement("div");
-    header.className = "step-header";
+  let currentFile = null;
+  let imageBitmap = null;
+  let originalInfo = { w: 0, h: 0 };
 
-    const title = document.createElement("div");
-    title.className = "step-title";
-    title.textContent = step.id + ". " + step.text;
-
-    const status = document.createElement("div");
-    status.className = "step-status";
-    status.id = "status-" + step.id;
-    status.textContent = step.duration > 0 ? "대기중" : "체크용";
-
-    header.appendChild(title);
-    header.appendChild(status);
-
-    const time = document.createElement("div");
-    time.className = "step-time";
-    time.id = "time-" + step.id;
-    if (step.duration > 0) {
-      time.textContent = "예정 시간: " + formatTime(step.duration);
-    } else {
-      time.textContent = "권장 시간대: 멋재이가 직접 체크";
-    }
-
-    div.appendChild(header);
-    div.appendChild(time);
-    stepsEl.appendChild(div);
-  });
-}
-
-function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
-}
-
-/*
-  🧩 3. 음성 안내 (여자 한국어 목소리 우선)
-  -------------------------------- */
-function speak(text) {
-  if (!("speechSynthesis" in window)) return;
-
-  window.speechSynthesis.cancel();
-
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "ko-KR";
-
-  const voices = window.speechSynthesis.getVoices();
-  const koVoices = voices.filter(v => v.lang && v.lang.startsWith("ko"));
-  if (koVoices.length > 0) {
-    // 보통 첫 번째가 여자 보이스인 경우가 많음
-    utter.voice = koVoices[0];
+  function humanSize(bytes){
+    const units = ["B","KB","MB","GB"];
+    let i = 0, v = bytes;
+    while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
+    return `${v.toFixed(i===0?0:1)} ${units[i]}`;
   }
 
-  window.speechSynthesis.speak(utter);
-}
-
-function speakStep(step) {
-  if (step.duration <= 0) return;
-  speak(`${step.id}단계, ${step.text} 시작합니다.`);
-}
-
-/*
-  🧩 4. 단계 전환 / 타이머
-  -------------------------------- */
-function setCurrentStep(index) {
-  // 기존 current 표시 제거
-  steps.forEach(step => {
-    const el = document.getElementById("step-" + step.id);
-    if (!el) return;
-    el.classList.remove("current");
-  });
-
-  if (index < 0) {
-    currentIndex = -1;
-    currentStepLabel.textContent = "대기중";
-    remainingSec = 0;
-    return;
+  function setMessage(text, type){
+    msg.textContent = text || "";
+    msg.className = "msg " + (type || "");
   }
 
-  currentIndex = index;
-  const step = steps[index];
-
-  const el = document.getElementById("step-" + step.id);
-  if (el && step.duration > 0) {
-    el.classList.add("current");
+  function resetAll(){
+    currentFile = null;
+    imageBitmap = null;
+    originalInfo = { w: 0, h: 0 };
+    fileInput.value = "";
+    thumb.innerHTML = '<span style="color:#90a3c1; font-size:12px;">미리보기</span>';
+    meta.textContent = "파일을 선택하면 정보가 표시됩니다.";
+    btnConvert.disabled = true;
+    btnReset.disabled = true;
+    inW.value = "";
+    inH.value = "";
+    setMessage("");
   }
 
-  currentStepLabel.textContent = `${step.id}단계 · ${step.text}`;
-
-  if (step.duration > 0) {
-    remainingSec = step.duration;
-    const timeEl = document.getElementById("time-" + step.id);
-    if (timeEl) {
-      timeEl.textContent = "남은 시간: " + formatTime(remainingSec);
-    }
-    const statusEl = document.getElementById("status-" + step.id);
-    if (statusEl) statusEl.textContent = "진행중";
-  }
-}
-
-function markStepDone(index) {
-  const step = steps[index];
-  if (!step || step.duration <= 0) return;
-
-  const el = document.getElementById("step-" + step.id);
-  if (el) {
-    el.classList.remove("current");
-    el.classList.add("done");
-  }
-  const statusEl = document.getElementById("status-" + step.id);
-  if (statusEl) statusEl.textContent = "완료";
-  const timeEl = document.getElementById("time-" + step.id);
-  if (timeEl) timeEl.textContent = "완료됨";
-}
-
-function nextTimedStepIndex(fromIndex) {
-  for (let i = fromIndex + 1; i < steps.length; i++) {
-    if (steps[i].duration > 0) return i;
-  }
-  return -1;
-}
-
-function rotateHourglass() {
-  hourglassAngle += 180;
-  hourglassEl.style.transform = `rotate(${hourglassAngle}deg)`;
-}
-
-function tick() {
-  if (!isRunning || currentIndex < 0) return;
-
-  if (remainingSec > 0) {
-    remainingSec--;
-    const step = steps[currentIndex];
-    const timeEl = document.getElementById("time-" + step.id);
-    if (timeEl) {
-      timeEl.textContent = "남은 시간: " + formatTime(remainingSec);
-    }
-  }
-
-  if (remainingSec <= 0) {
-    // 현재 단계 완료
-    markStepDone(currentIndex);
-    rotateHourglass();
-
-    const nextIndex = nextTimedStepIndex(currentIndex);
-    if (nextIndex === -1) {
-      // 모든 타이머 단계 끝
-      isRunning = false;
-      clearInterval(timerId);
-      timerId = null;
-      playBtn.textContent = "아침 루틴 완료 🎉";
-      currentStepLabel.textContent = "타이머 단계 모두 완료!";
-      speak("멋재이, 아침 루틴 타이머 단계가 모두 끝났어요. 수고했어.");
+  async function loadFile(file){
+    if(!file) return;
+    if(!file.type.startsWith("image/")){
+      setMessage("이미지 파일만 가능합니다.", "err");
       return;
     }
 
-    // 다음 단계로 넘어가면서 음성 안내
-    setCurrentStep(nextIndex);
-    speakStep(steps[nextIndex]);
-  }
-}
+    currentFile = file;
+    btnReset.disabled = false;
+    setMessage("이미지 로딩 중…", "");
 
-function startRoutine() {
-  if (isRunning) {
-    // 일시정지
-    isRunning = false;
-    playBtn.textContent = "아침 루틴 재생 ▶";
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
+    // preview image
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = async () => {
+      URL.revokeObjectURL(url);
+
+      originalInfo.w = img.naturalWidth;
+      originalInfo.h = img.naturalHeight;
+
+      thumb.innerHTML = "";
+      thumb.appendChild(img);
+
+      meta.innerHTML =
+        `파일명: <b>${escapeHtml(file.name)}</b><br/>` +
+        `형식: <b>${escapeHtml(file.type || "unknown")}</b><br/>` +
+        `크기: <b>${humanSize(file.size)}</b><br/>` +
+        `해상도: <b>${originalInfo.w} × ${originalInfo.h}</b>`;
+
+      try{
+        imageBitmap = await createImageBitmap(file);
+        btnConvert.disabled = false;
+        setMessage("준비 완료! 변환 버튼을 눌러 다운로드하세요.", "ok");
+      }catch(e){
+        btnConvert.disabled = true;
+        setMessage("이미지를 처리할 수 없어요. 다른 이미지로 시도해 주세요.", "err");
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      setMessage("미리보기에 실패했어요.", "err");
+    };
+    img.src = url;
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  function getTargetSize(){
+    const w = parseInt(inW.value, 10);
+    const h = parseInt(inH.value, 10);
+
+    if(!w && !h) return { w: originalInfo.w, h: originalInfo.h };
+
+    // keep aspect ratio if one missing
+    if(w && !h){
+      return { w, h: Math.round(w * (originalInfo.h / originalInfo.w)) };
     }
-    return;
+    if(!w && h){
+      return { w: Math.round(h * (originalInfo.w / originalInfo.h)), h };
+    }
+    return { w, h };
   }
 
-  // 처음 시작
-  if (currentIndex === -1) {
-    const firstIndex = steps.findIndex(s => s.duration > 0);
-    if (firstIndex === -1) return;
-
-    speak("멋재이, 아침 루틴을 시작합니다.");
-    setCurrentStep(firstIndex);
-    speakStep(steps[firstIndex]);
+  function mimeToExt(mime){
+    if(mime === "image/jpeg") return "jpg";
+    if(mime === "image/png") return "png";
+    if(mime === "image/webp") return "webp";
+    return "bin";
   }
 
-  isRunning = true;
-  playBtn.textContent = "일시정지 ⏸";
-
-  if (!timerId) {
-    timerId = setInterval(tick, 1000);
+  function buildOutputName(){
+    const base = (currentFile.name || "image").replace(/\.[^.]+$/, "");
+    const ext = mimeToExt(selFormat.value);
+    const { w, h } = getTargetSize();
+    const tag = (w===originalInfo.w && h===originalInfo.h) ? "" : `_${w}x${h}`;
+    return `${base}${tag}.${ext}`;
   }
-}
 
-/*
-  🧩 5. 초기화 및 이벤트 연결
-  -------------------------------- */
-renderSteps();
-setCurrentStep(-1);
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
 
-playBtn.addEventListener("click", startRoutine);
+  async function convertAndDownload(){
+    if(!currentFile || !imageBitmap){
+      setMessage("먼저 이미지를 업로드하세요.", "err");
+      return;
+    }
 
-// 서비스워커 (PWA용)
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    btnConvert.disabled = true;
+    setMessage("변환 중…", "");
+
+    const mime = selFormat.value;
+    const quality = parseFloat(selQuality.value);
+    const { w, h } = getTargetSize();
+
+    // draw to canvas
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(imageBitmap, 0, 0, w, h);
+
+    // toBlob
+    const blob = await new Promise((resolve) => {
+      if(mime === "image/png"){
+        canvas.toBlob(resolve, mime);
+      }else{
+        canvas.toBlob(resolve, mime, quality);
+      }
+    });
+
+    if(!blob){
+      setMessage("변환 실패. 다른 옵션으로 다시 시도해 주세요.", "err");
+      btnConvert.disabled = false;
+      return;
+    }
+
+    const outName = buildOutputName();
+    downloadBlob(blob, outName);
+
+    setMessage(`다운로드 시작: ${outName} (${humanSize(blob.size)})`, "ok");
+    btnConvert.disabled = false;
+  }
+
+  // Drag & drop
+  ["dragenter","dragover"].forEach(evt => {
+    drop.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drop.classList.add("drag");
+    });
   });
-}
+  ["dragleave","drop"].forEach(evt => {
+    drop.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drop.classList.remove("drag");
+    });
+  });
+  drop.addEventListener("drop", (e) => {
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
 
-// 일부 브라우저에서 음성 목록 로딩 트리거
-if ("speechSynthesis" in window) {
-  speechSynthesis.getVoices();
-  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
-}
+  fileInput.addEventListener("change", (e) => {
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  btnConvert.addEventListener("click", convertAndDownload);
+  btnReset.addEventListener("click", resetAll);
+
+  // If PNG selected, quality is irrelevant but keep UI; just hint message
+  selFormat.addEventListener("change", () => {
+    if(selFormat.value === "image/png"){
+      setMessage("PNG는 무손실이라 품질 설정이 적용되지 않아요.", "");
+    } else if(currentFile) {
+      setMessage("준비 완료! 변환 버튼을 눌러 다운로드하세요.", "ok");
+    } else {
+      setMessage("");
+    }
+  });
+
+  // init
+  resetAll();
+})();
 </script>
 </body>
 </html>
