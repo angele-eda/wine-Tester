@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>ConvertFiles24 - Image Converter</title>
-  <meta name="description" content="Upload an image, convert to JPG/PNG/WebP, and download instantly. Runs locally in your browser." />
+  <meta name="description" content="Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser." />
+
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     body{
@@ -19,7 +21,7 @@
     h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    .langbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .langbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
     .langbtn{
       font-size:12px; font-weight:700;
       color:#b8c6dc; border:var(--border);
@@ -81,6 +83,7 @@
     .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top">
@@ -89,7 +92,7 @@
         <p class="sub" id="subtitle"></p>
       </div>
 
-      <!-- ✅ 오른쪽 상단 언어 3개 (자동감지 + 저장) -->
+      <!-- ✅ 오른쪽 상단 언어 선택 -->
       <div class="langbar" aria-label="Language selector">
         <div class="langbtn" data-lang="en">EN</div>
         <div class="langbtn" data-lang="ja">日本語</div>
@@ -98,7 +101,7 @@
     </div>
 
     <div class="grid">
-      <!-- Left: Upload & Preview -->
+      <!-- Left -->
       <div class="card">
         <h2 id="h_upload"></h2>
 
@@ -117,14 +120,14 @@
 
         <h2 id="h_preview"></h2>
         <div class="preview">
-          <div class="thumb" id="thumb"><span style="color:#90a3c1; font-size:12px;" id="thumb_label"></span></div>
+          <div class="thumb" id="thumb"></div>
           <div class="meta" id="meta"></div>
         </div>
 
         <div class="msg" id="msg"></div>
       </div>
 
-      <!-- Right: Settings -->
+      <!-- Right -->
       <div class="card">
         <h2 id="h_settings"></h2>
 
@@ -198,10 +201,12 @@
   $("year").textContent = new Date().getFullYear();
 
   // =========================
-  // i18n (KO/EN/JA) + auto detect + remember
+  // i18n (KO/EN/JA) - 100% 한 곳에서만 텍스트 관리 (섞임 방지)
   // =========================
   const STR = {
     ko: {
+      title: "ConvertFiles24 - 이미지 변환",
+      desc: "이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요. 브라우저에서 로컬 처리됩니다.",
       subtitle: '이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)',
       h_upload: '1) 업로드',
       drop_title: '여기에 파일을 끌어놓거나',
@@ -240,7 +245,9 @@
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`
     },
     en: {
-      subtitle: 'Upload an image, convert to <b>JPG / PNG / WebP</b>, and download instantly. (Processed locally in your browser)',
+      title: "ConvertFiles24 - Image Converter",
+      desc: "Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser.",
+      subtitle: 'Upload an image and instantly convert it to <b>JPG / PNG / WebP</b>. (Processed locally in your browser)',
       h_upload: '1) Upload',
       drop_title: 'Drag & drop a file here, or',
       pick_btn: 'Choose file',
@@ -278,7 +285,9 @@
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`
     },
     ja: {
-      subtitle: '画像をアップロードして <b>JPG / PNG / WebP</b> に変換し、すぐにダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
+      title: "ConvertFiles24 - 画像変換",
+      desc: "画像をアップロードして JPG/PNG/WebP に変換し、すぐにダウンロードできます。ブラウザ内でローカル処理します。",
+      subtitle: '画像をアップロードするだけで <b>JPG / PNG / WebP</b> に変換してすぐダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
       h_upload: '1) アップロード',
       drop_title: 'ここにファイルをドロップ、または',
       pick_btn: 'ファイル選択',
@@ -317,6 +326,8 @@
     }
   };
 
+  const META_DESC = document.querySelector('meta[name="description"]');
+
   function detectLang(){
     const saved = localStorage.getItem("cf24_lang");
     if(saved && STR[saved]) return saved;
@@ -329,34 +340,34 @@
 
   let LANG = detectLang();
 
-  function setLang(lang){
-    if(!STR[lang]) return;
-    LANG = lang;
-    localStorage.setItem("cf24_lang", lang);
-
-    // update html lang
-    document.documentElement.lang = lang;
-
-    // highlight buttons
+  function setActiveLangButtons(lang){
     document.querySelectorAll(".langbtn").forEach(b=>{
       b.classList.toggle("active", b.dataset.lang === lang);
     });
+  }
 
-    // fill texts
-    const t = STR[lang];
+  function renderTexts(){
+    const t = STR[LANG];
+
+    // SEO meta
+    document.documentElement.lang = LANG;
+    document.title = t.title;
+    if(META_DESC) META_DESC.setAttribute("content", t.desc);
+
+    // Header
     $("subtitle").innerHTML = t.subtitle;
 
+    // Sections
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
     $("pick_btn").textContent = t.pick_btn;
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
-    $("thumb_label").textContent = t.thumb_label;
-
     $("h_settings").textContent = t.h_settings;
     $("lbl_format").textContent = t.lbl_format;
     $("lbl_quality").textContent = t.lbl_quality;
+
     $("q_095").textContent = t.q_095;
     $("q_090").textContent = t.q_090;
     $("q_080").textContent = t.q_080;
@@ -374,11 +385,19 @@
 
     $("privacy_hint").innerHTML = t.privacy_hint;
 
-    // meta idle if no file
+    // Idle UI (only when no file)
     if(!currentFile){
       meta.textContent = t.meta_idle;
-      $("thumb").innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
+      thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
     }
+  }
+
+  function setLang(lang){
+    if(!STR[lang]) return;
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+    setActiveLangButtons(lang);
+    renderTexts();
   }
 
   document.querySelectorAll(".langbtn").forEach(b=>{
@@ -386,7 +405,7 @@
   });
 
   // =========================
-  // Converter logic (same as your original)
+  // Converter logic
   // =========================
   let currentFile = null;
   let imageBitmap = null;
@@ -419,9 +438,9 @@
     btnReset.disabled = true;
     inW.value = "";
     inH.value = "";
-    setMessage("");
-    meta.textContent = STR[LANG].meta_idle;
-    thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${STR[LANG].thumb_label}</span>`;
+    setMessage("", "");
+    // 텍스트는 여기서 건드리지 않음 (섞임 방지)
+    renderTexts();
   }
 
   async function loadFile(file){
@@ -437,6 +456,7 @@
 
     const url = URL.createObjectURL(file);
     const img = new Image();
+
     img.onload = async () => {
       URL.revokeObjectURL(url);
 
@@ -463,10 +483,12 @@
         setMessage(STR[LANG].err_process, "err");
       }
     };
+
     img.onerror = () => {
       URL.revokeObjectURL(url);
       setMessage(STR[LANG].err_preview, "err");
     };
+
     img.src = url;
     img.style.width = "100%";
     img.style.height = "100%";
@@ -546,7 +568,6 @@
 
     const outName = buildOutputName();
     downloadBlob(blob, outName);
-
     setMessage(STR[LANG].dl_start(outName, humanSize(blob.size)), "ok");
     btnConvert.disabled = false;
   }
@@ -585,7 +606,7 @@
     } else if(currentFile) {
       setMessage(STR[LANG].msg_ready, "ok");
     } else {
-      setMessage("");
+      setMessage("", "");
     }
   });
 
