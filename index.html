@@ -1,11 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- ✅ SEO 기본 -->
   <title>ConvertFiles24 - Image Converter</title>
   <meta name="description" content="Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f17" />
+
+  <!-- ✅ Canonical (도메인만 바꾸면 됨) -->
+  <link rel="canonical" href="https://YOUR-DOMAIN.com/" />
+
+  <!-- ✅ Open Graph (공유 미리보기) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ConvertFiles24 - Image Converter" />
+  <meta property="og:description" content="Convert JPG/PNG/WebP instantly — processed locally in your browser." />
+  <meta property="og:url" content="https://YOUR-DOMAIN.com/" />
+
+  <!-- ✅ Twitter card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ConvertFiles24 - Image Converter" />
+  <meta name="twitter:description" content="Convert JPG/PNG/WebP instantly — processed locally in your browser." />
+
+  <!-- ✅ 구조화 데이터 (검색엔진 이해 도움) -->
+  <script type="application/ld+json" id="jsonld">
+  {
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"ConvertFiles24",
+    "applicationCategory":"MultimediaApplication",
+    "operatingSystem":"Web",
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+    "url":"https://YOUR-DOMAIN.com/"
+  }
+  </script>
 
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
@@ -201,12 +231,14 @@
   $("year").textContent = new Date().getFullYear();
 
   // =========================
-  // i18n (KO/EN/JA) - 100% 한 곳에서만 텍스트 관리 (섞임 방지)
+  // i18n (KO/EN/JA) - 텍스트는 100% 여기만 (섞임 방지)
   // =========================
   const STR = {
     ko: {
-      title: "ConvertFiles24 - 이미지 변환",
-      desc: "이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요. 브라우저에서 로컬 처리됩니다.",
+      seoTitle: "ConvertFiles24 - 이미지 변환",
+      seoDesc: "이미지 업로드 후 JPG/PNG/WebP로 변환하고 바로 다운로드하세요. 브라우저에서 로컬 처리됩니다.",
+      ogTitle: "ConvertFiles24 - 이미지 변환",
+      ogDesc: "JPG/PNG/WebP로 빠르게 변환 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 업로드한 뒤 <b>JPG / PNG / WebP</b>로 변환하고 바로 다운로드하세요. (서버 업로드 없이 내 브라우저에서 처리)',
       h_upload: '1) 업로드',
       drop_title: '여기에 파일을 끌어놓거나',
@@ -245,8 +277,10 @@
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`
     },
     en: {
-      title: "ConvertFiles24 - Image Converter",
-      desc: "Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser.",
+      seoTitle: "ConvertFiles24 - Image Converter",
+      seoDesc: "Upload an image, convert to JPG/PNG/WebP, and download instantly — processed locally in your browser.",
+      ogTitle: "ConvertFiles24 - Image Converter",
+      ogDesc: "Convert JPG/PNG/WebP instantly — processed locally in your browser.",
       subtitle: 'Upload an image and instantly convert it to <b>JPG / PNG / WebP</b>. (Processed locally in your browser)',
       h_upload: '1) Upload',
       drop_title: 'Drag & drop a file here, or',
@@ -273,7 +307,7 @@
       privacy_hint: '🔒 Privacy: Your file is never uploaded to a server.<br/>⚠️ Server-required features (like PDF conversion) can be added next.',
       msg_loading: 'Loading image…',
       msg_ready: 'Ready! Click convert to download.',
-      msg_png_q: 'PNG is lossless, so the quality setting does not apply.',
+      msg_png_q: "PNG is lossless, so the quality setting doesn't apply.",
       err_only_img: 'Images only.',
       err_process: 'Could not process this image. Try a different file.',
       err_preview: 'Failed to preview the image.',
@@ -285,8 +319,10 @@
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`
     },
     ja: {
-      title: "ConvertFiles24 - 画像変換",
-      desc: "画像をアップロードして JPG/PNG/WebP に変換し、すぐにダウンロードできます。ブラウザ内でローカル処理します。",
+      seoTitle: "ConvertFiles24 - 画像変換",
+      seoDesc: "画像をアップロードして JPG/PNG/WebP に変換し、すぐにダウンロードできます。ブラウザ内でローカル処理します。",
+      ogTitle: "ConvertFiles24 - 画像変換",
+      ogDesc: "JPG/PNG/WebPにすぐ変換 — ブラウザ内でローカル処理",
       subtitle: '画像をアップロードするだけで <b>JPG / PNG / WebP</b> に変換してすぐダウンロードできます。（ブラウザ内で処理・サーバー送信なし）',
       h_upload: '1) アップロード',
       drop_title: 'ここにファイルをドロップ、または',
@@ -327,6 +363,11 @@
   };
 
   const META_DESC = document.querySelector('meta[name="description"]');
+  const OG_TITLE = document.querySelector('meta[property="og:title"]');
+  const OG_DESC  = document.querySelector('meta[property="og:description"]');
+  const TW_TITLE = document.querySelector('meta[name="twitter:title"]');
+  const TW_DESC  = document.querySelector('meta[name="twitter:description"]');
+  const JSONLD   = document.getElementById('jsonld');
 
   function detectLang(){
     const saved = localStorage.getItem("cf24_lang");
@@ -349,15 +390,30 @@
   function renderTexts(){
     const t = STR[LANG];
 
-    // SEO meta
+    // language
     document.documentElement.lang = LANG;
-    document.title = t.title;
-    if(META_DESC) META_DESC.setAttribute("content", t.desc);
 
-    // Header
+    // SEO meta (언어별로 업데이트)
+    document.title = t.seoTitle;
+    if(META_DESC) META_DESC.setAttribute("content", t.seoDesc);
+    if(OG_TITLE)  OG_TITLE.setAttribute("content", t.ogTitle);
+    if(OG_DESC)   OG_DESC.setAttribute("content", t.ogDesc);
+    if(TW_TITLE)  TW_TITLE.setAttribute("content", t.ogTitle);
+    if(TW_DESC)   TW_DESC.setAttribute("content", t.ogDesc);
+
+    // JSON-LD도 언어에 맞게 약간만 갱신(이름 동일, 설명만 바꾸고 싶으면 확장 가능)
+    if(JSONLD){
+      try{
+        const obj = JSON.parse(JSONLD.textContent);
+        obj.name = "ConvertFiles24";
+        obj.url = (document.querySelector('link[rel="canonical"]')?.href) || obj.url;
+        JSONLD.textContent = JSON.stringify(obj);
+      }catch(e){}
+    }
+
+    // UI texts
     $("subtitle").innerHTML = t.subtitle;
 
-    // Sections
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
     $("pick_btn").textContent = t.pick_btn;
@@ -382,7 +438,6 @@
     $("h_download").textContent = t.h_download;
     btnConvert.textContent = t.convert;
     btnReset.textContent = t.reset;
-
     $("privacy_hint").innerHTML = t.privacy_hint;
 
     // Idle UI (only when no file)
@@ -439,8 +494,7 @@
     inW.value = "";
     inH.value = "";
     setMessage("", "");
-    // 텍스트는 여기서 건드리지 않음 (섞임 방지)
-    renderTexts();
+    renderTexts(); // 텍스트는 여기서만 재렌더 (언어 섞임 방지)
   }
 
   async function loadFile(file){
@@ -512,12 +566,14 @@
     return "bin";
   }
 
+  // ✅ “다시 받기” 줄이기: 파일명에 타임스탬프 붙임
   function buildOutputName(){
     const base = (currentFile.name || "image").replace(/\.[^.]+$/, "");
     const ext = mimeToExt(selFormat.value);
     const { w, h } = getTargetSize();
     const tag = (w===originalInfo.w && h===originalInfo.h) ? "" : `_${w}x${h}`;
-    return `${base}${tag}.${ext}`;
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-"); // safe for filenames
+    return `${base}${tag}_${stamp}.${ext}`;
   }
 
   function downloadBlob(blob, filename){
@@ -611,7 +667,7 @@
   });
 
   // init
-  setLang(LANG);
+  setLang(detectLang());
   resetAll();
 })();
 </script>
