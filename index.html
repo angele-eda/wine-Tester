@@ -2,29 +2,35 @@
 <html lang="en" translate="no">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- ✅ SEO 기본 -->
-  <title>ConvertFiles24 – Free Converter (Images & PDF)</title>
-  <meta name="description" content="Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser." />
+  <title>ConvertFiles24 – Free Converter (JPG, PNG, WebP, PDF, ZIP)</title>
+  <meta name="description" content="Convert images (JPG/PNG/WebP) and merge PDFs — processed locally in your browser. Optional ZIP download." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- ✅ Canonical -->
+  <!-- Canonical -->
   <link rel="canonical" href="https://convertfiles24.com/" />
 
-  <!-- ✅ Open Graph -->
+  <!-- hreflang (OK: canonical과 충돌 아님) -->
+  <link rel="alternate" hreflang="en" href="https://convertfiles24.com/" />
+  <link rel="alternate" hreflang="ja" href="https://convertfiles24.com/?lang=ja" />
+  <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/?lang=ko" />
+  <link rel="alternate" hreflang="es" href="https://convertfiles24.com/?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/" />
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ConvertFiles24 - Converter (Images & PDF)" />
-  <meta property="og:description" content="Convert images, create PDFs, merge PDFs — processed locally in your browser." />
+  <meta property="og:title" content="ConvertFiles24 - Converter" />
+  <meta property="og:description" content="Convert images and merge PDFs locally. Optional ZIP download." />
   <meta property="og:url" content="https://convertfiles24.com/" />
 
-  <!-- ✅ Twitter card -->
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="ConvertFiles24 - Converter (Images & PDF)" />
-  <meta name="twitter:description" content="Convert images, create PDFs, merge PDFs — processed locally in your browser." />
+  <meta name="twitter:title" content="ConvertFiles24 - Converter" />
+  <meta name="twitter:description" content="Convert images and merge PDFs locally. Optional ZIP download." />
 
-  <!-- ✅ 구조화 데이터 -->
+  <!-- JSON-LD -->
   <script type="application/ld+json" id="jsonld">
   {
     "@context":"https://schema.org",
@@ -37,182 +43,306 @@
   }
   </script>
 
-  <!-- ✅ Libraries (브라우저 로컬 처리) -->
+  <!-- Libraries (browser local) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
   <style>
-    :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
+    :root{
+      --bg:#0b0f17;
+      --fg:#e9eef7;
+      --muted:#a7b3c7;
+      --border:1px solid rgba(255,255,255,.12);
+      --card:rgba(255,255,255,.03);
+      --card2:rgba(255,255,255,.04);
+      --radius:18px;
+      --pad:16px;
+      --blue:#2f6df6;
+      --blue2:rgba(47,109,246,.22);
+      --blue3:rgba(47,109,246,.55);
+      --danger:#ffb4b4;
+      --ok:#b8ffcc;
+    }
+
     *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
-      background:#0b0f17;
-      color:#e9eef7;
-      overflow-x:hidden;
+      background:var(--bg);
+      color:var(--fg);
+      overflow-x:hidden; /* ✅ 옆으로 벗어남 방지 */
     }
+
     .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
     .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
       margin-bottom:14px;
     }
-    h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
-    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+    .brand{ min-width:240px; }
+    h1{ margin:0; font-size:22px; letter-spacing:-.2px; }
+    .sub{ margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.55; }
 
-    /* ✅ language bar (PC에서 일본어 줄바꿈/왼쪽 떨어짐 방지) */
+    /* language buttons */
     .langbar{
       display:flex;
       gap:8px;
       align-items:center;
       justify-content:flex-end;
-      flex-wrap:nowrap;
+      flex-wrap:nowrap; /* ✅ PC에서 줄바꿈 방지 */
       max-width:100%;
+      overflow-x:auto; /* 혹시 좁으면 스크롤 */
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:2px;
     }
     .langbtn{
-      font-size:12px; font-weight:800;
-      color:#b8c6dc; border:var(--border);
-      padding:9px 12px; border-radius:999px;
-      background:rgba(255,255,255,.04);
-      cursor:pointer; user-select:none;
       white-space:nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:800;
+      color:#b8c6dc;
+      border:var(--border);
+      padding:9px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      cursor:pointer;
+      user-select:none;
       flex:0 0 auto;
     }
+    .langbtn .flag{ font-size:15px; line-height:1; }
     .langbtn.active{
-      color:#e9eef7;
-      background:rgba(47,109,246,.22);
-      border-color:rgba(47,109,246,.55);
+      color:var(--fg);
+      background:var(--blue2);
+      border-color:var(--blue3);
     }
 
-    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
-    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+      width:100%;
+      max-width:100%;
+    }
+    @media (max-width: 860px){
+      .grid{ grid-template-columns:1fr; }
+    }
 
     .card{
       border:var(--border);
-      background:rgba(255,255,255,.03);
+      background:var(--card);
       border-radius:var(--radius);
       padding:var(--pad);
-      min-width:0;
+      width:100%;
+      max-width:100%;
+      overflow:hidden; /* ✅ 내부 요소가 튀어나오면 잘라줌 */
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
+    .divider{ height:1px; background:rgba(255,255,255,.08); margin:14px 0; }
+
     .drop{
       border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      display:flex; align-items:center; justify-content:center; text-align:center;
+      border-radius:14px;
+      padding:18px;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center;
       background:rgba(255,255,255,.02);
-      min-width:0;
     }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
 
     .btn{
-      appearance:none; border:none; cursor:pointer;
-      background:#2f6df6; color:white; font-weight:800;
-      padding:12px 14px; border-radius:14px; width:100%;
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      background:var(--blue);
+      color:white;
+      font-weight:800;
+      padding:12px 14px;
+      border-radius:14px;
+      width:100%;
       font-size:15px;
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
-    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
-    .btn.inline{ width:auto; display:inline-flex; align-items:center; gap:8px; }
+    .btn.secondary{
+      background:rgba(255,255,255,.10);
+      color:var(--fg);
+      border:var(--border);
+    }
+    .btn.small{
+      width:auto;
+      padding:10px 14px;
+      font-size:14px;
+      border-radius:12px;
+    }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > * { flex:1; min-width:160px; }
-
-    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-
+    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
     input[type="file"]{ display:none; }
 
     select, input[type="number"]{
-      width:100%; padding:12px 12px; border-radius:14px;
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
       background:rgba(255,255,255,.06);
-      color:#e9eef7; border:var(--border);
+      color:var(--fg);
+      border:var(--border);
       outline:none;
+      max-width:100%;
     }
+    select{
+      background-color:#0b0f17;
+      border:1px solid rgba(255,255,255,.2);
+    }
+    option{ background-color:#0b0f17; color:var(--fg); }
 
+    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+    .row > *{ flex:1; min-width:160px; }
+
+    .hint{
+      margin-top:10px;
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.55;
+      word-break:keep-all;
+    }
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+      color:#cfe0ff;
+      word-break:break-word;
+    }
+    .err{ color:var(--danger); }
+    .ok{ color:var(--ok); }
+
+    /* preview */
     .preview{
-      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
-      min-width:0;
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap:12px;
+      align-items:center;
+      width:100%;
+      max-width:100%;
+    }
+    @media (max-width: 480px){
+      .preview{ grid-template-columns: 120px 1fr; }
     }
     .thumb{
-      width:140px; height:140px; border-radius:14px; border:var(--border);
+      width:140px; height:140px;
+      border-radius:14px;
+      border:var(--border);
       background:rgba(255,255,255,.03);
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
+      flex:0 0 auto;
+    }
+    @media (max-width: 480px){
+      .thumb{ width:120px; height:120px; }
     }
     .thumb img{ width:100%; height:100%; object-fit:cover; }
-    .meta{ color:#b7c3d9; font-size:13px; line-height:1.5; min-width:0; word-break:break-word; }
-    .meta b{ color:#e9eef7; }
-    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
-    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
-    .err{ color:#ffb4b4; }
-    .ok{ color:#b8ffcc; }
-    .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
+    .meta{ color:#b7c3d9; font-size:13px; line-height:1.55; }
+    .meta b{ color:var(--fg); }
 
-    /* ▼ select / option 가독성 */
-    select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
-    option { background-color: #0b0f17; color:#e9eef7; }
-
-    /* ✅ Multi-file list */
-    .list{
-      margin-top:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:12px;
-      display:none;
-    }
+    /* file list (order/delete) */
     .listTitle{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
       flex-wrap:wrap;
-      margin-bottom:8px;
     }
-    .pill{
-      font-size:12px; color:#b8c6dc; border:var(--border);
-      padding:7px 10px; border-radius:999px;
-      background:rgba(255,255,255,.04);
-      display:inline-flex; gap:8px; align-items:center;
-      white-space:nowrap;
-    }
-    .toggle{
-      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
-    }
-    .chk{
-      display:inline-flex; gap:8px; align-items:center;
+    .miniInfo{ color:#93a6c2; font-size:12px; }
+    .fileList{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+    .fileItem{
       border:var(--border);
-      background:rgba(255,255,255,.04);
-      padding:8px 10px; border-radius:12px;
-      cursor:pointer; user-select:none;
-      font-size:12px; color:#cfe0ff;
-      white-space:nowrap;
-    }
-    .chk input{ width:16px; height:16px; }
-    .fileRow{
-      display:flex; gap:8px; align-items:center;
-      padding:10px 10px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
-      background:rgba(255,255,255,.02);
-      margin-bottom:8px;
+      background:var(--card2);
+      border-radius:16px;
+      padding:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      width:100%;
+      max-width:100%;
       overflow:hidden;
     }
-    .fileName{
-      flex:1; min-width:0;
-      font-size:13px; color:#dbe7ff;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    .fileItem .miniThumb{
+      width:56px; height:56px;
+      border-radius:12px;
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+      flex:0 0 auto;
     }
-    .mini{
-      display:flex; gap:6px; align-items:center;
+    .fileItem .miniThumb img{ width:100%; height:100%; object-fit:cover; }
+    .fileItem .info{
+      min-width:0;
+      flex:1;
+    }
+    .fileItem .name{
+      font-weight:800;
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .fileItem .subinfo{
+      font-size:12px;
+      color:#9fb0ca;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .fileItem .actions{
+      display:flex;
+      gap:8px;
+      flex:0 0 auto;
     }
     .iconBtn{
+      appearance:none;
       border:var(--border);
-      background:rgba(255,255,255,.06);
-      color:#e9eef7;
-      padding:8px 10px;
-      border-radius:10px;
+      background:rgba(0,0,0,.12);
+      color:var(--fg);
+      width:44px; height:44px;
+      border-radius:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       cursor:pointer;
+      user-select:none;
+      font-size:18px;
       font-weight:900;
-      line-height:1;
-      min-width:40px;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
-    .note{
-      font-size:12px; color:#a7b3c7; margin-top:8px;
+    .iconBtn.danger{ color:#ffd0d0; }
+
+    /* toggles */
+    .checkRow{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .checkWrap{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      padding:12px 12px;
+      border-radius:16px;
+      width:100%;
+    }
+    .checkWrap input{ width:18px; height:18px; }
+    .checkWrap .checkText{ font-weight:800; }
+    .checkWrap .checkHint{ color:#9fb0ca; font-size:12px; line-height:1.4; }
+
+    .footer{
+      margin-top:14px;
+      color:#94a6c2;
+      font-size:12px;
+      text-align:center;
     }
   </style>
 </head>
@@ -220,16 +350,16 @@
 <body>
   <div class="wrap">
     <div class="top">
-      <div>
+      <div class="brand">
         <h1>ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
       </div>
 
       <div class="langbar" aria-label="Language selector">
-        <div class="langbtn" data-lang="en">🇺🇸 EN</div>
-        <div class="langbtn" data-lang="es">🇪🇸 ES</div>
-        <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
-        <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+        <div class="langbtn" data-lang="en"><span class="flag">🇺🇸</span>EN</div>
+        <div class="langbtn" data-lang="ja"><span class="flag">🇯🇵</span>日本語</div>
+        <div class="langbtn" data-lang="ko"><span class="flag">🇰🇷</span>KO</div>
+        <div class="langbtn" data-lang="es"><span class="flag">🇪🇸</span>ES</div>
       </div>
     </div>
 
@@ -239,42 +369,30 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop">
-          <div>
-            <div style="font-weight:800; margin-bottom:8px;" id="drop_title"></div>
+          <div style="width:100%;">
+            <div style="font-weight:900; margin-bottom:8px;" id="drop_title"></div>
 
-            <!-- ✅ 모바일 파일 선택창 트리거 강화: label + button both -->
-            <div class="row" style="justify-content:center; margin:0;">
-              <button class="btn secondary inline" id="pick_trigger" type="button">📁</button>
-              <label for="file" style="display:inline-block; cursor:pointer;">
-                <span class="btn secondary inline" style="padding:10px 14px;" id="pick_btn"></span>
-              </label>
-            </div>
+            <!-- ✅ 모바일 파일선택 트리거 강화: button 클릭으로 input.click() -->
+            <button class="btn secondary small" id="pick_real" type="button"></button>
+            <input id="file" type="file" accept="image/*,application/pdf" multiple />
 
-            <input id="file" type="file" multiple accept="image/*,application/pdf" />
             <div class="hint" id="drop_hint"></div>
+
+            <div class="divider"></div>
+
+            <div class="hint" id="diff_hint"></div>
           </div>
         </div>
 
-        <div class="list" id="multiPanel">
-          <div class="listTitle">
-            <div class="pill" id="multiCount"></div>
-            <div class="toggle">
-              <label class="chk" title="Download multiple outputs as ZIP">
-                <input type="checkbox" id="zipMode" />
-                <span id="zip_label"></span>
-              </label>
-              <label class="chk" title="PDF page size A4 normalization (when merging PDFs)">
-                <input type="checkbox" id="a4Mode" />
-                <span id="a4_label"></span>
-              </label>
-            </div>
-          </div>
+        <div class="divider"></div>
 
-          <div id="fileList"></div>
-          <div class="note" id="multi_note"></div>
+        <div class="listTitle">
+          <h2 style="margin:0;" id="h_order"></h2>
+          <div class="miniInfo" id="order_help"></div>
         </div>
+        <div class="fileList" id="file_list"></div>
 
-        <div style="height:12px;"></div>
+        <div class="divider"></div>
 
         <h2 id="h_preview"></h2>
         <div class="preview">
@@ -299,6 +417,7 @@
               <option value="application/pdf">PDF</option>
             </select>
           </div>
+
           <div>
             <label id="lbl_quality"></label>
             <select id="quality">
@@ -325,7 +444,39 @@
 
         <div class="hint" id="size_hint"></div>
 
-        <div style="height:12px;"></div>
+        <div class="checkRow" id="pdf_options_wrap" style="display:none;">
+          <div style="width:100%;">
+            <label id="lbl_pdf_mode"></label>
+            <select id="pdf_mode">
+              <option value="single" id="pdfm_single"></option>
+              <option value="merge" id="pdfm_merge"></option>
+            </select>
+
+            <div style="height:10px;"></div>
+
+            <div class="checkWrap">
+              <input id="a4_normalize" type="checkbox" />
+              <div>
+                <div class="checkText" id="lbl_a4"></div>
+                <div class="checkHint" id="hint_a4"></div>
+              </div>
+            </div>
+
+            <div class="hint" id="pdf_warn"></div>
+          </div>
+        </div>
+
+        <div class="checkRow" id="zip_wrap">
+          <div class="checkWrap">
+            <input id="zip_bundle" type="checkbox" />
+            <div>
+              <div class="checkText" id="lbl_zip"></div>
+              <div class="checkHint" id="hint_zip"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
 
         <h2 id="h_download"></h2>
         <button class="btn" id="convert" disabled></button>
@@ -333,11 +484,6 @@
         <button class="btn secondary" id="reset" disabled></button>
 
         <div class="hint" id="privacy_hint"></div>
-
-        <div class="hint" style="margin-top:10px;">
-          <b id="pdfzip_title"></b><br/>
-          <span id="pdfzip_desc"></span>
-        </div>
       </div>
     </div>
 
@@ -348,261 +494,365 @@
 
 <script>
 (() => {
-  "use strict";
-
   const $ = (id) => document.getElementById(id);
-  const safe = (id) => document.getElementById(id);
 
-  const fileInput   = $("file");
-  const pickTrigger = $("pick_trigger");
-  const drop        = $("drop");
-  const thumb       = $("thumb");
-  const meta        = $("meta");
-  const msg         = $("msg");
-  const btnConvert  = $("convert");
-  const btnReset    = $("reset");
-  const selFormat   = $("format");
-  const selQuality  = $("quality");
-  const inW         = $("w");
-  const inH         = $("h");
+  const fileInput = $("file");
+  const pickReal  = $("pick_real");
+  const drop      = $("drop");
+  const thumb     = $("thumb");
+  const meta      = $("meta");
+  const msg       = $("msg");
+  const fileList  = $("file_list");
 
-  const multiPanel  = $("multiPanel");
-  const multiCount  = $("multiCount");
-  const fileListEl  = $("fileList");
-  const zipModeEl   = $("zipMode");
-  const a4ModeEl    = $("a4Mode");
+  const btnConvert = $("convert");
+  const btnReset   = $("reset");
+
+  const selFormat  = $("format");
+  const selQuality = $("quality");
+  const inW = $("w");
+  const inH = $("h");
+
+  const pdfWrap     = $("pdf_options_wrap");
+  const selPdfMode  = $("pdf_mode");
+  const chkA4       = $("a4_normalize");
+  const zipWrap     = $("zip_wrap");
+  const chkZip      = $("zip_bundle");
 
   $("year").textContent = new Date().getFullYear();
 
   // =========================
-  // i18n
+  // i18n (KO/EN/JA/ES)
   // =========================
   const STR = {
-    en: {
-      seoTitle: "ConvertFiles24 – Free Converter (Images & PDF)",
-      seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser.",
-      ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
-      ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
-      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
-      h_upload: "1) Upload",
-      drop_title: "Drag & drop files here, or",
-      pick_btn: "Choose files",
-      drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
-      h_preview: "2) Preview",
-      thumb_label: "Preview",
-      meta_idle: "Select files to see details.",
-      h_settings: "3) Settings",
-      lbl_format: "Output",
-      lbl_quality: "Quality (JPG/WebP only)",
-      q_095: "Max (0.95)",
-      q_090: "High (0.90)",
-      q_080: "Normal (0.80)",
-      q_070: "Small (0.70)",
-      lbl_w: "Width (px) (blank = original)",
-      lbl_h: "Height (px) (blank = original)",
-      ph_w: "e.g., 1200",
-      ph_h: "e.g., 800",
-      size_hint: "If you enter only one side, aspect ratio is preserved automatically.",
-      h_download: "4) Download",
-      convert: "Convert / Merge",
-      reset: "Reset",
-      privacy_hint: "🔒 Privacy: Files are processed locally in your browser (no server upload).",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: Merge multiple pages into ONE PDF.  • ZIP: Download multiple converted files as ONE .zip",
-      zip_label: "ZIP download",
-      a4_label: "A4 normalize (PDF merge)",
-      multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
-      warn_zip: "Multiple files detected. For multiple image outputs, please enable ZIP download.",
-      msg_loading: "Loading…",
-      msg_ready: "Ready! Click Convert / Merge.",
-      msg_png_q: "PNG is lossless; quality setting does not apply.",
-      msg_pdf_one: "Image→PDF will be saved as a single-page PDF (per image).",
-      msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
-      err_only_supported: "Only images and PDFs are supported.",
-      err_preview: "Failed to preview.",
-      err_convert: "Conversion failed. Try different files/options.",
-      err_pdf_lib: "PDF library is not ready. Please refresh and try again.",
-      err_pdf_locked: "This PDF may be password-protected or corrupted. Please unlock it and try again.",
-      dl_start: (name, size) => `Download started: ${name} (${size})`,
-      meta_tpl: (name, type, size, w, h) =>
-        `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`,
-      multi_count: (n) => `Selected: ${n} file(s)`
-    },
     ko: {
-      seoTitle: "ConvertFiles24 – 무료 변환기 (이미지 & PDF)",
-      seoDesc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF+PDF 병합까지 — 모두 브라우저 로컬 처리.",
-      ogTitle: "ConvertFiles24 - 이미지 & PDF 변환",
-      ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
-      subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
-      h_upload: "1) 업로드",
-      drop_title: "여기에 파일을 끌어놓거나",
-      pick_btn: "파일 선택",
-      drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
-      h_preview: "2) 미리보기",
-      thumb_label: "미리보기",
-      meta_idle: "파일을 선택하면 정보가 표시됩니다.",
-      h_settings: "3) 설정",
-      lbl_format: "출력",
-      lbl_quality: "품질 (JPG/WebP만)",
-      q_095: "최고(0.95)",
-      q_090: "높음(0.90)",
-      q_080: "보통(0.80)",
-      q_070: "압축(0.70)",
-      lbl_w: "가로(px) (비우면 원본)",
-      lbl_h: "세로(px) (비우면 원본)",
-      ph_w: "예: 1200",
-      ph_h: "예: 800",
-      size_hint: "가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.",
-      h_download: "4) 다운로드",
-      convert: "변환 / 합치기",
-      reset: "초기화",
-      privacy_hint: "🔒 개인정보: 파일은 서버로 전송되지 않고 브라우저에서 로컬 처리됩니다.",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: 여러 페이지를 1개 PDF로 합침  • ZIP: 여러 변환 파일을 1개 zip으로 받기",
-      zip_label: "ZIP 받기",
-      a4_label: "A4 통일(PDF 병합)",
-      multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
-      warn_zip: "여러 파일이 선택됐어요. 여러 이미지 변환 결과는 ZIP 받기를 체크해 주세요.",
-      msg_loading: "로딩 중…",
-      msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
-      msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
-      msg_pdf_one: "이미지→PDF는 이미지 1장당 1페이지 PDF로 저장됩니다.",
-      msg_pdf_merge: "PDF+PDF 병합은 1개의 합쳐진 PDF로 저장됩니다.",
-      err_only_supported: "이미지와 PDF만 지원합니다.",
-      err_preview: "미리보기에 실패했어요.",
-      err_convert: "변환 실패. 다른 파일/옵션으로 다시 시도해 주세요.",
-      err_pdf_lib: "PDF 라이브러리가 준비되지 않았어요. 새로고침 후 다시 시도해 주세요.",
-      err_pdf_locked: "PDF가 암호로 잠겼거나 손상된 것 같아요. 잠금 해제 후 다시 시도해 주세요.",
-      dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
-      meta_tpl: (name, type, size, w, h) =>
-        `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`,
-      multi_count: (n) => `선택됨: ${n}개`
+      seoTitle: "ConvertFiles24 - 변환기",
+      seoDesc: "이미지(JPG/PNG/WebP) 변환 + PDF 병합 — 서버 업로드 없이 브라우저 로컬 처리. ZIP 다운로드 선택 가능.",
+      ogTitle: "ConvertFiles24 - 변환기",
+      ogDesc: "이미지 변환 및 PDF 병합을 브라우저에서 로컬 처리합니다. ZIP 다운로드 선택 가능.",
+
+      subtitle: '이미지를 <b>JPG / PNG / WebP</b>로 변환하거나, 여러 파일을 <b>PDF로 합치기 / PDF+PDF 병합</b>할 수 있어요. (서버 업로드 없이 로컬 처리)',
+      h_upload: '1) 업로드',
+      drop_title: '여기에 파일을 끌어놓거나',
+      pick_btn: '파일 선택',
+      drop_hint: '지원: JPG, PNG, WebP, PDF / 여러 장 선택 가능',
+      diff_hint: '• ZIP: 여러 파일 변환 결과를 1개 ZIP으로 묶기\n• PDF: 여러 이미지/여러 PDF를 1개 PDF로 합치기',
+      h_order: '페이지 순서 / 삭제',
+      order_help: '↑↓로 순서 변경, 🗑️로 삭제 (PDF 병합은 이 순서를 따름)',
+      h_preview: '2) 미리보기',
+      thumb_label: '미리보기',
+      meta_idle: '파일을 선택하면 정보가 표시됩니다.',
+
+      h_settings: '3) 변환 설정',
+      lbl_format: '출력 형식',
+      lbl_quality: '품질 (JPG/WebP만)',
+      q_095: '최고(0.95)',
+      q_090: '높음(0.90)',
+      q_080: '보통(0.80)',
+      q_070: '압축(0.70)',
+
+      lbl_w: '가로(px) (비우면 원본)',
+      lbl_h: '세로(px) (비우면 원본)',
+      ph_w: '예: 1200',
+      ph_h: '예: 800',
+      size_hint: '가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.',
+
+      lbl_pdf_mode: 'PDF 동작',
+      pdfm_single: '1장 PDF (첫 파일만)',
+      pdfm_merge: '여러 파일 → 한 PDF로 합치기',
+      lbl_a4: 'PDF 페이지 크기 A4로 통일',
+      hint_a4: '켜면 모든 페이지를 A4에 맞춰 축소/확대하여 중앙 배치합니다.',
+      pdf_warn: '※ 암호(PASSWORD)가 걸린 PDF는 병합할 수 없어요. 비밀번호 해제 후 다시 시도해 주세요.',
+
+      lbl_zip: '여러 파일 결과를 ZIP으로 묶기',
+      hint_zip: '여러 장을 JPG/PNG/WebP로 바꿀 때 ZIP을 켜면 한 번에 내려받을 수 있어요.',
+
+      h_download: '4) 다운로드',
+      convert: '변환 & 다운로드',
+      reset: '초기화',
+      privacy_hint: '🔒 개인정보: 업로드된 파일은 서버로 전송되지 않습니다.<br/>✅ 변환/병합은 브라우저에서 로컬 처리됩니다.',
+
+      msg_loading: '읽는 중…',
+      msg_ready_multi: (n)=> `준비 완료! (${n}개 선택됨)`,
+      msg_ready_single: '준비 완료! 변환 버튼을 누르세요.',
+      msg_png_q: 'PNG는 무손실이라 품질 설정이 적용되지 않아요.',
+      msg_pdf_multi_hint: 'PDF로 저장 시, 여러 파일을 선택했다면 “한 PDF로 합치기”를 선택하세요.',
+      err_none: '먼저 파일을 선택하세요.',
+      err_only_type: '이미지 또는 PDF만 가능합니다.',
+      err_preview: '미리보기에 실패했어요.',
+      err_convert: '변환/병합 실패. 다른 파일 또는 옵션으로 다시 시도해 주세요.',
+      err_pdf_password: '암호가 걸린 PDF는 병합할 수 없어요. 비밀번호 해제 후 다시 시도해 주세요.',
+      converting: '처리 중…',
+
+      zip_confirm_title: "ZIP 권장",
+      zip_confirm_body: "여러 파일은 브라우저 정책 때문에 1개만 다운로드될 수 있어요.\nZIP으로 한 번에 받을까요?",
+      dl_started: (name, size)=> `다운로드 시작: ${name} (${size})`,
+      meta_tpl: (name, type, size, extra) =>
+        `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b>${extra ? `<br/>${extra}` : ""}`
     },
+
+    en: {
+      seoTitle: "ConvertFiles24 - Converter",
+      seoDesc: "Convert images (JPG/PNG/WebP) and merge PDFs — processed locally in your browser. Optional ZIP download.",
+      ogTitle: "ConvertFiles24 - Converter",
+      ogDesc: "Convert images and merge PDFs locally. Optional ZIP download.",
+
+      subtitle: 'Convert images to <b>JPG / PNG / WebP</b>, or merge multiple files into <b>one PDF (PDF+PDF supported)</b>. (All processed locally)',
+      h_upload: '1) Upload',
+      drop_title: 'Drag & drop files here, or',
+      pick_btn: 'Choose files',
+      drop_hint: 'Supports JPG, PNG, WebP, PDF / Multiple selection allowed',
+      diff_hint: '• ZIP: bundle multiple converted outputs into one ZIP\n• PDF: merge multiple images/PDFs into one PDF',
+      h_order: 'Page order / delete',
+      order_help: 'Use ↑↓ to reorder, 🗑️ to delete (PDF merge follows this order)',
+      h_preview: '2) Preview',
+      thumb_label: 'Preview',
+      meta_idle: 'Select files to see details.',
+
+      h_settings: '3) Conversion settings',
+      lbl_format: 'Output format',
+      lbl_quality: 'Quality (JPG/WebP only)',
+      q_095: 'Max (0.95)',
+      q_090: 'High (0.90)',
+      q_080: 'Normal (0.80)',
+      q_070: 'Small (0.70)',
+
+      lbl_w: 'Width (px) (blank = original)',
+      lbl_h: 'Height (px) (blank = original)',
+      ph_w: 'e.g., 1200',
+      ph_h: 'e.g., 800',
+      size_hint: 'If you enter only one side, the aspect ratio is preserved automatically.',
+
+      lbl_pdf_mode: 'PDF behavior',
+      pdfm_single: 'Single-page PDF (first file only)',
+      pdfm_merge: 'Merge multiple files into one PDF',
+      lbl_a4: 'Normalize PDF pages to A4',
+      hint_a4: 'When enabled, each page is scaled to fit A4 and centered.',
+      pdf_warn: 'Note: Password-protected PDFs cannot be merged. Remove the password and try again.',
+
+      lbl_zip: 'Bundle multiple outputs into ZIP',
+      hint_zip: 'For multiple JPG/PNG/WebP outputs, enabling ZIP lets you download all at once.',
+
+      h_download: '4) Download',
+      convert: 'Convert & Download',
+      reset: 'Reset',
+      privacy_hint: '🔒 Privacy: Your files are never uploaded to a server.<br/>✅ Conversion & merge run locally in your browser.',
+
+      msg_loading: 'Loading…',
+      msg_ready_multi: (n)=> `Ready! (${n} selected)`,
+      msg_ready_single: 'Ready! Click convert to download.',
+      msg_png_q: "PNG is lossless, so the quality setting doesn't apply.",
+      msg_pdf_multi_hint: 'When output is PDF and multiple files are selected, choose “Merge into one PDF”.',
+      err_none: 'Please select files first.',
+      err_only_type: 'Only images or PDFs are supported.',
+      err_preview: 'Failed to preview.',
+      err_convert: 'Conversion/merge failed. Try different files/options.',
+      err_pdf_password: 'Cannot merge password-protected PDFs. Remove the password and try again.',
+      converting: 'Processing…',
+
+      zip_confirm_title: "ZIP recommended",
+      zip_confirm_body: "With multiple files, your browser may download only one.\nDownload all as a ZIP instead?",
+      dl_started: (name, size)=> `Download started: ${name} (${size})`,
+      meta_tpl: (name, type, size, extra) =>
+        `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b>${extra ? `<br/>${extra}` : ""}`
+    },
+
     ja: {
-      seoTitle: "ConvertFiles24 – 無料変換 (画像 & PDF)",
-      seoDesc: "画像をJPG/PNG/WebP/PDFに変換し、PDF+PDF結合も可能 — すべてブラウザ内でローカル処理。",
-      ogTitle: "ConvertFiles24 - 画像 & PDF 変換",
-      ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
-      subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
-      h_upload: "1) アップロード",
-      drop_title: "ここにファイルをドロップ、または",
-      pick_btn: "ファイル選択",
-      drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
-      h_preview: "2) プレビュー",
-      thumb_label: "プレビュー",
-      meta_idle: "ファイルを選択すると情報が表示されます。",
-      h_settings: "3) 設定",
-      lbl_format: "出力",
-      lbl_quality: "品質（JPG/WebPのみ）",
-      q_095: "最高(0.95)",
-      q_090: "高(0.90)",
-      q_080: "標準(0.80)",
-      q_070: "圧縮(0.70)",
-      lbl_w: "幅(px)（空欄=元サイズ）",
-      lbl_h: "高さ(px)（空欄=元サイズ）",
-      ph_w: "例: 1200",
-      ph_h: "例: 800",
-      size_hint: "片方だけ入力すると、比率を維持して自動計算します。",
-      h_download: "4) ダウンロード",
-      convert: "変換 / 結合",
-      reset: "リセット",
-      privacy_hint: "🔒 プライバシー: ファイルはサーバーに送信されず、ブラウザ内で処理されます。",
-      pdfzip_title: "PDF と ZIP",
-      pdfzip_desc: "• PDF: 複数ページを1つのPDFに結合  • ZIP: 複数ファイルを1つのzipでダウンロード",
-      zip_label: "ZIPで受け取る",
-      a4_label: "A4統一(PDF結合)",
-      multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
-      warn_zip: "複数ファイルです。複数画像の出力はZIPをチェックしてください。",
-      msg_loading: "読み込み中…",
-      msg_ready: "準備完了！変換 / 結合を押してください。",
-      msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
-      msg_pdf_one: "画像→PDFは画像1枚につき1ページPDFとして保存されます。",
-      msg_pdf_merge: "PDF+PDF結合は1つの結合PDFとして保存されます。",
-      err_only_supported: "画像とPDFのみ対応です。",
-      err_preview: "プレビューに失敗しました。",
-      err_convert: "変換に失敗しました。別のファイル/設定でお試しください。",
-      err_pdf_lib: "PDFライブラリが準備できていません。更新して再試行してください。",
-      err_pdf_locked: "PDFがパスワード保護または破損している可能性があります。解除して再試行してください。",
-      dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
-      meta_tpl: (name, type, size, w, h) =>
-        `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`,
-      multi_count: (n) => `選択: ${n}件`
+      seoTitle: "ConvertFiles24 - 変換",
+      seoDesc: "画像(JPG/PNG/WebP)変換 + PDF結合 — ブラウザ内でローカル処理。ZIPダウンロード選択可。",
+      ogTitle: "ConvertFiles24 - 変換",
+      ogDesc: "画像変換とPDF結合をローカル処理。ZIPダウンロード選択可。",
+
+      subtitle: '画像を <b>JPG / PNG / WebP</b> に変換、または複数ファイルを <b>1つのPDFに結合（PDF+PDF対応）</b> できます。（サーバー送信なし）',
+      h_upload: '1) アップロード',
+      drop_title: 'ここにファイルをドロップ、または',
+      pick_btn: 'ファイル選択',
+      drop_hint: '対応: JPG, PNG, WebP, PDF / 複数選択OK',
+      diff_hint: '• ZIP: 複数の変換結果を1つのZIPにまとめる\n• PDF: 複数の画像/PDFを1つのPDFに結合する',
+      h_order: '順序 / 削除',
+      order_help: '↑↓で順序変更、🗑️で削除（PDF結合はこの順序）',
+      h_preview: '2) プレビュー',
+      thumb_label: 'プレビュー',
+      meta_idle: 'ファイルを選択すると情報が表示されます。',
+
+      h_settings: '3) 変換設定',
+      lbl_format: '出力形式',
+      lbl_quality: '品質（JPG/WebPのみ）',
+      q_095: '最高(0.95)',
+      q_090: '高(0.90)',
+      q_080: '標準(0.80)',
+      q_070: '圧縮(0.70)',
+
+      lbl_w: '幅(px)（空欄=元サイズ）',
+      lbl_h: '高さ(px)（空欄=元サイズ）',
+      ph_w: '例: 1200',
+      ph_h: '例: 800',
+      size_hint: '片方だけ入力すると、比率を維持して自動計算します。',
+
+      lbl_pdf_mode: 'PDF動作',
+      pdfm_single: '1ページPDF（最初のファイルのみ）',
+      pdfm_merge: '複数ファイル → 1つのPDFに結合',
+      lbl_a4: 'PDFページをA4に統一',
+      hint_a4: 'ONにすると各ページをA4に合わせて拡大/縮小し中央配置します。',
+      pdf_warn: '※ パスワード付きPDFは結合できません。解除してから再試行してください。',
+
+      lbl_zip: '複数出力をZIPにまとめる',
+      hint_zip: '複数のJPG/PNG/WebP出力はZIPにすると一括で保存できます。',
+
+      h_download: '4) ダウンロード',
+      convert: '変換してダウンロード',
+      reset: 'リセット',
+      privacy_hint: '🔒 プライバシー: ファイルはサーバーに送信されません。<br/>✅ 変換/結合はブラウザ内でローカル処理です。',
+
+      msg_loading: '読み込み中…',
+      msg_ready_multi: (n)=> `準備完了！(${n}件選択)`,
+      msg_ready_single: '準備完了！変換ボタンで保存します。',
+      msg_png_q: 'PNGは無劣化のため、品質設定は適用されません。',
+      msg_pdf_multi_hint: '出力がPDFで複数ファイルの場合、「1つのPDFに結合」を選択してください。',
+      err_none: '先にファイルを選択してください。',
+      err_only_type: '画像またはPDFのみ対応です。',
+      err_preview: 'プレビューに失敗しました。',
+      err_convert: '変換/結合に失敗しました。別のファイル/設定でお試しください。',
+      err_pdf_password: 'パスワード付きPDFは結合できません。解除してから再試行してください。',
+      converting: '処理中…',
+
+      zip_confirm_title: "ZIP推奨",
+      zip_confirm_body: "複数ファイルはブラウザの仕様で1つしか保存されない場合があります。\nZIPにまとめてダウンロードしますか？",
+      dl_started: (name, size)=> `ダウンロード開始: ${name} (${size})`,
+      meta_tpl: (name, type, size, extra) =>
+        `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b>${extra ? `<br/>${extra}` : ""}`
     },
+
     es: {
-      seoTitle: "ConvertFiles24 – Convertidor Gratis (Imágenes y PDF)",
-      seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs al instante — todo se procesa localmente en tu navegador.",
-      ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
-      ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
-      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
-      h_upload: "1) Subir",
-      drop_title: "Arrastra y suelta archivos aquí, o",
-      pick_btn: "Elegir archivos",
-      drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
-      h_preview: "2) Vista previa",
-      thumb_label: "Vista previa",
-      meta_idle: "Elige archivos para ver detalles.",
-      h_settings: "3) Ajustes",
-      lbl_format: "Salida",
-      lbl_quality: "Calidad (solo JPG/WebP)",
-      q_095: "Máx (0.95)",
-      q_090: "Alta (0.90)",
-      q_080: "Normal (0.80)",
-      q_070: "Pequeña (0.70)",
-      lbl_w: "Ancho (px) (vacío = original)",
-      lbl_h: "Alto (px) (vacío = original)",
-      ph_w: "p. ej., 1200",
-      ph_h: "p. ej., 800",
-      size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
-      h_download: "4) Descargar",
-      convert: "Convertir / Unir",
-      reset: "Reiniciar",
-      privacy_hint: "🔒 Privacidad: Los archivos se procesan localmente en tu navegador (sin subir al servidor).",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: Une varias páginas en UN PDF.  • ZIP: Descarga varios archivos convertidos en UN .zip",
-      zip_label: "Descargar en ZIP",
-      a4_label: "Normalizar a A4 (unir PDF)",
-      multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
-      warn_zip: "Se detectaron varios archivos. Para múltiples salidas de imagen, activa ZIP.",
-      msg_loading: "Cargando…",
-      msg_ready: "¡Listo! Pulsa Convertir / Unir.",
-      msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
-      msg_pdf_one: "Imagen→PDF se guardará como un PDF de una sola página (por imagen).",
-      msg_pdf_merge: "Unir PDF+PDF generará un solo PDF combinado.",
-      err_only_supported: "Solo se admiten imágenes y PDFs.",
-      err_preview: "Falló la vista previa.",
-      err_convert: "Falló la conversión. Prueba con otros archivos/opciones.",
-      err_pdf_lib: "La librería PDF no está lista. Actualiza y reintenta.",
-      err_pdf_locked: "Este PDF puede estar protegido con contraseña o dañado. Desbloquéalo y reintenta.",
-      dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
-      meta_tpl: (name, type, size, w, h) =>
-        `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b><br/>Resolución: <b>${w} × ${h}</b>`,
-      multi_count: (n) => `Seleccionados: ${n}`
+      seoTitle: "ConvertFiles24 - Convertidor",
+      seoDesc: "Convierte imágenes (JPG/PNG/WebP) y une PDFs — procesado localmente en tu navegador. ZIP opcional.",
+      ogTitle: "ConvertFiles24 - Convertidor",
+      ogDesc: "Convierte imágenes y une PDFs localmente. ZIP opcional.",
+
+      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP</b> o une varios archivos en <b>un solo PDF (PDF+PDF)</b>. (Todo local en el navegador)',
+      h_upload: '1) Subir',
+      drop_title: 'Arrastra y suelta archivos aquí, o',
+      pick_btn: 'Elegir archivos',
+      drop_hint: 'Soporta JPG, PNG, WebP, PDF / Selección múltiple',
+      diff_hint: '• ZIP: agrupa múltiples salidas en un ZIP\n• PDF: une varias imágenes/PDF en un PDF',
+      h_order: 'Orden / borrar',
+      order_help: 'Usa ↑↓ para ordenar, 🗑️ para borrar (la unión PDF sigue este orden)',
+      h_preview: '2) Vista previa',
+      thumb_label: 'Vista previa',
+      meta_idle: 'Selecciona archivos para ver detalles.',
+
+      h_settings: '3) Ajustes',
+      lbl_format: 'Formato de salida',
+      lbl_quality: 'Calidad (solo JPG/WebP)',
+      q_095: 'Máx (0.95)',
+      q_090: 'Alta (0.90)',
+      q_080: 'Normal (0.80)',
+      q_070: 'Compacta (0.70)',
+
+      lbl_w: 'Ancho (px) (vacío = original)',
+      lbl_h: 'Alto (px) (vacío = original)',
+      ph_w: 'p. ej., 1200',
+      ph_h: 'p. ej., 800',
+      size_hint: 'Si ingresas solo un lado, se mantiene la relación de aspecto automáticamente.',
+
+      lbl_pdf_mode: 'Comportamiento PDF',
+      pdfm_single: 'PDF de 1 página (solo primer archivo)',
+      pdfm_merge: 'Unir varios archivos en un PDF',
+      lbl_a4: 'Normalizar páginas PDF a A4',
+      hint_a4: 'Al activarlo, cada página se ajusta a A4 y se centra.',
+      pdf_warn: 'Nota: No se pueden unir PDFs con contraseña. Quita la contraseña y vuelve a intentar.',
+
+      lbl_zip: 'Agrupar múltiples salidas en ZIP',
+      hint_zip: 'Para múltiples salidas JPG/PNG/WebP, activar ZIP permite descargar todo de una vez.',
+
+      h_download: '4) Descargar',
+      convert: 'Convertir y Descargar',
+      reset: 'Reiniciar',
+      privacy_hint: '🔒 Privacidad: tus archivos nunca se suben a un servidor.<br/>✅ Conversión y unión se ejecutan localmente en tu navegador.',
+
+      msg_loading: 'Cargando…',
+      msg_ready_multi: (n)=> `¡Listo! (${n} seleccionados)`,
+      msg_ready_single: '¡Listo! Haz clic en convertir para descargar.',
+      msg_png_q: 'PNG es sin pérdida, así que la calidad no aplica.',
+      msg_pdf_multi_hint: 'Si la salida es PDF y hay varios archivos, elige “Unir en un PDF”.',
+      err_none: 'Selecciona archivos primero.',
+      err_only_type: 'Solo se admiten imágenes o PDF.',
+      err_preview: 'No se pudo previsualizar.',
+      err_convert: 'Falló la conversión/unión. Prueba con otros archivos/opciones.',
+      err_pdf_password: 'No se pueden unir PDFs con contraseña. Quita la contraseña y vuelve a intentar.',
+      converting: 'Procesando…',
+
+      zip_confirm_title: "Se recomienda ZIP",
+      zip_confirm_body: "Con varios archivos, el navegador puede descargar solo uno.\n¿Quieres descargar todo como ZIP?",
+      dl_started: (name, size)=> `Descarga iniciada: ${name} (${size})`,
+      meta_tpl: (name, type, size, extra) =>
+        `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b>${extra ? `<br/>${extra}` : ""}`
     }
   };
 
-  const META_DESC = document.querySelector('meta[name="description"]');
-  const OG_TITLE = document.querySelector('meta[property="og:title"]');
-  const OG_DESC  = document.querySelector('meta[property="og:description"]');
-  const TW_TITLE = document.querySelector('meta[name="twitter:title"]');
-  const TW_DESC  = document.querySelector('meta[name="twitter:description"]');
-  const JSONLD   = document.getElementById('jsonld');
-
-  function getQueryLang(){
-    try{
-      const u = new URL(location.href);
-      const q = (u.searchParams.get("lang")||"").toLowerCase();
-      if(q && STR[q]) return q;
-    }catch(e){}
-    return null;
+  // =========================
+  // Utilities
+  // =========================
+  function humanSize(bytes){
+    const units = ["B","KB","MB","GB"];
+    let i = 0, v = bytes;
+    while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
+    return `${v.toFixed(i===0?0:1)} ${units[i]}`;
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+  function setMessage(text, type){
+    msg.textContent = text || "";
+    msg.className = "msg " + (type || "");
+  }
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+  function mimeToExt(mime){
+    if(mime === "image/jpeg") return "jpg";
+    if(mime === "image/png") return "png";
+    if(mime === "image/webp") return "webp";
+    if(mime === "application/pdf") return "pdf";
+    return "bin";
+  }
+  function buildStamp(){
+    return new Date().toISOString().replace(/[:.]/g,"-");
   }
 
-  function detectLang(){
-    const q = getQueryLang();
-    if(q) return q;
+  // A4 points (PDF uses points; 72dpi)
+  const A4_W = 595.28;
+  const A4_H = 841.89;
 
+  // =========================
+  // Language handling
+  // =========================
+  const META_DESC = document.querySelector('meta[name="description"]');
+  const OG_TITLE  = document.querySelector('meta[property="og:title"]');
+  const OG_DESC   = document.querySelector('meta[property="og:description"]');
+  const TW_TITLE  = document.querySelector('meta[name="twitter:title"]');
+  const TW_DESC   = document.querySelector('meta[name="twitter:description"]');
+  const JSONLD    = document.getElementById('jsonld');
+
+  function detectLang(){
+    // 1) URL ?lang=xx
+    const u = new URL(location.href);
+    const q = (u.searchParams.get("lang") || "").toLowerCase();
+    if(q && STR[q]) return q;
+
+    // 2) saved
     const saved = localStorage.getItem("cf24_lang");
     if(saved && STR[saved]) return saved;
 
+    // 3) browser
     const nav = (navigator.language || "").toLowerCase();
     if(nav.startsWith("ja")) return "ja";
     if(nav.startsWith("ko")) return "ko";
@@ -619,7 +869,7 @@
   }
 
   function renderTexts(){
-    const t = STR[LANG] || STR.en;
+    const t = STR[LANG];
 
     document.documentElement.lang = LANG;
 
@@ -639,57 +889,62 @@
       }catch(e){}
     }
 
-    safe("subtitle") && (safe("subtitle").innerHTML = t.subtitle);
+    $("subtitle").innerHTML = t.subtitle;
 
-    safe("h_upload") && (safe("h_upload").textContent = t.h_upload);
-    safe("drop_title") && (safe("drop_title").textContent = t.drop_title);
-    safe("pick_btn") && (safe("pick_btn").textContent = t.pick_btn);
-    safe("drop_hint") && (safe("drop_hint").textContent = t.drop_hint);
+    $("h_upload").textContent = t.h_upload;
+    $("drop_title").textContent = t.drop_title;
+    pickReal.textContent = t.pick_btn;
+    $("drop_hint").textContent = t.drop_hint;
+    $("diff_hint").textContent = t.diff_hint;
 
-    safe("h_preview") && (safe("h_preview").textContent = t.h_preview);
-    safe("h_settings") && (safe("h_settings").textContent = t.h_settings);
-    safe("lbl_format") && (safe("lbl_format").textContent = t.lbl_format);
-    safe("lbl_quality") && (safe("lbl_quality").textContent = t.lbl_quality);
+    $("h_order").textContent = t.h_order;
+    $("order_help").textContent = t.order_help;
 
-    safe("q_095") && (safe("q_095").textContent = t.q_095);
-    safe("q_090") && (safe("q_090").textContent = t.q_090);
-    safe("q_080") && (safe("q_080").textContent = t.q_080);
-    safe("q_070") && (safe("q_070").textContent = t.q_070);
+    $("h_preview").textContent = t.h_preview;
+    $("h_settings").textContent = t.h_settings;
+    $("lbl_format").textContent = t.lbl_format;
+    $("lbl_quality").textContent = t.lbl_quality;
 
-    safe("lbl_w") && (safe("lbl_w").textContent = t.lbl_w);
-    safe("lbl_h") && (safe("lbl_h").textContent = t.lbl_h);
+    $("q_095").textContent = t.q_095;
+    $("q_090").textContent = t.q_090;
+    $("q_080").textContent = t.q_080;
+    $("q_070").textContent = t.q_070;
+
+    $("lbl_w").textContent = t.lbl_w;
+    $("lbl_h").textContent = t.lbl_h;
     inW.placeholder = t.ph_w;
     inH.placeholder = t.ph_h;
-    safe("size_hint") && (safe("size_hint").textContent = t.size_hint);
+    $("size_hint").textContent = t.size_hint;
 
-    safe("h_download") && (safe("h_download").textContent = t.h_download);
+    $("lbl_pdf_mode").textContent = t.lbl_pdf_mode;
+    $("pdfm_single").textContent = t.pdfm_single;
+    $("pdfm_merge").textContent = t.pdfm_merge;
+    $("lbl_a4").textContent = t.lbl_a4;
+    $("hint_a4").textContent = t.hint_a4;
+    $("pdf_warn").textContent = t.pdf_warn;
+
+    $("lbl_zip").textContent = t.lbl_zip;
+    $("hint_zip").textContent = t.hint_zip;
+
+    $("h_download").textContent = t.h_download;
     btnConvert.textContent = t.convert;
     btnReset.textContent = t.reset;
+    $("privacy_hint").innerHTML = t.privacy_hint;
 
-    safe("privacy_hint") && (safe("privacy_hint").innerHTML = t.privacy_hint);
-
-    safe("pdfzip_title") && (safe("pdfzip_title").textContent = t.pdfzip_title);
-    safe("pdfzip_desc") && (safe("pdfzip_desc").textContent = t.pdfzip_desc);
-
-    safe("zip_label") && (safe("zip_label").textContent = t.zip_label);
-    safe("a4_label") && (safe("a4_label").textContent = t.a4_label);
-
-    safe("multi_note") && (safe("multi_note").textContent = t.multi_note);
-
-    if(files.length === 0){
+    // preview idle
+    if(selectedFiles.length === 0){
       meta.textContent = t.meta_idle;
       thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
     }
-    if(multiCount) multiCount.textContent = t.multi_count(files.length);
   }
 
   function setLang(lang){
-    if(!STR[lang]) lang = "en";
+    if(!STR[lang]) return;
     LANG = lang;
     localStorage.setItem("cf24_lang", lang);
     setActiveLangButtons(lang);
     renderTexts();
-    updateQualityState();
+    updateUIState();
   }
 
   document.querySelectorAll(".langbtn").forEach(b=>{
@@ -697,271 +952,332 @@
   });
 
   // =========================
-  // Helpers
+  // State: selected files (ordered)
   // =========================
-  function humanSize(bytes){
-    const units = ["B","KB","MB","GB"];
-    let i = 0, v = bytes;
-    while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
-    return `${v.toFixed(i===0?0:1)} ${units[i]}`;
-  }
-
-  function setMessage(text, type){
-    msg.textContent = text || "";
-    msg.className = "msg " + (type || "");
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
-
-  function mimeToExt(mime){
-    if(mime === "image/jpeg") return "jpg";
-    if(mime === "image/png") return "png";
-    if(mime === "image/webp") return "webp";
-    if(mime === "application/pdf") return "pdf";
-    return "bin";
-  }
-
-  function buildName(baseName, ext){
-    const base = (baseName || "file").replace(/\.[^.]+$/, "");
-    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    return `${base}_${stamp}.${ext}`;
-  }
-
-  function downloadBlob(blob, filename){
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 1500);
-  }
-
-  function isImage(file){ return (file.type||"").startsWith("image/"); }
-  function isPDF(file){ return (file.type||"") === "application/pdf" || (file.name||"").toLowerCase().endsWith(".pdf"); }
-
-  // =========================
-  // State
-  // =========================
-  let files = []; // {file, id}
-  let activeIndex = 0;
+  let selectedFiles = []; // [{file, kind:'image'|'pdf', w,h, pages, thumbUrl}]
+  let firstPreviewReady = false;
 
   function resetAll(){
-    files = [];
-    activeIndex = 0;
+    selectedFiles = [];
+    firstPreviewReady = false;
+
     fileInput.value = "";
+    fileList.innerHTML = "";
+
     btnConvert.disabled = true;
     btnReset.disabled = true;
+
     inW.value = "";
     inH.value = "";
-    zipModeEl.checked = false;
-    a4ModeEl.checked = false;
+
+    chkZip.checked = false;
+    chkA4.checked = false;
+    selPdfMode.value = "single";
+
     setMessage("", "");
-    renderFileList();
     renderTexts();
+    updateUIState();
+  }
+
+  function updateQualityState(){
+    const mime = selFormat.value;
+    const disableQuality = (mime === "image/png" || mime === "application/pdf");
+    selQuality.disabled = disableQuality;
+    selQuality.style.opacity = disableQuality ? ".6" : "1";
+  }
+
+  function updateUIState(){
+    updateQualityState();
+
+    const outMime = selFormat.value;
+    const multi = selectedFiles.length > 1;
+
+    // PDF options visible only when output PDF
+    pdfWrap.style.display = (outMime === "application/pdf") ? "block" : "none";
+
+    // ZIP recommended for multi outputs of images/webp/jpg/png
+    zipWrap.style.display = (outMime !== "application/pdf") ? "block" : "none";
+
+    // enable convert if we have at least 1 file
+    const has = selectedFiles.length > 0;
+    btnConvert.disabled = !has;
+    btnReset.disabled = !has;
+
+    // message hints
+    if(has){
+      const t = STR[LANG];
+      setMessage(
+        multi ? t.msg_ready_multi(selectedFiles.length) : t.msg_ready_single,
+        "ok"
+      );
+
+      if(outMime === "image/png"){
+        // not error, just hint
+        // keep ok msg if already ok
+      }
+    } else {
+      setMessage("", "");
+    }
   }
 
   // =========================
-  // UI: file list (reorder/delete)
+  // File list rendering (order / delete)
   // =========================
   function renderFileList(){
-    if(!multiPanel) return;
+    fileList.innerHTML = "";
 
-    if(files.length <= 1){
-      multiPanel.style.display = "none";
-    } else {
-      multiPanel.style.display = "block";
-    }
-
-    if(multiCount) multiCount.textContent = (STR[LANG]?.multi_count ? STR[LANG].multi_count(files.length) : `Selected: ${files.length}`);
-
-    fileListEl.innerHTML = "";
-    files.forEach((item, idx) => {
+    selectedFiles.forEach((it, idx)=>{
       const row = document.createElement("div");
-      row.className = "fileRow";
-
-      const name = document.createElement("div");
-      name.className = "fileName";
-      name.title = item.file.name;
-      name.textContent = item.file.name;
+      row.className = "fileItem";
 
       const mini = document.createElement("div");
-      mini.className = "mini";
+      mini.className = "miniThumb";
+      if(it.kind === "image" && it.thumbUrl){
+        const img = new Image();
+        img.src = it.thumbUrl;
+        mini.appendChild(img);
+      } else {
+        mini.innerHTML = `<span style="font-size:18px;">📄</span>`;
+      }
+
+      const info = document.createElement("div");
+      info.className = "info";
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = `${idx+1}. ${it.file.name}`;
+
+      const sub = document.createElement("div");
+      sub.className = "subinfo";
+      const size = humanSize(it.file.size);
+      const type = it.kind === "pdf" ? "application/pdf" : (it.file.type || "image");
+      let extra = "";
+      if(it.kind === "image" && it.w && it.h) extra = ` · ${it.w}×${it.h}`;
+      if(it.kind === "pdf" && it.pages) extra = ` · pages: ${it.pages}`;
+      sub.textContent = `${type} · ${size}${extra}`;
+
+      info.appendChild(name);
+      info.appendChild(sub);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
 
       const up = document.createElement("button");
       up.className = "iconBtn";
       up.type = "button";
-      up.textContent = "▲";
-      up.disabled = idx === 0;
-      up.addEventListener("click", ()=> move(idx, idx-1));
+      up.textContent = "↑";
+      up.disabled = (idx === 0);
+      up.addEventListener("click", ()=>{
+        moveItem(idx, idx-1);
+      });
 
       const down = document.createElement("button");
       down.className = "iconBtn";
       down.type = "button";
-      down.textContent = "▼";
-      down.disabled = idx === files.length-1;
-      down.addEventListener("click", ()=> move(idx, idx+1));
-
-      const del = document.createElement("button");
-      del.className = "iconBtn";
-      del.type = "button";
-      del.textContent = "🗑️";
-      del.addEventListener("click", ()=> removeAt(idx));
-
-      mini.appendChild(up);
-      mini.appendChild(down);
-      mini.appendChild(del);
-
-      row.appendChild(name);
-      row.appendChild(mini);
-
-      row.addEventListener("click", (e)=>{
-        // 버튼 클릭은 제외
-        if(e.target === up || e.target === down || e.target === del) return;
-        activeIndex = idx;
-        previewActive();
+      down.textContent = "↓";
+      down.disabled = (idx === selectedFiles.length-1);
+      down.addEventListener("click", ()=>{
+        moveItem(idx, idx+1);
       });
 
-      fileListEl.appendChild(row);
+      const del = document.createElement("button");
+      del.className = "iconBtn danger";
+      del.type = "button";
+      del.textContent = "🗑️";
+      del.addEventListener("click", ()=>{
+        removeItem(idx);
+      });
+
+      actions.appendChild(up);
+      actions.appendChild(down);
+      actions.appendChild(del);
+
+      row.appendChild(mini);
+      row.appendChild(info);
+      row.appendChild(actions);
+
+      // clicking a row sets preview to this file
+      row.addEventListener("click", (e)=>{
+        // ignore clicks on buttons
+        if(e.target && e.target.closest("button")) return;
+        showPreviewForIndex(idx);
+      });
+
+      fileList.appendChild(row);
     });
-  }
 
-  function move(from, to){
-    if(to < 0 || to >= files.length) return;
-    const t = files[from];
-    files.splice(from,1);
-    files.splice(to,0,t);
-    if(activeIndex === from) activeIndex = to;
-    renderFileList();
-    previewActive();
-  }
-
-  function removeAt(idx){
-    files.splice(idx,1);
-    if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
-    renderFileList();
-    if(files.length === 0){
-      resetAll();
-      return;
+    if(selectedFiles.length === 0){
+      fileList.innerHTML = `<div style="color:#9fb0ca; font-size:12px;">(empty)</div>`;
     }
-    previewActive();
+  }
+
+  function moveItem(from, to){
+    if(to < 0 || to >= selectedFiles.length) return;
+    const x = selectedFiles.splice(from, 1)[0];
+    selectedFiles.splice(to, 0, x);
+    renderFileList();
+    // keep preview aligned (show moved item)
+    showPreviewForIndex(to);
+  }
+
+  function removeItem(idx){
+    const it = selectedFiles[idx];
+    if(it && it.thumbUrl){
+      try{ URL.revokeObjectURL(it.thumbUrl); }catch(e){}
+    }
+    selectedFiles.splice(idx, 1);
+    renderFileList();
+    updateUIState();
+    if(selectedFiles.length > 0){
+      showPreviewForIndex(Math.min(idx, selectedFiles.length-1));
+    } else {
+      renderTexts();
+    }
   }
 
   // =========================
   // Preview
   // =========================
-  async function previewActive(){
-    const t = STR[LANG] || STR.en;
-    if(files.length === 0){
-      renderTexts();
-      return;
-    }
+  async function showPreviewForIndex(idx){
+    const t = STR[LANG];
+    const it = selectedFiles[idx];
+    if(!it) return;
 
-    const f = files[activeIndex]?.file;
-    if(!f) return;
-
-    btnConvert.disabled = false;
-    btnReset.disabled = false;
-
-    // If image: show thumbnail
-    if(isImage(f)){
-      setMessage(t.msg_loading, "");
-      const url = URL.createObjectURL(f);
+    if(it.kind === "image"){
+      thumb.innerHTML = "";
       const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        thumb.innerHTML = "";
-        thumb.appendChild(img);
-
-        const w = img.naturalWidth || 0;
-        const h = img.naturalHeight || 0;
-        meta.innerHTML = t.meta_tpl(
-          escapeHtml(f.name),
-          escapeHtml(f.type || "image"),
-          humanSize(f.size),
-          w, h
-        );
-        setMessage(t.msg_ready, "ok");
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        thumb.innerHTML = "";
-        meta.textContent = t.err_preview;
-        setMessage(t.err_preview, "err");
-      };
-      img.src = url;
+      img.src = it.thumbUrl || URL.createObjectURL(it.file);
       img.style.width = "100%";
       img.style.height = "100%";
       img.style.objectFit = "cover";
+      thumb.appendChild(img);
+
+      const extra = (it.w && it.h) ? `Resolution: <b>${it.w} × ${it.h}</b>` : "";
+      meta.innerHTML = t.meta_tpl(
+        escapeHtml(it.file.name),
+        escapeHtml(it.file.type || "image"),
+        humanSize(it.file.size),
+        extra
+      );
+      firstPreviewReady = true;
       return;
     }
 
-    // If PDF: show a PDF icon preview
-    if(isPDF(f)){
-      thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
-      meta.innerHTML =
-        `Name: <b>${escapeHtml(f.name)}</b><br/>Type: <b>application/pdf</b><br/>Size: <b>${humanSize(f.size)}</b>`;
-      setMessage(t.msg_ready, "ok");
-      return;
-    }
-
-    meta.textContent = t.err_only_supported;
-    setMessage(t.err_only_supported, "err");
-    btnConvert.disabled = true;
+    // PDF preview: show icon and pages count
+    thumb.innerHTML = `<span style="font-size:28px;">📄</span>`;
+    const extra = it.pages ? `Pages: <b>${it.pages}</b>` : "";
+    meta.innerHTML = t.meta_tpl(
+      escapeHtml(it.file.name),
+      "application/pdf",
+      humanSize(it.file.size),
+      extra
+    );
+    firstPreviewReady = true;
   }
 
   // =========================
-  // Input handling
+  // Loading files
   // =========================
-  async function handleFiles(selected){
-    const t = STR[LANG] || STR.en;
-    if(!selected || selected.length === 0) return;
+  async function readPdfPageCount(file){
+    try{
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const pdfDoc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      return pdfDoc.getPageCount();
+    }catch(e){
+      // password or invalid
+      return -1;
+    }
+  }
 
-    const arr = Array.from(selected);
-    // filter supported
-    const ok = arr.filter(f => isImage(f) || isPDF(f));
-    if(ok.length === 0){
-      setMessage(t.err_only_supported, "err");
+  async function readImageSize(file){
+    return new Promise((resolve)=>{
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        resolve({ w: img.naturalWidth, h: img.naturalHeight, url });
+      };
+      img.onerror = () => {
+        try{ URL.revokeObjectURL(url); }catch(e){}
+        resolve({ w:0, h:0, url:null });
+      };
+      img.src = url;
+    });
+  }
+
+  function isSupported(file){
+    if(file.type.startsWith("image/")) return true;
+    if(file.type === "application/pdf") return true;
+    // some android pdf may have empty type: fallback by extension
+    const n = (file.name || "").toLowerCase();
+    if(n.endsWith(".pdf")) return true;
+    if(n.match(/\.(jpg|jpeg|png|webp)$/)) return true;
+    return false;
+  }
+
+  function kindOf(file){
+    if(file.type === "application/pdf") return "pdf";
+    const n = (file.name || "").toLowerCase();
+    if(n.endsWith(".pdf")) return "pdf";
+    return "image";
+  }
+
+  async function addFiles(files){
+    const t = STR[LANG];
+    if(!files || files.length === 0) return;
+
+    // filter
+    const arr = Array.from(files).filter(isSupported);
+    if(arr.length === 0){
+      setMessage(t.err_only_type, "err");
       return;
     }
 
-    files = ok.map((file, i)=>({file, id: `${Date.now()}_${i}`}));
-    activeIndex = 0;
+    setMessage(t.msg_loading, "");
 
-    btnReset.disabled = false;
-    btnConvert.disabled = false;
+    for(const f of arr){
+      const kind = kindOf(f);
+
+      if(kind === "image"){
+        const { w, h, url } = await readImageSize(f);
+        selectedFiles.push({
+          file: f,
+          kind: "image",
+          w, h,
+          pages: null,
+          thumbUrl: url
+        });
+      } else {
+        const pages = await readPdfPageCount(f);
+        selectedFiles.push({
+          file: f,
+          kind: "pdf",
+          w: null, h: null,
+          pages: pages > 0 ? pages : null,
+          thumbUrl: null,
+          pdfEncrypted: (pages === -1)
+        });
+      }
+    }
 
     renderFileList();
-    renderTexts();
-    await previewActive();
-    updateQualityState();
+    updateUIState();
 
-    // 안내 메시지
-    if(selFormat.value === "application/pdf"){
-      setMessage(t.msg_pdf_one, "");
-    } else if(selFormat.value === "image/png"){
-      setMessage(t.msg_png_q, "");
-    } else {
-      setMessage(t.msg_ready, "ok");
+    // auto preview first item if none
+    if(!firstPreviewReady && selectedFiles.length > 0){
+      await showPreviewForIndex(0);
+    } else if(selectedFiles.length > 0){
+      // keep showing last
+      await showPreviewForIndex(selectedFiles.length - 1);
+    }
+
+    // PDF hint
+    if(selFormat.value === "application/pdf" && selectedFiles.length > 1){
+      setMessage(t.msg_pdf_multi_hint, "");
     }
   }
 
-  // mobile picker trigger hardening
-  pickTrigger.addEventListener("click", ()=>{
-    // Some mobile devices require direct user gesture
-    try{ fileInput.click(); }catch(e){}
-  });
-
-  fileInput.addEventListener("change", (e)=>{
-    handleFiles(e.target.files);
-  });
-
+  // =========================
   // Drag & drop
+  // =========================
   ["dragenter","dragover"].forEach(evt => {
     drop.addEventListener(evt, (e) => {
       e.preventDefault(); e.stopPropagation();
@@ -975,282 +1291,345 @@
     });
   });
   drop.addEventListener("drop", (e) => {
-    const fs = e.dataTransfer.files;
-    handleFiles(fs);
+    const dt = e.dataTransfer;
+    if(dt && dt.files) addFiles(dt.files);
   });
 
   // =========================
-  // Settings / mode logic
+  // Mobile file picker trigger 강화
   // =========================
-  function updateQualityState(){
-    const mime = selFormat.value;
-    const disableQuality = (mime === "image/png" || mime === "application/pdf");
-    selQuality.disabled = disableQuality;
-    selQuality.style.opacity = disableQuality ? ".6" : "1";
+  function openFilePicker(){
+    // 일부 기기에서 click이 무시되면 focus 후 click
+    try{
+      fileInput.value = ""; // 같은 파일 재선택 가능
+      fileInput.focus({ preventScroll:true });
+      // iOS/Android 대응: setTimeout 한 번
+      setTimeout(()=> fileInput.click(), 0);
+    }catch(e){
+      try{ fileInput.click(); }catch(e2){}
+    }
   }
 
-  selFormat.addEventListener("change", ()=>{
-    updateQualityState();
-    const t = STR[LANG] || STR.en;
+  pickReal.addEventListener("click", (e)=>{
+    e.preventDefault();
+    openFilePicker();
+  });
 
-    const mime = selFormat.value;
-    if(mime === "image/png"){
-      setMessage(t.msg_png_q, "");
-    } else if(mime === "application/pdf"){
-      if(files.some(x=>isPDF(x.file))){
-        setMessage(t.msg_pdf_merge, "");
-      } else {
-        setMessage(t.msg_pdf_one, "");
-      }
-    } else if(files.length){
-      setMessage(t.msg_ready, "ok");
-    } else {
-      setMessage("", "");
-    }
+  // drop 영역 전체도 누르면 파일 선택(모바일 편의)
+  drop.addEventListener("click", (e)=>{
+    // 버튼 클릭은 중복 방지
+    if(e.target && e.target.closest("button")) return;
+    openFilePicker();
+  });
+
+  fileInput.addEventListener("change", (e) => {
+    const files = e.target.files;
+    addFiles(files);
   });
 
   // =========================
-  // Converters
+  // Size handling (images)
   // =========================
-  function getTargetSizeFromFirstImage(origW, origH){
+  function getTargetSize(originalW, originalH){
     const w = parseInt(inW.value, 10);
     const h = parseInt(inH.value, 10);
 
-    if(!w && !h) return { w: origW, h: origH };
-    if(w && !h) return { w, h: Math.round(w * (origH / origW)) };
-    if(!w && h) return { w: Math.round(h * (origW / origH)), h };
+    if(!w && !h) return { w: originalW, h: originalH };
+    if(w && !h) return { w, h: Math.round(w * (originalH / originalW)) };
+    if(!w && h) return { w: Math.round(h * (originalW / originalH)), h };
     return { w, h };
   }
 
-  async function imageToCanvasBlob(file, outMime, quality){
-    // Load image into canvas
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    const loaded = await new Promise((resolve, reject)=>{
-      img.onload = ()=> resolve(true);
-      img.onerror = ()=> reject(new Error("image load fail"));
-      img.src = url;
-    });
-    URL.revokeObjectURL(url);
+  // =========================
+  // ZIP A안: multiple outputs + ZIP OFF => confirm => auto ON
+  // =========================
+  function shouldRecommendZip(selectedCount, outMime){
+    return selectedCount > 1 && outMime !== "application/pdf";
+  }
+  function confirmZipIfNeeded(){
+    const t = STR[LANG];
+    const outMime = selFormat.value;
 
-    const origW = img.naturalWidth || 0;
-    const origH = img.naturalHeight || 0;
-    const { w, h } = getTargetSizeFromFirstImage(origW, origH);
+    if(shouldRecommendZip(selectedFiles.length, outMime) && !chkZip.checked){
+      const ok = confirm(`${t.zip_confirm_title}\n\n${t.zip_confirm_body}`);
+      if(ok){
+        chkZip.checked = true;
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
 
+  // =========================
+  // PDF helpers (A4 normalize)
+  // =========================
+  function fitRect(srcW, srcH, dstW, dstH){
+    const s = Math.min(dstW/srcW, dstH/srcH);
+    const w = srcW * s;
+    const h = srcH * s;
+    const x = (dstW - w)/2;
+    const y = (dstH - h)/2;
+    return { x, y, w, h, s };
+  }
+
+  async function addImageAsPdfPage(pdfDoc, imgBytes, isPng, pageW, pageH, a4Normalize){
+    const embed = isPng ? await pdfDoc.embedPng(imgBytes) : await pdfDoc.embedJpg(imgBytes);
+
+    const iw = embed.width;
+    const ih = embed.height;
+
+    if(a4Normalize){
+      const page = pdfDoc.addPage([A4_W, A4_H]);
+      const r = fitRect(iw, ih, A4_W, A4_H);
+      page.drawImage(embed, { x:r.x, y:r.y, width:r.w, height:r.h });
+    } else {
+      // page size = image size in points (good enough)
+      const page = pdfDoc.addPage([pageW, pageH]);
+      page.drawImage(embed, { x:0, y:0, width:pageW, height:pageH });
+    }
+  }
+
+  async function appendPdfInto(pdfDocDest, pdfBytes, a4Normalize){
+    // password protected => throw
+    const src = await PDFLib.PDFDocument.load(pdfBytes, { ignoreEncryption:false });
+
+    const count = src.getPageCount();
+
+    if(!a4Normalize){
+      const copied = await pdfDocDest.copyPages(src, src.getPageIndices());
+      copied.forEach(p=> pdfDocDest.addPage(p));
+      return count;
+    }
+
+    // A4 normalize: embed each page and draw onto A4
+    for(let i=0;i<count;i++){
+      const [p] = await pdfDocDest.copyPages(src, [i]);
+      const w = p.getWidth();
+      const h = p.getHeight();
+
+      // embed the copied page into XObject
+      const embedded = await pdfDocDest.embedPage(p);
+      const page = pdfDocDest.addPage([A4_W, A4_H]);
+      const r = fitRect(w, h, A4_W, A4_H);
+      page.drawPage(embedded, { x:r.x, y:r.y, xScale:r.w/w, yScale:r.h/h });
+    }
+    return count;
+  }
+
+  // =========================
+  // Convert core
+  // =========================
+  async function convertImagesToBlob(mime, quality, imgFile, targetW, targetH){
+    // draw into canvas
+    const bmp = await createImageBitmap(imgFile);
     const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = targetW;
+    canvas.height = targetH;
+
     const ctx = canvas.getContext("2d", { alpha:true });
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(img, 0, 0, w, h);
+    ctx.drawImage(bmp, 0, 0, targetW, targetH);
 
-    let blob = await new Promise((resolve)=>{
-      if(outMime === "image/png"){
-        canvas.toBlob(resolve, outMime);
-      }else{
-        canvas.toBlob(resolve, outMime, quality);
+    const blob = await new Promise((resolve)=>{
+      if(mime === "image/png"){
+        canvas.toBlob(resolve, "image/png");
+      } else {
+        canvas.toBlob(resolve, mime, quality);
       }
     });
 
-    if(!blob) throw new Error("toBlob failed");
-    return { blob, w, h, canvas };
+    return blob;
   }
 
-  async function imagesToSinglePDF(imageFiles){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
-
-    const { PDFDocument } = window.PDFLib;
-    const pdfDoc = await PDFDocument.create();
-
-    for(const it of imageFiles){
-      const f = it.file;
-      const { canvas, w, h } = await imageToCanvasBlob(f, "image/png", 1);
-      const pngBlob = await new Promise((resolve)=> canvas.toBlob(resolve, "image/png"));
-      const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
-
-      const imgEmbed = await pdfDoc.embedPng(pngBytes);
-      const page = pdfDoc.addPage([w, h]); // pixel=point
-      page.drawImage(imgEmbed, { x:0, y:0, width:w, height:h });
-    }
-
-    const bytes = await pdfDoc.save();
-    return new Blob([bytes], { type:"application/pdf" });
+  function buildOutputName(baseName, outMime, suffix=""){
+    const base = (baseName || "file").replace(/\.[^.]+$/, "");
+    const ext = mimeToExt(outMime);
+    const stamp = buildStamp();
+    return `${base}${suffix}_${stamp}.${ext}`;
   }
 
-  async function mergePDFs(pdfFiles, normalizeA4){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
+  async function handleConvert(){
+    const t = STR[LANG];
 
-    const { PDFDocument, PageSizes } = window.PDFLib;
-    const outDoc = await PDFDocument.create();
-
-    for(const it of pdfFiles){
-      try{
-        const buf = await it.file.arrayBuffer();
-        const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: false });
-        const pages = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-
-        for(const p of pages){
-          if(normalizeA4){
-            // A4 portrait (points)
-            const [a4w, a4h] = PageSizes.A4;
-            // scale to fit
-            const { width, height } = p.getSize();
-            const scale = Math.min(a4w / width, a4h / height);
-            p.scale(scale, scale);
-
-            // NOTE: pdf-lib doesn't have direct "center on page" after scale in-place easily.
-            // So we re-add via embedded page technique for proper centering.
-            // We'll do a safer approach: embed original page into new A4 page.
-            // Replace by embedding original page instead:
-          }
-        }
-
-        if(normalizeA4){
-          // Better: embed each original page onto a new A4 page to center + fit
-          const srcDoc2 = await PDFDocument.load(buf, { ignoreEncryption: false });
-          const srcPages = srcDoc2.getPages();
-          for(let i=0;i<srcPages.length;i++){
-            const [a4w, a4h] = PageSizes.A4;
-            const embedded = await outDoc.embedPage(srcPages[i]);
-            const w = embedded.width;
-            const h = embedded.height;
-            const scale = Math.min(a4w / w, a4h / h);
-            const drawW = w * scale;
-            const drawH = h * scale;
-            const x = (a4w - drawW) / 2;
-            const y = (a4h - drawH) / 2;
-
-            const page = outDoc.addPage([a4w, a4h]);
-            page.drawPage(embedded, { x, y, width: drawW, height: drawH });
-          }
-        }else{
-          pages.forEach(p => outDoc.addPage(p));
-        }
-      }catch(e){
-        throw new Error(t.err_pdf_locked);
-      }
-    }
-
-    const bytes = await outDoc.save();
-    return new Blob([bytes], { type:"application/pdf" });
-  }
-
-  async function convertImagesToZIP(imageFiles, outMime, quality){
-    const t = STR[LANG] || STR.en;
-    if(!window.JSZip) throw new Error("ZIP library is not ready.");
-
-    const zip = new window.JSZip();
-
-    for(const it of imageFiles){
-      const f = it.file;
-      const { blob } = await imageToCanvasBlob(f, outMime, quality);
-      const ext = mimeToExt(outMime);
-      const name = (f.name || "image").replace(/\.[^.]+$/, "");
-      const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-      const filename = `${name}_${stamp}.${ext}`;
-      zip.file(filename, blob);
-    }
-
-    const zipped = await zip.generateAsync({ type:"blob" });
-    return zipped;
-  }
-
-  // =========================
-  // Main action
-  // =========================
-  async function onConvert(){
-    const t = STR[LANG] || STR.en;
-    if(files.length === 0){
-      setMessage(t.err_only_supported, "err");
+    if(selectedFiles.length === 0){
+      setMessage(t.err_none, "err");
       return;
     }
 
+    // A안: multiple + zip off => recommend zip
+    if(!confirmZipIfNeeded()) return;
+
     btnConvert.disabled = true;
-    setMessage(t.msg_loading, "");
+    setMessage(t.converting, "");
 
     const outMime = selFormat.value;
     const quality = parseFloat(selQuality.value);
 
-    const images = files.filter(x => isImage(x.file));
-    const pdfs   = files.filter(x => isPDF(x.file));
-    const multi  = files.length >= 2;
+    const a4Normalize = chkA4.checked;
+    const pdfMode = selPdfMode.value; // single | merge
+    const wantZip = chkZip.checked;
 
     try{
-      // ✅ A안: 여러 파일인데 ZIP 미체크 + (이미지 출력)이라면 경고하고 중단
-      if(multi && images.length >= 2 && outMime !== "application/pdf" && !zipModeEl.checked){
-        alert(t.warn_zip);
-        setMessage(t.warn_zip, "err");
-        btnConvert.disabled = false;
-        return;
-      }
-
-      // Case 1) Output is PDF
+      // ===========
+      // CASE 1) output PDF
+      // ===========
       if(outMime === "application/pdf"){
-        // If PDFs exist => merge PDFs (true PDF merge)
-        if(pdfs.length >= 1){
-          const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
-          const name = buildName("merged_pdf", "pdf");
-          downloadBlob(merged, name);
-          setMessage(t.dl_start(name, humanSize(merged.size)), "ok");
-          btnConvert.disabled = false;
-          return;
+        // If multiple and pdfMode == single -> only first file (image or pdf)
+        const items = (selectedFiles.length > 1 && pdfMode === "single")
+          ? [selectedFiles[0]]
+          : selectedFiles;
+
+        // If any pdf is encrypted -> 안내
+        for(const it of items){
+          if(it.kind === "pdf" && it.pdfEncrypted){
+            setMessage(t.err_pdf_password, "err");
+            btnConvert.disabled = false;
+            return;
+          }
         }
 
-        // Else => images to PDF (single image -> 1 page / multi images -> 1 merged pdf)
-        if(images.length >= 1){
-          const pdfBlob = await imagesToSinglePDF(images);
-          const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
-          downloadBlob(pdfBlob, name);
-          setMessage(t.dl_start(name, humanSize(pdfBlob.size)), "ok");
-          btnConvert.disabled = false;
-          return;
+        const pdfDoc = await PDFLib.PDFDocument.create();
+
+        // merge in order: pdf pages or image pages
+        for(const it of items){
+          if(it.kind === "pdf"){
+            const bytes = new Uint8Array(await it.file.arrayBuffer());
+            try{
+              await appendPdfInto(pdfDoc, bytes, a4Normalize);
+            }catch(e){
+              setMessage(t.err_pdf_password, "err");
+              btnConvert.disabled = false;
+              return;
+            }
+          } else {
+            // image -> pdf page
+            const imgBytes = new Uint8Array(await it.file.arrayBuffer());
+            const isPng = (it.file.type === "image/png") || (it.file.name || "").toLowerCase().endsWith(".png");
+            const iw = it.w || 1200;
+            const ih = it.h || 1600;
+
+            // if user typed W/H, apply to image pages too (optional but helpful)
+            const tgt = getTargetSize(iw, ih);
+            const pageW = a4Normalize ? A4_W : tgt.w;
+            const pageH = a4Normalize ? A4_H : tgt.h;
+
+            // For non-A4: we draw image into page sized to target
+            // Need actual target bitmap bytes: easiest is canvas -> PNG then embedPng
+            // Use canvas conversion to PNG so that resizing applies
+            const resized = await convertImagesToBlob("image/png", 0.92, it.file, tgt.w, tgt.h);
+            const resizedBytes = new Uint8Array(await resized.arrayBuffer());
+            await addImageAsPdfPage(pdfDoc, resizedBytes, true, pageW, pageH, a4Normalize);
+          }
         }
 
-        throw new Error(t.err_only_supported);
-      }
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type:"application/pdf" });
 
-      // Case 2) Output is image mime
-      if(images.length === 0){
-        throw new Error(t.err_only_supported);
-      }
+        const outName = buildOutputName(
+          items.length === 1 ? items[0].file.name : "merged",
+          "application/pdf",
+          (items.length > 1 ? "_merged" : "")
+        );
 
-      // If ZIP mode: convert images -> zip
-      if(images.length >= 2 && zipModeEl.checked){
-        const zipBlob = await convertImagesToZIP(images, outMime, quality);
-        const name = buildName("converted_images", "zip");
-        downloadBlob(zipBlob, name);
-        setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
+        downloadBlob(blob, outName);
+        setMessage(t.dl_started(outName, humanSize(blob.size)), "ok");
         btnConvert.disabled = false;
         return;
       }
 
-      // Single image convert (or multi but warning prevented)
-      const first = images[0].file;
-      const { blob } = await imageToCanvasBlob(first, outMime, quality);
-      const name = buildName(first.name, mimeToExt(outMime));
-      downloadBlob(blob, name);
-      setMessage(t.dl_start(name, humanSize(blob.size)), "ok");
+      // ===========
+      // CASE 2) output image formats (JPG/PNG/WebP)
+      // ===========
+      // Convert each image file; PDFs are NOT convertible to JPG/PNG/WebP here (keep simple + safe)
+      const imagesOnly = selectedFiles.filter(x=>x.kind==="image");
+      if(imagesOnly.length === 0){
+        setMessage(t.err_only_type, "err");
+        btnConvert.disabled = false;
+        return;
+      }
+
+      // if user selected PDFs together, ignore PDFs for image output (friendly hint)
+      const ignoredPdfCount = selectedFiles.filter(x=>x.kind==="pdf").length;
+      // (we won't spam message; just proceed)
+
+      const results = []; // {name, blob}
+      for(const it of imagesOnly){
+        const origW = it.w || 1200;
+        const origH = it.h || 1600;
+        const tgt = getTargetSize(origW, origH);
+
+        const blob = await convertImagesToBlob(outMime, quality, it.file, tgt.w, tgt.h);
+
+        const suffix = (tgt.w===origW && tgt.h===origH) ? "" : `_${tgt.w}x${tgt.h}`;
+        const outName = buildOutputName(it.file.name, outMime, suffix);
+
+        results.push({ name: outName, blob });
+      }
+
+      // multiple outputs:
+      if(results.length > 1){
+        if(wantZip){
+          const zip = new JSZip();
+          results.forEach(r=> zip.file(r.name, r.blob));
+          const zipBlob = await zip.generateAsync({ type:"blob" });
+          const zipName = `convertfiles24_${buildStamp()}.zip`;
+          downloadBlob(zipBlob, zipName);
+          setMessage(t.dl_started(zipName, humanSize(zipBlob.size)), "ok");
+        } else {
+          // In case user unchecked ZIP but confirmed earlier, this shouldn't happen.
+          // But safe fallback: download first only.
+          downloadBlob(results[0].blob, results[0].name);
+          setMessage(t.dl_started(results[0].name, humanSize(results[0].blob.size)), "ok");
+        }
+      } else {
+        downloadBlob(results[0].blob, results[0].name);
+        setMessage(t.dl_started(results[0].name, humanSize(results[0].blob.size)), "ok");
+      }
+
       btnConvert.disabled = false;
-    }catch(e){
-      const errText = (e && e.message) ? e.message : t.err_convert;
-      setMessage(errText, "err");
+    } catch(e){
+      console.error(e);
+      setMessage(STR[LANG].err_convert, "err");
       btnConvert.disabled = false;
     }
   }
 
   // =========================
-  // Reset / init
+  // Events
   // =========================
-  btnConvert.addEventListener("click", onConvert);
+  btnConvert.addEventListener("click", handleConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // init language + UI
-  setLang(LANG);
-  resetAll();
+  selFormat.addEventListener("change", ()=>{
+    updateUIState();
 
+    const t = STR[LANG];
+    const mime = selFormat.value;
+
+    if(mime === "image/png"){
+      setMessage(t.msg_png_q, "");
+    } else if(mime === "application/pdf" && selectedFiles.length > 1){
+      setMessage(t.msg_pdf_multi_hint, "");
+    } else {
+      // keep ok ready message
+      if(selectedFiles.length > 0){
+        setMessage(
+          selectedFiles.length > 1 ? t.msg_ready_multi(selectedFiles.length) : t.msg_ready_single,
+          "ok"
+        );
+      } else {
+        setMessage("", "");
+      }
+    }
+  });
+
+  // init
+  setLang(detectLang());
+  renderFileList();
+  updateUIState();
+  renderTexts();
 })();
 </script>
 </body>
