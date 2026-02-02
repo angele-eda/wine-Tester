@@ -96,39 +96,51 @@
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
 
+    /* ✅ 드롭존 = 전체 클릭 가능한 큰 사각형 */
     .drop{
       border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      display:flex; align-items:center; justify-content:center; text-align:center;
+      border-radius:14px;
+      padding:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
       background:rgba(255,255,255,.02);
       min-width:0;
+      cursor:pointer;
+      user-select:none;
+      transition:background .15s, border-color .15s, transform .05s;
+      outline:none;
     }
+    .drop:hover{
+      background:rgba(47,109,246,.08);
+      border-color:rgba(47,109,246,.40);
+    }
+    .drop:active{ transform: scale(0.995); }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
 
-    /* ✅ ②안: 긴 바 클릭 가능 + 텍스트/아이콘 */
-    .pickArea{
+    .pickIconOnly{
       width:100%;
       border-radius:14px;
       background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.10);
-      padding:16px 14px;
+      padding:22px 14px;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      cursor:pointer;
-      transition:background .15s, border-color .15s, transform .05s;
-      user-select:none;
+      margin-top:12px;
     }
-    .pickArea:hover{
-      background:rgba(47,109,246,.12);
-      border-color:rgba(47,109,246,.45);
+    .pickIconOnly .ico{
+      font-size:30px;
+      line-height:1;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,.25));
     }
-    .pickArea:active{
-      transform: scale(0.995);
+    .pickIconOnly .miniText{
+      font-size:12px;
+      color:#9fb0ca;
+      display:none; /* 아이콘만 원하면 숨김 */
     }
-    .pickIcon{ font-size:20px; line-height:1; }
-    .pickText{ font-weight:900; font-size:14px; color:#e9eef7; }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -138,7 +150,6 @@
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
     .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
-    .btn.inline{ width:auto; display:inline-flex; align-items:center; gap:8px; justify-content:center; }
 
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row > * { flex:1; min-width:160px; }
@@ -266,20 +277,15 @@
       <div class="card">
         <h2 id="h_upload"></h2>
 
-        <div class="drop" id="drop">
+        <!-- ✅ 드롭존 전체 클릭 가능 -->
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:10px;" id="drop_title"></div>
 
-            <!-- ✅ ②안: 긴 바(클릭 가능) -->
-            <div class="pickArea" id="pick_area" role="button" tabindex="0" aria-label="Choose files">
-              <span class="pickIcon" aria-hidden="true">📁</span>
-              <span class="pickText" id="pick_text">Choose files</span>
-            </div>
-
-            <!-- ✅ 백업 트리거(혹시 어떤 기기에서 pickArea가 막힐 때 대비) -->
-            <div class="row" style="justify-content:center; margin:12px 0 0;">
-              <button class="btn secondary inline" id="pick_trigger" type="button">📁</button>
-              <button class="btn secondary inline" id="pick_btn" type="button"></button>
+            <!-- ✅ 아이콘만 -->
+            <div class="pickIconOnly" aria-hidden="true">
+              <span class="ico">📁</span>
+              <span class="miniText" id="pick_help">Choose files</span>
             </div>
 
             <input id="file" type="file" multiple accept="image/*,application/pdf" />
@@ -387,11 +393,6 @@
   const $ = (id) => document.getElementById(id);
 
   const fileInput   = $("file");
-  const pickArea    = $("pick_area");
-  const pickText    = $("pick_text");
-  const pickTrigger = $("pick_trigger");
-  const pickBtn     = $("pick_btn");
-
   const drop        = $("drop");
   const thumb       = $("thumb");
   const meta        = $("meta");
@@ -409,6 +410,7 @@
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
+  // ✅ footer year auto
   $("year").textContent = new Date().getFullYear();
 
   // =========================
@@ -422,8 +424,7 @@
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       h_upload: "1) Upload",
-      drop_title: "Drag & drop files here, or",
-      pick_btn: "Choose files",
+      drop_title: "Drag & drop files here, or tap to choose",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       h_preview: "2) Preview",
       thumb_label: "Preview",
@@ -475,8 +476,7 @@
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       h_upload: "1) 업로드",
-      drop_title: "여기에 파일을 끌어놓거나",
-      pick_btn: "파일 선택",
+      drop_title: "여기에 파일을 끌어놓거나, 탭해서 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       h_preview: "2) 미리보기",
       thumb_label: "미리보기",
@@ -528,8 +528,7 @@
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       h_upload: "1) アップロード",
-      drop_title: "ここにファイルをドロップ、または",
-      pick_btn: "ファイル選択",
+      drop_title: "ここにドロップ、またはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       h_preview: "2) プレビュー",
       thumb_label: "プレビュー",
@@ -581,8 +580,7 @@
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       h_upload: "1) Subir",
-      drop_title: "Arrastra y suelta archivos aquí, o",
-      pick_btn: "Elegir archivos",
+      drop_title: "Suelta aquí o toca para elegir",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       h_preview: "2) Vista previa",
       thumb_label: "Vista previa",
@@ -764,11 +762,6 @@
     $("subtitle").innerHTML = t.subtitle;
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
-
-    // ✅ 긴 바 텍스트 + 백업 버튼 텍스트 동일
-    pickText.textContent = t.pick_btn;
-    pickBtn.textContent = t.pick_btn;
-
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
@@ -1034,18 +1027,18 @@
     }
   }
 
-  // ✅ ②안: 긴 바 클릭 + 키보드 엔터/스페이스
-  pickArea.addEventListener("click", openFilePicker);
-  pickArea.addEventListener("keydown", (e)=>{
+  // ✅ 1번: 드롭존 전체 클릭 + 키보드
+  drop.addEventListener("click", (e)=>{
+    // 드래그&드롭 동작 방해 최소화
+    if(drop.classList.contains("drag")) return;
+    openFilePicker();
+  });
+  drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
       e.preventDefault();
       openFilePicker();
     }
   });
-
-  // 백업 버튼도 동일 동작
-  pickTrigger.addEventListener("click", openFilePicker);
-  pickBtn.addEventListener("click", openFilePicker);
 
   fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
 
@@ -1247,7 +1240,7 @@
     const multi  = files.length >= 2;
 
     try{
-      // ✅ A안: 여러 이미지 -> 이미지 출력인데 ZIP 미체크면 경고 후 중단
+      // ✅ 여러 이미지 -> 이미지 출력인데 ZIP 미체크면 경고 후 중단
       if(multi && images.length >= 2 && outMime !== "application/pdf" && !zipModeEl.checked){
         alert(t.warn_zip);
         setMessage(t.warn_zip, "err");
