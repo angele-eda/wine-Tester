@@ -59,7 +59,7 @@
     h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ language bar fix (PC 일본어 줄바꿈/왼쪽 떨어짐 방지) */
+    /* ✅ language bar fix */
     .langbar{
       display:flex;
       gap:8px;
@@ -105,6 +105,31 @@
     }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
 
+    /* ✅ ②안: 긴 바 클릭 가능 + 텍스트/아이콘 */
+    .pickArea{
+      width:100%;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      padding:16px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      transition:background .15s, border-color .15s, transform .05s;
+      user-select:none;
+    }
+    .pickArea:hover{
+      background:rgba(47,109,246,.12);
+      border-color:rgba(47,109,246,.45);
+    }
+    .pickArea:active{
+      transform: scale(0.995);
+    }
+    .pickIcon{ font-size:20px; line-height:1; }
+    .pickText{ font-weight:900; font-size:14px; color:#e9eef7; }
+
     .btn{
       appearance:none; border:none; cursor:pointer;
       background:#2f6df6; color:white; font-weight:800;
@@ -149,7 +174,6 @@
     .ok{ color:#b8ffcc; }
     .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
 
-    /* select/option readable */
     select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
     option { background-color: #0b0f17; color:#e9eef7; }
 
@@ -214,6 +238,10 @@
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
+
+    /* footer links */
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
   </style>
 </head>
 
@@ -239,11 +267,17 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop">
-          <div>
-            <div style="font-weight:800; margin-bottom:8px;" id="drop_title"></div>
+          <div style="width:100%;">
+            <div style="font-weight:800; margin-bottom:10px;" id="drop_title"></div>
 
-            <!-- ✅ picker trigger hardening: button + label -->
-            <div class="row" style="justify-content:center; margin:0;">
+            <!-- ✅ ②안: 긴 바(클릭 가능) -->
+            <div class="pickArea" id="pick_area" role="button" tabindex="0" aria-label="Choose files">
+              <span class="pickIcon" aria-hidden="true">📁</span>
+              <span class="pickText" id="pick_text">Choose files</span>
+            </div>
+
+            <!-- ✅ 백업 트리거(혹시 어떤 기기에서 pickArea가 막힐 때 대비) -->
+            <div class="row" style="justify-content:center; margin:12px 0 0;">
               <button class="btn secondary inline" id="pick_trigger" type="button">📁</button>
               <button class="btn secondary inline" id="pick_btn" type="button"></button>
             </div>
@@ -340,7 +374,9 @@
     </div>
 
     <div class="footer">
-      © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages
+      © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages ·
+      <a href="/privacy.html" rel="nofollow">Privacy</a> ·
+      <a href="/terms.html" rel="nofollow">Terms</a>
     </div>
   </div>
 
@@ -351,8 +387,11 @@
   const $ = (id) => document.getElementById(id);
 
   const fileInput   = $("file");
+  const pickArea    = $("pick_area");
+  const pickText    = $("pick_text");
   const pickTrigger = $("pick_trigger");
   const pickBtn     = $("pick_btn");
+
   const drop        = $("drop");
   const thumb       = $("thumb");
   const meta        = $("meta");
@@ -414,7 +453,7 @@
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert / Merge.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
-      msg_pdf_one: "Image→PDF will be saved as a PDF. (Multiple images become one merged PDF.)",
+      msg_pdf_one: "Image→PDF will be saved. (Multiple images become one merged PDF.)",
       msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
       err_only_supported: "Only images and PDFs are supported.",
       err_preview: "Failed to preview.",
@@ -647,7 +686,7 @@
     return (name || "").toLowerCase().split(".").pop();
   }
 
-  // ✅ robust type detection (mobile sometimes file.type is empty)
+  // ✅ robust type detection
   function isImage(file){
     const t = (file.type || "").toLowerCase();
     if(t.startsWith("image/")) return true;
@@ -725,7 +764,11 @@
     $("subtitle").innerHTML = t.subtitle;
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
+
+    // ✅ 긴 바 텍스트 + 백업 버튼 텍스트 동일
+    pickText.textContent = t.pick_btn;
     pickBtn.textContent = t.pick_btn;
+
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
@@ -881,7 +924,6 @@
     btnReset.disabled = false;
 
     if(isImage(f)){
-      // HEIC/HEIF warning
       const ext = extLower(f.name);
       if(ext === "heic" || ext === "heif"){
         setMessage(t.err_heic, "err");
@@ -906,7 +948,6 @@
           w, h
         );
 
-        // if not HEIC warning, show ready
         if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
       };
       img.onerror = () => {
@@ -943,7 +984,6 @@
 
     const arr = Array.from(selected);
 
-    // filter supported (robust)
     const ok = arr.filter(f => isImage(f) || isPDF(f));
     if(ok.length === 0){
       setMessage(t.err_only_supported, "err");
@@ -961,7 +1001,6 @@
     await previewActive();
     updateQualityState();
 
-    // tip msg
     if(selFormat.value === "image/png"){
       setMessage(t.msg_png_q, "");
     } else if(selFormat.value === "application/pdf"){
@@ -975,12 +1014,11 @@
   // ✅ open picker (mobile hardening + same-file reselection)
   function openFilePicker(){
     try{
-      fileInput.value = ""; // IMPORTANT: allow selecting same file again
-      // Some devices need focus+click inside same gesture:
+      fileInput.value = ""; // allow selecting same file again
       fileInput.focus();
       fileInput.click();
     }catch(e){
-      // fallback: create temp input (rare)
+      // rare fallback
       const tmp = document.createElement("input");
       tmp.type = "file";
       tmp.accept = "image/*,application/pdf";
@@ -996,12 +1034,20 @@
     }
   }
 
+  // ✅ ②안: 긴 바 클릭 + 키보드 엔터/스페이스
+  pickArea.addEventListener("click", openFilePicker);
+  pickArea.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openFilePicker();
+    }
+  });
+
+  // 백업 버튼도 동일 동작
   pickTrigger.addEventListener("click", openFilePicker);
   pickBtn.addEventListener("click", openFilePicker);
 
-  fileInput.addEventListener("change", (e)=>{
-    handleFiles(e.target.files);
-  });
+  fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
 
   // Drag & drop
   ["dragenter","dragover"].forEach(evt => {
@@ -1113,7 +1159,6 @@
       const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
       const imgEmbed = await pdfDoc.embedPng(pngBytes);
 
-      // Pixel-as-point page
       const page = pdfDoc.addPage([w, h]);
       page.drawImage(imgEmbed, { x:0, y:0, width:w, height:h });
     }
@@ -1137,7 +1182,6 @@
         const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: false });
 
         if(normalizeA4){
-          // Embed each page onto new A4 pages (center + fit)
           const srcPages = srcDoc.getPages();
           for(let i=0;i<srcPages.length;i++){
             const embedded = await outDoc.embedPage(srcPages[i]);
@@ -1157,7 +1201,6 @@
           copied.forEach(p => outDoc.addPage(p));
         }
       }catch(e){
-        // likely encrypted/invalid
         throw new Error(t.err_pdf_locked);
       }
     }
@@ -1214,7 +1257,6 @@
 
       // ✅ Output PDF
       if(outMime === "application/pdf"){
-        // 1) If any PDFs exist -> merge real PDFs (PDF+PDF)
         if(pdfs.length >= 1){
           const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
           const name = buildName("merged_pdf", "pdf");
@@ -1224,7 +1266,6 @@
           return;
         }
 
-        // 2) else images -> single merged PDF
         if(images.length >= 1){
           const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
@@ -1261,7 +1302,7 @@
       btnConvert.disabled = false;
 
     }catch(e){
-      const errText = (e && e.message) ? e.message : t.err_convert;
+      const errText = (e && e.message) ? e.message : (STR[LANG]||STR.en).err_convert;
       setMessage(errText, "err");
       btnConvert.disabled = false;
     }
@@ -1274,7 +1315,6 @@
     files = [];
     activeIndex = 0;
 
-    // allow re-select same file
     fileInput.value = "";
 
     btnConvert.disabled = true;
