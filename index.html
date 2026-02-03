@@ -96,57 +96,46 @@
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
 
-    /* ✅ 업로드 큰 박스(최종): 전체 클릭 가능 + 아이콘 1개 */
     .drop{
       border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px;
-      padding:18px;
+      border-radius:14px; padding:18px;
+      display:flex; align-items:center; justify-content:center; text-align:center;
       background:rgba(255,255,255,.02);
       min-width:0;
-      cursor:pointer;
-      transition:background .15s, border-color .15s, transform .05s;
-      user-select:none;
-      outline:none;
     }
-    .drop:hover{
-      background:rgba(47,109,246,.08);
-      border-color:rgba(47,109,246,.38);
-    }
-    .drop:active{ transform: scale(0.995); }
-    .drop.drag{
-      background:rgba(106,169,255,.12);
-      border-color:rgba(106,169,255,.45);
-    }
-    .dropInner{
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
+
+    /* ✅ 업로드 박스: '내부 회색 큰 사각형' 제거 + 아이콘만 가운데 */
+    .pickArea{
       width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      text-align:center;
-      padding:12px 8px;
-    }
-    .dropTitle{
-      font-weight:900;
-      font-size:16px;
-      letter-spacing:-.2px;
-    }
-    .dropIcon{
-      width:100%;
-      height:110px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.01);
+      background:transparent;               /* ✅ 회색 박스 제거 */
+      border:none;                          /* ✅ 내부 박스 라인 제거 */
+      padding:20px 12px;                    /* ✅ 터치 영역은 유지 */
       display:flex;
       align-items:center;
       justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      transition:transform .05s;
+      min-height:120px;                     /* ✅ 가운데 아이콘 공간 확보 */
     }
-    .dropIcon span{
-      font-size:42px;
+    .pickArea:hover{
+      /* hover에서 배경/테두리 생기지 않게 */
+      background:transparent;
+      border:none;
+    }
+    .pickArea:active{
+      transform: scale(0.995);
+    }
+
+    /* ✅ 아이콘만 크게 (너무 크지 않게 적당히) */
+    .pickIcon{
+      font-size:44px;                       /* ✅ 기존 20px → 44px */
       line-height:1;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,.25));
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
+    .pickText{ display:none; }              /* ✅ 텍스트 제거 (아이콘만) */
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -156,6 +145,7 @@
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
     .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    .btn.inline{ width:auto; display:inline-flex; align-items:center; gap:8px; justify-content:center; }
 
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row > * { flex:1; min-width:160px; }
@@ -283,15 +273,25 @@
       <div class="card">
         <h2 id="h_upload"></h2>
 
-        <!-- ✅ 업로드 박스(최종): 전체 클릭 -->
-        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
-          <div class="dropInner">
-            <div class="dropTitle" id="drop_title"></div>
-            <div class="dropIcon" aria-hidden="true"><span>📁</span></div>
-            <div class="hint" id="drop_hint" style="margin-top:0;"></div>
-          </div>
+        <div class="drop" id="drop">
+          <div style="width:100%;">
+            <div style="font-weight:800; margin-bottom:10px;" id="drop_title"></div>
 
-          <input id="file" type="file" multiple accept="image/*,application/pdf" />
+            <!-- ✅ 내부 회색 박스 없이 아이콘만 -->
+            <div class="pickArea" id="pick_area" role="button" tabindex="0" aria-label="Choose files">
+              <span class="pickIcon" aria-hidden="true">📁</span>
+              <span class="pickText" id="pick_text">Choose files</span>
+            </div>
+
+            <!-- ✅ 백업 트리거(혹시 어떤 기기에서 pickArea가 막힐 때 대비) -->
+            <div class="row" style="justify-content:center; margin:12px 0 0; display:none;">
+              <button class="btn secondary inline" id="pick_trigger" type="button">📁</button>
+              <button class="btn secondary inline" id="pick_btn" type="button"></button>
+            </div>
+
+            <input id="file" type="file" multiple accept="image/*,application/pdf" />
+            <div class="hint" id="drop_hint"></div>
+          </div>
         </div>
 
         <div class="list" id="multiPanel">
@@ -394,6 +394,11 @@
   const $ = (id) => document.getElementById(id);
 
   const fileInput   = $("file");
+  const pickArea    = $("pick_area");
+  const pickText    = $("pick_text");
+  const pickTrigger = $("pick_trigger");
+  const pickBtn     = $("pick_btn");
+
   const drop        = $("drop");
   const thumb       = $("thumb");
   const meta        = $("meta");
@@ -424,7 +429,8 @@
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       h_upload: "1) Upload",
-      drop_title: "Drag & drop files here, or tap to choose",
+      drop_title: "Drag & drop files here, or",
+      pick_btn: "Choose files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       h_preview: "2) Preview",
       thumb_label: "Preview",
@@ -476,7 +482,8 @@
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       h_upload: "1) 업로드",
-      drop_title: "여기에 파일을 끌어놓거나, 탭해서 선택",
+      drop_title: "여기에 파일을 끌어놓거나",
+      pick_btn: "파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       h_preview: "2) 미리보기",
       thumb_label: "미리보기",
@@ -528,7 +535,8 @@
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       h_upload: "1) アップロード",
-      drop_title: "ここにファイルをドロップ、またはタップして選択",
+      drop_title: "ここにファイルをドロップ、または",
+      pick_btn: "ファイル選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       h_preview: "2) プレビュー",
       thumb_label: "プレビュー",
@@ -580,7 +588,8 @@
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       h_upload: "1) Subir",
-      drop_title: "Arrastra y suelta archivos aquí, o toca para elegir",
+      drop_title: "Arrastra y suelta archivos aquí, o",
+      pick_btn: "Elegir archivos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       h_preview: "2) Vista previa",
       thumb_label: "Vista previa",
@@ -762,6 +771,11 @@
     $("subtitle").innerHTML = t.subtitle;
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
+
+    // ✅ 텍스트는 숨김이지만, 접근성/다국어 유지용으로 값은 세팅
+    pickText.textContent = t.pick_btn;
+    if(pickBtn) pickBtn.textContent = t.pick_btn;
+
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
@@ -1027,17 +1041,18 @@
     }
   }
 
-  // ✅ 업로드 박스 전체 클릭 + 키보드 엔터/스페이스
-  drop.addEventListener("click", (e)=>{
-    // 내부에서 체크박스/버튼 눌렀을 때 파일 선택창이 뜨는 걸 방지하고 싶다면 여기서 더 분기 가능
-    openFilePicker();
-  });
-  drop.addEventListener("keydown", (e)=>{
+  // ✅ pick area click + keyboard enter/space
+  pickArea.addEventListener("click", openFilePicker);
+  pickArea.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
       e.preventDefault();
       openFilePicker();
     }
   });
+
+  // 백업 버튼(숨김 상태지만 혹시 표시로 돌릴 때 대비)
+  if(pickTrigger) pickTrigger.addEventListener("click", openFilePicker);
+  if(pickBtn) pickBtn.addEventListener("click", openFilePicker);
 
   fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
 
@@ -1239,7 +1254,7 @@
     const multi  = files.length >= 2;
 
     try{
-      // ✅ 여러 이미지 -> 이미지 출력인데 ZIP 미체크면 경고 후 중단
+      // ✅ A안: 여러 이미지 -> 이미지 출력인데 ZIP 미체크면 경고 후 중단
       if(multi && images.length >= 2 && outMime !== "application/pdf" && !zipModeEl.checked){
         alert(t.warn_zip);
         setMessage(t.warn_zip, "err");
