@@ -108,6 +108,16 @@
       user-select:none;
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
     }
+/* drop 높이 고정 (업로드 박스 안정화) */
+.drop{
+  min-height: 240px;
+}
+
+@media (max-width: 480px){
+  .drop{
+    min-height: 210px;
+  }
+}
     .drop:active{ transform: scale(0.998); }
 
     /* ✅ 드래그 오버 */
