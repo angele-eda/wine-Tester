@@ -455,7 +455,7 @@
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       h_upload: "1) Upload",
-      drop_title: "Drag & drop files here, or tap to choose",
+      drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       h_preview: "2) Preview",
       thumb_label: "Preview",
@@ -507,7 +507,7 @@
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       h_upload: "1) 업로드",
-      drop_title: "여기에 파일을 끌어놓거나, 탭해서 선택",
+      drop_title: "여기에 파일을 놓으세요\n또는 탭해서 파일을 선택하세요",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       h_preview: "2) 미리보기",
       thumb_label: "미리보기",
@@ -559,7 +559,7 @@
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       h_upload: "1) アップロード",
-      drop_title: "ここにファイルをドラッグ＆ドロップ、またはタップして選択",
+      drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       h_preview: "2) プレビュー",
       thumb_label: "プレビュー",
@@ -611,7 +611,7 @@
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       h_upload: "1) Subir",
-      drop_title: "Arrastra y suelta aquí, o toca para elegir",
+      drop_title: "Suelta archivos aquí\no toca para seleccionar",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       h_preview: "2) Vista previa",
       thumb_label: "Vista previa",
@@ -792,7 +792,10 @@
 
     $("subtitle").innerHTML = t.subtitle;
     $("h_upload").textContent = t.h_upload;
-    $("drop_title").textContent = t.drop_title;
+
+    // ✅ allow line breaks in drop_title (\n -> <br>)
+    $("drop_title").innerHTML = String(t.drop_title || "").replace(/\n/g, "<br>");
+
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
