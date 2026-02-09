@@ -9,67 +9,21 @@
   <meta name="description" content="Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
+
   <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
- <!-- Favicon -->
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-  <style>
-  .site-title {
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.2px;
-    font-size: 28px;
-  }
-
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-
-  /* PC에서만 조금 더 크게 */
-  @media (min-width: 1024px) {
-    .site-title {
-      font-size: 32px;
-    }
-  }
-  /* =========================
-   Site Title (ConvertFiles24)
-   ========================= */
-.site-title {
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
-  line-height: 1.2;
-  color: #ffffff;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-@media (max-width: 768px) {
-  .site-title {
-    font-size: 18px;
-    letter-spacing: -0.2px;
-  }
-}
-  
-</style>
-
-
-<!-- Android / PWA -->
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0b0f17">
+  <!-- Android / PWA -->
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0b0f17">
 
   <!-- ✅ Canonical -->
   <link rel="canonical" href="https://convertfiles24.com/" />
@@ -114,19 +68,45 @@
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     *{ box-sizing:border-box; }
+
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
       background:#0b0f17;
       color:#e9eef7;
       overflow-x:hidden;
+
+      /* ✅ 글씨 선명도(PC/모바일 공통) */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
+
     .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
     .top{
       display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
       flex-wrap:wrap; margin-bottom:14px;
     }
-    h1{ margin:0; font-size:20px; letter-spacing:-.2px; }
+
+    /* ✅ Site Title (ConvertFiles24) */
+    .site-title{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      font-weight:800;
+      letter-spacing:-0.35px;
+      line-height:1.15;
+      color:#ffffff;
+      font-size:24px;
+    }
+    /* PC에서만 조금 더 크게 */
+    @media (min-width: 1024px){
+      .site-title{ font-size:32px; }
+    }
+    /* 모바일 */
+    @media (max-width: 768px){
+      .site-title{ font-size:20px; letter-spacing:-0.25px; }
+    }
+
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
     /* ✅ language bar fix */
@@ -214,6 +194,11 @@
       background:#2f6df6; color:white; font-weight:800;
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
+
+      /* ✅ 버튼 글씨 번짐 방지 */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      letter-spacing: -0.2px;
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
     .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
@@ -241,6 +226,12 @@
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
     }
+    /* ✅ PC에서 preview 더 크게 */
+    @media (min-width: 1024px){
+      .preview{ grid-template-columns: 180px 1fr; }
+      .thumb{ width:180px; height:180px; }
+    }
+
     .thumb img{ width:100%; height:100%; object-fit:cover; }
     .meta{
       color:#b7c3d9; font-size:13px; line-height:1.5;
@@ -314,6 +305,10 @@
       font-weight:900;
       line-height:1;
       min-width:42px;
+
+      /* 버튼류 선명도 */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
@@ -346,8 +341,8 @@
   <div class="wrap">
     <div class="top">
       <div>
-       <h1 class="site-title">ConvertFiles24</h1>
-   <p class="sub" id="subtitle"></p>
+        <h1 class="site-title">ConvertFiles24</h1>
+        <p class="sub" id="subtitle"></p>
       </div>
 
       <div class="langbar" aria-label="Language selector">
@@ -631,7 +626,7 @@
       h_download: "4) ダウンロード",
       convert: "変換 / 結合",
       reset: "リセット",
-      privacy_hint: "🔒 プライバシー: サーバー送信なし、ブラウザ内で処理されます。",
+      privacy_hint: "🔒 プライバシー: サーバー送信なし、ブラ라우저内で処理されます。",
       pdfzip_title: "PDF と ZIP",
       pdfzip_desc: "• PDF: 複数ページを1つのPDFに結合  • ZIP: 複数ファイルを1つのzipでダウンロード",
       zip_label: "ZIPで受け取る",
@@ -1336,7 +1331,6 @@
 
     const images = files.filter(x => isImage(x.file));
     const pdfs   = files.filter(x => isPDF(x.file));
-    const multi  = files.length >= 2;
 
     try{
       if(outMime === "application/pdf"){
