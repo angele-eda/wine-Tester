@@ -10,10 +10,10 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- Fonts -->
+  <!-- Fonts (Inter + Noto Sans KR) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -71,7 +71,7 @@
 
     body{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
       background:#0b0f17;
       color:#e9eef7;
       overflow-x:hidden;
@@ -79,7 +79,16 @@
       /* ✅ 글씨 선명도(PC/모바일 공통) */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
+      text-rendering: geometricPrecision;
+      font-kerning: normal;
+      font-optical-sizing: auto;
+    }
+
+    /* ✅ 폼/버튼 폰트 상속 고정(삼성인터넷/모바일 깨짐 방지) */
+    button, input, select, textarea{
+      font-family: inherit;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
 
     .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
@@ -91,7 +100,7 @@
     /* ✅ Site Title (ConvertFiles24) */
     .site-title{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
       font-weight:800;
       letter-spacing:-0.35px;
       line-height:1.15;
@@ -520,17 +529,17 @@
       ph_h: "e.g., 800",
       size_hint: "If you enter only one side, aspect ratio is preserved automatically.",
       h_download: "4) Download",
-      convert: "Convert / Merge",
+      convert: "Convert & Download",
       reset: "Reset",
       privacy_hint: "🔒 Privacy: Files are processed locally in your browser (no server upload).",
       pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: Merge multiple pages into ONE PDF.  • ZIP: Download multiple converted files as ONE .zip",
+      pdfzip_desc: "• PDF: Merge multiple pages into ONE PDF. • ZIP: Download multiple converted files as ONE .zip",
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
       multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
       warn_zip: "Multiple files detected. For multiple image outputs, please enable ZIP download.",
       msg_loading: "Loading…",
-      msg_ready: "Ready! Click Convert / Merge.",
+      msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
       msg_pdf_one: "Image→PDF will be saved. (Multiple images become one merged PDF.)",
       msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
