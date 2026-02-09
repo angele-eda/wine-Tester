@@ -21,6 +21,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
   <style>
   .site-title {
     font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -41,6 +42,28 @@
       font-size: 32px;
     }
   }
+  /* =========================
+   Site Title (ConvertFiles24)
+   ========================= */
+.site-title {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  color: #ffffff;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (max-width: 768px) {
+  .site-title {
+    font-size: 18px;
+    letter-spacing: -0.2px;
+  }
+}
+  
 </style>
 
 
@@ -323,8 +346,8 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1>ConvertFiles24</h1>
-        <p class="sub" id="subtitle"></p>
+       <h1 class="site-title">ConvertFiles24</h1>
+   <p class="sub" id="subtitle"></p>
       </div>
 
       <div class="langbar" aria-label="Language selector">
