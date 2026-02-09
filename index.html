@@ -65,6 +65,9 @@
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
+  <!-- ✅ FFmpeg.wasm (Video/Audio → WAV) -->
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/ffmpeg.min.js"></script>
+
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     *{ box-sizing:border-box; }
@@ -107,11 +110,9 @@
       color:#ffffff;
       font-size:24px;
     }
-    /* PC에서만 조금 더 크게 */
     @media (min-width: 1024px){
       .site-title{ font-size:32px; }
     }
-    /* 모바일 */
     @media (max-width: 768px){
       .site-title{ font-size:20px; letter-spacing:-0.25px; }
     }
@@ -162,35 +163,27 @@
       background:rgba(255,255,255,.02);
       min-width:0;
 
-      /* ✅ 전체 박스 클릭 UX */
       cursor:pointer;
       user-select:none;
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
       position: relative;
     }
 
-    /* ✅ Drop title line-break support */
     #drop_title{ white-space: pre-line; }
 
-    /* drop 높이 고정 (업로드 박스 안정화) */
     .drop{ min-height: 240px; }
     @media (max-width: 480px){
       .drop{ min-height: 210px; }
     }
 
     .drop:active{ transform: scale(0.998); }
-
-    /* ✅ 드래그 오버 */
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
-
-    /* ✅ 파일 선택 후 활성화 */
     .drop.active{
       border-color: rgba(47,109,246,.55);
       background: rgba(47,109,246,.08);
       box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
     }
 
-    /* ✅ 업로드 박스 내부: 아이콘 */
     .dropEmoji{
       font-size:42px;
       line-height:1;
@@ -204,7 +197,6 @@
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
 
-      /* ✅ 버튼 글씨 번짐 방지 */
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       letter-spacing: -0.2px;
@@ -235,7 +227,6 @@
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
     }
-    /* ✅ PC에서 preview 더 크게 */
     @media (min-width: 1024px){
       .preview{ grid-template-columns: 180px 1fr; }
       .thumb{ width:180px; height:180px; }
@@ -256,7 +247,6 @@
     select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
     option { background-color: #0b0f17; color:#e9eef7; }
 
-    /* ✅ multi list panel */
     .list{
       margin-top:12px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -315,21 +305,16 @@
       line-height:1;
       min-width:42px;
 
-      /* 버튼류 선명도 */
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
 
-    /* footer links */
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    /* ================================
-       Samsung Internet upload box fix
-       - Only applies when JS sets html[data-samsung="true"]
-       ================================ */
+    /* Samsung Internet upload box fix */
     html[data-samsung="true"] .drop{
       border: none !important;
       outline: none !important;
@@ -371,7 +356,8 @@
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
             <div class="dropEmoji" aria-hidden="true">📁</div>
-            <input id="file" type="file" multiple accept="image/*,application/pdf" />
+            <!-- ✅ accept expanded for video/audio -->
+            <input id="file" type="file" multiple accept="image/*,application/pdf,video/*,audio/*" />
             <div class="hint" id="drop_hint"></div>
           </div>
         </div>
@@ -418,6 +404,7 @@
               <option value="image/png">PNG</option>
               <option value="image/webp">WebP</option>
               <option value="application/pdf">PDF</option>
+              <option value="audio/wav">WAV (Audio)</option>
             </select>
           </div>
           <div>
@@ -509,10 +496,10 @@
       seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser.",
       ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
-      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
+      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b>, merge <b>PDF + PDF</b>, or extract <b>Video → WAV</b>. (No server upload)',
       h_upload: "1) Upload",
       drop_title: "Drop files here\nor tap to select files",
-      drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
+      drop_hint: "Supports: Images, PDF, Video/Audio • Multiple selection supported",
       h_preview: "2) Preview",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
@@ -543,17 +530,23 @@
       msg_png_q: "PNG is lossless; quality setting does not apply.",
       msg_pdf_one: "Image→PDF will be saved. (Multiple images become one merged PDF.)",
       msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
-      err_only_supported: "Only images and PDFs are supported.",
+      msg_wav_hint: "Video/Audio → WAV will be extracted locally. Large files may be slow on mobile.",
+      err_only_supported: "Only images, PDFs, videos, and audio files are supported.",
       err_preview: "Failed to preview.",
       err_convert: "Conversion failed. Try different files/options.",
       err_pdf_lib: "PDF library is not ready. Please refresh and try again.",
       err_pdf_locked: "This PDF may be password-protected or corrupted. Please unlock it and try again.",
       err_heic: "HEIC/HEIF may not work on some browsers. Please save as JPG/PNG and try again.",
+      err_ffmpeg: "Audio extraction engine is not ready. Please refresh and try again.",
+      err_wav_need_media: "To export WAV, please upload a video/audio file.",
+      err_wav_multi: "WAV export supports one file at a time. Please keep only one video/audio file selected.",
       dl_start: (name, size) => `Download started: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Name: <b>${name}</b><br/>Type: <b>application/pdf</b><br/>Size: <b>${size}</b>`,
+      meta_media: (name, type, size) =>
+        `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b>`,
       multi_count: (n) => `Selected: ${n} file(s)`
     },
     ko: {
@@ -595,17 +588,23 @@
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
       msg_pdf_one: "이미지→PDF는 저장됩니다. (여러 이미지는 1개 PDF로 합쳐집니다.)",
       msg_pdf_merge: "PDF+PDF 병합은 1개의 합쳐진 PDF로 저장됩니다.",
-      err_only_supported: "이미지와 PDF만 지원합니다.",
+      msg_wav_hint: "영상/오디오 → WAV 추출은 브라우저에서 로컬 처리됩니다. 파일이 크면 모바일에서 느릴 수 있어요.",
+      err_only_supported: "이미지, PDF, 영상, 오디오만 지원합니다.",
       err_preview: "미리보기에 실패했어요.",
       err_convert: "변환 실패. 다른 파일/옵션으로 다시 시도해 주세요.",
       err_pdf_lib: "PDF 라이브러리가 준비되지 않았어요. 새로고침 후 다시 시도해 주세요.",
       err_pdf_locked: "PDF가 암호로 잠겼거나 손상된 것 같아요. 잠금 해제 후 다시 시도해 주세요.",
       err_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. JPG/PNG로 저장 후 다시 시도해 주세요.",
+      err_ffmpeg: "오디오 추출 엔진이 준비되지 않았어요. 새로고침 후 다시 시도해 주세요.",
+      err_wav_need_media: "WAV로 저장하려면 영상/오디오 파일을 업로드해 주세요.",
+      err_wav_multi: "WAV 추출은 한 번에 1개 파일만 지원해요. 영상/오디오 파일을 1개만 남겨 주세요.",
       dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `파일명: <b>${name}</b><br/>형식: <b>application/pdf</b><br/>크기: <b>${size}</b>`,
+      meta_media: (name, type, size) =>
+        `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b>`,
       multi_count: (n) => `선택됨: ${n}개`
     },
     ja: {
@@ -616,7 +615,7 @@
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
-      drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
+      drop_hint: "対応: 画像, PDF, 動画/音声 • 複数選択OK",
       h_preview: "2) プレビュー",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
@@ -647,17 +646,23 @@
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
       msg_pdf_one: "画像→PDFは保存されます。（複数画像は1つのPDFに結合）",
       msg_pdf_merge: "PDF+PDF結合は1つの結合PDFとして保存されます。",
-      err_only_supported: "画像とPDFのみ対応です。",
+      msg_wav_hint: "動画/音声 → WAV 抽出はローカル処理です。大きいファイルはモバイルで遅くなる場合があります。",
+      err_only_supported: "画像・PDF・動画・音声のみ対応です。",
       err_preview: "プレビューに失敗しました。",
       err_convert: "変換に失敗しました。別のファイル/設定でお試しください。",
       err_pdf_lib: "PDFライブラリが準備できていません。更新して再試行してください。",
       err_pdf_locked: "PDFがパスワード保護または破損している可能性があります。解除して再試行してください。",
       err_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGで保存してお試しください。",
+      err_ffmpeg: "音声抽出エンジンが準備できていません。更新して再試行してください。",
+      err_wav_need_media: "WAVで保存するには動画/音声ファイルをアップロードしてください。",
+      err_wav_multi: "WAV抽出は一度に1ファイルのみ対応です。1つだけ残してください。",
       dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `ファイル名: <b>${name}</b><br/>形式: <b>application/pdf</b><br/>サイズ: <b>${size}</b>`,
+      meta_media: (name, type, size) =>
+        `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b>`,
       multi_count: (n) => `選択: ${n}件`
     },
     es: {
@@ -665,10 +670,10 @@
       seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs al instante — todo se procesa localmente en tu navegador.",
       ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
-      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
+      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b>, une <b>PDF+PDF</b> o extrae <b>Video → WAV</b>. (Sin subir archivos)',
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
-      drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
+      drop_hint: "Soporta: Imágenes, PDF, Video/Audio • Selección múltiple",
       h_preview: "2) Vista previa",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
@@ -699,17 +704,23 @@
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
       msg_pdf_one: "Imagen→PDF se guardará. (Varias imágenes se combinan en un solo PDF.)",
       msg_pdf_merge: "Unir PDF+PDF generará un solo PDF combinado.",
-      err_only_supported: "Solo se admiten imágenes y PDFs.",
+      msg_wav_hint: "Video/Audio → WAV se extrae localmente. Archivos grandes pueden ser lentos en móvil.",
+      err_only_supported: "Solo se admiten imágenes, PDFs, video y audio.",
       err_preview: "Falló la vista previa.",
       err_convert: "Falló la conversión. Prueba con otros archivos/opciones.",
       err_pdf_lib: "La librería PDF no está lista. Actualiza y reintenta.",
       err_pdf_locked: "Este PDF puede estar protegido con contraseña o dañado. Desbloquéalo y reintenta.",
       err_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
+      err_ffmpeg: "El motor de audio no está listo. Actualiza y reintenta.",
+      err_wav_need_media: "Para exportar WAV, sube un archivo de video/audio.",
+      err_wav_multi: "WAV admite 1 archivo a la vez. Deja solo un video/audio seleccionado.",
       dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b><br/>Resolución: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Nombre: <b>${name}</b><br/>Tipo: <b>application/pdf</b><br/>Tamaño: <b>${size}</b>`,
+      meta_media: (name, type, size) =>
+        `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b>`,
       multi_count: (n) => `Seleccionados: ${n}`
     }
   };
@@ -785,11 +796,26 @@
     return extLower(file.name) === "pdf";
   }
 
+  function isVideo(file){
+    const t = (file.type || "").toLowerCase();
+    if(t.startsWith("video/")) return true;
+    const ext = extLower(file.name);
+    return ["mp4","mov","m4v","avi","mkv","webm","mpg","mpeg"].includes(ext);
+  }
+
+  function isAudio(file){
+    const t = (file.type || "").toLowerCase();
+    if(t.startsWith("audio/")) return true;
+    const ext = extLower(file.name);
+    return ["mp3","m4a","aac","wav","ogg","flac","opus"].includes(ext);
+  }
+
   function mimeToExt(mime){
     if(mime === "image/jpeg") return "jpg";
     if(mime === "image/png") return "png";
     if(mime === "image/webp") return "webp";
     if(mime === "application/pdf") return "pdf";
+    if(mime === "audio/wav") return "wav";
     return "bin";
   }
 
@@ -814,6 +840,66 @@
     document.querySelectorAll(".langbtn").forEach(b=>{
       b.classList.toggle("active", b.dataset.lang === lang);
     });
+  }
+
+  // =========================
+  // FFmpeg (WAV export)
+  // =========================
+  let ffmpegInstance = null;
+
+  async function ensureFFmpeg(){
+    const t = STR[LANG] || STR.en;
+
+    if(!window.FFmpeg || !window.FFmpeg.createFFmpeg) {
+      throw new Error(t.err_ffmpeg);
+    }
+
+    if(ffmpegInstance && ffmpegInstance.isLoaded()) return ffmpegInstance;
+
+    const { createFFmpeg } = window.FFmpeg;
+
+    // corePath is required for GitHub Pages/cross-origin
+    ffmpegInstance = createFFmpeg({
+      log: false,
+      corePath: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js"
+    });
+
+    setMessage(t.msg_loading, "");
+    await ffmpegInstance.load();
+    return ffmpegInstance;
+  }
+
+  async function mediaToWav(file){
+    const t = STR[LANG] || STR.en;
+    const ffmpeg = await ensureFFmpeg();
+
+    const { fetchFile } = window.FFmpeg;
+
+    // cleanup names
+    const inName  = "input_" + Date.now() + "." + extLower(file.name || "media");
+    const outName = "output_" + Date.now() + ".wav";
+
+    // write input
+    ffmpeg.FS("writeFile", inName, await fetchFile(file));
+
+    // run: extract audio to wav (PCM 16-bit, 44.1k, stereo)
+    // -vn: no video
+    await ffmpeg.run(
+      "-i", inName,
+      "-vn",
+      "-acodec", "pcm_s16le",
+      "-ar", "44100",
+      "-ac", "2",
+      outName
+    );
+
+    const data = ffmpeg.FS("readFile", outName);
+
+    // cleanup FS
+    try{ ffmpeg.FS("unlink", inName); }catch(e){}
+    try{ ffmpeg.FS("unlink", outName); }catch(e){}
+
+    return new Blob([data.buffer], { type: "audio/wav" });
   }
 
   // =========================
@@ -848,7 +934,7 @@
 
     $("subtitle").innerHTML = t.subtitle;
     $("h_upload").textContent = t.h_upload;
-    $("drop_title").textContent = t.drop_title; // ✅ supports \n line breaks
+    $("drop_title").textContent = t.drop_title;
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
@@ -893,7 +979,7 @@
     localStorage.setItem("cf24_lang", lang);
     setActiveLangButtons(lang);
     renderTexts();
-    updateQualityState();
+    updateModeState();
     renderFileList();
   }
 
@@ -905,6 +991,7 @@
   // UI: file list
   // =========================
   function renderFileList(){
+    // WAV mode: still allow list (but convert will enforce 1 media file)
     if(files.length <= 1){
       multiPanel.style.display = "none";
     } else {
@@ -982,6 +1069,7 @@
       return;
     }
     previewActive();
+    updateModeState();
   }
 
   // =========================
@@ -1050,6 +1138,13 @@
       return;
     }
 
+    if(isVideo(f) || isAudio(f)){
+      thumb.innerHTML = `<div style="font-weight:900; font-size:18px; color:#cfe0ff;">MEDIA</div>`;
+      meta.innerHTML = t.meta_media(escapeHtml(f.name), escapeHtml((f.type || "media/*")), humanSize(f.size));
+      setMessage(t.msg_ready, "ok");
+      return;
+    }
+
     meta.textContent = t.err_only_supported;
     setMessage(t.err_only_supported, "err");
     btnConvert.disabled = true;
@@ -1064,7 +1159,7 @@
 
     const arr = Array.from(selected);
 
-    const ok = arr.filter(f => isImage(f) || isPDF(f));
+    const ok = arr.filter(f => isImage(f) || isPDF(f) || isVideo(f) || isAudio(f));
     if(ok.length === 0){
       setMessage(t.err_only_supported, "err");
       return;
@@ -1073,7 +1168,6 @@
     files = ok.map((file, i)=>({ file, id: `${Date.now()}_${i}` }));
     activeIndex = 0;
 
-    // ✅ 업로드 박스 활성화
     drop.classList.add("active");
 
     btnReset.disabled = false;
@@ -1082,12 +1176,12 @@
     renderFileList();
     renderTexts();
     await previewActive();
-    updateQualityState();
+    updateModeState();
 
-    // ✅ Auto ZIP: 2+ images + output is not PDF => turn on ZIP automatically
+    // Auto ZIP: only when images 2+ and output not PDF/WAV
     const outMime = selFormat.value;
     const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && outMime !== "application/pdf"){
+    if(imagesCount >= 2 && outMime !== "application/pdf" && outMime !== "audio/wav"){
       zipModeEl.checked = true;
     } else {
       zipModeEl.checked = false;
@@ -1098,21 +1192,22 @@
     } else if(selFormat.value === "application/pdf"){
       if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
       else setMessage(t.msg_pdf_one, "");
+    } else if(selFormat.value === "audio/wav"){
+      setMessage(t.msg_wav_hint, "");
     } else {
       setMessage(t.msg_ready, "ok");
     }
   }
 
-  // ✅ open picker (mobile hardening + same-file reselection)
   function openFilePicker(){
     try{
-      fileInput.value = ""; // allow selecting same file again
+      fileInput.value = "";
       fileInput.focus();
       fileInput.click();
     }catch(e){
       const tmp = document.createElement("input");
       tmp.type = "file";
-      tmp.accept = "image/*,application/pdf";
+      tmp.accept = "image/*,application/pdf,video/*,audio/*";
       tmp.multiple = true;
       tmp.style.position = "fixed";
       tmp.style.left = "-9999px";
@@ -1125,7 +1220,6 @@
     }
   }
 
-  // ✅ 업로드 박스 전체 클릭 + 키보드
   drop.addEventListener("click", openFilePicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
@@ -1136,7 +1230,6 @@
 
   fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
 
-  // Drag & drop
   ["dragenter","dragover"].forEach(evt => {
     drop.addEventListener(evt, (e) => {
       e.preventDefault(); e.stopPropagation();
@@ -1157,22 +1250,40 @@
   // =========================
   // Settings / mode logic
   // =========================
-  function updateQualityState(){
+  function updateModeState(){
     const mime = selFormat.value;
-    const disableQuality = (mime === "image/png" || mime === "application/pdf");
+
+    const isWav = (mime === "audio/wav");
+    const disableQuality = (mime === "image/png" || mime === "application/pdf" || isWav);
     selQuality.disabled = disableQuality;
     selQuality.style.opacity = disableQuality ? ".6" : "1";
+
+    // width/height only for image exports
+    const disableSize = (mime === "application/pdf" || isWav);
+    inW.disabled = disableSize;
+    inH.disabled = disableSize;
+    inW.style.opacity = disableSize ? ".6" : "1";
+    inH.style.opacity = disableSize ? ".6" : "1";
+
+    // ZIP/A4 not relevant for WAV
+    if(isWav){
+      zipModeEl.checked = false;
+      a4ModeEl.checked = false;
+      zipModeEl.disabled = true;
+      a4ModeEl.disabled = true;
+    }else{
+      zipModeEl.disabled = false;
+      a4ModeEl.disabled = false;
+    }
   }
 
   selFormat.addEventListener("change", ()=>{
-    updateQualityState();
+    updateModeState();
     const t = STR[LANG] || STR.en;
-
     const mime = selFormat.value;
 
-    // ✅ Auto ZIP sync when output format changes
     const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && mime !== "application/pdf"){
+    if(imagesCount >= 2 && mime !== "application/pdf" && mime !== "audio/wav"){
       zipModeEl.checked = true;
     } else {
       zipModeEl.checked = false;
@@ -1183,6 +1294,8 @@
     } else if(mime === "application/pdf"){
       if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
       else setMessage(t.msg_pdf_one, "");
+    } else if(mime === "audio/wav"){
+      setMessage(t.msg_wav_hint, "");
     } else if(files.length){
       setMessage(t.msg_ready, "ok");
     } else {
@@ -1191,7 +1304,7 @@
   });
 
   // =========================
-  // Converters
+  // Converters (existing)
   // =========================
   function getTargetSize(origW, origH){
     const w = parseInt(inW.value, 10);
@@ -1340,8 +1453,26 @@
 
     const images = files.filter(x => isImage(x.file));
     const pdfs   = files.filter(x => isPDF(x.file));
+    const media  = files.filter(x => isVideo(x.file) || isAudio(x.file));
 
     try{
+      // ✅ WAV export (video/audio → wav)
+      if(outMime === "audio/wav"){
+        if(media.length === 0) throw new Error(t.err_wav_need_media);
+        if(media.length >= 2) throw new Error(t.err_wav_multi);
+
+        const src = media[0].file;
+        setMessage(t.msg_wav_hint, "");
+
+        const wavBlob = await mediaToWav(src);
+        const name = buildName((src.name || "audio").replace(/\.[^.]+$/, "") + "_to_wav", "wav");
+        downloadBlob(wavBlob, name);
+        setMessage(t.dl_start(name, humanSize(wavBlob.size)), "ok");
+        btnConvert.disabled = false;
+        return;
+      }
+
+      // ✅ PDF output
       if(outMime === "application/pdf"){
         if(pdfs.length >= 1){
           const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
@@ -1364,6 +1495,7 @@
         throw new Error(t.err_only_supported);
       }
 
+      // ✅ image output
       if(images.length === 0){
         throw new Error(t.err_only_supported);
       }
@@ -1399,8 +1531,6 @@
     activeIndex = 0;
 
     fileInput.value = "";
-
-    // ✅ 업로드 박스 활성화 해제
     drop.classList.remove("active");
 
     btnConvert.disabled = true;
@@ -1416,6 +1546,7 @@
 
     renderTexts();
     renderFileList();
+    updateModeState();
   }
 
   btnConvert.addEventListener("click", onConvert);
