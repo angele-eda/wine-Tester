@@ -1,1 +1,881 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <title>ConvertFiles24 – 증명사진 / 여권사진 (서버 업로드 없음)</title>
+  <meta name="description" content="증명사진·여권사진을 브라우저에서 바로 만들고 다운로드하세요. 파일은 서버로 업로드되지 않고 로컬에서 처리됩니다." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f17" />
+  <link rel="canonical" href="https://convertfiles24.com/id/" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --card:rgba(255,255,255,.03);
+      --border:1px solid rgba(255,255,255,.12);
+      --radius:16px;
+      --pad:16px;
+      --text:#e9eef7;
+      --muted:#a7b3c7;
+      --blue:#2f6df6;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+      font-kerning: normal;
+      font-optical-sizing: auto;
+    }
+    button, input, select, textarea{
+      font-family: inherit;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+
+    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      flex-wrap:wrap; margin-bottom:14px;
+    }
+    .site-title{
+      margin:0;
+      font-weight:800;
+      letter-spacing:-0.35px;
+      line-height:1.15;
+      color:#ffffff;
+      font-size:24px;
+    }
+    @media (min-width:1024px){ .site-title{ font-size:32px; } }
+    @media (max-width:768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
+
+    .sub{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.45; }
+    .nav{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pill{
+      font-size:12px; color:#b8c6dc; border:var(--border);
+      padding:8px 10px; border-radius:999px;
+      background:rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+
+    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:12px; }
+    @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{
+      border:var(--border);
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      min-width:0;
+    }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
+
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      display:flex; align-items:center; justify-content:center; text-align:center;
+      background:rgba(255,255,255,.02);
+      min-height:210px;
+      cursor:pointer; user-select:none;
+      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
+      position: relative;
+    }
+    .drop:active{ transform: scale(0.998); }
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
+    .drop.active{
+      border-color: rgba(47,109,246,.55);
+      background: rgba(47,109,246,.08);
+      box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
+    }
+    .dropEmoji{
+      font-size:42px; line-height:1; margin:12px 0 8px;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
+    }
+    input[type="file"]{ display:none; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+    .row > *{ flex:1; min-width:160px; }
+    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+
+    select, input[type="number"]{
+      width:100%; padding:12px 12px; border-radius:14px;
+      background:rgba(255,255,255,.06);
+      color:var(--text); border:var(--border);
+      outline:none;
+    }
+    select{ background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
+    option{ background-color: #0b0f17; color:#e9eef7; }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:var(--blue); color:white; font-weight:800;
+      padding:12px 14px; border-radius:14px; width:100%;
+      font-size:15px;
+      letter-spacing:-0.2px;
+    }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    .btn.inline{ width:auto; display:inline-flex; align-items:center; gap:8px; justify-content:center; }
+
+    .seg{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .seg button{
+      border:var(--border);
+      background:rgba(255,255,255,.04);
+      color:#cfe0ff;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .seg button.active{
+      background:rgba(47,109,246,.22);
+      border-color:rgba(47,109,246,.55);
+      color:#e9eef7;
+    }
+
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .err{ color:#ffb4b4; }
+    .ok{ color:#b8ffcc; }
+
+    .editorWrap{
+      border:var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,.02);
+      position:relative;
+      min-height:280px;
+    }
+
+    /* Canvas stays sharp on high DPI */
+    canvas{ display:block; width:100%; height:auto; background:#0a0e16; }
+
+    .overlayHint{
+      position:absolute; inset:0;
+      pointer-events:none;
+    }
+
+    .controls{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .sliderRow{
+      display:flex; gap:10px; align-items:center;
+      border:var(--border);
+      background:rgba(255,255,255,.04);
+      padding:10px 12px;
+      border-radius:14px;
+    }
+    .sliderRow b{ font-size:12px; color:#dbe7ff; width:64px; }
+    input[type="range"]{ width:100%; }
+
+    .footer{
+      margin-top:14px; color:#94a6c2; font-size:12px; text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1 class="site-title">ConvertFiles24 · 증명사진 / 여권사진</h1>
+        <p class="sub">
+          업로드 → 위치/확대 조절 → 다운로드. <b>서버 업로드 없이</b> 브라우저에서 로컬 처리됩니다.
+          <span style="opacity:.85">·</span>
+          <a href="/">이미지/PDF 변환으로 돌아가기</a>
+        </p>
+      </div>
+      <div class="nav">
+        <span class="pill">🔒 Local processing</span>
+        <span class="pill" id="presetLabel">Preset: 증명사진(3×4)</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left: Upload + Editor -->
+      <div class="card">
+        <h2>1) 사진 업로드</h2>
+
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose photo">
+          <div style="width:100%;">
+            <div style="font-weight:800; margin-bottom:6px;" id="dropTitle">여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택</div>
+            <div class="dropEmoji" aria-hidden="true">🪪</div>
+            <input id="file" type="file" accept="image/*" />
+            <div class="hint">지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)</div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <h2>2) 미리보기 / 크롭</h2>
+        <div class="editorWrap" id="editorWrap">
+          <canvas id="canvas" aria-label="Crop editor"></canvas>
+          <div class="overlayHint" id="overlayHint"></div>
+        </div>
+
+        <div class="controls">
+          <div class="seg" aria-label="Presets">
+            <button type="button" class="presetBtn active" data-preset="kr_id">증명사진 (3×4)</button>
+            <button type="button" class="presetBtn" data-preset="kr_passport">여권 (3.5×4.5)</button>
+            <button type="button" class="presetBtn" data-preset="us_2x2">US 2×2</button>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>출력 형식</label>
+              <select id="outFormat">
+                <option value="image/jpeg">JPG</option>
+                <option value="image/png">PNG</option>
+              </select>
+            </div>
+            <div>
+              <label>배경색 (JPG에서 투명 대신 채움)</label>
+              <select id="bgFill">
+                <option value="#ffffff">흰색</option>
+                <option value="#e9eef7">연한 회백</option>
+                <option value="#cfe0ff">연한 하늘</option>
+                <option value="#0b0f17">어두운(테스트용)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>출력 가로(px)</label>
+              <input id="outW" type="number" min="64" step="1" />
+            </div>
+            <div>
+              <label>출력 세로(px)</label>
+              <input id="outH" type="number" min="64" step="1" />
+            </div>
+          </div>
+
+          <div class="sliderRow">
+            <b>확대</b>
+            <input id="zoom" type="range" min="0.2" max="4" step="0.01" value="1" />
+          </div>
+
+          <div class="sliderRow">
+            <b>가이드</b>
+            <div style="display:flex; gap:10px; align-items:center; width:100%; flex-wrap:wrap;">
+              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="showGuide" checked />
+                얼굴 가이드 표시
+              </label>
+              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="snapCenter" checked />
+                자동 중앙(권장)
+              </label>
+            </div>
+          </div>
+
+          <div class="row">
+            <button class="btn" id="download" disabled>다운로드</button>
+            <button class="btn secondary" id="reset" disabled>초기화</button>
+          </div>
+
+          <div class="msg" id="msg"></div>
+          <div class="hint">
+            ✅ 사용법: 사진 업로드 후, <b>사진을 드래그</b>해서 위치를 옮기고 <b>확대 슬라이더</b>로 크기를 맞추세요.<br/>
+            * 모바일에서 두 손가락 확대/축소 대신, 슬라이더 방식이라 안정적입니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="card">
+        <h2>설명</h2>
+        <div class="hint" style="margin-top:0">
+          <b>증명사진/여권사진은 “비율(가로:세로)”이 핵심</b>이라서,
+          우선 비율을 고정하고 출력 픽셀만 정해주면 깔끔하게 나옵니다.
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="hint">
+          <b>기본 프리셋(권장 출력 크기)</b><br/>
+          • 증명사진(3×4): 354×472px (가볍고 선명)<br/>
+          • 여권(3.5×4.5): 413×531px<br/>
+          • US 2×2: 600×600px
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="hint">
+          <b>팁</b><br/>
+          • JPG로 받으면 배경색이 깔끔하게 채워져요.<br/>
+          • PNG는 투명 배경이 가능하지만, 증명사진은 보통 흰 배경이 많아서 JPG를 권장해요.<br/>
+          • “자동 중앙”을 켜면, 드래그를 많이 안 해도 중앙 맞추기 쉬워요.
+        </div>
+
+        <div style="height:14px;"></div>
+
+        <div class="footer">
+          © <span id="year"></span> ConvertFiles24 ·
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  const yearEl = $("year");
+  yearEl.textContent = new Date().getFullYear();
+
+  const drop = $("drop");
+  const fileInput = $("file");
+  const canvas = $("canvas");
+  const wrap = $("editorWrap");
+  const overlay = $("overlayHint");
+
+  const outFormat = $("outFormat");
+  const bgFill = $("bgFill");
+  const outW = $("outW");
+  const outH = $("outH");
+  const zoomEl = $("zoom");
+  const showGuide = $("showGuide");
+  const snapCenter = $("snapCenter");
+
+  const presetLabel = $("presetLabel");
+  const btnDownload = $("download");
+  const btnReset = $("reset");
+  const msg = $("msg");
+
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  function setMsg(text, type){
+    msg.textContent = text || "";
+    msg.className = "msg " + (type || "");
+  }
+
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  // --- Presets ---
+  // ratio = w/h
+  const PRESETS = {
+    kr_id: {
+      name: "증명사진(3×4)",
+      ratio: 3/4,
+      outW: 354,
+      outH: 472,
+      guide: { headTop: 0.18, chin: 0.76 } // relative to crop height
+    },
+    kr_passport: {
+      name: "여권(3.5×4.5)",
+      ratio: 3.5/4.5,
+      outW: 413,
+      outH: 531,
+      guide: { headTop: 0.16, chin: 0.78 }
+    },
+    us_2x2: {
+      name: "US 2×2",
+      ratio: 1,
+      outW: 600,
+      outH: 600,
+      guide: { headTop: 0.18, chin: 0.78 }
+    }
+  };
+
+  let presetKey = "kr_id";
+
+  // --- State ---
+  let img = null;
+  let imgW = 0, imgH = 0;
+
+  // pan offsets in "image space" pixels (relative to image center)
+  let panX = 0, panY = 0;
+  let isDragging = false;
+  let dragStart = { x:0, y:0, panX:0, panY:0 };
+
+  // editor render size
+  let viewW = 0, viewH = 0;
+  let dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  // crop rect in view pixels
+  let crop = { x:0, y:0, w:0, h:0 };
+
+  function setPreset(key){
+    if(!PRESETS[key]) key = "kr_id";
+    presetKey = key;
+
+    document.querySelectorAll(".presetBtn").forEach(b=>{
+      b.classList.toggle("active", b.dataset.preset === key);
+    });
+
+    const p = PRESETS[key];
+    presetLabel.textContent = "Preset: " + p.name;
+    outW.value = p.outW;
+    outH.value = p.outH;
+
+    // recompute crop box + re-render
+    layoutCanvas();
+    if(img && snapCenter.checked){
+      panX = 0; panY = 0;
+    }
+    render();
+  }
+
+  // --- Upload/open ---
+  function openPicker(){
+    fileInput.value = "";
+    fileInput.click();
+  }
+
+  drop.addEventListener("click", openPicker);
+  drop.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openPicker();
+    }
+  });
+
+  // Drag & drop
+  ["dragenter","dragover"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.add("drag");
+    });
+  });
+  ["dragleave","drop"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.remove("drag");
+    });
+  });
+  drop.addEventListener("drop", (e)=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+
+  fileInput.addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  function loadFile(file){
+    if(!file || !(file.type || "").startsWith("image/")){
+      setMsg("이미지 파일만 지원합니다.", "err");
+      return;
+    }
+
+    setMsg("로딩 중…", "");
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => {
+      URL.revokeObjectURL(url);
+
+      img = im;
+      imgW = im.naturalWidth || 0;
+      imgH = im.naturalHeight || 0;
+
+      // reset
+      panX = 0; panY = 0;
+      zoomEl.value = "1";
+
+      drop.classList.add("active");
+      btnDownload.disabled = false;
+      btnReset.disabled = false;
+
+      layoutCanvas();
+      render();
+      setMsg("준비 완료! 사진을 드래그해서 위치를 맞추고 다운로드하세요.", "ok");
+    };
+    im.onerror = () => {
+      URL.revokeObjectURL(url);
+      setMsg("이미지를 불러오지 못했어요. 다른 파일로 시도해 주세요.", "err");
+    };
+    im.src = url;
+  }
+
+  // --- Canvas layout ---
+  function layoutCanvas(){
+    // set view size based on wrapper width
+    const rect = wrap.getBoundingClientRect();
+    viewW = Math.max(320, Math.floor(rect.width));
+    // make editor taller on desktop
+    const minH = window.matchMedia("(min-width: 1024px)").matches ? 420 : 320;
+    viewH = Math.max(minH, Math.floor(rect.width * 0.72));
+    // but keep inside card nicely
+    viewH = Math.min(viewH, 520);
+
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+
+    canvas.width = Math.floor(viewW * dpr);
+    canvas.height = Math.floor(viewH * dpr);
+
+    canvas.style.width = viewW + "px";
+    canvas.style.height = viewH + "px";
+
+    // crop rect: centered with margins, keeping preset ratio
+    const pad = 18;
+    const maxW = viewW - pad*2;
+    const maxH = viewH - pad*2;
+
+    const ratio = PRESETS[presetKey].ratio;
+
+    let cw = maxW;
+    let ch = cw / ratio;
+    if(ch > maxH){
+      ch = maxH;
+      cw = ch * ratio;
+    }
+
+    crop.w = cw;
+    crop.h = ch;
+    crop.x = (viewW - cw) / 2;
+    crop.y = (viewH - ch) / 2;
+
+    // overlay drawn via canvas render; keep overlay empty for accessibility
+    overlay.innerHTML = "";
+  }
+
+  window.addEventListener("resize", ()=>{
+    layoutCanvas();
+    render();
+  });
+
+  // --- Drag to pan ---
+  function toLocal(e){
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  canvas.addEventListener("pointerdown", (e)=>{
+    if(!img) return;
+    isDragging = true;
+    canvas.setPointerCapture(e.pointerId);
+    const p = toLocal(e);
+    dragStart = { x:p.x, y:p.y, panX, panY };
+  });
+
+  canvas.addEventListener("pointermove", (e)=>{
+    if(!img || !isDragging) return;
+    const p = toLocal(e);
+
+    // translate view drag into image-space pan:
+    // scale factor from image to view at current zoom (cover crop)
+    const zoom = parseFloat(zoomEl.value || "1");
+    const base = baseCoverScale();
+    const scale = base * zoom;
+
+    // view pixels delta -> image pixels delta
+    const dxView = p.x - dragStart.x;
+    const dyView = p.y - dragStart.y;
+
+    const dxImg = dxView / scale;
+    const dyImg = dyView / scale;
+
+    panX = dragStart.panX + dxImg;
+    panY = dragStart.panY + dyImg;
+
+    render();
+  });
+
+  function endDrag(e){
+    if(!isDragging) return;
+    isDragging = false;
+    try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+  }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("pointerleave", endDrag);
+
+  zoomEl.addEventListener("input", ()=> render());
+  showGuide.addEventListener("change", ()=> render());
+  snapCenter.addEventListener("change", ()=>{
+    if(snapCenter.checked){
+      panX = 0; panY = 0;
+      render();
+    }
+  });
+
+  // --- Rendering ---
+  function baseCoverScale(){
+    // base scale to cover the crop box (so no empty within crop)
+    if(!img) return 1;
+    const scaleX = crop.w / imgW;
+    const scaleY = crop.h / imgH;
+    return Math.max(scaleX, scaleY);
+  }
+
+  function render(){
+    const cw = canvas.width;
+    const ch = canvas.height;
+
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,cw,ch);
+
+    // scale for DPR
+    ctx.scale(dpr, dpr);
+
+    // background
+    ctx.fillStyle = "#0a0e16";
+    ctx.fillRect(0,0,viewW,viewH);
+
+    // draw image (if any)
+    if(img){
+      const zoom = parseFloat(zoomEl.value || "1");
+      const base = baseCoverScale();
+      const scale = base * zoom;
+
+      // center crop in view; place image relative to crop center + pan
+      const cropCx = crop.x + crop.w/2;
+      const cropCy = crop.y + crop.h/2;
+
+      // image draw size in view pixels
+      const drawW = imgW * scale;
+      const drawH = imgH * scale;
+
+      // panX/panY are in image pixels; convert to view pixels:
+      const panVX = panX * scale;
+      const panVY = panY * scale;
+
+      const drawX = cropCx - drawW/2 + panVX;
+      const drawY = cropCy - drawH/2 + panVY;
+
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      // darken outside crop
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,.55)";
+      // top
+      ctx.fillRect(0,0,viewW,crop.y);
+      // bottom
+      ctx.fillRect(0,crop.y+crop.h,viewW,viewH-(crop.y+crop.h));
+      // left
+      ctx.fillRect(0,crop.y,crop.x,crop.h);
+      // right
+      ctx.fillRect(crop.x+crop.w,crop.y,viewW-(crop.x+crop.w),crop.h);
+      ctx.restore();
+
+      // crop border
+      ctx.save();
+      ctx.strokeStyle = "rgba(47,109,246,.85)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
+      ctx.restore();
+
+      // guide lines (head/chin)
+      if(showGuide.checked){
+        const g = PRESETS[presetKey].guide;
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,.55)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6,6]);
+
+        const yHead = crop.y + crop.h * g.headTop;
+        const yChin = crop.y + crop.h * g.chin;
+
+        // head line
+        ctx.beginPath(); ctx.moveTo(crop.x, yHead); ctx.lineTo(crop.x+crop.w, yHead); ctx.stroke();
+        // chin line
+        ctx.beginPath(); ctx.moveTo(crop.x, yChin); ctx.lineTo(crop.x+crop.w, yChin); ctx.stroke();
+
+        // center vertical
+        ctx.setLineDash([4,7]);
+        const xMid = crop.x + crop.w/2;
+        ctx.beginPath(); ctx.moveTo(xMid, crop.y); ctx.lineTo(xMid, crop.y+crop.h); ctx.stroke();
+
+        ctx.restore();
+
+        // guide label
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,0,.45)";
+        ctx.fillRect(crop.x+10, crop.y+10, 140, 44);
+        ctx.fillStyle = "#e9eef7";
+        ctx.font = "700 12px Inter, Noto Sans KR, sans-serif";
+        ctx.fillText("머리끝 가이드", crop.x+18, crop.y+28);
+        ctx.fillText("턱끝 가이드", crop.x+18, crop.y+46);
+        ctx.restore();
+      }
+
+      // corners
+      ctx.save();
+      ctx.strokeStyle = "rgba(47,109,246,.95)";
+      ctx.lineWidth = 3;
+      const c = 16;
+      // tl
+      ctx.beginPath(); ctx.moveTo(crop.x, crop.y+c); ctx.lineTo(crop.x, crop.y); ctx.lineTo(crop.x+c, crop.y); ctx.stroke();
+      // tr
+      ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y); ctx.lineTo(crop.x+crop.w, crop.y); ctx.lineTo(crop.x+crop.w, crop.y+c); ctx.stroke();
+      // bl
+      ctx.beginPath(); ctx.moveTo(crop.x, crop.y+crop.h-c); ctx.lineTo(crop.x, crop.y+crop.h); ctx.lineTo(crop.x+c, crop.y+crop.h); ctx.stroke();
+      // br
+      ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h-c); ctx.stroke();
+      ctx.restore();
+
+    } else {
+      // empty state
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.65)";
+      ctx.font = "800 16px Inter, Noto Sans KR, sans-serif";
+      ctx.fillText("미리보기", 24, 42);
+      ctx.fillStyle = "rgba(255,255,255,.45)";
+      ctx.font = "600 12px Inter, Noto Sans KR, sans-serif";
+      ctx.fillText("사진을 업로드하면 크롭 편집이 표시됩니다.", 24, 68);
+      ctx.restore();
+    }
+  }
+
+  // --- Export ---
+  function exportCropped(){
+    if(!img) return;
+
+    const targetW = parseInt(outW.value, 10);
+    const targetH = parseInt(outH.value, 10);
+    if(!targetW || !targetH || targetW < 64 || targetH < 64){
+      setMsg("출력 가로/세로(px)를 확인해 주세요.", "err");
+      return;
+    }
+
+    // offscreen canvas at output resolution
+    const out = document.createElement("canvas");
+    out.width = targetW;
+    out.height = targetH;
+    const octx = out.getContext("2d", { alpha: true });
+
+    // fill background for JPG (and also for PNG if user wants; we keep transparent for PNG by default)
+    const mime = outFormat.value;
+    const fill = bgFill.value;
+
+    if(mime === "image/jpeg"){
+      octx.fillStyle = fill;
+      octx.fillRect(0,0,targetW,targetH);
+    } else {
+      // PNG: keep transparent unless user chose non-white? (we still fill if not pure transparent is desired)
+      // If you want always fill for PNG too, uncomment:
+      // octx.fillStyle = fill; octx.fillRect(0,0,targetW,targetH);
+    }
+
+    // Compute mapping from editor crop box to source image pixels at current pan/zoom
+    const zoom = parseFloat(zoomEl.value || "1");
+    const base = baseCoverScale();
+    const scale = base * zoom;
+
+    // In view pixels:
+    const cropCx = crop.x + crop.w/2;
+    const cropCy = crop.y + crop.h/2;
+
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+
+    const panVX = panX * scale;
+    const panVY = panY * scale;
+
+    const drawX = cropCx - drawW/2 + panVX;
+    const drawY = cropCy - drawH/2 + panVY;
+
+    // We need source rect in image pixels that corresponds to crop rect in view pixels.
+    // Convert crop rect corners from view -> image:
+    // viewX = drawX + imgX*scale  => imgX = (viewX - drawX)/scale
+    const sx = (crop.x - drawX) / scale;
+    const sy = (crop.y - drawY) / scale;
+    const sw = crop.w / scale;
+    const sh = crop.h / scale;
+
+    // Clamp source rect to image bounds a bit (avoid NaN)
+    const sx2 = clamp(sx, -imgW, imgW*2);
+    const sy2 = clamp(sy, -imgH, imgH*2);
+
+    // Draw with high quality
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
+    octx.drawImage(img, sx2, sy2, sw, sh, 0, 0, targetW, targetH);
+
+    // Download
+    const ext = (mime === "image/png") ? "png" : "jpg";
+    const name = presetKey + "_" + new Date().toISOString().replace(/[:.]/g,"-") + "." + ext;
+
+    out.toBlob((blob)=>{
+      if(!blob){
+        setMsg("다운로드 실패. 다시 시도해 주세요.", "err");
+        return;
+      }
+      const a = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1500);
+      setMsg("다운로드 시작: " + name, "ok");
+    }, mime, 0.92);
+  }
+
+  // --- Buttons ---
+  btnDownload.addEventListener("click", exportCropped);
+
+  btnReset.addEventListener("click", ()=>{
+    img = null; imgW = 0; imgH = 0;
+    panX = 0; panY = 0;
+    zoomEl.value = "1";
+    fileInput.value = "";
+
+    drop.classList.remove("active");
+    btnDownload.disabled = true;
+    btnReset.disabled = true;
+
+    setMsg("", "");
+    layoutCanvas();
+    render();
+  });
+
+  // preset buttons
+  document.querySelectorAll(".presetBtn").forEach(b=>{
+    b.addEventListener("click", ()=> setPreset(b.dataset.preset));
+  });
+
+  // keep ratio if user edits only one side? (simple helper)
+  function syncSizeKeepRatio(changed){
+    const p = PRESETS[presetKey];
+    const ratio = p.ratio;
+    const w = parseInt(outW.value, 10);
+    const h = parseInt(outH.value, 10);
+    if(changed === "w" && w && (!h || document.activeElement === outW)){
+      outH.value = Math.round(w / ratio);
+    }
+    if(changed === "h" && h && (!w || document.activeElement === outH)){
+      outW.value = Math.round(h * ratio);
+    }
+  }
+  outW.addEventListener("input", ()=> syncSizeKeepRatio("w"));
+  outH.addEventListener("input", ()=> syncSizeKeepRatio("h"));
+
+  // init
+  layoutCanvas();
+  render();
+  setPreset("kr_id");
+})();
+</script>
+</body>
+</html>
