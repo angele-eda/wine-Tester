@@ -118,29 +118,29 @@
       align-items:center;
     }
 
-    /* === BIG TOOL BUTTON (ID Photo) === */
+    /* === TOOL BUTTON (ID Photo) toned down (main is converter) === */
     .toolPrimary{
       display:inline-flex;
       align-items:center;
       gap:10px;
-      padding:12px 14px;
+      padding:10px 12px;
       border-radius:999px;
       text-decoration:none;
       cursor:pointer;
       user-select:none;
       font-weight:900;
-      border:1px solid rgba(47,109,246,.55);
-      background:rgba(47,109,246,.22);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
       color:#e9eef7;
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      box-shadow: none;
     }
-    .toolPrimary:hover{ background:rgba(47,109,246,.28); }
+    .toolPrimary:hover{ background: rgba(255,255,255,.10); }
     .toolPrimary .badge{
-      font-size:11px;
+      font-size:10px;
       font-weight:900;
-      padding:6px 10px;
+      padding:5px 8px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
       color:#e9eef7;
       display:inline-flex;
@@ -166,34 +166,21 @@
       gap:8px;
       opacity:.95;
     }
-    .langbar{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:flex-end;
-      flex-wrap:nowrap;
-      max-width:100%;
-      overflow:hidden;
-    }
-    .langbtn{
-      font-size:12px; font-weight:900;
-      color:#b8c6dc; border:var(--border);
-      padding:9px 12px; border-radius:999px;
-      background:rgba(255,255,255,.04);
-      cursor:pointer; user-select:none;
-      white-space:nowrap;
-      flex:0 0 auto;
+    .langbar{ display:none !important; } /* ✅ hide old buttons */
 
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .langbtn.active{
+    .langSelect{
+      width: 100%;
+      max-width: 220px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
       color:#e9eef7;
-      background:rgba(255,255,255,.10);
-      border-color:rgba(255,255,255,.22);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      font-weight: 900;
+      font-size: 12px;
+      outline: none;
     }
+    .langSelect option{ background:#0b0f17; color:#e9eef7; }
 
     /* =========================
        ✅ First choice section
@@ -266,6 +253,7 @@
       margin-top:10px;
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:8px;
       padding:10px 12px;
       border-radius:999px;
@@ -275,6 +263,14 @@
       font-weight:900;
       font-size:12px;
       text-decoration:none;
+      width: fit-content;
+    }
+
+    /* ✅ main CTA emphasis */
+    .choiceCTA.primary{
+      background:#2f6df6;
+      border: 1px solid rgba(47,109,246,.45);
+      box-shadow: 0 12px 28px rgba(47,109,246,.22);
     }
 
     .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
@@ -568,6 +564,32 @@
       border-radius: 14px;
       pointer-events:none;
     }
+
+    /* ✅ collapse helper for right-side long hints */
+    .detailsBox{
+      margin-top:10px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:10px;
+    }
+    details{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.02);
+    }
+    summary{
+      cursor:pointer;
+      font-weight:900;
+      color:#dbe7ff;
+      list-style:none;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .detailsBody{
+      margin-top:8px;
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.55;
+    }
   </style>
 </head>
 
@@ -578,7 +600,7 @@
         <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Top: ONLY ID Photo -->
+        <!-- ✅ Top: ONLY ID Photo (sub feature) -->
         <div class="tools">
           <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
             🪪 <span id="tool_idphoto_text">ID Photo</span>
@@ -587,10 +609,19 @@
         </div>
       </div>
 
-      <!-- ✅ Language -->
+      <!-- ✅ Language (dropdown) -->
       <div class="langArea" aria-label="Language selector">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
-        <div class="langbar">
+
+        <select class="langSelect" id="langSelect" aria-label="Language">
+          <option value="en">🇺🇸 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="ko">🇰🇷 한국어</option>
+        </select>
+
+        <!-- (old buttons kept in HTML? hidden by CSS .langbar display none) -->
+        <div class="langbar" aria-hidden="true">
           <div class="langbtn" data-lang="en">🇺🇸 EN</div>
           <div class="langbtn" data-lang="es">🇪🇸 ES</div>
           <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
@@ -599,7 +630,7 @@
       </div>
     </div>
 
-    <!-- ✅ First: Two choices -->
+    <!-- ✅ First: Two choices (converter is MAIN) -->
     <div class="choiceWrap" id="choiceWrap">
       <div class="choiceTitle" id="choice_title"></div>
 
@@ -610,7 +641,7 @@
           <div class="choiceMain">
             <p class="choiceH" id="choice_convert_h"></p>
             <p class="choiceP" id="choice_convert_p"></p>
-            <span class="choiceCTA" id="choice_convert_cta"></span>
+            <span class="choiceCTA primary" id="choice_convert_cta"></span>
           </div>
         </div>
 
@@ -726,9 +757,22 @@
         <div style="height:10px;"></div>
         <button class="btn secondary" id="reset" disabled></button>
 
-        <div class="hint" id="privacy_hint"></div>
+        <!-- ✅ 6) collapse long hints -->
+        <div class="detailsBox">
+          <details>
+            <summary id="privacy_summary"></summary>
+            <div class="detailsBody" id="privacy_body"></div>
+          </details>
+          <div style="height:10px;"></div>
+          <details>
+            <summary id="pdfzip_summary"></summary>
+            <div class="detailsBody" id="pdfzip_body"></div>
+          </details>
+        </div>
 
-        <div class="hint" style="margin-top:10px;">
+        <!-- keep original nodes for backward compatibility (hidden) -->
+        <div class="hint" id="privacy_hint" style="display:none;"></div>
+        <div class="hint" style="margin-top:10px; display:none;">
           <b id="pdfzip_title"></b><br/>
           <span id="pdfzip_desc"></span>
         </div>
@@ -795,6 +839,9 @@
   const cropBtn     = $("cropBtn");
   const cropLabel   = $("cropLabel");
   const toolIdPhoto = $("tool_idphoto");
+
+  // Language dropdown
+  const langSelectEl = $("langSelect");
 
   // Choice
   const choiceConvert = $("choice_convert");
@@ -863,9 +910,12 @@
       h_download: "4) Download",
       convert: "Convert & Download",
       reset: "Reset",
-      privacy_hint: "🔒 Privacy: Files are processed locally in your browser (no server upload).",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: Merge multiple pages into ONE PDF. • ZIP: Download multiple converted files as ONE .zip",
+
+      privacy_summary: "🔒 Privacy / Local processing",
+      privacy_body: "Files are processed locally in your browser (no server upload).",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: Merge multiple pages into ONE PDF.<br/>• ZIP: Download multiple converted files as ONE .zip",
+
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
       multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
@@ -934,9 +984,12 @@
       h_download: "4) 다운로드",
       convert: "변환 / 합치기",
       reset: "초기화",
-      privacy_hint: "🔒 개인정보: 파일은 서버로 전송되지 않고 브라우저에서 로컬 처리됩니다.",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: 여러 페이지를 1개 PDF로 합침  • ZIP: 여러 변환 파일을 1개 zip으로 받기",
+
+      privacy_summary: "🔒 개인정보 / 로컬 처리 안내",
+      privacy_body: "파일은 서버로 전송되지 않고 브라우저에서 로컬 처리됩니다.",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: 여러 페이지를 1개 PDF로 합침<br/>• ZIP: 여러 변환 파일을 1개 zip으로 받기",
+
       zip_label: "ZIP 받기",
       a4_label: "A4 통일(PDF 병합)",
       multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
@@ -1005,9 +1058,12 @@
       h_download: "4) ダウンロード",
       convert: "変換 / 結合",
       reset: "リセット",
-      privacy_hint: "🔒 プライバシー: サーバー送信なし、ブラウザ内で処理されます。",
-      pdfzip_title: "PDF と ZIP",
-      pdfzip_desc: "• PDF: 複数ページを1つのPDFに結合  • ZIP: 複数ファイルを1つのzipでダウンロード",
+
+      privacy_summary: "🔒 プライバシー / ローカル処理",
+      privacy_body: "ファイルはサーバー送信されず、ブラウザ内で処理されます。",
+      pdfzip_summary: "PDF と ZIP",
+      pdfzip_body: "• PDF: 複数ページを1つに結合<br/>• ZIP: 複数ファイルをzipで受け取る",
+
       zip_label: "ZIPで受け取る",
       a4_label: "A4統一(PDF結合)",
       multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
@@ -1076,9 +1132,12 @@
       h_download: "4) Descargar",
       convert: "Convertir / Unir",
       reset: "Reiniciar",
-      privacy_hint: "🔒 Privacidad: Los archivos se procesan localmente (sin subir al servidor).",
-      pdfzip_title: "PDF vs ZIP",
-      pdfzip_desc: "• PDF: Une varias páginas en UN PDF.  • ZIP: Descarga varios archivos convertidos en UN .zip",
+
+      privacy_summary: "🔒 Privacidad / Procesamiento local",
+      privacy_body: "Los archivos no se suben al servidor; se procesan localmente en tu navegador.",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: Une varias páginas en un PDF<br/>• ZIP: Descarga varios archivos en un .zip",
+
       zip_label: "Descargar en ZIP",
       a4_label: "Normalizar a A4 (unir PDF)",
       multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
@@ -1194,15 +1253,14 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function setActiveLangButtons(lang){
-    document.querySelectorAll(".langbtn").forEach(b=>{
-      b.classList.toggle("active", b.dataset.lang === lang);
-    });
-  }
-
   function syncToolLinks(){
     const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
     toolIdPhoto.href = url;
+  }
+
+  function syncLangSelect(){
+    if(!langSelectEl) return;
+    langSelectEl.value = LANG;
   }
 
   // ✅ Sheet helpers
@@ -1322,9 +1380,15 @@
     btnConvert.textContent = t.convert;
     btnReset.textContent = t.reset;
 
-    $("privacy_hint").innerHTML = t.privacy_hint;
-    $("pdfzip_title").textContent = t.pdfzip_title;
-    $("pdfzip_desc").textContent = t.pdfzip_desc;
+    // collapsed hints
+    const ps = $("privacy_summary");
+    const pb = $("privacy_body");
+    const zs = $("pdfzip_summary");
+    const zb = $("pdfzip_body");
+    if(ps) ps.textContent = t.privacy_summary;
+    if(pb) pb.innerHTML = t.privacy_body;
+    if(zs) zs.textContent = t.pdfzip_summary;
+    if(zb) zb.innerHTML = t.pdfzip_body;
 
     $("zip_label").textContent = t.zip_label;
     $("a4_label").textContent = t.a4_label;
@@ -1338,22 +1402,29 @@
     if(multiCount) multiCount.textContent = t.multi_count(files.length);
 
     syncToolLinks();
+    syncLangSelect();
   }
 
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
     localStorage.setItem("cf24_lang", lang);
-    setActiveLangButtons(lang);
+
+    try{
+      const u = new URL(location.href);
+      u.searchParams.set("lang", LANG);
+      history.replaceState({}, "", u.toString());
+    }catch(e){}
+
     renderTexts();
     updateQualityState();
     renderFileList();
     updateCropState();
   }
 
-  document.querySelectorAll(".langbtn").forEach(b=>{
-    b.addEventListener("click", ()=> setLang(b.dataset.lang));
-  });
+  if(langSelectEl){
+    langSelectEl.addEventListener("change", ()=> setLang(langSelectEl.value));
+  }
 
   function renderFileList(){
     if(files.length <= 1){
@@ -1893,8 +1964,6 @@
 
   wireChoice(choiceConvert, ()=>{
     focusConvert();
-    // optional: open file picker immediately on mobile
-    // openFilePicker();
   });
 
   wireChoice(choiceIdPhoto, ()=>{
@@ -1931,7 +2000,6 @@
     const f = e.target.files && e.target.files[0];
     if(!f) return;
     focusConvert();
-    // feed to existing converter
     const dt = new DataTransfer();
     dt.items.add(f);
     handleFiles(dt.files);
