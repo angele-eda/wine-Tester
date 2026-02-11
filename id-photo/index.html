@@ -17,21 +17,38 @@
   <style>
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     *{ box-sizing:border-box; }
+
+    /* ✅ HARD STOP: prevent any horizontal spill */
+    html, body{
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+    }
+
     body{
       margin:0;
       font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
       background:#0b0f17;
       color:#e9eef7;
-      overflow-x:hidden;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+
+    .wrap{
+      max-width:980px;
+      width:100%;
+      margin:0 auto;
+      padding:22px 14px 44px;
+      overflow-x: clip; /* ✅ modern browsers */
+    }
+
     .top{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
       flex-wrap:wrap; margin-bottom:14px;
+      min-width:0;
     }
+
     .title{
       margin:0;
       font-weight:900;
@@ -41,6 +58,7 @@
       font-size:22px;
     }
     .sub{ margin:8px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+
     .homeBtn{
       width:100%;
       display:flex; align-items:center; justify-content:center; gap:10px;
@@ -64,6 +82,7 @@
       align-items:flex-end;
       gap:8px;
       min-width:220px;
+      max-width:100%;
     }
     .langLabel{
       font-size:12px;
@@ -98,6 +117,7 @@
       font-size:13px;
       font-weight:900;
       display:flex; align-items:center; justify-content:center; gap:10px;
+      min-width:0;
     }
 
     .card{
@@ -107,11 +127,30 @@
       padding:var(--pad);
       margin-top:12px;
       min-width:0;
+      max-width:100%;
+      overflow-x: clip; /* ✅ prevent inner spill */
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .row > * { flex:1; min-width:160px; }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+    .row > * {
+      flex:1;
+      min-width:160px;
+      max-width:100%;
+      min-width:0; /* ✅ allow flex items to shrink (critical for overflow bugs) */
+    }
+
+    /* ✅ super small devices: never force min width */
+    @media (max-width: 380px){
+      .langRow{ min-width: 0; width:100%; align-items:flex-start; }
+      .langSelect{ width:100%; }
+    }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -135,6 +174,8 @@
       position: relative;
       min-height: 180px;
       display:flex; align-items:center; justify-content:center;
+      max-width:100%;
+      overflow:hidden;
     }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
     .drop:active{ transform: scale(0.998); }
@@ -152,6 +193,8 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      min-width:0;
+      max-width:100%;
     }
     .segBtn{
       border:var(--border);
@@ -167,6 +210,11 @@
       gap:8px;
       user-select:none;
       white-space:nowrap;
+
+      /* ✅ prevent button text from forcing overflow */
+      max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .segBtn.active{
       color:#e9eef7;
@@ -180,6 +228,8 @@
       display:grid;
       grid-template-columns: 1.2fr .8fr;
       gap:12px;
+      min-width:0;
+      max-width:100%;
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
@@ -192,14 +242,26 @@
       aspect-ratio: 4 / 3;
       min-height: 320px;
       touch-action: none; /* for pointer events & pinch */
+
+      width:100%;
+      max-width:100%;
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    canvas{ display:block; width:100%; height:100%; }
+    /* ✅ canvas must NEVER overflow */
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+    }
 
     .overlay{
       position:absolute; inset:0;
       pointer-events:none;
+      max-width:100%;
+      overflow:hidden;
     }
     .cropBox{
       position:absolute;
@@ -243,6 +305,7 @@
       font-size:13px;
       line-height:1.5;
       word-break:break-word;
+      min-width:0;
     }
     .meta b{ color:#e9eef7; }
 
@@ -270,6 +333,7 @@
       border:var(--border);
       outline:none;
       font-weight:900;
+      max-width:100%;
     }
   </style>
 </head>
@@ -626,7 +690,6 @@
   }
 
   let LANG = detectLang();
-
   function t(){ return STR[LANG] || STR.en; }
 
   function setLang(lang){
@@ -675,12 +738,14 @@
 
     if(!imgEl) $("meta").innerHTML = t().meta_idle;
     refreshPresetPill();
+
+    // ✅ language change can change layout width => resize canvas again
+    setTimeout(()=>resizeCanvas(), 0);
   }
 
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
   // ========= Presets =========
-  // mm sizes (W x H) and ratio
   const PRESETS = {
     KR: {
       ID:   { name: "KR · ID (3×4)",      mmW:30, mmH:40 },
@@ -713,7 +778,6 @@
     });
   }
 
-  // country seg
   document.querySelectorAll("#countrySeg .segBtn").forEach(b=>{
     b.addEventListener("click", ()=>{
       COUNTRY = b.dataset.country;
@@ -722,10 +786,10 @@
       updateCropBox();
       if(autoCenter) smartCenter();
       redraw();
+      resizeCanvas();
     });
   });
 
-  // doc seg
   document.querySelectorAll("#docSeg .segBtn").forEach(b=>{
     b.addEventListener("click", ()=>{
       DOC = b.dataset.doc;
@@ -734,6 +798,7 @@
       updateCropBox();
       if(autoCenter) smartCenter();
       redraw();
+      resizeCanvas();
     });
   });
 
@@ -815,12 +880,10 @@
   let imgEl = null;
   let imgW = 0, imgH = 0;
 
-  // transform
   let scale = 1;
   let offsetX = 0;
   let offsetY = 0;
 
-  // controls
   let autoCenter = true;
   let showGuide = false;
 
@@ -875,7 +938,6 @@
 
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
-  // resize canvas for stage
   function resizeCanvas(){
     const rect = stage.getBoundingClientRect();
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -894,7 +956,6 @@
     const p = currentPreset();
     const ratio = p.mmW / p.mmH;
 
-    // crop box size: fit within stage with margin
     const margin = 18;
     const maxW = rect.width - margin*2;
     const maxH = rect.height - margin*2;
@@ -918,15 +979,11 @@
   }
 
   function fitToCrop(){
-    const rect = stage.getBoundingClientRect();
     const cr = cropRectInStage();
-
-    // ensure image covers crop box
     const sx = cr.w / imgW;
     const sy = cr.h / imgH;
     scale = Math.max(sx, sy);
 
-    // center image to crop
     const cropCenterX = cr.x + cr.w/2;
     const cropCenterY = cr.y + cr.h/2;
     offsetX = cropCenterX - (imgW/2)*scale;
@@ -936,7 +993,6 @@
   }
 
   function smartCenter(){
-    // For now: just fit to crop (best simple default)
     fitToCrop();
   }
 
@@ -995,6 +1051,7 @@
       redraw();
       setMsg(t().msg_ready, "ok");
       updateMeta();
+      resizeCanvas(); // ✅ after image load
     };
     img.onerror = ()=>{
       URL.revokeObjectURL(url);
@@ -1003,6 +1060,7 @@
       redraw();
       setMsg(t().msg_fail, "err");
       updateMeta();
+      resizeCanvas();
     };
     img.src = url;
   }
@@ -1100,12 +1158,10 @@
   }
 
   function buildName(){
-    const p = currentPreset();
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
     const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
-    const country = COUNTRY;
     const doc = (DOC === "PASS") ? "passport" : "id";
-    return `cf24_${country}_${doc}_${stamp}.${ext}`;
+    return `cf24_${COUNTRY}_${doc}_${stamp}.${ext}`;
   }
 
   function stageToOutput(){
@@ -1118,11 +1174,8 @@
     const outW = Math.round((p.mmW / 25.4) * dpi);
     const outH = Math.round((p.mmH / 25.4) * dpi);
 
-    const rect = stage.getBoundingClientRect();
     const cr = cropRectInStage();
 
-    // Mapping: stage pixels -> image pixels via (offset, scale)
-    // Stage coords (sx,sy) => image coords: ix = (sx - offsetX)/scale, iy = (sy - offsetY)/scale
     const ix0 = (cr.x - offsetX) / scale;
     const iy0 = (cr.y - offsetY) / scale;
     const ix1 = (cr.x + cr.w - offsetX) / scale;
@@ -1131,7 +1184,6 @@
     const srcW = ix1 - ix0;
     const srcH = iy1 - iy0;
 
-    // Output canvas
     const out = document.createElement("canvas");
     out.width = Math.max(1, outW);
     out.height = Math.max(1, outH);
@@ -1139,7 +1191,6 @@
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
 
-    // draw (crop)
     octx.drawImage(imgEl, ix0, iy0, srcW, srcH, 0, 0, out.width, out.height);
 
     return new Promise((resolve, reject)=>{
@@ -1168,6 +1219,7 @@
     setMsg("", "");
     redraw();
     updateMeta();
+    resizeCanvas();
   });
 
   $("dpi").addEventListener("change", updateMeta);
@@ -1191,6 +1243,7 @@
         redraw();
         updateMeta();
         setMsg(t().msg_ready, "ok");
+        resizeCanvas();
       };
       img.onerror = ()=>{};
       img.src = dataUrl;
