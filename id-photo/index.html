@@ -18,7 +18,6 @@
     :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     *{ box-sizing:border-box; }
 
-    /* ✅ HARD STOP: prevent any horizontal spill */
     html, body{
       width:100%;
       max-width:100%;
@@ -40,7 +39,7 @@
       width:100%;
       margin:0 auto;
       padding:22px 14px 44px;
-      overflow-x: clip; /* ✅ modern browsers */
+      overflow-x: clip;
     }
 
     .top{
@@ -128,7 +127,7 @@
       margin-top:12px;
       min-width:0;
       max-width:100%;
-      overflow-x: clip; /* ✅ prevent inner spill */
+      overflow-x: clip;
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
@@ -143,10 +142,9 @@
       flex:1;
       min-width:160px;
       max-width:100%;
-      min-width:0; /* ✅ allow flex items to shrink (critical for overflow bugs) */
+      min-width:0;
     }
 
-    /* ✅ super small devices: never force min width */
     @media (max-width: 380px){
       .langRow{ min-width: 0; width:100%; align-items:flex-start; }
       .langSelect{ width:100%; }
@@ -210,8 +208,6 @@
       gap:8px;
       user-select:none;
       white-space:nowrap;
-
-      /* ✅ prevent button text from forcing overflow */
       max-width:100%;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -241,14 +237,12 @@
       position:relative;
       aspect-ratio: 4 / 3;
       min-height: 320px;
-      touch-action: none; /* for pointer events & pinch */
-
+      touch-action: none;
       width:100%;
       max-width:100%;
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    /* ✅ canvas must NEVER overflow */
     canvas{
       display:block;
       width:100%;
@@ -337,30 +331,43 @@
     }
 
     /* =========================
-       FIX #3: Country buttons equal width
+       FIX #3: Country buttons equal width (mobile-first)
+       - default: 2 columns (phones)
+       - wide: 4 columns (desktop)
        ========================= */
     #countrySeg{
-      display:grid;                 /* override flex */
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap:8px;
       width:100%;
     }
+    @media (min-width: 700px){
+      #countrySeg{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
     #countrySeg .segBtn{
       width:100%;
-      justify-content:center;       /* center content */
+      justify-content:center;
       text-align:center;
     }
-    @media (max-width: 520px){
-      #countrySeg{
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+
+    /* (옵션) doc도 동일폭 원하면 켜기 */
+    #docSeg{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:8px;
+      width:100%;
+    }
+    #docSeg .segBtn{
+      width:100%;
+      justify-content:center;
+      text-align:center;
     }
 
     /* =========================
-       FIX #4: DPI/Output height match
+       FIX #4: DPI/Output row height aligned
        ========================= */
     .small{
-      min-height: 36px;             /* keep rows aligned */
+      min-height: 36px;
       display:block;
     }
     @media (max-width: 380px){
@@ -486,8 +493,8 @@
 
         <div class="row">
           <div class="seg" style="gap:8px;">
-            <div class="segBtn active" id="toggleAuto">✅ <span id="auto_txt">Auto center (recommended)</span></div>
-            <div class="segBtn" id="toggleGuide">☑️ <span id="guide_txt">Show face guide</span></div>
+            <div class="segBtn active" id="toggleAuto"><span id="auto_icon">✅</span> <span id="auto_txt">Auto center (recommended)</span></div>
+            <div class="segBtn" id="toggleGuide"><span id="guide_icon">☑️</span> <span id="guide_txt">Show face guide</span></div>
           </div>
         </div>
 
@@ -706,7 +713,6 @@
   }
 
   function detectLang(){
-    // ✅ 기본은 Global English
     const q = getQueryLang();
     if(q) return q;
 
@@ -769,8 +775,6 @@
 
     if(!imgEl) $("meta").innerHTML = t().meta_idle;
     refreshPresetPill();
-
-    // ✅ language change can change layout width => resize canvas again
     setTimeout(()=>resizeCanvas(), 0);
   }
 
@@ -797,11 +801,9 @@
   };
 
   let COUNTRY = "KR";
-  let DOC = "PASS"; // ID or PASS
+  let DOC = "PASS";
 
-  function currentPreset(){
-    return PRESETS[COUNTRY][DOC];
-  }
+  function currentPreset(){ return PRESETS[COUNTRY][DOC]; }
 
   function setSegActive(containerId, key, value){
     document.querySelectorAll(`#${containerId} .segBtn`).forEach(b=>{
@@ -846,34 +848,18 @@
   const camBtn    = $("camBtn");
   const drop      = $("drop");
 
-  pickBtn.addEventListener("click", ()=>{
-    pickInput.value = "";
-    pickInput.click();
-  });
-
-  camBtn.addEventListener("click", ()=>{
-    camInput.value = "";
-    camInput.click();
-  });
+  pickBtn.addEventListener("click", ()=>{ pickInput.value = ""; pickInput.click(); });
+  camBtn.addEventListener("click", ()=>{ camInput.value = ""; camInput.click(); });
 
   function isHeic(name){
     const ext = (name||"").toLowerCase().split(".").pop();
     return ext === "heic" || ext === "heif";
   }
 
-  pickInput.addEventListener("change", (e)=> {
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
-  });
-  camInput.addEventListener("change", (e)=> {
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
-  });
+  pickInput.addEventListener("change", (e)=> { const f = e.target.files && e.target.files[0]; if(f) loadFile(f); });
+  camInput.addEventListener("change", (e)=> { const f = e.target.files && e.target.files[0]; if(f) loadFile(f); });
 
-  function openDropPicker(){
-    pickInput.value = "";
-    pickInput.click();
-  }
+  function openDropPicker(){ pickInput.value = ""; pickInput.click(); }
 
   drop.addEventListener("click", openDropPicker);
   drop.addEventListener("keydown", (e)=>{
@@ -884,16 +870,10 @@
   });
 
   ["dragenter","dragover"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{
-      e.preventDefault(); e.stopPropagation();
-      drop.classList.add("drag");
-    });
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
   });
   ["dragleave","drop"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{
-      e.preventDefault(); e.stopPropagation();
-      drop.classList.remove("drag");
-    });
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
   });
   drop.addEventListener("drop", (e)=>{
     const f = e.dataTransfer.files && e.dataTransfer.files[0];
@@ -918,16 +898,24 @@
   let autoCenter = true;
   let showGuide = false;
 
+  function syncToggleUI(){
+    $("toggleAuto").classList.toggle("active", autoCenter);
+    $("toggleGuide").classList.toggle("active", showGuide);
+    $("auto_icon").textContent = autoCenter ? "✅" : "☐";
+    $("guide_icon").textContent = showGuide ? "✅" : "☐";
+    faceGuideEl.classList.toggle("show", showGuide);
+  }
+
   $("toggleAuto").addEventListener("click", ()=>{
     autoCenter = !autoCenter;
-    $("toggleAuto").classList.toggle("active", autoCenter);
     if(autoCenter && imgEl) smartCenter();
+    syncToggleUI();
+    redraw();
   });
 
   $("toggleGuide").addEventListener("click", ()=>{
     showGuide = !showGuide;
-    $("toggleGuide").classList.toggle("active", showGuide);
-    faceGuideEl.classList.toggle("show", showGuide);
+    syncToggleUI();
   });
 
   $("fitBtn").addEventListener("click", ()=>{
@@ -1023,14 +1011,11 @@
     redraw();
   }
 
-  function smartCenter(){
-    fitToCrop();
-  }
+  function smartCenter(){ fitToCrop(); }
 
   function redraw(){
     const rect = stage.getBoundingClientRect();
     ctx.clearRect(0,0,rect.width,rect.height);
-
     if(!imgEl) return;
 
     ctx.save();
@@ -1064,11 +1049,8 @@
   async function loadFile(file){
     if(!file) return;
 
-    if(isHeic(file.name)){
-      setMsg(t().msg_heic, "");
-    } else {
-      setMsg("", "");
-    }
+    if(isHeic(file.name)) setMsg(t().msg_heic, "");
+    else setMsg("", "");
 
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -1082,7 +1064,7 @@
       redraw();
       setMsg(t().msg_ready, "ok");
       updateMeta();
-      resizeCanvas(); // ✅ after image load
+      resizeCanvas();
     };
     img.onerror = ()=>{
       URL.revokeObjectURL(url);
@@ -1096,7 +1078,7 @@
     img.src = url;
   }
 
-  // ========= pointer events (drag + pinch) =========
+  // ========= pointer events =========
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
@@ -1258,10 +1240,10 @@
 
   // init
   setLang(LANG);
+  syncToggleUI();     // ✅ 토글 아이콘/상태 동기화
   resizeCanvas();
   refreshPresetPill();
 
-  // If home page sent an image via sessionStorage
   try{
     const dataUrl = sessionStorage.getItem("cf24_idphoto_img");
     if(dataUrl){
