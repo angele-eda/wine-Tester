@@ -109,7 +109,7 @@
 
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ tool links (ID photo etc.) */
+    /* ✅ tools */
     .tools{
       margin-top:10px;
       display:flex;
@@ -148,24 +148,7 @@
       gap:6px;
     }
 
-    /* small links (Privacy/Terms) */
-    .toolLink{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      border:var(--border);
-      background:rgba(255,255,255,.06);
-      color:#e9eef7;
-      padding:10px 12px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:12px;
-      text-decoration:none;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .toolLink:hover{ background:rgba(255,255,255,.09); }
-
-    /* ✅ LANGUAGE AREA (separate block) */
+    /* ✅ LANGUAGE AREA */
     .langArea{
       display:flex;
       flex-direction:column;
@@ -201,7 +184,6 @@
       white-space:nowrap;
       flex:0 0 auto;
 
-      /* ✅ flag alignment */
       display:inline-flex;
       align-items:center;
       gap:8px;
@@ -291,7 +273,6 @@
     }
     .previewActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 
-    /* Crop button (only one, small) */
     .miniBtn{
       border:var(--border);
       background:rgba(255,255,255,.06);
@@ -430,19 +411,16 @@
         <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Tools: big tool + small links -->
+        <!-- ✅ Top: ONLY ID Photo -->
         <div class="tools">
           <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
             🪪 <span id="tool_idphoto_text">ID Photo</span>
             <span class="badge">✨ <span id="tool_badge">NEW</span></span>
           </a>
-
-          <a class="toolLink" href="/privacy.html">🔒 <span id="tool_privacy">Privacy</span></a>
-          <a class="toolLink" href="/terms.html">📄 <span id="tool_terms">Terms</span></a>
         </div>
       </div>
 
-      <!-- ✅ Language block (separated, flagged) -->
+      <!-- ✅ Language -->
       <div class="langArea" aria-label="Language selector">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
         <div class="langbar">
@@ -489,7 +467,7 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview head with ONLY crop -->
+        <!-- ✅ Preview: ONLY ✂️ -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
@@ -563,6 +541,7 @@
       </div>
     </div>
 
+    <!-- ✅ Footer: Privacy/Terms ONLY HERE -->
     <div class="footer">
       © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages ·
       <a href="/privacy.html">Privacy</a> ·
@@ -574,7 +553,6 @@
 (() => {
   "use strict";
 
-  // ✅ Samsung Internet detection: enable CSS fix only there
   if (/SamsungBrowser/i.test(navigator.userAgent)) {
     document.documentElement.dataset.samsung = "true";
   }
@@ -605,9 +583,6 @@
 
   $("year").textContent = new Date().getFullYear();
 
-  // =========================
-  // i18n
-  // =========================
   const STR = {
     en: {
       seoTitle: "ConvertFiles24 – Free Converter (Images & PDF)",
@@ -618,8 +593,6 @@
       lang_label: "Language",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
-      tool_privacy: "Privacy",
-      tool_terms: "Terms",
       h_upload: "1) Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
@@ -675,8 +648,6 @@
       lang_label: "언어",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
-      tool_privacy: "Privacy",
-      tool_terms: "Terms",
       h_upload: "1) 업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
@@ -732,8 +703,6 @@
       lang_label: "言語",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
-      tool_privacy: "Privacy",
-      tool_terms: "Terms",
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
@@ -789,8 +758,6 @@
       lang_label: "Idioma",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
-      tool_privacy: "Privacy",
-      tool_terms: "Terms",
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
@@ -937,15 +904,11 @@
     });
   }
 
-  // ✅ keep tool link lang
   function syncToolLinks(){
     const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
     toolIdPhoto.href = url;
   }
 
-  // =========================
-  // State
-  // =========================
   let files = [];
   let activeIndex = 0;
 
@@ -975,8 +938,6 @@
     $("lang_label").textContent = t.lang_label;
     $("tool_idphoto_text").textContent = t.tool_idphoto;
     $("tool_badge").textContent = t.tool_badge;
-    $("tool_privacy").textContent = t.tool_privacy;
-    $("tool_terms").textContent = t.tool_terms;
 
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
@@ -1539,7 +1500,6 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Crop button: send selected single image to /id-photo/ via sessionStorage
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
@@ -1563,7 +1523,6 @@
     }
   });
 
-  // init
   setLang(LANG);
   resetAll();
 })();
