@@ -350,7 +350,7 @@
       text-align:center;
     }
 
-    /* (옵션) doc도 동일폭 원하면 켜기 */
+    /* doc도 동일폭 */
     #docSeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -493,8 +493,10 @@
 
         <div class="row">
           <div class="seg" style="gap:8px;">
+            <!-- ✅ 기본 ON: active -->
             <div class="segBtn active" id="toggleAuto"><span id="auto_icon">✅</span> <span id="auto_txt">Auto center (recommended)</span></div>
-            <div class="segBtn" id="toggleGuide"><span id="guide_icon">☑️</span> <span id="guide_txt">Show face guide</span></div>
+            <!-- ✅ 기본 ON: active -->
+            <div class="segBtn active" id="toggleGuide"><span id="guide_icon">✅</span> <span id="guide_txt">Show face guide</span></div>
           </div>
         </div>
 
@@ -895,8 +897,9 @@
   let offsetX = 0;
   let offsetY = 0;
 
+  // ✅ 기본값을 둘 다 ON으로
   let autoCenter = true;
-  let showGuide = false;
+  let showGuide = true;
 
   function syncToggleUI(){
     $("toggleAuto").classList.toggle("active", autoCenter);
@@ -1240,7 +1243,7 @@
 
   // init
   setLang(LANG);
-  syncToggleUI();     // ✅ 토글 아이콘/상태 동기화
+  syncToggleUI();     // ✅ 초기 상태를 변수값(둘다 ON)에 맞춰 강제 동기화
   resizeCanvas();
   refreshPresetPill();
 
