@@ -1,21 +1,13 @@
 <!doctype html>
-<html lang="ko" translate="no">
+<html lang="en" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>ConvertFiles24 – 증명사진 / 여권사진 (서버 업로드 없음)</title>
-  <meta name="description" content="증명사진·여권사진을 브라우저에서 바로 만들고 다운로드하세요. 파일은 서버로 업로드되지 않고 로컬에서 처리됩니다." />
+  <title>ConvertFiles24 – ID Photo / Passport</title>
+  <meta name="description" content="Make ID photo / passport photo in your browser — processed locally (no server upload)." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
-  <link rel="canonical" href="https://convertfiles24.com/id-photo/" />
-
-  <!-- hreflang -->
-  <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/id-photo/?lang=ko" />
-  <link rel="alternate" hreflang="en" href="https://convertfiles24.com/id-photo/?lang=en" />
-  <link rel="alternate" hreflang="es" href="https://convertfiles24.com/id-photo/?lang=es" />
-  <link rel="alternate" hreflang="ja" href="https://convertfiles24.com/id-photo/?lang=ja" />
-  <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/id-photo/" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,798 +15,775 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#0b0f17;
-      --card:rgba(255,255,255,.03);
-      --border:1px solid rgba(255,255,255,.12);
-      --radius:16px;
-      --pad:16px;
-      --text:#e9eef7;
-      --muted:#a7b3c7;
-      --blue:#2f6df6;
-    }
+    :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
     *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
-      background:var(--bg);
-      color:var(--text);
+      background:#0b0f17;
+      color:#e9eef7;
       overflow-x:hidden;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
-      font-kerning: normal;
-      font-optical-sizing: auto;
     }
-    button, input, select, textarea{
-      font-family: inherit;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-    }
-    a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
-    a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
-
     .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
     .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
       flex-wrap:wrap; margin-bottom:14px;
     }
-    .site-title{
+    .title{
       margin:0;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-0.35px;
       line-height:1.15;
       color:#ffffff;
-      font-size:24px;
+      font-size:22px;
     }
-    @media (min-width:1024px){ .site-title{ font-size:32px; } }
-    @media (max-width:768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
-
-    .sub{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.45; }
-    .nav{
-      display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
-    }
-
-    .pill{
-      font-size:12px; color:#b8c6dc; border:var(--border);
-      padding:8px 10px; border-radius:999px;
-      background:rgba(255,255,255,.04);
-      white-space:nowrap;
-    }
-
+    .sub{ margin:8px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
     .homeBtn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
+      width:100%;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
       border-radius:999px;
+      border:1px solid rgba(47,109,246,.55);
       background:rgba(47,109,246,.18);
-      border:1px solid rgba(47,109,246,.45);
       color:#e9eef7;
-      font-size:12px;
-      font-weight:800;
-      text-decoration:none;
-      box-shadow: 0 10px 26px rgba(0,0,0,.28);
-    }
-    .homeBtn:hover{
-      background:rgba(47,109,246,.25);
-      border-color:rgba(47,109,246,.6);
-      color:#ffffff;
-    }
-    .homeIcon{ width:16px; height:16px; display:inline-block; filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
-
-    .langSelect{
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.05);
-      color:#e9eef7;
-      font-weight:800;
-      font-size:12px;
-      outline:none;
+      font-weight:900;
       cursor:pointer;
+      text-decoration:none;
+      user-select:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      max-width:380px;
     }
-    .langSelect option{ background:#0b0f17; color:#e9eef7; }
+    .homeBtn:hover{ background:rgba(47,109,246,.24); }
 
-    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:12px; }
-    @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
-
-    .card{
-      border:var(--border);
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:var(--pad);
-      min-width:0;
+    .langRow{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      min-width:220px;
     }
-    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
-
-    .drop{
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      display:flex; align-items:center; justify-content:center; text-align:center;
-      background:rgba(255,255,255,.02);
-      min-height:210px;
-      cursor:pointer; user-select:none;
-      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
-      position: relative;
-    }
-    .drop:active{ transform: scale(0.998); }
-    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
-    .drop.active{
-      border-color: rgba(47,109,246,.55);
-      background: rgba(47,109,246,.08);
-      box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
-    }
-    .dropEmoji{
-      font-size:42px; line-height:1; margin:12px 0 8px;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
-    }
-    input[type="file"]{ display:none; }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > *{ flex:1; min-width:160px; }
-    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-
-    select, input[type="number"]{
-      width:100%; padding:12px 12px; border-radius:14px;
-      background:rgba(255,255,255,.06);
-      color:var(--text); border:var(--border);
-      outline:none;
-    }
-    select{ background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
-    option{ background-color: #0b0f17; color:#e9eef7; }
-
-    .btn{
-      appearance:none; border:none; cursor:pointer;
-      background:var(--blue); color:white; font-weight:800;
-      padding:12px 14px; border-radius:14px; width:100%;
-      font-size:15px;
-      letter-spacing:-0.2px;
-    }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
-    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
-
-    /* ✅ 2단계 선택 UI */
-    .seg{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-top:8px;
-    }
-    .segTitle{
-      margin-top:6px;
+    .langLabel{
       font-size:12px;
       font-weight:900;
       color:#9fb0ca;
       letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.95;
     }
-    .seg button{
+    .langSelect{
+      width:220px;
+      max-width:100%;
+      padding:12px 12px;
+      border-radius:999px;
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      outline:none;
+      font-weight:900;
+    }
+    option{ background:#0b0f17; color:#e9eef7; }
+
+    .pill{
+      width:100%;
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:999px;
+      padding:10px 14px;
+      color:#b8c6dc;
+      font-size:13px;
+      font-weight:900;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+
+    .card{
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      margin-top:12px;
+      min-width:0;
+    }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .row > * { flex:1; min-width:160px; }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:#2f6df6; color:white; font-weight:900;
+      padding:12px 14px; border-radius:14px; width:100%;
+      font-size:14px;
+      letter-spacing: -0.2px;
+      user-select:none;
+    }
+    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      background:rgba(255,255,255,.02);
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
+      position: relative;
+      min-height: 180px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
+    .drop:active{ transform: scale(0.998); }
+    .dropEmoji{
+      font-size:42px;
+      line-height:1;
+      margin:10px 0 8px;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
+    }
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
+
+    /* Segmented buttons */
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .segBtn{
       border:var(--border);
       background:rgba(255,255,255,.04);
-      color:#cfe0ff;
+      color:#b8c6dc;
       padding:10px 12px;
-      border-radius:12px;
+      border-radius:999px;
       cursor:pointer;
       font-weight:900;
       font-size:12px;
-      white-space:nowrap;
       display:inline-flex;
       align-items:center;
       gap:8px;
+      user-select:none;
+      white-space:nowrap;
     }
-    .seg button.active{
-      background:rgba(47,109,246,.22);
-      border-color:rgba(47,109,246,.55);
+    .segBtn.active{
       color:#e9eef7;
-    }
-    .seg button:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-    }
-
-    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
-    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
-    .err{ color:#ffb4b4; }
-    .ok{ color:#b8ffcc; }
-
-    .editorWrap{
-      border:var(--border);
-      border-radius:14px;
-      overflow:hidden;
-      background:rgba(255,255,255,.02);
-      position:relative;
-      min-height:280px;
+      background:rgba(255,255,255,.10);
+      border-color:rgba(255,255,255,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
 
-    canvas{ display:block; width:100%; height:auto; background:#0a0e16; }
-
-    .controls{
-      margin-top:10px;
+    /* Crop stage */
+    .stageWrap{
       display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+    }
+    @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
+
+    .stage{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25);
+      border-radius:16px;
+      overflow:hidden;
+      position:relative;
+      aspect-ratio: 4 / 3;
+      min-height: 320px;
+      touch-action: none; /* for pointer events & pinch */
+    }
+    @media (max-width: 480px){ .stage{ min-height: 280px; } }
+
+    canvas{ display:block; width:100%; height:100%; }
+
+    .overlay{
+      position:absolute; inset:0;
+      pointer-events:none;
+    }
+    .cropBox{
+      position:absolute;
+      left:50%; top:50%;
+      transform:translate(-50%,-50%);
+      border:2px solid rgba(106,169,255,.85);
+      box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
+      border-radius:8px;
+    }
+    .gridLines{
+      position:absolute; inset:0;
+      border-radius:8px;
+      overflow:hidden;
+    }
+    .gridLines::before, .gridLines::after{
+      content:"";
+      position:absolute; left:0; top:0; right:0; bottom:0;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.35) 0 0) 33.33% 0/1px 100% no-repeat,
+        linear-gradient(to right, rgba(255,255,255,.35) 0 0) 66.66% 0/1px 100% no-repeat,
+        linear-gradient(to bottom, rgba(255,255,255,.35) 0 0) 0 33.33%/100% 1px no-repeat,
+        linear-gradient(to bottom, rgba(255,255,255,.35) 0 0) 0 66.66%/100% 1px no-repeat;
+      opacity:.35;
     }
 
-    .sliderRow{
-      display:flex; gap:10px; align-items:center;
-      border:var(--border);
-      background:rgba(255,255,255,.04);
-      padding:10px 12px;
-      border-radius:14px;
+    .faceGuide{
+      position:absolute;
+      left:50%; top:50%;
+      transform:translate(-50%,-52%);
+      width:46%;
+      aspect-ratio: 3/4;
+      border:2px dashed rgba(255,255,255,.45);
+      border-radius:999px;
+      opacity:.75;
+      display:none;
     }
-    .sliderRow b{ font-size:12px; color:#dbe7ff; width:64px; flex:0 0 auto; }
-    input[type="range"]{ width:100%; }
+    .faceGuide.show{ display:block; }
+
+    .meta{
+      color:#b7c3d9;
+      font-size:13px;
+      line-height:1.5;
+      word-break:break-word;
+    }
+    .meta b{ color:#e9eef7; }
+
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .msg.err{ color:#ffb4b4; }
+    .msg.ok{ color:#b8ffcc; }
 
     .footer{
-      margin-top:14px; color:#94a6c2; font-size:12px; text-align:center;
+      margin-top:16px;
+      color:#94a6c2;
+      font-size:12px;
+      text-align:center;
     }
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    @media (max-width:420px){
-      .nav{ justify-content:flex-start; }
-      .homeBtn{ width:100%; justify-content:center; }
-      .langSelect{ width:100%; }
-      .pill{ width:100%; text-align:center; }
+    input[type="file"]{ display:none; }
+    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+    select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      border:var(--border);
+      outline:none;
+      font-weight:900;
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="top">
-      <div>
-        <h1 class="site-title" id="t_title">ConvertFiles24 · 증명사진 / 여권사진</h1>
-        <p class="sub" id="t_sub">
-          업로드 → 위치/확대 조절 → 다운로드. <b>서버 업로드 없이</b> 브라우저에서 로컬 처리됩니다.
-        </p>
+      <div style="flex:1; min-width:240px;">
+        <h1 class="title" id="page_title">ConvertFiles24 · ID Photo / Passport</h1>
+        <p class="sub" id="page_sub">Upload → adjust position/zoom → download. Processed locally in your browser.</p>
+
+        <div style="margin-top:10px;">
+          <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="pill">🔒 <span id="local_processing">Local processing</span></div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="pill" id="presetPill">Preset: KR · Passport (3.5×4.5)</div>
+        </div>
       </div>
 
-      <div class="nav">
-        <a class="homeBtn" href="/" aria-label="Home">
-          <svg class="homeIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M3 10.5L12 3l9 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 9.8V21h14V9.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span id="t_homeBtn">홈으로</span>
-        </a>
-
-        <select class="langSelect" id="lang" aria-label="Language">
+      <div class="langRow">
+        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+        <select class="langSelect" id="langSelect" aria-label="Language">
+          <option value="en">🌐 Global (English)</option>
           <option value="ko">🇰🇷 한국어</option>
-          <option value="en">🇺🇸 English</option>
           <option value="es">🇪🇸 Español</option>
           <option value="ja">🇯🇵 日本語</option>
         </select>
-
-        <span class="pill" id="t_localPill">🔒 Local processing</span>
-        <span class="pill" id="presetLabel">Preset: KR · ID (3×4)</span>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- Left -->
-      <div class="card">
-        <h2 id="t_step1">1) 사진 업로드</h2>
+    <!-- 0) Country & Doc type -->
+    <div class="card">
+      <h2 id="h_step0">0) Select</h2>
 
-        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose photo">
+      <div class="row">
+        <div>
+          <label id="lbl_country">Country</label>
+          <div class="seg" id="countrySeg">
+            <div class="segBtn active" data-country="KR">🇰🇷 Korea</div>
+            <div class="segBtn" data-country="US">🇺🇸 USA</div>
+            <div class="segBtn" data-country="EU">🇪🇺 EU</div>
+            <div class="segBtn" data-country="JP">🇯🇵 Japan</div>
+          </div>
+        </div>
+
+        <div>
+          <label id="lbl_doc">Document type</label>
+          <div class="seg" id="docSeg">
+            <div class="segBtn" data-doc="ID">🪪 ID Photo</div>
+            <div class="segBtn active" data-doc="PASS">🛂 Passport</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint" id="hint_2step">
+        Tip: Choose country first, then choose document type.
+      </div>
+    </div>
+
+    <div class="stageWrap">
+      <!-- Left: upload + crop stage -->
+      <div class="card">
+        <h2 id="h_step1">1) Upload photo</h2>
+
+        <div class="row">
+          <button class="btn secondary" id="pickBtn" type="button">📁 Choose photo</button>
+          <button class="btn" id="camBtn" type="button">📷 Open camera</button>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload photo">
           <div style="width:100%;">
-            <div style="font-weight:800; margin-bottom:6px;" id="dropTitle">여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택</div>
+            <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop photo here<br/>or tap to upload</div>
             <div class="dropEmoji" aria-hidden="true">🪪</div>
-            <input id="file" type="file" accept="image/*" />
-            <div class="hint" id="t_dropHint">지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)</div>
+            <div class="hint" id="drop_hint">Supports: JPG, PNG, WebP (HEIC may not work on some devices)</div>
           </div>
         </div>
 
         <div style="height:12px;"></div>
 
-        <h2 id="t_step2">2) 미리보기 / 크롭</h2>
-        <div class="editorWrap" id="editorWrap">
-          <canvas id="canvas" aria-label="Crop editor"></canvas>
+        <h2 id="h_step2">2) Preview / Crop</h2>
+
+        <div class="stage" id="stage">
+          <canvas id="cv"></canvas>
+
+          <div class="overlay" id="overlay">
+            <div class="cropBox" id="cropBox">
+              <div class="gridLines"></div>
+            </div>
+            <div class="faceGuide" id="faceGuide"></div>
+          </div>
         </div>
 
-        <div class="controls">
-          <!-- ✅ 2단계 선택 UI -->
-          <div class="segTitle" id="t_countryTitle">국가</div>
-          <div class="seg" aria-label="Country presets">
-            <button type="button" class="countryBtn active" data-country="kr" id="c_kr">🇰🇷 Korea</button>
-            <button type="button" class="countryBtn" data-country="us" id="c_us">🇺🇸 USA</button>
-            <button type="button" class="countryBtn" data-country="eu" id="c_eu">🇪🇺 EU</button>
-            <button type="button" class="countryBtn" data-country="jp" id="c_jp">🇯🇵 Japan</button>
-          </div>
-
-          <div class="segTitle" id="t_docTitle">문서</div>
-          <div class="seg" aria-label="Document type">
-            <button type="button" class="docBtn active" data-doc="id" id="d_id">🪪 증명사진</button>
-            <button type="button" class="docBtn" data-doc="passport" id="d_passport">🛂 여권사진</button>
-          </div>
-
-          <!-- ✅ 가이드 -->
-          <div class="sliderRow">
-            <b id="t_guide">가이드</b>
-            <div style="display:flex; gap:10px; align-items:center; width:100%; flex-wrap:wrap;">
-              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
-                <input type="checkbox" id="showGuide" checked />
-                <span id="t_showGuide">얼굴 가이드 표시</span>
-              </label>
-              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
-                <input type="checkbox" id="snapCenter" checked />
-                <span id="t_snapCenter">자동 중앙(권장)</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="sliderRow">
-            <b id="t_zoom">확대</b>
-            <input id="zoom" type="range" min="0.2" max="4" step="0.01" value="1" />
-          </div>
-
-          <div class="row">
-            <div>
-              <label id="t_upscale">업스케일</label>
-              <select id="upscaleFactor">
-                <option value="1">1× (기본)</option>
-                <option value="2">2× (선명도↑)</option>
-                <option value="4">4× (고해상도)</option>
-              </select>
-            </div>
-            <div>
-              <label id="t_outFormat">출력 형식</label>
-              <select id="outFormat">
-                <option value="image/jpeg">JPG</option>
-                <option value="image/png">PNG</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label id="t_bgFill">배경색 (JPG에서 투명 대신 채움)</label>
-              <select id="bgFill">
-                <option value="#ffffff" id="t_bg1">흰색</option>
-                <option value="#e9eef7" id="t_bg2">연한 회백</option>
-                <option value="#cfe0ff" id="t_bg3">연한 하늘</option>
-                <option value="#0b0f17" id="t_bg4">어두운(테스트용)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label id="t_outW">출력 가로(px)</label>
-              <input id="outW" type="number" min="64" step="1" />
-            </div>
-            <div>
-              <label id="t_outH">출력 세로(px)</label>
-              <input id="outH" type="number" min="64" step="1" />
-            </div>
-          </div>
-
-          <div class="row">
-            <button class="btn" id="download" disabled>다운로드</button>
-            <button class="btn secondary" id="reset" disabled>초기화</button>
-          </div>
-
-          <div class="msg" id="msg"></div>
-          <div class="hint" id="t_howto">
-            ✅ 사용법: 사진 업로드 후, <b>사진을 드래그</b>해서 위치를 옮기고 <b>확대 슬라이더</b>로 크기를 맞추세요.<br/>
-            * 모바일에서 두 손가락 확대/축소 대신, 슬라이더 방식이라 안정적입니다.
-          </div>
-        </div>
+        <div class="msg" id="msg"></div>
       </div>
 
-      <!-- Right -->
+      <!-- Right: controls -->
       <div class="card">
-        <h2 id="t_infoTitle">설명</h2>
-        <div class="hint" style="margin-top:0" id="t_info1">
-          <b>국가 → 문서(증명/여권)</b> 순서로 선택하면, 해당 규격의 <b>비율/권장 픽셀/가이드</b>가 자동 적용됩니다.
+        <h2 id="h_controls">Controls</h2>
+
+        <div class="row">
+          <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
+          <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
         </div>
 
         <div style="height:10px;"></div>
 
-        <div class="hint" id="t_info2">
-          <b>권장 프리셋 예시</b><br/>
-          • KR 증명(3×4): 354×472px<br/>
-          • KR 여권(3.5×4.5): 413×531px<br/>
-          • USA 여권(2×2): 600×600px<br/>
-          • EU/JP 여권(35×45mm): 413×531px
+        <div class="row">
+          <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom</button>
+          <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom</button>
         </div>
 
+        <div style="height:12px;"></div>
+
+        <div class="row">
+          <div class="seg" style="gap:8px;">
+            <div class="segBtn active" id="toggleAuto">✅ <span id="auto_txt">Auto center (recommended)</span></div>
+            <div class="segBtn" id="toggleGuide">☑️ <span id="guide_txt">Show face guide</span></div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="row">
+          <div>
+            <label id="lbl_dpi">DPI</label>
+            <select id="dpi">
+              <option value="300" selected>300</option>
+              <option value="600">600</option>
+            </select>
+            <div class="small" id="dpi_hint">300dpi is enough for most printing.</div>
+          </div>
+          <div>
+            <label id="lbl_format">Output</label>
+            <select id="outFormat">
+              <option value="image/jpeg" selected>JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+            <div class="small" id="fmt_hint">JPG recommended.</div>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <h2 id="h_step3">3) Download</h2>
+        <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
         <div style="height:10px;"></div>
+        <button class="btn secondary" id="resetBtn" type="button" disabled>Reset</button>
 
-        <div class="hint" id="t_info3">
-          <b>팁</b><br/>
-          • JPG로 받으면 배경색이 깔끔하게 채워져요.<br/>
-          • PNG는 투명 배경이 가능하지만, 증명사진은 보통 흰 배경이 많아서 JPG를 권장해요.<br/>
-          • 업스케일 2×/4×는 “다운로드 해상도”만 키우는 간단 옵션입니다.
-        </div>
-
-        <div style="height:14px;"></div>
-
-        <div class="footer">
-          © <span id="year"></span> ConvertFiles24 ·
-          <a href="/" id="t_footerHome">Home</a>
+        <div style="height:12px;"></div>
+        <div class="meta" id="meta">
+          <b>Preview</b><br/>Upload a photo to start cropping.
         </div>
       </div>
     </div>
+
+    <div class="footer">
+      © <span id="year"></span> ConvertFiles24 ·
+      <a href="/privacy.html">Privacy</a> ·
+      <a href="/terms.html">Terms</a>
+    </div>
   </div>
+
+  <!-- hidden inputs -->
+  <input id="pickInput" type="file" accept="image/*">
+  <input id="camInput" type="file" accept="image/*" capture="environment">
 
 <script>
 (() => {
   "use strict";
-  const $ = (id) => document.getElementById(id);
+  const $ = (id)=>document.getElementById(id);
 
-  // ---- i18n (간단 유지) ----
-  const I18N = {
-    ko: {
-      htmlLang:"ko",
-      title:"ConvertFiles24 · 증명사진 / 여권사진",
-      sub:`업로드 → 위치/확대 조절 → 다운로드. <b>서버 업로드 없이</b> 브라우저에서 로컬 처리됩니다.`,
-      homeBtn:"홈으로",
-      localPill:"🔒 Local processing",
-      step1:"1) 사진 업로드",
-      step2:"2) 미리보기 / 크롭",
-      dropTitle:"여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택",
-      dropHint:"지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)",
-      countryTitle:"국가",
-      docTitle:"문서",
-      idPhoto:"🪪 증명사진",
-      passport:"🛂 여권사진",
-      guide:"가이드",
-      showGuide:"얼굴 가이드 표시",
-      snapCenter:"자동 중앙(권장)",
-      zoom:"확대",
-      upscale:"업스케일",
-      outFormat:"출력 형식",
-      bgFill:"배경색 (JPG에서 투명 대신 채움)",
-      bg1:"흰색",
-      bg2:"연한 회백",
-      bg3:"연한 하늘",
-      bg4:"어두운(테스트용)",
-      outW:"출력 가로(px)",
-      outH:"출력 세로(px)",
-      howto:`✅ 사용법: 사진 업로드 후, <b>사진을 드래그</b>해서 위치를 옮기고 <b>확대 슬라이더</b>로 크기를 맞추세요.<br/>
-             * 모바일에서 두 손가락 확대/축소 대신, 슬라이더 방식이라 안정적입니다.`,
-      infoTitle:"설명",
-      footerHome:"Home",
-      msgReady:"준비 완료! 사진을 드래그해서 위치를 맞추고 다운로드하세요.",
-      msgLoading:"로딩 중…",
-      errOnlyImg:"이미지 파일만 지원합니다.",
-      errLoadFail:"이미지를 불러오지 못했어요. 다른 파일로 시도해 주세요.",
-      errSize:"출력 가로/세로(px)를 확인해 주세요.",
-      errDlFail:"다운로드 실패. 다시 시도해 주세요.",
-      okDlStart:"다운로드 시작: ",
-      warnNotAvailable:"이 조합은 아직 준비 중입니다. (자동으로 가능한 프리셋으로 전환됨)"
-    },
-    en: {
-      htmlLang:"en",
-      title:"ConvertFiles24 · Passport / ID Photo Maker",
-      sub:`Upload → move/zoom → download. <b>No server upload</b> — processed locally in your browser.`,
-      homeBtn:"Home",
-      localPill:"🔒 Local processing",
-      step1:"1) Upload photo",
-      step2:"2) Preview / Crop",
-      dropTitle:"Drag & drop a photo here<br/>or tap to choose",
-      dropHint:"Supported: JPG, PNG, WebP (HEIC may not work on some devices/browsers)",
-      countryTitle:"Country",
-      docTitle:"Document",
-      idPhoto:"🪪 ID Photo",
-      passport:"🛂 Passport Photo",
-      guide:"Guide",
-      showGuide:"Show face guide",
-      snapCenter:"Auto center (recommended)",
-      zoom:"Zoom",
-      upscale:"Upscale",
-      outFormat:"Output format",
-      bgFill:"Background fill (JPG replaces transparency)",
-      bg1:"White",
-      bg2:"Light gray",
-      bg3:"Light sky",
-      bg4:"Dark (test)",
-      outW:"Output width (px)",
-      outH:"Output height (px)",
-      howto:`✅ How to: Upload a photo, <b>drag</b> to position, and use the <b>zoom slider</b>.<br/>
-             * Slider zoom is stable on mobile.`,
-      infoTitle:"Info",
-      footerHome:"Home",
-      msgReady:"Ready! Drag to position and download.",
-      msgLoading:"Loading…",
-      errOnlyImg:"Images only.",
-      errLoadFail:"Failed to load the image. Try another file.",
-      errSize:"Check output width/height (px).",
-      errDlFail:"Download failed. Try again.",
-      okDlStart:"Downloading: ",
-      warnNotAvailable:"This combo is not available yet. Switching to a supported preset."
-    },
-    es: {
-      htmlLang:"es",
-      title:"ConvertFiles24 · Creador de Fotos para Pasaporte / ID",
-      sub:`Sube → mueve/zoom → descarga. <b>Sin subir al servidor</b> — se procesa localmente en tu navegador.`,
-      homeBtn:"Inicio",
-      localPill:"🔒 Procesamiento local",
-      step1:"1) Subir foto",
-      step2:"2) Vista previa / Recorte",
-      dropTitle:"Arrastra y suelta una foto aquí<br/>o toca para elegir",
-      dropHint:"Soporta: JPG, PNG, WebP (HEIC puede no funcionar en algunos dispositivos/navegadores)",
-      countryTitle:"País",
-      docTitle:"Documento",
-      idPhoto:"🪪 Foto ID",
-      passport:"🛂 Pasaporte",
-      guide:"Guía",
-      showGuide:"Mostrar guía de rostro",
-      snapCenter:"Centrar automático (recomendado)",
-      zoom:"Zoom",
-      upscale:"Escalar",
-      outFormat:"Formato",
-      bgFill:"Relleno de fondo (JPG reemplaza transparencia)",
-      bg1:"Blanco",
-      bg2:"Gris claro",
-      bg3:"Cielo claro",
-      bg4:"Oscuro (test)",
-      outW:"Ancho (px)",
-      outH:"Alto (px)",
-      howto:`✅ Cómo usar: Sube una foto, <b>arrastra</b> para posicionar y usa el <b>slider de zoom</b>.<br/>
-             * Zoom por slider es estable en móvil.`,
-      infoTitle:"Info",
-      footerHome:"Inicio",
-      msgReady:"¡Listo! Arrastra para posicionar y descarga.",
-      msgLoading:"Cargando…",
-      errOnlyImg:"Solo imágenes.",
-      errLoadFail:"No se pudo cargar. Prueba otro archivo.",
-      errSize:"Revisa ancho/alto (px).",
-      errDlFail:"Fallo de descarga. Intenta de nuevo.",
-      okDlStart:"Descargando: ",
-      warnNotAvailable:"Esta combinación no está disponible aún. Cambiando a un ajuste compatible."
-    },
-    ja: {
-      htmlLang:"ja",
-      title:"ConvertFiles24 · 証明写真 / パスポート写真",
-      sub:`アップロード → 移動/拡大 → ダウンロード。<b>サーバーに送信せず</b>ブラウザ内でローカル処理します。`,
-      homeBtn:"ホーム",
-      localPill:"🔒 ローカル処理",
-      step1:"1) 写真をアップロード",
-      step2:"2) プレビュー / トリミング",
-      dropTitle:"ここにドラッグ&ドロップ<br/>またはタップして選択",
-      dropHint:"対応: JPG, PNG, WebP（HEICは環境により不可の場合あり）",
-      countryTitle:"国",
-      docTitle:"書類",
-      idPhoto:"🪪 証明写真",
-      passport:"🛂 パスポート",
-      guide:"ガイド",
-      showGuide:"顔ガイド表示",
-      snapCenter:"自動中央（推奨）",
-      zoom:"拡大",
-      upscale:"アップスケール",
-      outFormat:"出力形式",
-      bgFill:"背景色（JPGは透明を置換）",
-      bg1:"白",
-      bg2:"薄いグレー",
-      bg3:"薄い水色",
-      bg4:"暗い（テスト）",
-      outW:"横(px)",
-      outH:"縦(px)",
-      howto:`✅ 使い方：アップロード後、<b>ドラッグ</b>で位置調整、<b>拡大スライダー</b>でサイズ調整。<br/>
-             * モバイルでも安定します。`,
-      infoTitle:"説明",
-      footerHome:"Home",
-      msgReady:"準備完了！ドラッグで調整してダウンロードしてください。",
-      msgLoading:"読み込み中…",
-      errOnlyImg:"画像のみ対応です。",
-      errLoadFail:"画像を読み込めませんでした。別のファイルで試してください。",
-      errSize:"出力サイズ(px)を確認してください。",
-      errDlFail:"ダウンロードに失敗しました。もう一度お試しください。",
-      okDlStart:"ダウンロード開始: ",
-      warnNotAvailable:"この組み合わせは未対応です。対応プリセットへ切り替えます。"
-    }
-  };
-
-  function setText(id, html){ const el=$(id); if(el) el.innerHTML = html; }
-  function setPlain(id, text){ const el=$(id); if(el) el.textContent = text; }
-
-  // ---- Year ----
   $("year").textContent = new Date().getFullYear();
 
-  // ---- Elements ----
-  const drop = $("drop");
-  const fileInput = $("file");
-  const canvas = $("canvas");
-  const wrap = $("editorWrap");
-
-  const outFormat = $("outFormat");
-  const bgFill = $("bgFill");
-  const outW = $("outW");
-  const outH = $("outH");
-  const zoomEl = $("zoom");
-  const showGuide = $("showGuide");
-  const snapCenter = $("snapCenter");
-  const upscaleFactorEl = $("upscaleFactor");
-
-  const presetLabel = $("presetLabel");
-  const btnDownload = $("download");
-  const btnReset = $("reset");
-  const msg = $("msg");
-
-  const ctx = canvas.getContext("2d", { alpha: true });
-
-  function setMsg(text, type){
-    msg.textContent = text || "";
-    msg.className = "msg " + (type || "");
-  }
-  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-  // =========================================================
-  // ✅ 2단계 프리셋: country + doc
-  // =========================================================
-  const PRESETS = {
-    kr: {
-      labelEN: "KR",
-      labelKO: "Korea",
-      docs: {
-        id:       { key:"kr_id",       name:"KR · ID (3×4)",          ratio: 3/4,         outW:354, outH:472, guide:{ headTop:0.18, chin:0.76 } },
-        passport: { key:"kr_passport", name:"KR · Passport (3.5×4.5)", ratio: 3.5/4.5,     outW:413, outH:531, guide:{ headTop:0.16, chin:0.78 } }
-      }
+  // ========= i18n =========
+  const STR = {
+    en: {
+      page_title: "ConvertFiles24 · ID Photo / Passport",
+      page_sub: "Upload → adjust position/zoom → download. Processed locally in your browser.",
+      home: "🏠 Home",
+      local: "Local processing",
+      lang_label: "Language",
+      step0: "0) Select",
+      country: "Country",
+      doc: "Document type",
+      tip2: "Tip: Choose country first, then choose document type.",
+      step1: "1) Upload photo",
+      choose: "📁 Choose photo",
+      camera: "📷 Open camera",
+      drop_title: "Drop photo here<br/>or tap to upload",
+      drop_hint: "Supports: JPG, PNG, WebP (HEIC may not work on some devices)",
+      step2: "2) Preview / Crop",
+      controls: "Controls",
+      fit: "↔ Fit",
+      center: "🎯 Center",
+      zoomOut: "➖ Zoom",
+      zoomIn: "➕ Zoom",
+      auto: "Auto center (recommended)",
+      guide: "Show face guide",
+      dpi: "DPI",
+      dpi_hint: "300dpi is enough for most printing.",
+      out: "Output",
+      out_hint: "JPG recommended.",
+      step3: "3) Download",
+      download: "⬇️ Download",
+      reset: "Reset",
+      msg_need: "Please upload a photo first.",
+      msg_ready: "Ready. Drag to move, pinch/press buttons to zoom.",
+      msg_heic: "HEIC/HEIF may not work on some browsers. If preview fails, save as JPG/PNG and try again.",
+      msg_fail: "Failed to load image.",
+      meta_idle: "<b>Preview</b><br/>Upload a photo to start cropping.",
+      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Crop ratio: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`
     },
-    us: {
-      labelEN: "USA",
-      labelKO: "USA",
-      docs: {
-        // 미국은 일반적으로 2×2가 여권/비자 중심
-        passport: { key:"us_2x2", name:"USA · Passport (2×2)", ratio: 1, outW:600, outH:600, guide:{ headTop:0.18, chin:0.78 } }
-      }
+    ko: {
+      page_title: "ConvertFiles24 · 증명사진 / 여권사진",
+      page_sub: "업로드 → 위치/확대 조절 → 다운로드. 서버 업로드 없이 브라우저에서 로컬 처리됩니다.",
+      home: "🏠 홈으로",
+      local: "Local processing",
+      lang_label: "언어",
+      step0: "0) 선택",
+      country: "국가",
+      doc: "문서 타입",
+      tip2: "팁: 국가를 먼저 고른 뒤, 그 나라 안에서 문서 타입(ID/여권)을 선택하세요.",
+      step1: "1) 사진 업로드",
+      choose: "📁 파일 선택",
+      camera: "📷 카메라 열기",
+      drop_title: "여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택",
+      drop_hint: "지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안 될 수 있어요)",
+      step2: "2) 미리보기 / 크롭",
+      controls: "조작",
+      fit: "↔ 맞추기",
+      center: "🎯 중앙",
+      zoomOut: "➖ 확대",
+      zoomIn: "➕ 확대",
+      auto: "자동 중앙(권장)",
+      guide: "얼굴 가이드 표시",
+      dpi: "DPI",
+      dpi_hint: "일반 출력은 300dpi면 충분해요.",
+      out: "출력",
+      out_hint: "JPG 권장",
+      step3: "3) 다운로드",
+      download: "⬇️ 다운로드",
+      reset: "초기화",
+      msg_need: "먼저 사진을 업로드해 주세요.",
+      msg_ready: "준비 완료! 드래그로 이동, 핀치/버튼으로 확대하세요.",
+      msg_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. 미리보기가 실패하면 JPG/PNG로 저장 후 다시 시도해 주세요.",
+      msg_fail: "이미지 로드 실패",
+      meta_idle: "<b>미리보기</b><br/>사진을 업로드하면 크롭을 시작할 수 있어요.",
+      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>비율: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`
     },
-    eu: {
-      labelEN: "EU",
-      labelKO: "EU",
-      docs: {
-        // EU/JP 35×45mm 많이 씀 (비율 35/45 = 0.777...)
-        passport: { key:"eu_35x45", name:"EU · Passport (35×45)", ratio: 35/45, outW:413, outH:531, guide:{ headTop:0.16, chin:0.78 } }
-      }
+    es: {
+      page_title: "ConvertFiles24 · Foto ID / Pasaporte",
+      page_sub: "Sube → ajusta posición/zoom → descarga. Se procesa localmente.",
+      home: "🏠 Inicio",
+      local: "Local processing",
+      lang_label: "Idioma",
+      step0: "0) Seleccionar",
+      country: "País",
+      doc: "Tipo de documento",
+      tip2: "Consejo: Elige primero el país y luego el tipo (ID/Pasaporte).",
+      step1: "1) Subir foto",
+      choose: "📁 Elegir foto",
+      camera: "📷 Abrir cámara",
+      drop_title: "Suelta la foto aquí<br/>o toca para subir",
+      drop_hint: "Soporta: JPG, PNG, WebP (HEIC puede fallar en algunos dispositivos)",
+      step2: "2) Vista previa / Recorte",
+      controls: "Controles",
+      fit: "↔ Ajustar",
+      center: "🎯 Centrar",
+      zoomOut: "➖ Zoom",
+      zoomIn: "➕ Zoom",
+      auto: "Centrado automático (recomendado)",
+      guide: "Mostrar guía de rostro",
+      dpi: "DPI",
+      dpi_hint: "300dpi suele ser suficiente.",
+      out: "Salida",
+      out_hint: "JPG recomendado.",
+      step3: "3) Descargar",
+      download: "⬇️ Descargar",
+      reset: "Reiniciar",
+      msg_need: "Primero sube una foto.",
+      msg_ready: "Listo. Arrastra para mover, pellizca o usa botones para zoom.",
+      msg_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
+      msg_fail: "No se pudo cargar la imagen.",
+      meta_idle: "<b>Vista previa</b><br/>Sube una foto para empezar.",
+      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Ratio: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`
     },
-    jp: {
-      labelEN: "Japan",
-      labelKO: "Japan",
-      docs: {
-        passport: { key:"jp_35x45", name:"Japan · Passport (35×45)", ratio: 35/45, outW:413, outH:531, guide:{ headTop:0.16, chin:0.78 } }
-      }
+    ja: {
+      page_title: "ConvertFiles24 · 証明写真 / パスポート",
+      page_sub: "アップロード → 位置/ズーム調整 → ダウンロード。ローカル処理です。",
+      home: "🏠 ホーム",
+      local: "Local processing",
+      lang_label: "言語",
+      step0: "0) 選択",
+      country: "国",
+      doc: "書類タイプ",
+      tip2: "ヒント: 国を選んでから、ID/パスポートを選択します。",
+      step1: "1) 写真アップロード",
+      choose: "📁 写真を選択",
+      camera: "📷 カメラを開く",
+      drop_title: "ここに写真をドロップ<br/>またはタップして選択",
+      drop_hint: "対応: JPG, PNG, WebP（HEICは一部非対応）",
+      step2: "2) プレビュー / 切り抜き",
+      controls: "操作",
+      fit: "↔ フィット",
+      center: "🎯 中央",
+      zoomOut: "➖ ズーム",
+      zoomIn: "➕ ズーム",
+      auto: "自動中央（推奨）",
+      guide: "顔ガイド表示",
+      dpi: "DPI",
+      dpi_hint: "通常は300dpiで十分です。",
+      out: "出力",
+      out_hint: "JPG推奨",
+      step3: "3) ダウンロード",
+      download: "⬇️ ダウンロード",
+      reset: "リセット",
+      msg_need: "先に写真をアップロードしてください。",
+      msg_ready: "準備OK。ドラッグで移動、ピンチ/ボタンでズーム。",
+      msg_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGでお試しください。",
+      msg_fail: "画像の読み込みに失敗しました。",
+      meta_idle: "<b>プレビュー</b><br/>写真をアップロードしてください。",
+      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>プリセット</b><br/>比率: ${mmW}×${mmH} mm<br/>出力: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>元画像</b><br/>${w}×${h}px`
     }
   };
 
-  let countryKey = "kr";
-  let docKey = "id"; // 기본: 한국 증명사진
+  function getQueryLang(){
+    try{
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toLowerCase();
+      if(q && STR[q]) return q;
+    }catch(e){}
+    return null;
+  }
+
+  function detectLang(){
+    // ✅ 기본은 Global English
+    const q = getQueryLang();
+    if(q) return q;
+
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("es")) return "es";
+    return "en";
+  }
+
+  let LANG = detectLang();
+
+  function t(){ return STR[LANG] || STR.en; }
+
+  function setLang(lang){
+    if(!STR[lang]) lang = "en";
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+    $("langSelect").value = lang;
+
+    document.documentElement.lang = lang;
+
+    $("page_title").textContent = t().page_title;
+    $("page_sub").textContent = t().page_sub;
+    $("home_btn").textContent = t().home;
+    $("local_processing").textContent = t().local;
+    $("lang_label").textContent = t().lang_label;
+
+    $("h_step0").textContent = t().step0;
+    $("lbl_country").textContent = t().country;
+    $("lbl_doc").textContent = t().doc;
+    $("hint_2step").textContent = t().tip2;
+
+    $("h_step1").textContent = t().step1;
+    $("pickBtn").textContent = t().choose;
+    $("camBtn").textContent = t().camera;
+    $("drop_title").innerHTML = t().drop_title;
+    $("drop_hint").textContent = t().drop_hint;
+
+    $("h_step2").textContent = t().step2;
+
+    $("h_controls").textContent = t().controls;
+    $("fitBtn").textContent = t().fit;
+    $("centerBtn").textContent = t().center;
+    $("zoomOutBtn").textContent = t().zoomOut;
+    $("zoomInBtn").textContent = t().zoomIn;
+    $("auto_txt").textContent = t().auto;
+    $("guide_txt").textContent = t().guide;
+
+    $("lbl_dpi").textContent = t().dpi;
+    $("dpi_hint").textContent = t().dpi_hint;
+    $("lbl_format").textContent = t().out;
+    $("fmt_hint").textContent = t().out_hint;
+
+    $("h_step3").textContent = t().step3;
+    $("downloadBtn").textContent = t().download;
+    $("resetBtn").textContent = t().reset;
+
+    if(!imgEl) $("meta").innerHTML = t().meta_idle;
+    refreshPresetPill();
+  }
+
+  $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
+
+  // ========= Presets =========
+  // mm sizes (W x H) and ratio
+  const PRESETS = {
+    KR: {
+      ID:   { name: "KR · ID (3×4)",      mmW:30, mmH:40 },
+      PASS: { name: "KR · Passport (3.5×4.5)", mmW:35, mmH:45 }
+    },
+    US: {
+      ID:   { name: "US · ID (2×2)",      mmW:51, mmH:51 },
+      PASS: { name: "US · Passport (2×2)", mmW:51, mmH:51 }
+    },
+    EU: {
+      ID:   { name: "EU · ID (35×45)",     mmW:35, mmH:45 },
+      PASS: { name: "EU · Passport (35×45)", mmW:35, mmH:45 }
+    },
+    JP: {
+      ID:   { name: "JP · ID (30×40)",     mmW:30, mmH:40 },
+      PASS: { name: "JP · Passport (35×45)", mmW:35, mmH:45 }
+    }
+  };
+
+  let COUNTRY = "KR";
+  let DOC = "PASS"; // ID or PASS
 
   function currentPreset(){
-    const c = PRESETS[countryKey];
-    if(!c) return PRESETS.kr.docs.id;
-    const d = c.docs[docKey];
-    if(d) return d;
-
-    // 조합이 없으면 fallback: 해당 국가의 첫 doc, 없으면 KR ID
-    const first = c.docs[Object.keys(c.docs)[0]];
-    return first || PRESETS.kr.docs.id;
+    return PRESETS[COUNTRY][DOC];
   }
 
-  function updateButtonsAvailability(){
-    const t = window.__T || I18N.ko;
-
-    // active style
-    document.querySelectorAll(".countryBtn").forEach(b=>{
-      b.classList.toggle("active", b.dataset.country === countryKey);
-    });
-
-    // doc 버튼 활성/비활성
-    const docs = PRESETS[countryKey]?.docs || {};
-    document.querySelectorAll(".docBtn").forEach(b=>{
-      const k = b.dataset.doc;
-      const ok = !!docs[k];
-      b.disabled = !ok;
-      // 만약 현재 docKey가 없는데 버튼 눌려있던 상태면 해제는 setPreset에서 정리됨
-      b.classList.toggle("active", ok && k === docKey);
-      if(!ok){
-        b.title = t.warnNotAvailable || "";
-      }else{
-        b.title = "";
-      }
+  function setSegActive(containerId, key, value){
+    document.querySelectorAll(`#${containerId} .segBtn`).forEach(b=>{
+      b.classList.toggle("active", b.dataset[key] === value);
     });
   }
 
-  function applyPresetFromState(showWarnIfFallback){
-    const t = window.__T || I18N.ko;
+  // country seg
+  document.querySelectorAll("#countrySeg .segBtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      COUNTRY = b.dataset.country;
+      setSegActive("countrySeg", "country", COUNTRY);
+      refreshPresetPill();
+      updateCropBox();
+      if(autoCenter) smartCenter();
+      redraw();
+    });
+  });
 
-    const beforeDoc = docKey;
+  // doc seg
+  document.querySelectorAll("#docSeg .segBtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      DOC = b.dataset.doc;
+      setSegActive("docSeg", "doc", DOC);
+      refreshPresetPill();
+      updateCropBox();
+      if(autoCenter) smartCenter();
+      redraw();
+    });
+  });
+
+  function refreshPresetPill(){
     const p = currentPreset();
-
-    // 만약 선택한 docKey가 해당 국가에 없어서 fallback 됐다면 docKey도 맞춰줌
-    const docs = PRESETS[countryKey]?.docs || {};
-    const has = !!docs[docKey];
-    if(!has){
-      const keys = Object.keys(docs);
-      docKey = keys[0] || "id";
-      if(showWarnIfFallback) setMsg(t.warnNotAvailable, "err");
-    }
-
-    const p2 = currentPreset();
-    presetLabel.textContent = "Preset: " + p2.name;
-
-    outW.value = p2.outW;
-    outH.value = p2.outH;
-
-    layoutCanvas();
-    if(img && snapCenter.checked){
-      panX = 0; panY = 0;
-    }
-    updateButtonsAvailability();
-    render();
+    $("presetPill").textContent = `Preset: ${p.name}`;
+    updateMeta();
   }
 
-  // ---- Simple i18n apply ----
-  function applyLang(lang){
-    const t = I18N[lang] || I18N.ko;
-    document.documentElement.lang = t.htmlLang;
+  // ========= Upload / Image =========
+  const pickInput = $("pickInput");
+  const camInput  = $("camInput");
+  const pickBtn   = $("pickBtn");
+  const camBtn    = $("camBtn");
+  const drop      = $("drop");
 
-    setPlain("t_title", t.title);
-    setText("t_sub", t.sub);
-    setPlain("t_homeBtn", t.homeBtn);
-    setPlain("t_localPill", t.localPill);
+  pickBtn.addEventListener("click", ()=>{
+    pickInput.value = "";
+    pickInput.click();
+  });
 
-    setPlain("t_step1", t.step1);
-    setPlain("t_step2", t.step2);
-    setText("dropTitle", t.dropTitle);
-    setPlain("t_dropHint", t.dropHint);
+  camBtn.addEventListener("click", ()=>{
+    camInput.value = "";
+    camInput.click();
+  });
 
-    setPlain("t_countryTitle", t.countryTitle);
-    setPlain("t_docTitle", t.docTitle);
-
-    setPlain("d_id", t.idPhoto);
-    setPlain("d_passport", t.passport);
-
-    setPlain("t_guide", t.guide);
-    setPlain("t_showGuide", t.showGuide);
-    setPlain("t_snapCenter", t.snapCenter);
-    setPlain("t_zoom", t.zoom);
-    setPlain("t_upscale", t.upscale);
-    setPlain("t_outFormat", t.outFormat);
-    setPlain("t_bgFill", t.bgFill);
-
-    setPlain("t_bg1", t.bg1);
-    setPlain("t_bg2", t.bg2);
-    setPlain("t_bg3", t.bg3);
-    setPlain("t_bg4", t.bg4);
-
-    setPlain("t_outW", t.outW);
-    setPlain("t_outH", t.outH);
-    setText("t_howto", t.howto);
-
-    setPlain("t_infoTitle", t.infoTitle);
-    setPlain("t_footerHome", t.footerHome);
-
-    window.__T = t;
-
-    // 언어 바뀌어도 프리셋 재적용(문구/경고 등)
-    updateButtonsAvailability();
+  function isHeic(name){
+    const ext = (name||"").toLowerCase().split(".").pop();
+    return ext === "heic" || ext === "heif";
   }
 
-  // ---- Elements / State ----
-  let img = null;
-  let imgW = 0, imgH = 0;
+  pickInput.addEventListener("change", (e)=> {
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+  camInput.addEventListener("change", (e)=> {
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
 
-  // pan offsets in image pixels (relative to image center)
-  let panX = 0, panY = 0;
-  let isDragging = false;
-  let dragStart = { x:0, y:0, panX:0, panY:0 };
-
-  // editor render size
-  let viewW = 0, viewH = 0;
-  let dpr = Math.max(1, window.devicePixelRatio || 1);
-
-  // crop rect in view pixels
-  let crop = { x:0, y:0, w:0, h:0 };
-
-  // ---- Upload/open ----
-  function openPicker(){
-    fileInput.value = "";
-    fileInput.click();
+  function openDropPicker(){
+    pickInput.value = "";
+    pickInput.click();
   }
-  drop.addEventListener("click", openPicker);
+
+  drop.addEventListener("click", openDropPicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
       e.preventDefault();
-      openPicker();
+      openDropPicker();
     }
   });
 
@@ -835,425 +804,399 @@
     if(f) loadFile(f);
   });
 
-  fileInput.addEventListener("change", (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
+  // ========= Crop engine =========
+  const stage = $("stage");
+  const cv = $("cv");
+  const ctx = cv.getContext("2d", { alpha:true });
+
+  const cropBoxEl = $("cropBox");
+  const faceGuideEl = $("faceGuide");
+
+  let imgEl = null;
+  let imgW = 0, imgH = 0;
+
+  // transform
+  let scale = 1;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // controls
+  let autoCenter = true;
+  let showGuide = false;
+
+  $("toggleAuto").addEventListener("click", ()=>{
+    autoCenter = !autoCenter;
+    $("toggleAuto").classList.toggle("active", autoCenter);
+    if(autoCenter && imgEl) smartCenter();
   });
 
-  function loadFile(file){
-    const t = window.__T || I18N.ko;
+  $("toggleGuide").addEventListener("click", ()=>{
+    showGuide = !showGuide;
+    $("toggleGuide").classList.toggle("active", showGuide);
+    faceGuideEl.classList.toggle("show", showGuide);
+  });
 
-    if(!file || !(file.type || "").startsWith("image/")){
-      setMsg(t.errOnlyImg, "err");
+  $("fitBtn").addEventListener("click", ()=>{
+    if(!imgEl) return setMsg(t().msg_need, "err");
+    fitToCrop();
+  });
+
+  $("centerBtn").addEventListener("click", ()=>{
+    if(!imgEl) return setMsg(t().msg_need, "err");
+    smartCenter();
+    redraw();
+  });
+
+  $("zoomInBtn").addEventListener("click", ()=> zoomBy(1.08));
+  $("zoomOutBtn").addEventListener("click", ()=> zoomBy(1/1.08));
+
+  function zoomBy(factor){
+    if(!imgEl) return setMsg(t().msg_need, "err");
+    const rect = stage.getBoundingClientRect();
+    const cx = rect.width/2;
+    const cy = rect.height/2;
+
+    const beforeX = (cx - offsetX) / scale;
+    const beforeY = (cy - offsetY) / scale;
+
+    scale = clamp(scale * factor, 0.1, 12);
+
+    offsetX = cx - beforeX * scale;
+    offsetY = cy - beforeY * scale;
+
+    redraw();
+  }
+
+  function setMsg(text, cls){
+    const m = $("msg");
+    m.textContent = text || "";
+    m.className = "msg " + (cls || "");
+  }
+
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  // resize canvas for stage
+  function resizeCanvas(){
+    const rect = stage.getBoundingClientRect();
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    cv.width = Math.round(rect.width * dpr);
+    cv.height = Math.round(rect.height * dpr);
+    cv.style.width = rect.width + "px";
+    cv.style.height = rect.height + "px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    updateCropBox();
+    redraw();
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  function cropRectInStage(){
+    const rect = stage.getBoundingClientRect();
+    const p = currentPreset();
+    const ratio = p.mmW / p.mmH;
+
+    // crop box size: fit within stage with margin
+    const margin = 18;
+    const maxW = rect.width - margin*2;
+    const maxH = rect.height - margin*2;
+
+    let w = maxW;
+    let h = w / ratio;
+    if(h > maxH){
+      h = maxH;
+      w = h * ratio;
+    }
+
+    const x = (rect.width - w)/2;
+    const y = (rect.height - h)/2;
+    return { x, y, w, h };
+  }
+
+  function updateCropBox(){
+    const r = cropRectInStage();
+    cropBoxEl.style.width = r.w + "px";
+    cropBoxEl.style.height = r.h + "px";
+  }
+
+  function fitToCrop(){
+    const rect = stage.getBoundingClientRect();
+    const cr = cropRectInStage();
+
+    // ensure image covers crop box
+    const sx = cr.w / imgW;
+    const sy = cr.h / imgH;
+    scale = Math.max(sx, sy);
+
+    // center image to crop
+    const cropCenterX = cr.x + cr.w/2;
+    const cropCenterY = cr.y + cr.h/2;
+    offsetX = cropCenterX - (imgW/2)*scale;
+    offsetY = cropCenterY - (imgH/2)*scale;
+
+    redraw();
+  }
+
+  function smartCenter(){
+    // For now: just fit to crop (best simple default)
+    fitToCrop();
+  }
+
+  function redraw(){
+    const rect = stage.getBoundingClientRect();
+    ctx.clearRect(0,0,rect.width,rect.height);
+
+    if(!imgEl) return;
+
+    ctx.save();
+    ctx.translate(offsetX, offsetY);
+    ctx.scale(scale, scale);
+    ctx.drawImage(imgEl, 0, 0, imgW, imgH);
+    ctx.restore();
+
+    updateMeta();
+  }
+
+  function updateMeta(){
+    const p = currentPreset();
+    const dpi = parseInt($("dpi").value, 10) || 300;
+
+    const pxW = Math.round((p.mmW / 25.4) * dpi);
+    const pxH = Math.round((p.mmH / 25.4) * dpi);
+
+    if(!imgEl){
+      $("meta").innerHTML = t().meta_idle;
+      $("downloadBtn").disabled = true;
+      $("resetBtn").disabled = true;
       return;
     }
 
-    setMsg(t.msgLoading, "");
-    const url = URL.createObjectURL(file);
-    const im = new Image();
-    im.onload = () => {
-      URL.revokeObjectURL(url);
-
-      img = im;
-      imgW = im.naturalWidth || 0;
-      imgH = im.naturalHeight || 0;
-
-      panX = 0; panY = 0;
-      zoomEl.value = "1";
-
-      drop.classList.add("active");
-      btnDownload.disabled = false;
-      btnReset.disabled = false;
-
-      layoutCanvas();
-      render();
-      setMsg(t.msgReady, "ok");
-    };
-    im.onerror = () => {
-      URL.revokeObjectURL(url);
-      setMsg(t.errLoadFail, "err");
-    };
-    im.src = url;
+    $("meta").innerHTML = t().meta_info(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
+    $("downloadBtn").disabled = false;
+    $("resetBtn").disabled = false;
   }
 
-  // ---- Canvas layout ----
-  function layoutCanvas(){
-    const rect = wrap.getBoundingClientRect();
-    viewW = Math.max(320, Math.floor(rect.width));
-    const minH = window.matchMedia("(min-width: 1024px)").matches ? 420 : 320;
-    viewH = Math.max(minH, Math.floor(rect.width * 0.72));
-    viewH = Math.min(viewH, 520);
+  async function loadFile(file){
+    if(!file) return;
 
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-
-    canvas.width = Math.floor(viewW * dpr);
-    canvas.height = Math.floor(viewH * dpr);
-    canvas.style.width = viewW + "px";
-    canvas.style.height = viewH + "px";
-
-    const pad = 18;
-    const maxW = viewW - pad*2;
-    const maxH = viewH - pad*2;
-
-    const ratio = currentPreset().ratio;
-
-    let cw = maxW;
-    let ch = cw / ratio;
-    if(ch > maxH){
-      ch = maxH;
-      cw = ch * ratio;
-    }
-
-    crop.w = cw;
-    crop.h = ch;
-    crop.x = (viewW - cw) / 2;
-    crop.y = (viewH - ch) / 2;
-  }
-
-  window.addEventListener("resize", ()=>{
-    layoutCanvas();
-    render();
-  });
-
-  // ---- Drag to pan ----
-  function toLocal(e){
-    const r = canvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
-
-  canvas.addEventListener("pointerdown", (e)=>{
-    if(!img) return;
-    isDragging = true;
-    canvas.setPointerCapture(e.pointerId);
-    const p = toLocal(e);
-    dragStart = { x:p.x, y:p.y, panX, panY };
-  });
-
-  canvas.addEventListener("pointermove", (e)=>{
-    if(!img || !isDragging) return;
-    const p = toLocal(e);
-
-    const zoom = parseFloat(zoomEl.value || "1");
-    const base = baseCoverScale();
-    const scale = base * zoom;
-
-    const dxView = p.x - dragStart.x;
-    const dyView = p.y - dragStart.y;
-
-    const dxImg = dxView / scale;
-    const dyImg = dyView / scale;
-
-    panX = dragStart.panX + dxImg;
-    panY = dragStart.panY + dyImg;
-
-    render();
-  });
-
-  function endDrag(e){
-    if(!isDragging) return;
-    isDragging = false;
-    try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
-  }
-  canvas.addEventListener("pointerup", endDrag);
-  canvas.addEventListener("pointercancel", endDrag);
-  canvas.addEventListener("pointerleave", endDrag);
-
-  zoomEl.addEventListener("input", ()=> render());
-  showGuide.addEventListener("change", ()=> render());
-  snapCenter.addEventListener("change", ()=>{
-    if(snapCenter.checked){
-      panX = 0; panY = 0;
-      render();
-    }
-  });
-
-  // ---- Rendering ----
-  function baseCoverScale(){
-    if(!img) return 1;
-    const scaleX = crop.w / imgW;
-    const scaleY = crop.h / imgH;
-    return Math.max(scaleX, scaleY);
-  }
-
-  function render(){
-    const cw = canvas.width;
-    const ch = canvas.height;
-
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0,0,cw,ch);
-
-    ctx.scale(dpr, dpr);
-
-    ctx.fillStyle = "#0a0e16";
-    ctx.fillRect(0,0,viewW,viewH);
-
-    if(img){
-      const zoom = parseFloat(zoomEl.value || "1");
-      const base = baseCoverScale();
-      const scale = base * zoom;
-
-      const cropCx = crop.x + crop.w/2;
-      const cropCy = crop.y + crop.h/2;
-
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
-
-      const panVX = panX * scale;
-      const panVY = panY * scale;
-
-      const drawX = cropCx - drawW/2 + panVX;
-      const drawY = cropCy - drawH/2 + panVY;
-
-      ctx.drawImage(img, drawX, drawY, drawW, drawH);
-
-      // darken outside crop
-      ctx.save();
-      ctx.fillStyle = "rgba(0,0,0,.55)";
-      ctx.fillRect(0,0,viewW,crop.y);
-      ctx.fillRect(0,crop.y+crop.h,viewW,viewH-(crop.y+crop.h));
-      ctx.fillRect(0,crop.y,crop.x,crop.h);
-      ctx.fillRect(crop.x+crop.w,crop.y,viewW-(crop.x+crop.w),crop.h);
-      ctx.restore();
-
-      // crop border
-      ctx.save();
-      ctx.strokeStyle = "rgba(47,109,246,.85)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
-      ctx.restore();
-
-      // guide lines
-      if(showGuide.checked){
-        const g = currentPreset().guide;
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,.55)";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([6,6]);
-
-        const yHead = crop.y + crop.h * g.headTop;
-        const yChin = crop.y + crop.h * g.chin;
-
-        ctx.beginPath(); ctx.moveTo(crop.x, yHead); ctx.lineTo(crop.x+crop.w, yHead); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(crop.x, yChin); ctx.lineTo(crop.x+crop.w, yChin); ctx.stroke();
-
-        ctx.setLineDash([4,7]);
-        const xMid = crop.x + crop.w/2;
-        ctx.beginPath(); ctx.moveTo(xMid, crop.y); ctx.lineTo(xMid, crop.y+crop.h); ctx.stroke();
-        ctx.restore();
-      }
-
-      // corners
-      ctx.save();
-      ctx.strokeStyle = "rgba(47,109,246,.95)";
-      ctx.lineWidth = 3;
-      const c = 16;
-      ctx.beginPath(); ctx.moveTo(crop.x, crop.y+c); ctx.lineTo(crop.x, crop.y); ctx.lineTo(crop.x+c, crop.y); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y); ctx.lineTo(crop.x+crop.w, crop.y); ctx.lineTo(crop.x+crop.w, crop.y+c); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(crop.x, crop.y+crop.h-c); ctx.lineTo(crop.x, crop.y+crop.h); ctx.lineTo(crop.x+c, crop.y+crop.h); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h-c); ctx.stroke();
-      ctx.restore();
-
+    if(isHeic(file.name)){
+      setMsg(t().msg_heic, "");
     } else {
-      ctx.save();
-      ctx.fillStyle = "rgba(255,255,255,.65)";
-      ctx.font = "800 16px Inter, Noto Sans KR, sans-serif";
-      ctx.fillText("Preview", 24, 42);
-      ctx.fillStyle = "rgba(255,255,255,.45)";
-      ctx.font = "600 12px Inter, Noto Sans KR, sans-serif";
-      ctx.fillText("Upload a photo to start cropping.", 24, 68);
-      ctx.restore();
+      setMsg("", "");
     }
+
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      imgEl = img;
+      imgW = img.naturalWidth || 0;
+      imgH = img.naturalHeight || 0;
+
+      if(autoCenter) smartCenter();
+      redraw();
+      setMsg(t().msg_ready, "ok");
+      updateMeta();
+    };
+    img.onerror = ()=>{
+      URL.revokeObjectURL(url);
+      imgEl = null;
+      imgW = imgH = 0;
+      redraw();
+      setMsg(t().msg_fail, "err");
+      updateMeta();
+    };
+    img.src = url;
   }
 
-  // ---- Export + Upscale ----
-  function exportCropped(){
-    const t = window.__T || I18N.ko;
-    if(!img) return;
+  // ========= pointer events (drag + pinch) =========
+  const pointers = new Map();
+  let lastPan = null;
+  let lastPinch = null;
 
-    const baseW = parseInt(outW.value, 10);
-    const baseH = parseInt(outH.value, 10);
-    if(!baseW || !baseH || baseW < 64 || baseH < 64){
-      setMsg(t.errSize, "err");
+  stage.addEventListener("pointerdown", (e)=>{
+    stage.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(pointers.size === 1){
+      lastPan = { x:e.clientX, y:e.clientY, ox:offsetX, oy:offsetY };
+      lastPinch = null;
+    } else if(pointers.size === 2){
+      const pts = Array.from(pointers.values());
+      lastPinch = pinchState(pts[0], pts[1]);
+      lastPan = null;
+    }
+  });
+
+  stage.addEventListener("pointermove", (e)=>{
+    if(!imgEl) return;
+    if(!pointers.has(e.pointerId)) return;
+
+    pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+
+    if(pointers.size === 1 && lastPan){
+      const dx = e.clientX - lastPan.x;
+      const dy = e.clientY - lastPan.y;
+      offsetX = lastPan.ox + dx;
+      offsetY = lastPan.oy + dy;
+      redraw();
       return;
     }
 
-    const factor = parseInt(upscaleFactorEl.value || "1", 10);
-    const targetW = baseW * factor;
-    const targetH = baseH * factor;
+    if(pointers.size === 2 && lastPinch){
+      const pts = Array.from(pointers.values());
+      const now = pinchState(pts[0], pts[1]);
 
-    const out = document.createElement("canvas");
-    out.width = targetW;
-    out.height = targetH;
-    const octx = out.getContext("2d", { alpha: true });
+      const factor = now.dist / (lastPinch.dist || now.dist);
+      const rect = stage.getBoundingClientRect();
+      const cx = now.midX - rect.left;
+      const cy = now.midY - rect.top;
 
-    const mime = outFormat.value;
-    const fill = bgFill.value;
+      const beforeX = (cx - offsetX) / scale;
+      const beforeY = (cy - offsetY) / scale;
 
-    if(mime === "image/jpeg"){
-      octx.fillStyle = fill;
-      octx.fillRect(0,0,targetW,targetH);
+      scale = clamp(scale * factor, 0.1, 12);
+
+      offsetX = cx - beforeX * scale;
+      offsetY = cy - beforeY * scale;
+
+      lastPinch = now;
+      redraw();
     }
+  });
 
-    const zoom = parseFloat(zoomEl.value || "1");
-    const base = baseCoverScale();
-    const scale = base * zoom;
+  stage.addEventListener("pointerup", (e)=>{
+    pointers.delete(e.pointerId);
+    if(pointers.size === 1){
+      const pts = Array.from(pointers.values());
+      lastPan = { x:pts[0].x, y:pts[0].y, ox:offsetX, oy:offsetY };
+      lastPinch = null;
+    } else {
+      lastPan = null;
+      lastPinch = null;
+    }
+  });
 
-    const cropCx = crop.x + crop.w/2;
-    const cropCy = crop.y + crop.h/2;
+  stage.addEventListener("pointercancel", (e)=>{
+    pointers.delete(e.pointerId);
+    lastPan = null;
+    lastPinch = null;
+  });
 
-    const drawW = imgW * scale;
-    const drawH = imgH * scale;
+  function pinchState(a,b){
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
+  }
 
-    const panVX = panX * scale;
-    const panVY = panY * scale;
+  // ========= Download =========
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
 
-    const drawX = cropCx - drawW/2 + panVX;
-    const drawY = cropCy - drawH/2 + panVY;
+  function buildName(){
+    const p = currentPreset();
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
+    const country = COUNTRY;
+    const doc = (DOC === "PASS") ? "passport" : "id";
+    return `cf24_${country}_${doc}_${stamp}.${ext}`;
+  }
 
-    // source rect in image pixels
-    const sx = (crop.x - drawX) / scale;
-    const sy = (crop.y - drawY) / scale;
-    const sw = crop.w / scale;
-    const sh = crop.h / scale;
+  function stageToOutput(){
+    if(!imgEl) throw new Error(t().msg_need);
 
-    const sx2 = clamp(sx, -imgW, imgW*2);
-    const sy2 = clamp(sy, -imgH, imgH*2);
+    const p = currentPreset();
+    const dpi = parseInt($("dpi").value, 10) || 300;
+    const outMime = $("outFormat").value;
 
+    const outW = Math.round((p.mmW / 25.4) * dpi);
+    const outH = Math.round((p.mmH / 25.4) * dpi);
+
+    const rect = stage.getBoundingClientRect();
+    const cr = cropRectInStage();
+
+    // Mapping: stage pixels -> image pixels via (offset, scale)
+    // Stage coords (sx,sy) => image coords: ix = (sx - offsetX)/scale, iy = (sy - offsetY)/scale
+    const ix0 = (cr.x - offsetX) / scale;
+    const iy0 = (cr.y - offsetY) / scale;
+    const ix1 = (cr.x + cr.w - offsetX) / scale;
+    const iy1 = (cr.y + cr.h - offsetY) / scale;
+
+    const srcW = ix1 - ix0;
+    const srcH = iy1 - iy0;
+
+    // Output canvas
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, outW);
+    out.height = Math.max(1, outH);
+    const octx = out.getContext("2d", { alpha:true });
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
-    octx.drawImage(img, sx2, sy2, sw, sh, 0, 0, targetW, targetH);
 
-    const ext = (mime === "image/png") ? "png" : "jpg";
-    const p = currentPreset();
-    const name = `${p.key}_x${factor}_` + new Date().toISOString().replace(/[:.]/g,"-") + "." + ext;
+    // draw (crop)
+    octx.drawImage(imgEl, ix0, iy0, srcW, srcH, 0, 0, out.width, out.height);
 
-    out.toBlob((blob)=>{
-      if(!blob){
-        setMsg(t.errDlFail, "err");
-        return;
+    return new Promise((resolve, reject)=>{
+      if(outMime === "image/png"){
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+      } else {
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
       }
-      const a = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      a.href = url;
-      a.download = name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1500);
-      setMsg(t.okDlStart + name, "ok");
-    }, mime, 0.92);
+    });
   }
 
-  // ---- Buttons ----
-  btnDownload.addEventListener("click", exportCropped);
+  $("downloadBtn").addEventListener("click", async ()=>{
+    try{
+      const blob = await stageToOutput();
+      downloadBlob(blob, buildName());
+      setMsg("✅ " + t().download, "ok");
+    }catch(e){
+      setMsg((e && e.message) ? e.message : "Download failed", "err");
+    }
+  });
 
-  btnReset.addEventListener("click", ()=>{
-    img = null; imgW = 0; imgH = 0;
-    panX = 0; panY = 0;
-    zoomEl.value = "1";
-    fileInput.value = "";
-
-    drop.classList.remove("active");
-    btnDownload.disabled = true;
-    btnReset.disabled = true;
-
+  $("resetBtn").addEventListener("click", ()=>{
+    imgEl = null;
+    imgW = imgH = 0;
+    scale = 1; offsetX = 0; offsetY = 0;
     setMsg("", "");
-    layoutCanvas();
-    render();
+    redraw();
+    updateMeta();
   });
 
-  // ---- Country / Doc buttons wiring ----
-  document.querySelectorAll(".countryBtn").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      countryKey = b.dataset.country || "kr";
-      // 국가 바꾸면 우선 그대로 doc 유지 시도 -> 없으면 자동 fallback
-      applyPresetFromState(true);
-    });
-  });
-  document.querySelectorAll(".docBtn").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      if(b.disabled) return;
-      docKey = b.dataset.doc || "id";
-      applyPresetFromState(false);
-    });
-  });
+  $("dpi").addEventListener("change", updateMeta);
+  $("outFormat").addEventListener("change", updateMeta);
 
-  function syncSizeKeepRatio(changed){
-    const ratio = currentPreset().ratio;
-    const w = parseInt(outW.value, 10);
-    const h = parseInt(outH.value, 10);
-    if(changed === "w" && w){
-      outH.value = Math.round(w / ratio);
-    }
-    if(changed === "h" && h){
-      outW.value = Math.round(h * ratio);
-    }
-  }
-  outW.addEventListener("input", ()=> syncSizeKeepRatio("w"));
-  outH.addEventListener("input", ()=> syncSizeKeepRatio("h"));
+  // init
+  setLang(LANG);
+  resizeCanvas();
+  refreshPresetPill();
 
-  // ---- Language init (supports ?lang=xx + auto by navigator) ----
-  const langSel = $("lang");
-  function getLangFromUrl(){
-    try{
-      const u = new URL(location.href);
-      const v = (u.searchParams.get("lang") || "").toLowerCase();
-      return ["ko","en","es","ja"].includes(v) ? v : null;
-    }catch(_){ return null; }
-  }
-  function autoLang(){
-    const nav = (navigator.language || "").toLowerCase();
-    if(nav.startsWith("ko")) return "ko";
-    if(nav.startsWith("ja")) return "ja";
-    if(nav.startsWith("es")) return "es";
-    return "en"; // 미국/영어권이면 보통 en
-  }
-
-  const initLang = getLangFromUrl() || autoLang();
-  langSel.value = initLang;
-  applyLang(initLang);
-
-  langSel.addEventListener("change", ()=>{
-    const v = langSel.value;
-    applyLang(v);
-    try{
-      const u = new URL(location.href);
-      u.searchParams.set("lang", v);
-      history.replaceState({}, "", u.toString());
-    }catch(_){}
-  });
-
-  // ---- Init ----
-  // 기본: KR + ID
-  countryKey = "kr";
-  docKey = "id";
-  applyPresetFromState(false);
-
-  layoutCanvas();
-  render();
-
-  // 만약 홈(변환기)에서 sessionStorage로 이미지 넘겨준 경우 자동 로드
+  // If home page sent an image via sessionStorage
   try{
     const dataUrl = sessionStorage.getItem("cf24_idphoto_img");
     if(dataUrl){
-      sessionStorage.removeItem("cf24_idphoto_img");
-      const im = new Image();
-      im.onload = () => {
-        img = im;
-        imgW = im.naturalWidth || 0;
-        imgH = im.naturalHeight || 0;
-        panX = 0; panY = 0;
-        zoomEl.value = "1";
-        drop.classList.add("active");
-        btnDownload.disabled = false;
-        btnReset.disabled = false;
-        layoutCanvas();
-        render();
-        setMsg((window.__T?.msgReady) || "Ready.", "ok");
+      const img = new Image();
+      img.onload = ()=>{
+        imgEl = img;
+        imgW = img.naturalWidth || 0;
+        imgH = img.naturalHeight || 0;
+        if(autoCenter) smartCenter();
+        redraw();
+        updateMeta();
+        setMsg(t().msg_ready, "ok");
       };
-      im.src = dataUrl;
+      img.onerror = ()=>{};
+      img.src = dataUrl;
+      sessionStorage.removeItem("cf24_idphoto_img");
     }
-  }catch(_){}
+  }catch(e){}
 })();
 </script>
 </body>
