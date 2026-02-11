@@ -10,6 +10,13 @@
   <meta name="theme-color" content="#0b0f17" />
   <link rel="canonical" href="https://convertfiles24.com/id/" />
 
+  <!-- Optional hreflang (single page + lang param style) -->
+  <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/id/?lang=ko" />
+  <link rel="alternate" hreflang="en" href="https://convertfiles24.com/id/?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://convertfiles24.com/id/?lang=es" />
+  <link rel="alternate" hreflang="ja" href="https://convertfiles24.com/id/?lang=ja" />
+  <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/id/" />
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,12 +74,51 @@
     .nav{
       display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
     }
+
     .pill{
       font-size:12px; color:#b8c6dc; border:var(--border);
       padding:8px 10px; border-radius:999px;
       background:rgba(255,255,255,.04);
       white-space:nowrap;
     }
+
+    /* ✅ Home button visibility improvement */
+    .homeBtn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background:rgba(47,109,246,.18);
+      border:1px solid rgba(47,109,246,.45);
+      color:#e9eef7;
+      font-size:12px;
+      font-weight:800;
+      text-decoration:none;
+      box-shadow: 0 10px 26px rgba(0,0,0,.28);
+    }
+    .homeBtn:hover{
+      background:rgba(47,109,246,.25);
+      border-color:rgba(47,109,246,.6);
+      color:#ffffff;
+    }
+    .homeIcon{
+      width:16px; height:16px; display:inline-block;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+    }
+
+    .langSelect{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.05);
+      color:#e9eef7;
+      font-weight:800;
+      font-size:12px;
+      outline:none;
+      cursor:pointer;
+    }
+    .langSelect option{ background:#0b0f17; color:#e9eef7; }
 
     .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:12px; }
     @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
@@ -168,13 +214,7 @@
       min-height:280px;
     }
 
-    /* Canvas stays sharp on high DPI */
     canvas{ display:block; width:100%; height:auto; background:#0a0e16; }
-
-    .overlayHint{
-      position:absolute; inset:0;
-      pointer-events:none;
-    }
 
     .controls{
       margin-top:10px;
@@ -190,11 +230,19 @@
       padding:10px 12px;
       border-radius:14px;
     }
-    .sliderRow b{ font-size:12px; color:#dbe7ff; width:64px; }
+    .sliderRow b{ font-size:12px; color:#dbe7ff; width:64px; flex:0 0 auto; }
     input[type="range"]{ width:100%; }
 
     .footer{
       margin-top:14px; color:#94a6c2; font-size:12px; text-align:center;
+    }
+
+    /* Keep top buttons visible even on small screens */
+    @media (max-width:420px){
+      .nav{ justify-content:flex-start; }
+      .homeBtn{ width:100%; justify-content:center; }
+      .langSelect{ width:100%; }
+      .pill{ width:100%; text-align:center; }
     }
   </style>
 </head>
@@ -203,15 +251,30 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 class="site-title">ConvertFiles24 · 증명사진 / 여권사진</h1>
-        <p class="sub">
+        <h1 class="site-title" id="t_title">ConvertFiles24 · 증명사진 / 여권사진</h1>
+        <p class="sub" id="t_sub">
           업로드 → 위치/확대 조절 → 다운로드. <b>서버 업로드 없이</b> 브라우저에서 로컬 처리됩니다.
-          <span style="opacity:.85">·</span>
-          <a href="/">이미지/PDF 변환으로 돌아가기</a>
         </p>
       </div>
+
       <div class="nav">
-        <span class="pill">🔒 Local processing</span>
+        <a class="homeBtn" href="/" aria-label="Home">
+          <svg class="homeIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 9.8V21h14V9.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="t_homeBtn">홈으로</span>
+        </a>
+
+        <select class="langSelect" id="lang" aria-label="Language">
+          <option value="ko">🇰🇷 한국어</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="ja">🇯🇵 日本語</option>
+        </select>
+
+        <span class="pill" id="t_localPill">🔒 Local processing</span>
         <span class="pill" id="presetLabel">Preset: 증명사진(3×4)</span>
       </div>
     </div>
@@ -219,78 +282,90 @@
     <div class="grid">
       <!-- Left: Upload + Editor -->
       <div class="card">
-        <h2>1) 사진 업로드</h2>
+        <h2 id="t_step1">1) 사진 업로드</h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose photo">
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:6px;" id="dropTitle">여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택</div>
             <div class="dropEmoji" aria-hidden="true">🪪</div>
             <input id="file" type="file" accept="image/*" />
-            <div class="hint">지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)</div>
+            <div class="hint" id="t_dropHint">지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)</div>
           </div>
         </div>
 
         <div style="height:12px;"></div>
 
-        <h2>2) 미리보기 / 크롭</h2>
+        <h2 id="t_step2">2) 미리보기 / 크롭</h2>
         <div class="editorWrap" id="editorWrap">
           <canvas id="canvas" aria-label="Crop editor"></canvas>
-          <div class="overlayHint" id="overlayHint"></div>
         </div>
 
         <div class="controls">
           <div class="seg" aria-label="Presets">
-            <button type="button" class="presetBtn active" data-preset="kr_id">증명사진 (3×4)</button>
-            <button type="button" class="presetBtn" data-preset="kr_passport">여권 (3.5×4.5)</button>
-            <button type="button" class="presetBtn" data-preset="us_2x2">US 2×2</button>
+            <button type="button" class="presetBtn active" data-preset="kr_id" id="t_p1">증명사진 (3×4)</button>
+            <button type="button" class="presetBtn" data-preset="kr_passport" id="t_p2">여권 (3.5×4.5)</button>
+            <button type="button" class="presetBtn" data-preset="us_2x2" id="t_p3">US 2×2</button>
           </div>
 
+          <!-- ✅ 가이드 영역을 "출력 형식 위"로 올림 -->
+          <div class="sliderRow">
+            <b id="t_guide">가이드</b>
+            <div style="display:flex; gap:10px; align-items:center; width:100%; flex-wrap:wrap;">
+              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="showGuide" checked />
+                <span id="t_showGuide">얼굴 가이드 표시</span>
+              </label>
+              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="snapCenter" checked />
+                <span id="t_snapCenter">자동 중앙(권장)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sliderRow">
+            <b id="t_zoom">확대</b>
+            <input id="zoom" type="range" min="0.2" max="4" step="0.01" value="1" />
+          </div>
+
+          <!-- ✅ 간단 업스케일 추가 -->
           <div class="row">
             <div>
-              <label>출력 형식</label>
+              <label id="t_upscale">업스케일</label>
+              <select id="upscaleFactor">
+                <option value="1">1× (기본)</option>
+                <option value="2">2× (선명도↑)</option>
+                <option value="4">4× (고해상도)</option>
+              </select>
+            </div>
+            <div>
+              <label id="t_outFormat">출력 형식</label>
               <select id="outFormat">
                 <option value="image/jpeg">JPG</option>
                 <option value="image/png">PNG</option>
               </select>
             </div>
+          </div>
+
+          <div class="row">
             <div>
-              <label>배경색 (JPG에서 투명 대신 채움)</label>
+              <label id="t_bgFill">배경색 (JPG에서 투명 대신 채움)</label>
               <select id="bgFill">
-                <option value="#ffffff">흰색</option>
-                <option value="#e9eef7">연한 회백</option>
-                <option value="#cfe0ff">연한 하늘</option>
-                <option value="#0b0f17">어두운(테스트용)</option>
+                <option value="#ffffff" id="t_bg1">흰색</option>
+                <option value="#e9eef7" id="t_bg2">연한 회백</option>
+                <option value="#cfe0ff" id="t_bg3">연한 하늘</option>
+                <option value="#0b0f17" id="t_bg4">어두운(테스트용)</option>
               </select>
             </div>
           </div>
 
           <div class="row">
             <div>
-              <label>출력 가로(px)</label>
+              <label id="t_outW">출력 가로(px)</label>
               <input id="outW" type="number" min="64" step="1" />
             </div>
             <div>
-              <label>출력 세로(px)</label>
+              <label id="t_outH">출력 세로(px)</label>
               <input id="outH" type="number" min="64" step="1" />
-            </div>
-          </div>
-
-          <div class="sliderRow">
-            <b>확대</b>
-            <input id="zoom" type="range" min="0.2" max="4" step="0.01" value="1" />
-          </div>
-
-          <div class="sliderRow">
-            <b>가이드</b>
-            <div style="display:flex; gap:10px; align-items:center; width:100%; flex-wrap:wrap;">
-              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
-                <input type="checkbox" id="showGuide" checked />
-                얼굴 가이드 표시
-              </label>
-              <label style="display:inline-flex; gap:8px; align-items:center; margin:0; color:#cfe0ff; font-size:12px; cursor:pointer;">
-                <input type="checkbox" id="snapCenter" checked />
-                자동 중앙(권장)
-              </label>
             </div>
           </div>
 
@@ -300,7 +375,7 @@
           </div>
 
           <div class="msg" id="msg"></div>
-          <div class="hint">
+          <div class="hint" id="t_howto">
             ✅ 사용법: 사진 업로드 후, <b>사진을 드래그</b>해서 위치를 옮기고 <b>확대 슬라이더</b>로 크기를 맞추세요.<br/>
             * 모바일에서 두 손가락 확대/축소 대신, 슬라이더 방식이라 안정적입니다.
           </div>
@@ -309,15 +384,15 @@
 
       <!-- Right: Info -->
       <div class="card">
-        <h2>설명</h2>
-        <div class="hint" style="margin-top:0">
+        <h2 id="t_infoTitle">설명</h2>
+        <div class="hint" style="margin-top:0" id="t_info1">
           <b>증명사진/여권사진은 “비율(가로:세로)”이 핵심</b>이라서,
           우선 비율을 고정하고 출력 픽셀만 정해주면 깔끔하게 나옵니다.
         </div>
 
         <div style="height:10px;"></div>
 
-        <div class="hint">
+        <div class="hint" id="t_info2">
           <b>기본 프리셋(권장 출력 크기)</b><br/>
           • 증명사진(3×4): 354×472px (가볍고 선명)<br/>
           • 여권(3.5×4.5): 413×531px<br/>
@@ -326,18 +401,18 @@
 
         <div style="height:10px;"></div>
 
-        <div class="hint">
+        <div class="hint" id="t_info3">
           <b>팁</b><br/>
           • JPG로 받으면 배경색이 깔끔하게 채워져요.<br/>
           • PNG는 투명 배경이 가능하지만, 증명사진은 보통 흰 배경이 많아서 JPG를 권장해요.<br/>
-          • “자동 중앙”을 켜면, 드래그를 많이 안 해도 중앙 맞추기 쉬워요.
+          • 업스케일 2×/4×는 “다운로드 해상도”만 키우는 간단 옵션입니다.
         </div>
 
         <div style="height:14px;"></div>
 
         <div class="footer">
           © <span id="year"></span> ConvertFiles24 ·
-          <a href="/">Home</a>
+          <a href="/" id="t_footerHome">Home</a>
         </div>
       </div>
     </div>
@@ -348,14 +423,256 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
 
-  const yearEl = $("year");
-  yearEl.textContent = new Date().getFullYear();
+  // ---- Simple i18n ----
+  const I18N = {
+    ko: {
+      htmlLang:"ko",
+      title:"ConvertFiles24 · 증명사진 / 여권사진",
+      sub:`업로드 → 위치/확대 조절 → 다운로드. <b>서버 업로드 없이</b> 브라우저에서 로컬 처리됩니다.`,
+      homeBtn:"홈으로",
+      localPill:"🔒 Local processing",
+      step1:"1) 사진 업로드",
+      step2:"2) 미리보기 / 크롭",
+      dropTitle:"여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택",
+      dropHint:"지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안될 수 있어요)",
+      p1:"증명사진 (3×4)",
+      p2:"여권 (3.5×4.5)",
+      p3:"US 2×2",
+      guide:"가이드",
+      showGuide:"얼굴 가이드 표시",
+      snapCenter:"자동 중앙(권장)",
+      zoom:"확대",
+      upscale:"업스케일",
+      outFormat:"출력 형식",
+      bgFill:"배경색 (JPG에서 투명 대신 채움)",
+      bg1:"흰색",
+      bg2:"연한 회백",
+      bg3:"연한 하늘",
+      bg4:"어두운(테스트용)",
+      outW:"출력 가로(px)",
+      outH:"출력 세로(px)",
+      howto:`✅ 사용법: 사진 업로드 후, <b>사진을 드래그</b>해서 위치를 옮기고 <b>확대 슬라이더</b>로 크기를 맞추세요.<br/>
+             * 모바일에서 두 손가락 확대/축소 대신, 슬라이더 방식이라 안정적입니다.`,
+      infoTitle:"설명",
+      info1:`<b>증명사진/여권사진은 “비율(가로:세로)”이 핵심</b>이라서,
+             우선 비율을 고정하고 출력 픽셀만 정해주면 깔끔하게 나옵니다.`,
+      info2:`<b>기본 프리셋(권장 출력 크기)</b><br/>
+             • 증명사진(3×4): 354×472px (가볍고 선명)<br/>
+             • 여권(3.5×4.5): 413×531px<br/>
+             • US 2×2: 600×600px`,
+      info3:`<b>팁</b><br/>
+             • JPG로 받으면 배경색이 깔끔하게 채워져요.<br/>
+             • PNG는 투명 배경이 가능하지만, 증명사진은 보통 흰 배경이 많아서 JPG를 권장해요.<br/>
+             • 업스케일 2×/4×는 “다운로드 해상도”만 키우는 간단 옵션입니다.`,
+      footerHome:"Home",
+      msgReady:"준비 완료! 사진을 드래그해서 위치를 맞추고 다운로드하세요.",
+      msgLoading:"로딩 중…",
+      errOnlyImg:"이미지 파일만 지원합니다.",
+      errLoadFail:"이미지를 불러오지 못했어요. 다른 파일로 시도해 주세요.",
+      errSize:"출력 가로/세로(px)를 확인해 주세요.",
+      errDlFail:"다운로드 실패. 다시 시도해 주세요.",
+      okDlStart:"다운로드 시작: "
+    },
+    en: {
+      htmlLang:"en",
+      title:"ConvertFiles24 · Passport / ID Photo Maker",
+      sub:`Upload → move/zoom → download. <b>No server upload</b> — processed locally in your browser.`,
+      homeBtn:"Home",
+      localPill:"🔒 Local processing",
+      step1:"1) Upload photo",
+      step2:"2) Preview / Crop",
+      dropTitle:"Drag & drop a photo here<br/>or tap to choose",
+      dropHint:"Supported: JPG, PNG, WebP (HEIC may not work on some devices/browsers)",
+      p1:"KR ID (3×4)",
+      p2:"KR Passport (3.5×4.5)",
+      p3:"US 2×2",
+      guide:"Guide",
+      showGuide:"Show face guide",
+      snapCenter:"Auto center (recommended)",
+      zoom:"Zoom",
+      upscale:"Upscale",
+      outFormat:"Output format",
+      bgFill:"Background fill (JPG replaces transparency)",
+      bg1:"White",
+      bg2:"Light gray",
+      bg3:"Light sky",
+      bg4:"Dark (test)",
+      outW:"Output width (px)",
+      outH:"Output height (px)",
+      howto:`✅ How to: Upload a photo, <b>drag</b> to position, and use the <b>zoom slider</b>.<br/>
+             * Slider zoom is stable on mobile.`,
+      infoTitle:"Info",
+      info1:`<b>Aspect ratio is key</b> for passport/ID photos. Lock the ratio, then set output pixels.`,
+      info2:`<b>Presets (recommended)</b><br/>
+             • KR ID (3×4): 354×472px<br/>
+             • KR Passport (3.5×4.5): 413×531px<br/>
+             • US 2×2: 600×600px`,
+      info3:`<b>Tips</b><br/>
+             • JPG fills the background neatly.<br/>
+             • PNG can be transparent, but white JPG is common for ID photos.<br/>
+             • Upscale 2×/4× only increases download resolution (simple option).`,
+      footerHome:"Home",
+      msgReady:"Ready! Drag to position and download.",
+      msgLoading:"Loading…",
+      errOnlyImg:"Images only.",
+      errLoadFail:"Failed to load the image. Try another file.",
+      errSize:"Check output width/height (px).",
+      errDlFail:"Download failed. Try again.",
+      okDlStart:"Downloading: "
+    },
+    es: {
+      htmlLang:"es",
+      title:"ConvertFiles24 · Creador de Fotos para Pasaporte / ID",
+      sub:`Sube → mueve/zoom → descarga. <b>Sin subir al servidor</b> — se procesa localmente en tu navegador.`,
+      homeBtn:"Inicio",
+      localPill:"🔒 Procesamiento local",
+      step1:"1) Subir foto",
+      step2:"2) Vista previa / Recorte",
+      dropTitle:"Arrastra y suelta una foto aquí<br/>o toca para elegir",
+      dropHint:"Soporta: JPG, PNG, WebP (HEIC puede no funcionar en algunos dispositivos/navegadores)",
+      p1:"KR ID (3×4)",
+      p2:"Pasaporte KR (3.5×4.5)",
+      p3:"US 2×2",
+      guide:"Guía",
+      showGuide:"Mostrar guía de rostro",
+      snapCenter:"Centrar automático (recomendado)",
+      zoom:"Zoom",
+      upscale:"Escalar",
+      outFormat:"Formato",
+      bgFill:"Relleno de fondo (JPG reemplaza transparencia)",
+      bg1:"Blanco",
+      bg2:"Gris claro",
+      bg3:"Cielo claro",
+      bg4:"Oscuro (test)",
+      outW:"Ancho (px)",
+      outH:"Alto (px)",
+      howto:`✅ Cómo usar: Sube una foto, <b>arrastra</b> para posicionar y usa el <b>slider de zoom</b>.<br/>
+             * Zoom por slider es estable en móvil.`,
+      infoTitle:"Info",
+      info1:`<b>La proporción es clave</b>. Bloquea la proporción y define los píxeles de salida.`,
+      info2:`<b>Preajustes (recomendado)</b><br/>
+             • KR ID (3×4): 354×472px<br/>
+             • Pasaporte KR (3.5×4.5): 413×531px<br/>
+             • US 2×2: 600×600px`,
+      info3:`<b>Consejos</b><br/>
+             • JPG rellena el fondo de forma limpia.<br/>
+             • PNG puede ser transparente, pero JPG blanco es común.<br/>
+             • 2×/4× solo aumenta la resolución de descarga (opción simple).`,
+      footerHome:"Inicio",
+      msgReady:"¡Listo! Arrastra para posicionar y descarga.",
+      msgLoading:"Cargando…",
+      errOnlyImg:"Solo imágenes.",
+      errLoadFail:"No se pudo cargar. Prueba otro archivo.",
+      errSize:"Revisa ancho/alto (px).",
+      errDlFail:"Fallo de descarga. Intenta de nuevo.",
+      okDlStart:"Descargando: "
+    },
+    ja: {
+      htmlLang:"ja",
+      title:"ConvertFiles24 · 証明写真 / パスポート写真",
+      sub:`アップロード → 移動/拡大 → ダウンロード。<b>サーバーに送信せず</b>ブラウザ内でローカル処理します。`,
+      homeBtn:"ホーム",
+      localPill:"🔒 ローカル処理",
+      step1:"1) 写真をアップロード",
+      step2:"2) プレビュー / トリミング",
+      dropTitle:"ここにドラッグ&ドロップ<br/>またはタップして選択",
+      dropHint:"対応: JPG, PNG, WebP（HEICは環境により不可の場合あり）",
+      p1:"証明写真 (3×4)",
+      p2:"パスポート (3.5×4.5)",
+      p3:"US 2×2",
+      guide:"ガイド",
+      showGuide:"顔ガイド表示",
+      snapCenter:"自動中央（推奨）",
+      zoom:"拡大",
+      upscale:"アップスケール",
+      outFormat:"出力形式",
+      bgFill:"背景色（JPGは透明を置換）",
+      bg1:"白",
+      bg2:"薄いグレー",
+      bg3:"薄い水色",
+      bg4:"暗い（テスト）",
+      outW:"横(px)",
+      outH:"縦(px)",
+      howto:`✅ 使い方：アップロード後、<b>ドラッグ</b>で位置調整、<b>拡大スライダー</b>でサイズ調整。<br/>
+             * モバイルでも安定します。`,
+      infoTitle:"説明",
+      info1:`<b>比率（縦横比）が重要</b>です。比率を固定して、出力ピクセルを決めれば綺麗に仕上がります。`,
+      info2:`<b>プリセット（推奨）</b><br/>
+             • 証明写真(3×4): 354×472px<br/>
+             • パスポート(3.5×4.5): 413×531px<br/>
+             • US 2×2: 600×600px`,
+      info3:`<b>ヒント</b><br/>
+             • JPGは背景が綺麗に塗りつぶされます。<br/>
+             • PNGは透明可ですが、証明写真は白背景が一般的です。<br/>
+             • 2×/4×はダウンロード解像度を上げる簡易オプションです。`,
+      footerHome:"Home",
+      msgReady:"準備完了！ドラッグで調整してダウンロードしてください。",
+      msgLoading:"読み込み中…",
+      errOnlyImg:"画像のみ対応です。",
+      errLoadFail:"画像を読み込めませんでした。別のファイルで試してください。",
+      errSize:"出力サイズ(px)を確認してください。",
+      errDlFail:"ダウンロードに失敗しました。もう一度お試しください。",
+      okDlStart:"ダウンロード開始: "
+    }
+  };
 
+  function setText(id, html){ const el=$(id); if(el) el.innerHTML = html; }
+  function setPlain(id, text){ const el=$(id); if(el) el.textContent = text; }
+
+  function applyLang(lang){
+    const t = I18N[lang] || I18N.ko;
+    document.documentElement.lang = t.htmlLang;
+
+    setPlain("t_title", t.title);
+    setText("t_sub", t.sub);
+    setPlain("t_homeBtn", t.homeBtn);
+    setPlain("t_localPill", t.localPill);
+
+    setPlain("t_step1", t.step1);
+    setPlain("t_step2", t.step2);
+    setText("dropTitle", t.dropTitle);
+    setPlain("t_dropHint", t.dropHint);
+
+    setPlain("t_p1", t.p1);
+    setPlain("t_p2", t.p2);
+    setPlain("t_p3", t.p3);
+
+    setPlain("t_guide", t.guide);
+    setPlain("t_showGuide", t.showGuide);
+    setPlain("t_snapCenter", t.snapCenter);
+    setPlain("t_zoom", t.zoom);
+    setPlain("t_upscale", t.upscale);
+    setPlain("t_outFormat", t.outFormat);
+    setPlain("t_bgFill", t.bgFill);
+
+    setPlain("t_bg1", t.bg1);
+    setPlain("t_bg2", t.bg2);
+    setPlain("t_bg3", t.bg3);
+    setPlain("t_bg4", t.bg4);
+
+    setPlain("t_outW", t.outW);
+    setPlain("t_outH", t.outH);
+    setText("t_howto", t.howto);
+
+    setPlain("t_infoTitle", t.infoTitle);
+    setText("t_info1", t.info1);
+    setText("t_info2", t.info2);
+    setText("t_info3", t.info3);
+
+    setPlain("t_footerHome", t.footerHome);
+
+    // keep messages localized
+    window.__T = t;
+  }
+
+  // ---- Year ----
+  $("year").textContent = new Date().getFullYear();
+
+  // ---- Elements ----
   const drop = $("drop");
   const fileInput = $("file");
   const canvas = $("canvas");
   const wrap = $("editorWrap");
-  const overlay = $("overlayHint");
 
   const outFormat = $("outFormat");
   const bgFill = $("bgFill");
@@ -364,6 +681,7 @@
   const zoomEl = $("zoom");
   const showGuide = $("showGuide");
   const snapCenter = $("snapCenter");
+  const upscaleFactorEl = $("upscaleFactor");
 
   const presetLabel = $("presetLabel");
   const btnDownload = $("download");
@@ -376,33 +694,13 @@
     msg.textContent = text || "";
     msg.className = "msg " + (type || "");
   }
-
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
   // --- Presets ---
-  // ratio = w/h
   const PRESETS = {
-    kr_id: {
-      name: "증명사진(3×4)",
-      ratio: 3/4,
-      outW: 354,
-      outH: 472,
-      guide: { headTop: 0.18, chin: 0.76 } // relative to crop height
-    },
-    kr_passport: {
-      name: "여권(3.5×4.5)",
-      ratio: 3.5/4.5,
-      outW: 413,
-      outH: 531,
-      guide: { headTop: 0.16, chin: 0.78 }
-    },
-    us_2x2: {
-      name: "US 2×2",
-      ratio: 1,
-      outW: 600,
-      outH: 600,
-      guide: { headTop: 0.18, chin: 0.78 }
-    }
+    kr_id: { nameKO:"증명사진(3×4)", nameEN:"KR ID (3×4)", ratio: 3/4, outW: 354, outH: 472, guide: { headTop: 0.18, chin: 0.76 } },
+    kr_passport: { nameKO:"여권(3.5×4.5)", nameEN:"KR Passport (3.5×4.5)", ratio: 3.5/4.5, outW: 413, outH: 531, guide: { headTop: 0.16, chin: 0.78 } },
+    us_2x2: { nameKO:"US 2×2", nameEN:"US 2×2", ratio: 1, outW: 600, outH: 600, guide: { headTop: 0.18, chin: 0.78 } }
   };
 
   let presetKey = "kr_id";
@@ -411,7 +709,7 @@
   let img = null;
   let imgW = 0, imgH = 0;
 
-  // pan offsets in "image space" pixels (relative to image center)
+  // pan offsets in image pixels (relative to image center)
   let panX = 0, panY = 0;
   let isDragging = false;
   let dragStart = { x:0, y:0, panX:0, panY:0 };
@@ -432,11 +730,12 @@
     });
 
     const p = PRESETS[key];
-    presetLabel.textContent = "Preset: " + p.name;
+    // preset pill text: keep simple
+    presetLabel.textContent = "Preset: " + p.nameEN;
+
     outW.value = p.outW;
     outH.value = p.outH;
 
-    // recompute crop box + re-render
     layoutCanvas();
     if(img && snapCenter.checked){
       panX = 0; panY = 0;
@@ -444,12 +743,11 @@
     render();
   }
 
-  // --- Upload/open ---
+  // ---- Upload/open ----
   function openPicker(){
     fileInput.value = "";
     fileInput.click();
   }
-
   drop.addEventListener("click", openPicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
@@ -458,7 +756,6 @@
     }
   });
 
-  // Drag & drop
   ["dragenter","dragover"].forEach(evt=>{
     drop.addEventListener(evt, (e)=>{
       e.preventDefault(); e.stopPropagation();
@@ -483,11 +780,11 @@
 
   function loadFile(file){
     if(!file || !(file.type || "").startsWith("image/")){
-      setMsg("이미지 파일만 지원합니다.", "err");
+      setMsg((window.__T?.errOnlyImg) || "Images only.", "err");
       return;
     }
 
-    setMsg("로딩 중…", "");
+    setMsg((window.__T?.msgLoading) || "Loading…", "");
     const url = URL.createObjectURL(file);
     const im = new Image();
     im.onload = () => {
@@ -497,7 +794,6 @@
       imgW = im.naturalWidth || 0;
       imgH = im.naturalHeight || 0;
 
-      // reset
       panX = 0; panY = 0;
       zoomEl.value = "1";
 
@@ -507,35 +803,30 @@
 
       layoutCanvas();
       render();
-      setMsg("준비 완료! 사진을 드래그해서 위치를 맞추고 다운로드하세요.", "ok");
+      setMsg((window.__T?.msgReady) || "Ready.", "ok");
     };
     im.onerror = () => {
       URL.revokeObjectURL(url);
-      setMsg("이미지를 불러오지 못했어요. 다른 파일로 시도해 주세요.", "err");
+      setMsg((window.__T?.errLoadFail) || "Failed to load.", "err");
     };
     im.src = url;
   }
 
-  // --- Canvas layout ---
+  // ---- Canvas layout ----
   function layoutCanvas(){
-    // set view size based on wrapper width
     const rect = wrap.getBoundingClientRect();
     viewW = Math.max(320, Math.floor(rect.width));
-    // make editor taller on desktop
     const minH = window.matchMedia("(min-width: 1024px)").matches ? 420 : 320;
     viewH = Math.max(minH, Math.floor(rect.width * 0.72));
-    // but keep inside card nicely
     viewH = Math.min(viewH, 520);
 
     dpr = Math.max(1, window.devicePixelRatio || 1);
 
     canvas.width = Math.floor(viewW * dpr);
     canvas.height = Math.floor(viewH * dpr);
-
     canvas.style.width = viewW + "px";
     canvas.style.height = viewH + "px";
 
-    // crop rect: centered with margins, keeping preset ratio
     const pad = 18;
     const maxW = viewW - pad*2;
     const maxH = viewH - pad*2;
@@ -553,9 +844,6 @@
     crop.h = ch;
     crop.x = (viewW - cw) / 2;
     crop.y = (viewH - ch) / 2;
-
-    // overlay drawn via canvas render; keep overlay empty for accessibility
-    overlay.innerHTML = "";
   }
 
   window.addEventListener("resize", ()=>{
@@ -563,7 +851,7 @@
     render();
   });
 
-  // --- Drag to pan ---
+  // ---- Drag to pan ----
   function toLocal(e){
     const r = canvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -581,13 +869,10 @@
     if(!img || !isDragging) return;
     const p = toLocal(e);
 
-    // translate view drag into image-space pan:
-    // scale factor from image to view at current zoom (cover crop)
     const zoom = parseFloat(zoomEl.value || "1");
     const base = baseCoverScale();
     const scale = base * zoom;
 
-    // view pixels delta -> image pixels delta
     const dxView = p.x - dragStart.x;
     const dyView = p.y - dragStart.y;
 
@@ -618,9 +903,8 @@
     }
   });
 
-  // --- Rendering ---
+  // ---- Rendering ----
   function baseCoverScale(){
-    // base scale to cover the crop box (so no empty within crop)
     if(!img) return 1;
     const scaleX = crop.w / imgW;
     const scaleY = crop.h / imgH;
@@ -634,28 +918,22 @@
     ctx.setTransform(1,0,0,1,0,0);
     ctx.clearRect(0,0,cw,ch);
 
-    // scale for DPR
     ctx.scale(dpr, dpr);
 
-    // background
     ctx.fillStyle = "#0a0e16";
     ctx.fillRect(0,0,viewW,viewH);
 
-    // draw image (if any)
     if(img){
       const zoom = parseFloat(zoomEl.value || "1");
       const base = baseCoverScale();
       const scale = base * zoom;
 
-      // center crop in view; place image relative to crop center + pan
       const cropCx = crop.x + crop.w/2;
       const cropCy = crop.y + crop.h/2;
 
-      // image draw size in view pixels
       const drawW = imgW * scale;
       const drawH = imgH * scale;
 
-      // panX/panY are in image pixels; convert to view pixels:
       const panVX = panX * scale;
       const panVY = panY * scale;
 
@@ -667,13 +945,9 @@
       // darken outside crop
       ctx.save();
       ctx.fillStyle = "rgba(0,0,0,.55)";
-      // top
       ctx.fillRect(0,0,viewW,crop.y);
-      // bottom
       ctx.fillRect(0,crop.y+crop.h,viewW,viewH-(crop.y+crop.h));
-      // left
       ctx.fillRect(0,crop.y,crop.x,crop.h);
-      // right
       ctx.fillRect(crop.x+crop.w,crop.y,viewW-(crop.x+crop.w),crop.h);
       ctx.restore();
 
@@ -684,7 +958,7 @@
       ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
       ctx.restore();
 
-      // guide lines (head/chin)
+      // guide lines
       if(showGuide.checked){
         const g = PRESETS[presetKey].guide;
         ctx.save();
@@ -695,26 +969,12 @@
         const yHead = crop.y + crop.h * g.headTop;
         const yChin = crop.y + crop.h * g.chin;
 
-        // head line
         ctx.beginPath(); ctx.moveTo(crop.x, yHead); ctx.lineTo(crop.x+crop.w, yHead); ctx.stroke();
-        // chin line
         ctx.beginPath(); ctx.moveTo(crop.x, yChin); ctx.lineTo(crop.x+crop.w, yChin); ctx.stroke();
 
-        // center vertical
         ctx.setLineDash([4,7]);
         const xMid = crop.x + crop.w/2;
         ctx.beginPath(); ctx.moveTo(xMid, crop.y); ctx.lineTo(xMid, crop.y+crop.h); ctx.stroke();
-
-        ctx.restore();
-
-        // guide label
-        ctx.save();
-        ctx.fillStyle = "rgba(0,0,0,.45)";
-        ctx.fillRect(crop.x+10, crop.y+10, 140, 44);
-        ctx.fillStyle = "#e9eef7";
-        ctx.font = "700 12px Inter, Noto Sans KR, sans-serif";
-        ctx.fillText("머리끝 가이드", crop.x+18, crop.y+28);
-        ctx.fillText("턱끝 가이드", crop.x+18, crop.y+46);
         ctx.restore();
       }
 
@@ -723,65 +983,56 @@
       ctx.strokeStyle = "rgba(47,109,246,.95)";
       ctx.lineWidth = 3;
       const c = 16;
-      // tl
       ctx.beginPath(); ctx.moveTo(crop.x, crop.y+c); ctx.lineTo(crop.x, crop.y); ctx.lineTo(crop.x+c, crop.y); ctx.stroke();
-      // tr
       ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y); ctx.lineTo(crop.x+crop.w, crop.y); ctx.lineTo(crop.x+crop.w, crop.y+c); ctx.stroke();
-      // bl
       ctx.beginPath(); ctx.moveTo(crop.x, crop.y+crop.h-c); ctx.lineTo(crop.x, crop.y+crop.h); ctx.lineTo(crop.x+c, crop.y+crop.h); ctx.stroke();
-      // br
       ctx.beginPath(); ctx.moveTo(crop.x+crop.w-c, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h); ctx.lineTo(crop.x+crop.w, crop.y+crop.h-c); ctx.stroke();
       ctx.restore();
 
     } else {
-      // empty state
       ctx.save();
       ctx.fillStyle = "rgba(255,255,255,.65)";
       ctx.font = "800 16px Inter, Noto Sans KR, sans-serif";
-      ctx.fillText("미리보기", 24, 42);
+      ctx.fillText("Preview", 24, 42);
       ctx.fillStyle = "rgba(255,255,255,.45)";
       ctx.font = "600 12px Inter, Noto Sans KR, sans-serif";
-      ctx.fillText("사진을 업로드하면 크롭 편집이 표시됩니다.", 24, 68);
+      ctx.fillText("Upload a photo to start cropping.", 24, 68);
       ctx.restore();
     }
   }
 
-  // --- Export ---
+  // ---- Export + Upscale ----
   function exportCropped(){
     if(!img) return;
 
-    const targetW = parseInt(outW.value, 10);
-    const targetH = parseInt(outH.value, 10);
-    if(!targetW || !targetH || targetW < 64 || targetH < 64){
-      setMsg("출력 가로/세로(px)를 확인해 주세요.", "err");
+    const baseW = parseInt(outW.value, 10);
+    const baseH = parseInt(outH.value, 10);
+    if(!baseW || !baseH || baseW < 64 || baseH < 64){
+      setMsg((window.__T?.errSize) || "Check output size.", "err");
       return;
     }
 
-    // offscreen canvas at output resolution
+    const factor = parseInt(upscaleFactorEl.value || "1", 10);
+    const targetW = baseW * factor;
+    const targetH = baseH * factor;
+
     const out = document.createElement("canvas");
     out.width = targetW;
     out.height = targetH;
     const octx = out.getContext("2d", { alpha: true });
 
-    // fill background for JPG (and also for PNG if user wants; we keep transparent for PNG by default)
     const mime = outFormat.value;
     const fill = bgFill.value;
 
     if(mime === "image/jpeg"){
       octx.fillStyle = fill;
       octx.fillRect(0,0,targetW,targetH);
-    } else {
-      // PNG: keep transparent unless user chose non-white? (we still fill if not pure transparent is desired)
-      // If you want always fill for PNG too, uncomment:
-      // octx.fillStyle = fill; octx.fillRect(0,0,targetW,targetH);
     }
 
-    // Compute mapping from editor crop box to source image pixels at current pan/zoom
     const zoom = parseFloat(zoomEl.value || "1");
     const base = baseCoverScale();
     const scale = base * zoom;
 
-    // In view pixels:
     const cropCx = crop.x + crop.w/2;
     const cropCy = crop.y + crop.h/2;
 
@@ -794,30 +1045,25 @@
     const drawX = cropCx - drawW/2 + panVX;
     const drawY = cropCy - drawH/2 + panVY;
 
-    // We need source rect in image pixels that corresponds to crop rect in view pixels.
-    // Convert crop rect corners from view -> image:
-    // viewX = drawX + imgX*scale  => imgX = (viewX - drawX)/scale
+    // source rect in image pixels
     const sx = (crop.x - drawX) / scale;
     const sy = (crop.y - drawY) / scale;
     const sw = crop.w / scale;
     const sh = crop.h / scale;
 
-    // Clamp source rect to image bounds a bit (avoid NaN)
     const sx2 = clamp(sx, -imgW, imgW*2);
     const sy2 = clamp(sy, -imgH, imgH*2);
 
-    // Draw with high quality
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
     octx.drawImage(img, sx2, sy2, sw, sh, 0, 0, targetW, targetH);
 
-    // Download
     const ext = (mime === "image/png") ? "png" : "jpg";
-    const name = presetKey + "_" + new Date().toISOString().replace(/[:.]/g,"-") + "." + ext;
+    const name = `${presetKey}_x${factor}_` + new Date().toISOString().replace(/[:.]/g,"-") + "." + ext;
 
     out.toBlob((blob)=>{
       if(!blob){
-        setMsg("다운로드 실패. 다시 시도해 주세요.", "err");
+        setMsg((window.__T?.errDlFail) || "Download failed.", "err");
         return;
       }
       const a = document.createElement("a");
@@ -828,11 +1074,11 @@
       a.click();
       a.remove();
       setTimeout(()=>URL.revokeObjectURL(url), 1500);
-      setMsg("다운로드 시작: " + name, "ok");
+      setMsg(((window.__T?.okDlStart) || "Downloading: ") + name, "ok");
     }, mime, 0.92);
   }
 
-  // --- Buttons ---
+  // ---- Buttons ----
   btnDownload.addEventListener("click", exportCropped);
 
   btnReset.addEventListener("click", ()=>{
@@ -850,28 +1096,50 @@
     render();
   });
 
-  // preset buttons
   document.querySelectorAll(".presetBtn").forEach(b=>{
     b.addEventListener("click", ()=> setPreset(b.dataset.preset));
   });
 
-  // keep ratio if user edits only one side? (simple helper)
   function syncSizeKeepRatio(changed){
     const p = PRESETS[presetKey];
     const ratio = p.ratio;
     const w = parseInt(outW.value, 10);
     const h = parseInt(outH.value, 10);
-    if(changed === "w" && w && (!h || document.activeElement === outW)){
+    if(changed === "w" && w){
       outH.value = Math.round(w / ratio);
     }
-    if(changed === "h" && h && (!w || document.activeElement === outH)){
+    if(changed === "h" && h){
       outW.value = Math.round(h * ratio);
     }
   }
   outW.addEventListener("input", ()=> syncSizeKeepRatio("w"));
   outH.addEventListener("input", ()=> syncSizeKeepRatio("h"));
 
-  // init
+  // ---- Language init (supports ?lang=xx) ----
+  const langSel = $("lang");
+  function getLangFromUrl(){
+    try{
+      const u = new URL(location.href);
+      const v = (u.searchParams.get("lang") || "").toLowerCase();
+      return ["ko","en","es","ja"].includes(v) ? v : null;
+    }catch(_){ return null; }
+  }
+  const initLang = getLangFromUrl() || "ko";
+  langSel.value = initLang;
+  applyLang(initLang);
+
+  langSel.addEventListener("change", ()=>{
+    const v = langSel.value;
+    applyLang(v);
+    // keep URL param (nice for sharing)
+    try{
+      const u = new URL(location.href);
+      u.searchParams.set("lang", v);
+      history.replaceState({}, "", u.toString());
+    }catch(_){}
+  });
+
+  // ---- Init ----
   layoutCanvas();
   render();
   setPreset("kr_id");
