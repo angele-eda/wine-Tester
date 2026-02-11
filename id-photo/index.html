@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>ID Photo / Passport</title>
-<meta name="description" content="Create ID and passport photos online. Adjust, crop and download instantly. 100% local processing." />
+  <title>ID Photo / Passport | ConvertFiles24</title>
+  <meta name="description" content="Create ID and passport photos online. Adjust, crop and download instantly. 100% local processing." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
@@ -330,11 +330,7 @@
       max-width:100%;
     }
 
-    /* =========================
-       FIX #3: Country buttons equal width (mobile-first)
-       - default: 2 columns (phones)
-       - wide: 4 columns (desktop)
-       ========================= */
+    /* Country buttons equal width */
     #countrySeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -350,7 +346,6 @@
       text-align:center;
     }
 
-    /* doc도 동일폭 */
     #docSeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -363,9 +358,6 @@
       text-align:center;
     }
 
-    /* =========================
-       FIX #4: DPI/Output row height aligned
-       ========================= */
     .small{
       min-height: 36px;
       display:block;
@@ -379,7 +371,7 @@
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
-        <h1 class="title" id="page_title">ConvertFiles24 · ID Photo / Passport</h1>
+        <h1 class="title" id="page_title">ID Photo / Passport</h1>
         <p class="sub" id="page_sub">Upload → adjust position/zoom → download. Processed locally in your browser.</p>
 
         <div style="margin-top:10px;">
@@ -493,9 +485,7 @@
 
         <div class="row">
           <div class="seg" style="gap:8px;">
-            <!-- ✅ 기본 ON: active -->
             <div class="segBtn active" id="toggleAuto"><span id="auto_icon">✅</span> <span id="auto_txt">Auto center (recommended)</span></div>
-            <!-- ✅ 기본 ON: active -->
             <div class="segBtn active" id="toggleGuide"><span id="guide_icon">✅</span> <span id="guide_txt">Show face guide</span></div>
           </div>
         </div>
@@ -556,7 +546,7 @@
   // ========= i18n =========
   const STR = {
     en: {
-      page_title: "ConvertFiles24 · ID Photo / Passport",
+      page_title: "ID Photo / Passport",
       page_sub: "Upload → adjust position/zoom → download. Processed locally in your browser.",
       home: "🏠 Home",
       local: "Local processing",
@@ -593,7 +583,7 @@
       meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Crop ratio: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`
     },
     ko: {
-      page_title: "ConvertFiles24 · 증명사진 / 여권사진",
+      page_title: "ID Photo / Passport",
       page_sub: "업로드 → 위치/확대 조절 → 다운로드. 서버 업로드 없이 브라우저에서 로컬 처리됩니다.",
       home: "🏠 홈으로",
       local: "Local processing",
@@ -630,7 +620,7 @@
       meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>비율: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`
     },
     es: {
-      page_title: "ConvertFiles24 · Foto ID / Pasaporte",
+      page_title: "ID Photo / Passport",
       page_sub: "Sube → ajusta posición/zoom → descarga. Se procesa localmente.",
       home: "🏠 Inicio",
       local: "Local processing",
@@ -667,7 +657,7 @@
       meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Ratio: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`
     },
     ja: {
-      page_title: "ConvertFiles24 · 証明写真 / パスポート",
+      page_title: "ID Photo / Passport",
       page_sub: "アップロード → 位置/ズーム調整 → ダウンロード。ローカル処理です。",
       home: "🏠 ホーム",
       local: "Local processing",
@@ -897,7 +887,6 @@
   let offsetX = 0;
   let offsetY = 0;
 
-  // ✅ 기본값을 둘 다 ON으로
   let autoCenter = true;
   let showGuide = true;
 
@@ -1243,7 +1232,7 @@
 
   // init
   setLang(LANG);
-  syncToggleUI();     // ✅ 초기 상태를 변수값(둘다 ON)에 맞춰 강제 동기화
+  syncToggleUI();
   resizeCanvas();
   refreshPresetPill();
 
