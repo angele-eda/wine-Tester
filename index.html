@@ -61,7 +61,7 @@
   }
   </script>
 
-  <!-- ✅ Libraries -->
+  <!-- ✅ Libraries (Local in browser) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
@@ -75,6 +75,7 @@
       background:#0b0f17;
       color:#e9eef7;
       overflow-x:hidden;
+
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
@@ -89,8 +90,9 @@
     }
 
     .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+
     .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
       flex-wrap:wrap; margin-bottom:14px;
     }
 
@@ -107,15 +109,47 @@
 
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ tools */
+    /* ✅ tool links (ID photo etc.) */
     .tools{
       margin-top:10px;
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
-    .toolBtn{
+
+    /* === BIG TOOL BUTTON (ID Photo) === */
+    .toolPrimary{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
+      text-decoration:none;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      border:1px solid rgba(47,109,246,.55);
+      background:rgba(47,109,246,.22);
+      color:#e9eef7;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+    .toolPrimary:hover{ background:rgba(47,109,246,.28); }
+    .toolPrimary .badge{
+      font-size:11px;
+      font-weight:900;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    /* small links (Privacy/Terms) */
+    .toolLink{
       display:inline-flex; align-items:center; justify-content:center; gap:8px;
       border:var(--border);
       background:rgba(255,255,255,.06);
@@ -129,26 +163,26 @@
       user-select:none;
       white-space:nowrap;
     }
-    .toolBtn.primary{
-      background:rgba(47,109,246,.22);
-      border-color:rgba(47,109,246,.55);
-      color:#e9eef7;
-    }
-    .toolBtn:hover{ background:rgba(255,255,255,.09); }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:10px;
-      font-weight:900;
-      padding:4px 8px;
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.14);
-      color:#e9eef7;
-    }
+    .toolLink:hover{ background:rgba(255,255,255,.09); }
 
-    /* ✅ language bar (make it feel "language", not a tool) */
+    /* ✅ LANGUAGE AREA (separate block) */
+    .langArea{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+      min-width: 220px;
+    }
+    .langLabel{
+      font-size:12px;
+      font-weight:900;
+      color:#9fb0ca;
+      letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.95;
+    }
     .langbar{
       display:flex;
       gap:8px;
@@ -160,19 +194,23 @@
     }
     .langbtn{
       font-size:12px; font-weight:900;
-      color:#b8c6dc; border:1px solid rgba(255,255,255,.10);
+      color:#b8c6dc; border:var(--border);
       padding:9px 12px; border-radius:999px;
-      background:rgba(255,255,255,.03);
+      background:rgba(255,255,255,.04);
       cursor:pointer; user-select:none;
       white-space:nowrap;
       flex:0 0 auto;
-      opacity:.95;
+
+      /* ✅ flag alignment */
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
     }
     .langbtn.active{
       color:#e9eef7;
-      background:rgba(255,255,255,.07);
-      border-color:rgba(255,255,255,.18);
-      box-shadow: 0 0 0 1px rgba(255,255,255,.05);
+      background:rgba(255,255,255,.10);
+      border-color:rgba(255,255,255,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
 
     .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
@@ -193,6 +231,7 @@
       display:flex; align-items:center; justify-content:center; text-align:center;
       background:rgba(255,255,255,.02);
       min-width:0;
+
       cursor:pointer;
       user-select:none;
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
@@ -222,6 +261,8 @@
       background:#2f6df6; color:white; font-weight:800;
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
       letter-spacing: -0.2px;
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
@@ -239,7 +280,7 @@
       outline:none;
     }
 
-    /* ✅ Preview head with only Scissors button */
+    /* ✅ Preview + Crop button layout */
     .previewHead{
       display:flex;
       align-items:center;
@@ -249,12 +290,14 @@
       flex-wrap:wrap;
     }
     .previewActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+    /* Crop button (only one, small) */
     .miniBtn{
       border:var(--border);
       background:rgba(255,255,255,.06);
       color:#e9eef7;
       padding:10px 12px;
-      border-radius:14px;
+      border-radius:999px;
       cursor:pointer;
       font-weight:900;
       font-size:12px;
@@ -352,6 +395,8 @@
       font-weight:900;
       line-height:1;
       min-width:42px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
@@ -359,8 +404,14 @@
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    /* Samsung Internet fix */
-    html[data-samsung="true"] .drop{ border: none !important; outline: none !important; box-shadow: none !important; }
+    /* ================================
+       Samsung Internet upload box fix
+       ================================ */
+    html[data-samsung="true"] .drop{
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
     html[data-samsung="true"] .drop::before{
       content:"";
       position:absolute;
@@ -379,19 +430,27 @@
         <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Tools (ID Photo only) -->
+        <!-- ✅ Tools: big tool + small links -->
         <div class="tools">
-          <a class="toolBtn primary" id="tool_idphoto" href="/id-photo/">
-            🪪 ID Photo <span class="badge">✨ NEW</span>
+          <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
+            🪪 <span id="tool_idphoto_text">ID Photo</span>
+            <span class="badge">✨ <span id="tool_badge">NEW</span></span>
           </a>
+
+          <a class="toolLink" href="/privacy.html">🔒 <span id="tool_privacy">Privacy</span></a>
+          <a class="toolLink" href="/terms.html">📄 <span id="tool_terms">Terms</span></a>
         </div>
       </div>
 
-      <div class="langbar" aria-label="Language selector">
-        <div class="langbtn" data-lang="en">EN</div>
-        <div class="langbtn" data-lang="es">ES</div>
-        <div class="langbtn" data-lang="ja">日本語</div>
-        <div class="langbtn" data-lang="ko">KO</div>
+      <!-- ✅ Language block (separated, flagged) -->
+      <div class="langArea" aria-label="Language selector">
+        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+        <div class="langbar">
+          <div class="langbtn" data-lang="en">🇺🇸 EN</div>
+          <div class="langbtn" data-lang="es">🇪🇸 ES</div>
+          <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
+          <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+        </div>
       </div>
     </div>
 
@@ -430,7 +489,7 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview head: ONLY scissors button -->
+        <!-- ✅ Preview head with ONLY crop -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
@@ -515,6 +574,7 @@
 (() => {
   "use strict";
 
+  // ✅ Samsung Internet detection: enable CSS fix only there
   if (/SamsungBrowser/i.test(navigator.userAgent)) {
     document.documentElement.dataset.samsung = "true";
   }
@@ -545,6 +605,9 @@
 
   $("year").textContent = new Date().getFullYear();
 
+  // =========================
+  // i18n
+  // =========================
   const STR = {
     en: {
       seoTitle: "ConvertFiles24 – Free Converter (Images & PDF)",
@@ -552,6 +615,11 @@
       ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
+      lang_label: "Language",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
+      tool_privacy: "Privacy",
+      tool_terms: "Terms",
       h_upload: "1) Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
@@ -604,6 +672,11 @@
       ogTitle: "ConvertFiles24 - 이미지 & PDF 변환",
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
+      lang_label: "언어",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
+      tool_privacy: "Privacy",
+      tool_terms: "Terms",
       h_upload: "1) 업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
@@ -656,6 +729,11 @@
       ogTitle: "ConvertFiles24 - 画像 & PDF 変換",
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
+      lang_label: "言語",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
+      tool_privacy: "Privacy",
+      tool_terms: "Terms",
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
@@ -708,6 +786,11 @@
       ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
+      lang_label: "Idioma",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
+      tool_privacy: "Privacy",
+      tool_terms: "Terms",
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
@@ -854,11 +937,15 @@
     });
   }
 
+  // ✅ keep tool link lang
   function syncToolLinks(){
     const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
     toolIdPhoto.href = url;
   }
 
+  // =========================
+  // State
+  // =========================
   let files = [];
   let activeIndex = 0;
 
@@ -884,6 +971,13 @@
     }
 
     $("subtitle").innerHTML = t.subtitle;
+
+    $("lang_label").textContent = t.lang_label;
+    $("tool_idphoto_text").textContent = t.tool_idphoto;
+    $("tool_badge").textContent = t.tool_badge;
+    $("tool_privacy").textContent = t.tool_privacy;
+    $("tool_terms").textContent = t.tool_terms;
+
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
     $("drop_hint").textContent = t.drop_hint;
@@ -1024,7 +1118,6 @@
   }
 
   function updateCropState(){
-    // only 1 image => enable scissors
     if(files.length === 1 && files[0] && isImage(files[0].file)){
       cropBtn.disabled = false;
       return;
@@ -1446,7 +1539,7 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Scissors only: send selected image to /id-photo/
+  // ✅ Crop button: send selected single image to /id-photo/ via sessionStorage
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
@@ -1463,7 +1556,8 @@
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
-      location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
+      const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
+      location.href = url;
     }catch(e){
       location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
     }
