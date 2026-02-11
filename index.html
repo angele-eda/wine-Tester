@@ -195,6 +195,88 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
 
+    /* =========================
+       ✅ First choice section
+       ========================= */
+    .choiceWrap{
+      margin: 14px 0 14px;
+      border: var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius);
+      padding: var(--pad);
+    }
+    .choiceTitle{
+      margin:0 0 10px;
+      font-size:15px;
+      color:#dbe7ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+    }
+    .choiceGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 860px){ .choiceGrid{ grid-template-columns: 1fr; } }
+
+    .choiceCard{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      padding: 16px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s, background .15s, border-color .15s, box-shadow .15s;
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      min-width:0;
+    }
+    .choiceCard:hover{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+    .choiceCard:active{ transform: scale(.997); }
+
+    .choiceIcon{
+      width:44px; height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px;
+      flex:0 0 auto;
+    }
+    .choiceMain{ min-width:0; flex:1; }
+    .choiceH{
+      margin:0;
+      font-size:15px;
+      font-weight:900;
+      color:#e9eef7;
+      letter-spacing:-0.2px;
+    }
+    .choiceP{
+      margin:6px 0 0;
+      color:#a7b3c7;
+      font-size:13px;
+      line-height:1.45;
+    }
+    .choiceCTA{
+      margin-top:10px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color:#e9eef7;
+      font-weight:900;
+      font-size:12px;
+      text-decoration:none;
+    }
+
     .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
     @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
 
@@ -386,6 +468,91 @@
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
     /* ================================
+       ✅ Action Sheet (camera / pick)
+       ================================ */
+    .sheet{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      background: rgba(0,0,0,.55);
+      z-index: 9999;
+      padding: 16px;
+    }
+    .sheet.show{ display:flex; }
+    .sheetPanel{
+      width: min(520px, 100%);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(12,16,28,.92);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      box-shadow: 0 30px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .sheetHead{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .sheetTitle{
+      font-weight: 900;
+      letter-spacing:-0.2px;
+      color:#e9eef7;
+      font-size:14px;
+      margin:0;
+    }
+    .sheetClose{
+      border: var(--border);
+      background: rgba(255,255,255,.06);
+      color:#e9eef7;
+      padding: 8px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+    }
+    .sheetBody{
+      padding: 12px 12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .sheetBtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#e9eef7;
+      font-weight:900;
+      cursor:pointer;
+      font-size:13px;
+      user-select:none;
+    }
+    .sheetBtn.primary{
+      border-color: rgba(47,109,246,.55);
+      background: rgba(47,109,246,.18);
+    }
+    .sheetBtn:hover{ background: rgba(255,255,255,.09); }
+    .sheetBtn.primary:hover{ background: rgba(47,109,246,.24); }
+    .sheetNote{
+      margin-top: 2px;
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.45;
+      text-align:center;
+      padding: 0 10px 10px;
+    }
+
+    /* ================================
        Samsung Internet upload box fix
        ================================ */
     html[data-samsung="true"] .drop{
@@ -432,7 +599,34 @@
       </div>
     </div>
 
-    <div class="grid">
+    <!-- ✅ First: Two choices -->
+    <div class="choiceWrap" id="choiceWrap">
+      <div class="choiceTitle" id="choice_title"></div>
+
+      <div class="choiceGrid">
+        <!-- Convert choice -->
+        <div class="choiceCard" id="choice_convert" role="button" tabindex="0">
+          <div class="choiceIcon">📁</div>
+          <div class="choiceMain">
+            <p class="choiceH" id="choice_convert_h"></p>
+            <p class="choiceP" id="choice_convert_p"></p>
+            <span class="choiceCTA" id="choice_convert_cta"></span>
+          </div>
+        </div>
+
+        <!-- ID Photo choice -->
+        <div class="choiceCard" id="choice_idphoto" role="button" tabindex="0">
+          <div class="choiceIcon">🪪</div>
+          <div class="choiceMain">
+            <p class="choiceH" id="choice_id_h"></p>
+            <p class="choiceP" id="choice_id_p"></p>
+            <span class="choiceCTA" id="choice_id_cta"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="convertSection">
       <!-- Left -->
       <div class="card">
         <h2 id="h_upload"></h2>
@@ -549,6 +743,27 @@
     </div>
   </div>
 
+  <!-- ✅ Action sheet for ID Photo / Camera -->
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheetPanel" role="dialog" aria-modal="true" aria-label="Quick actions">
+      <div class="sheetHead">
+        <div class="sheetTitle" id="sheet_title"></div>
+        <button class="sheetClose" id="sheet_close" type="button">✕</button>
+      </div>
+      <div class="sheetBody">
+        <button class="sheetBtn primary" id="sheet_id_camera" type="button">📷</button>
+        <button class="sheetBtn" id="sheet_id_gallery" type="button">🖼️</button>
+        <button class="sheetBtn" id="sheet_conv_camera" type="button">📷</button>
+      </div>
+      <div class="sheetNote" id="sheet_note"></div>
+    </div>
+  </div>
+
+  <!-- Hidden inputs for camera/gallery -->
+  <input id="id_cam" type="file" accept="image/*" capture="environment">
+  <input id="id_pick" type="file" accept="image/*">
+  <input id="conv_cam" type="file" accept="image/*" capture="environment">
+
 <script>
 (() => {
   "use strict";
@@ -581,6 +796,23 @@
   const cropLabel   = $("cropLabel");
   const toolIdPhoto = $("tool_idphoto");
 
+  // Choice
+  const choiceConvert = $("choice_convert");
+  const choiceIdPhoto = $("choice_idphoto");
+  const convertSection = $("convertSection");
+
+  // Sheet
+  const sheet = $("sheet");
+  const sheetClose = $("sheet_close");
+  const sheetIdCam = $("sheet_id_camera");
+  const sheetIdPick = $("sheet_id_gallery");
+  const sheetConvCam = $("sheet_conv_camera");
+
+  // Hidden inputs
+  const idCam = $("id_cam");
+  const idPick = $("id_pick");
+  const convCam = $("conv_cam");
+
   $("year").textContent = new Date().getFullYear();
 
   const STR = {
@@ -593,6 +825,22 @@
       lang_label: "Language",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
+
+      choice_title: "Start here",
+      choice_convert_h: "Convert Files",
+      choice_convert_p: "Convert images to JPG/PNG/WebP/PDF and merge PDF+PDF.",
+      choice_convert_cta: "Go to converter →",
+      choice_id_h: "ID Photo",
+      choice_id_p: "Take a photo or choose one, then crop to passport/ID size.",
+      choice_id_cta: "Open camera / photo →",
+
+      sheet_title: "Quick actions",
+      sheet_close: "Close",
+      sheet_id_camera: "Take photo → ID Photo",
+      sheet_id_gallery: "Choose photo → ID Photo",
+      sheet_conv_camera: "Take photo → Converter",
+      sheet_note: "Tip: On some browsers, camera may open as a photo picker depending on device settings.",
+
       h_upload: "1) Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
@@ -648,6 +896,22 @@
       lang_label: "언어",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
+
+      choice_title: "여기서 시작",
+      choice_convert_h: "파일 변환",
+      choice_convert_p: "이미지 변환(JPG/PNG/WebP/PDF) + PDF 병합(PDF+PDF).",
+      choice_convert_cta: "변환기로 이동 →",
+      choice_id_h: "증명사진 (ID Photo)",
+      choice_id_p: "카메라로 찍거나 사진을 선택해서 바로 자르기/저장.",
+      choice_id_cta: "카메라/사진 열기 →",
+
+      sheet_title: "빠른 실행",
+      sheet_close: "닫기",
+      sheet_id_camera: "사진 찍기 → ID Photo",
+      sheet_id_gallery: "사진 선택 → ID Photo",
+      sheet_conv_camera: "사진 찍기 → 변환기",
+      sheet_note: "팁: 일부 브라우저에서는 카메라가 사진 선택으로 열릴 수 있어요.",
+
       h_upload: "1) 업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
@@ -703,6 +967,22 @@
       lang_label: "言語",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
+
+      choice_title: "ここから開始",
+      choice_convert_h: "ファイル変換",
+      choice_convert_p: "画像変換(JPG/PNG/WebP/PDF) と PDF結合(PDF+PDF)。",
+      choice_convert_cta: "変換へ →",
+      choice_id_h: "証明写真 (ID Photo)",
+      choice_id_p: "撮影または選択して、すぐに切り抜き/保存。",
+      choice_id_cta: "カメラ/写真 →",
+
+      sheet_title: "クイック操作",
+      sheet_close: "閉じる",
+      sheet_id_camera: "撮影 → ID Photo",
+      sheet_id_gallery: "写真選択 → ID Photo",
+      sheet_conv_camera: "撮影 → 変換",
+      sheet_note: "ヒント: 一部のブラウザではカメラが写真選択として開く場合があります。",
+
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
@@ -725,7 +1005,7 @@
       h_download: "4) ダウンロード",
       convert: "変換 / 結合",
       reset: "リセット",
-      privacy_hint: "🔒 プライバシー: サーバー送信なし、ブラ라우저内で処理されます。",
+      privacy_hint: "🔒 プライバシー: サーバー送信なし、ブラウザ内で処理されます。",
       pdfzip_title: "PDF と ZIP",
       pdfzip_desc: "• PDF: 複数ページを1つのPDFに結合  • ZIP: 複数ファイルを1つのzipでダウンロード",
       zip_label: "ZIPで受け取る",
@@ -758,6 +1038,22 @@
       lang_label: "Idioma",
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
+
+      choice_title: "Empieza aquí",
+      choice_convert_h: "Convertir archivos",
+      choice_convert_p: "Convierte imágenes y une PDFs (PDF+PDF).",
+      choice_convert_cta: "Ir al convertidor →",
+      choice_id_h: "Foto ID",
+      choice_id_p: "Toma una foto o elige una y recorta al tamaño de ID/Pasaporte.",
+      choice_id_cta: "Abrir cámara / foto →",
+
+      sheet_title: "Acciones rápidas",
+      sheet_close: "Cerrar",
+      sheet_id_camera: "Tomar foto → Foto ID",
+      sheet_id_gallery: "Elegir foto → Foto ID",
+      sheet_conv_camera: "Tomar foto → Convertidor",
+      sheet_note: "Consejo: En algunos navegadores, la cámara puede abrirse como selector de fotos.",
+
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
@@ -909,6 +1205,50 @@
     toolIdPhoto.href = url;
   }
 
+  // ✅ Sheet helpers
+  function openSheet(){
+    sheet.classList.add("show");
+    sheet.setAttribute("aria-hidden","false");
+  }
+  function closeSheet(){
+    sheet.classList.remove("show");
+    sheet.setAttribute("aria-hidden","true");
+  }
+  sheet.addEventListener("click", (e)=>{
+    if(e.target === sheet) closeSheet();
+  });
+  sheetClose.addEventListener("click", closeSheet);
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") closeSheet();
+  });
+
+  function focusConvert(){
+    try{
+      convertSection.scrollIntoView({ behavior:"smooth", block:"start" });
+      setTimeout(()=>{ drop?.focus?.(); }, 250);
+    }catch(e){}
+  }
+
+  // ✅ Send image file -> ID Photo via sessionStorage and redirect
+  async function sendFileToIdPhoto(file){
+    if(!file) return;
+    if(!isImage(file)) return;
+
+    const dataUrl = await new Promise((resolve, reject)=>{
+      const r = new FileReader();
+      r.onload = ()=> resolve(r.result);
+      r.onerror = ()=> reject(new Error("read fail"));
+      r.readAsDataURL(file);
+    });
+
+    sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
+    sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
+    location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
+  }
+
+  // =========================
+  // State
+  // =========================
   let files = [];
   let activeIndex = 0;
 
@@ -938,6 +1278,23 @@
     $("lang_label").textContent = t.lang_label;
     $("tool_idphoto_text").textContent = t.tool_idphoto;
     $("tool_badge").textContent = t.tool_badge;
+
+    // choices
+    $("choice_title").textContent = t.choice_title;
+    $("choice_convert_h").textContent = t.choice_convert_h;
+    $("choice_convert_p").textContent = t.choice_convert_p;
+    $("choice_convert_cta").textContent = t.choice_convert_cta;
+    $("choice_id_h").textContent = t.choice_id_h;
+    $("choice_id_p").textContent = t.choice_id_p;
+    $("choice_id_cta").textContent = t.choice_id_cta;
+
+    // sheet
+    $("sheet_title").textContent = t.sheet_title;
+    sheetClose.textContent = "✕ " + t.sheet_close;
+    sheetIdCam.textContent = "📷 " + t.sheet_id_camera;
+    sheetIdPick.textContent = "🖼️ " + t.sheet_id_gallery;
+    sheetConvCam.textContent = "📷 " + t.sheet_conv_camera;
+    $("sheet_note").textContent = t.sheet_note;
 
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
@@ -1500,6 +1857,7 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
+  // ✅ Crop (existing behavior)
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
@@ -1516,13 +1874,70 @@
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
-      const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
-      location.href = url;
+      location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
     }catch(e){
       location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
     }
   });
 
+  // ✅ Choices
+  function wireChoice(el, fn){
+    el.addEventListener("click", fn);
+    el.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        fn();
+      }
+    });
+  }
+
+  wireChoice(choiceConvert, ()=>{
+    focusConvert();
+    // optional: open file picker immediately on mobile
+    // openFilePicker();
+  });
+
+  wireChoice(choiceIdPhoto, ()=>{
+    openSheet();
+  });
+
+  // ✅ Sheet actions
+  sheetIdCam.addEventListener("click", ()=>{
+    closeSheet();
+    try{ idCam.value = ""; idCam.click(); }catch(e){}
+  });
+  sheetIdPick.addEventListener("click", ()=>{
+    closeSheet();
+    try{ idPick.value = ""; idPick.click(); }catch(e){}
+  });
+  sheetConvCam.addEventListener("click", ()=>{
+    closeSheet();
+    try{ convCam.value = ""; convCam.click(); }catch(e){}
+  });
+
+  idCam.addEventListener("change", async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    try{ await sendFileToIdPhoto(f); }catch(err){}
+  });
+
+  idPick.addEventListener("change", async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    try{ await sendFileToIdPhoto(f); }catch(err){}
+  });
+
+  convCam.addEventListener("change", async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    focusConvert();
+    // feed to existing converter
+    const dt = new DataTransfer();
+    dt.items.add(f);
+    handleFiles(dt.files);
+  });
+
+  // init
   setLang(LANG);
   resetAll();
 })();
