@@ -61,7 +61,7 @@
   }
   </script>
 
-  <!-- ✅ Libraries (Local in browser) -->
+  <!-- ✅ Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
@@ -75,7 +75,6 @@
       background:#0b0f17;
       color:#e9eef7;
       overflow-x:hidden;
-
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
@@ -103,16 +102,12 @@
       color:#ffffff;
       font-size:24px;
     }
-    @media (min-width: 1024px){
-      .site-title{ font-size:32px; }
-    }
-    @media (max-width: 768px){
-      .site-title{ font-size:20px; letter-spacing:-0.25px; }
-    }
+    @media (min-width: 1024px){ .site-title{ font-size:32px; } }
+    @media (max-width: 768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
 
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ tool links (ID photo etc.) */
+    /* ✅ tools */
     .tools{
       margin-top:10px;
       display:flex;
@@ -140,8 +135,20 @@
       color:#e9eef7;
     }
     .toolBtn:hover{ background:rgba(255,255,255,.09); }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:10px;
+      font-weight:900;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      color:#e9eef7;
+    }
 
-    /* ✅ language bar fix */
+    /* ✅ language bar (make it feel "language", not a tool) */
     .langbar{
       display:flex;
       gap:8px;
@@ -152,18 +159,20 @@
       overflow:hidden;
     }
     .langbtn{
-      font-size:12px; font-weight:800;
-      color:#b8c6dc; border:var(--border);
+      font-size:12px; font-weight:900;
+      color:#b8c6dc; border:1px solid rgba(255,255,255,.10);
       padding:9px 12px; border-radius:999px;
-      background:rgba(255,255,255,.04);
+      background:rgba(255,255,255,.03);
       cursor:pointer; user-select:none;
       white-space:nowrap;
       flex:0 0 auto;
+      opacity:.95;
     }
     .langbtn.active{
       color:#e9eef7;
-      background:rgba(47,109,246,.22);
-      border-color:rgba(47,109,246,.55);
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.18);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.05);
     }
 
     .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
@@ -184,16 +193,13 @@
       display:flex; align-items:center; justify-content:center; text-align:center;
       background:rgba(255,255,255,.02);
       min-width:0;
-
       cursor:pointer;
       user-select:none;
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
       position: relative;
       min-height: 240px;
     }
-    @media (max-width: 480px){
-      .drop{ min-height: 210px; }
-    }
+    @media (max-width: 480px){ .drop{ min-height: 210px; } }
 
     #drop_title{ white-space: pre-line; }
     .drop:active{ transform: scale(0.998); }
@@ -216,8 +222,6 @@
       background:#2f6df6; color:white; font-weight:800;
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
       letter-spacing: -0.2px;
     }
     .btn:disabled{ opacity:.45; cursor:not-allowed; }
@@ -235,7 +239,7 @@
       outline:none;
     }
 
-    /* ✅ Preview layout */
+    /* ✅ Preview head with only Scissors button */
     .previewHead{
       display:flex;
       align-items:center;
@@ -244,6 +248,22 @@
       margin-bottom:10px;
       flex-wrap:wrap;
     }
+    .previewActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .miniBtn{
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
 
     .preview{
       display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
@@ -332,8 +352,6 @@
       font-weight:900;
       line-height:1;
       min-width:42px;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
@@ -341,47 +359,8 @@
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    /* ✅ Big ID Photo button (Preview area) */
-    .bigCta{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      width:100%;
-      border:1px solid rgba(47,109,246,.55);
-      background: rgba(47,109,246,.14);
-      color:#e9eef7;
-      border-radius:16px;
-      padding:14px 14px;
-      cursor:pointer;
-      font-weight:900;
-    }
-    .bigCta:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-    }
-    .bigCtaTop{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      font-size:15px;
-    }
-    .bigCtaSub{
-      text-align:center;
-      font-weight:700;
-      font-size:12px;
-      color:#b9c7de;
-      line-height:1.35;
-    }
-
-    /* ================================
-       Samsung Internet upload box fix
-       ================================ */
-    html[data-samsung="true"] .drop{
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-    }
+    /* Samsung Internet fix */
+    html[data-samsung="true"] .drop{ border: none !important; outline: none !important; box-shadow: none !important; }
     html[data-samsung="true"] .drop::before{
       content:"";
       position:absolute;
@@ -403,16 +382,16 @@
         <!-- ✅ Tools (ID Photo only) -->
         <div class="tools">
           <a class="toolBtn primary" id="tool_idphoto" href="/id-photo/">
-            🪪 ID Photo
+            🪪 ID Photo <span class="badge">✨ NEW</span>
           </a>
         </div>
       </div>
 
       <div class="langbar" aria-label="Language selector">
-        <div class="langbtn" data-lang="en">🇺🇸 EN</div>
-        <div class="langbtn" data-lang="es">🇪🇸 ES</div>
-        <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
-        <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+        <div class="langbtn" data-lang="en">EN</div>
+        <div class="langbtn" data-lang="es">ES</div>
+        <div class="langbtn" data-lang="ja">日本語</div>
+        <div class="langbtn" data-lang="ko">KO</div>
       </div>
     </div>
 
@@ -451,18 +430,15 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview -->
+        <!-- ✅ Preview head: ONLY scissors button -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
+          <div class="previewActions">
+            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo crop page">
+              ✂️ <span id="cropLabel">Crop</span>
+            </button>
+          </div>
         </div>
-
-        <!-- ✅ Big button + 안내문 -->
-        <button class="bigCta" id="idPhotoBigBtn" type="button" disabled>
-          <div class="bigCtaTop">🪪 <span id="idPhotoBigLabel">ID Photo</span></div>
-          <div class="bigCtaSub" id="idPhotoBigHint">ID Photo works when exactly 1 image is selected.</div>
-        </button>
-
-        <div style="height:10px;"></div>
 
         <div class="preview">
           <div class="thumb" id="thumb"></div>
@@ -539,7 +515,6 @@
 (() => {
   "use strict";
 
-  // ✅ Samsung Internet detection: enable CSS fix only there
   if (/SamsungBrowser/i.test(navigator.userAgent)) {
     document.documentElement.dataset.samsung = "true";
   }
@@ -564,18 +539,12 @@
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
-  // ✅ Big CTA
-  const idPhotoBigBtn   = $("idPhotoBigBtn");
-  const idPhotoBigLabel = $("idPhotoBigLabel");
-  const idPhotoBigHint  = $("idPhotoBigHint");
-
+  const cropBtn     = $("cropBtn");
+  const cropLabel   = $("cropLabel");
   const toolIdPhoto = $("tool_idphoto");
 
   $("year").textContent = new Date().getFullYear();
 
-  // =========================
-  // i18n
-  // =========================
   const STR = {
     en: {
       seoTitle: "ConvertFiles24 – Free Converter (Images & PDF)",
@@ -587,9 +556,7 @@
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       h_preview: "2) Preview",
-      idphoto_btn: "ID Photo",
-      idphoto_hint_off: "ID Photo works when exactly 1 image is selected.",
-      idphoto_hint_on: "Select 1 image to open the ID Photo crop tool.",
+      crop: "Crop",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
       h_settings: "3) Settings",
@@ -641,9 +608,7 @@
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       h_preview: "2) 미리보기",
-      idphoto_btn: "증명사진",
-      idphoto_hint_off: "증명사진 도구는 이미지 1장 선택 시 사용 가능합니다.",
-      idphoto_hint_on: "사진 1장을 선택하면 증명사진(자르기) 도구로 이동합니다.",
+      crop: "자르기",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
       h_settings: "3) 설정",
@@ -695,9 +660,7 @@
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       h_preview: "2) プレビュー",
-      idphoto_btn: "ID Photo",
-      idphoto_hint_off: "ID Photo works when exactly 1 image is selected.",
-      idphoto_hint_on: "Select 1 image to open the ID Photo crop tool.",
+      crop: "切り抜き",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
       h_settings: "3) 設定",
@@ -749,9 +712,7 @@
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       h_preview: "2) Vista previa",
-      idphoto_btn: "ID Photo",
-      idphoto_hint_off: "ID Photo works when exactly 1 image is selected.",
-      idphoto_hint_on: "Select 1 image to open the ID Photo crop tool.",
+      crop: "Recortar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
       h_settings: "3) Ajustes",
@@ -893,16 +854,12 @@
     });
   }
 
-  // ✅ keep tool link lang
   function syncToolLinks(){
     const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
     toolIdPhoto.href = url;
   }
 
-  // =========================
-  // State
-  // =========================
-  let files = []; // {file, id}
+  let files = [];
   let activeIndex = 0;
 
   function renderTexts(){
@@ -932,9 +889,7 @@
     $("drop_hint").textContent = t.drop_hint;
 
     $("h_preview").textContent = t.h_preview;
-
-    idPhotoBigLabel.textContent = t.idphoto_btn;
-    // hint text will be set by updateCropState()
+    cropLabel.textContent = t.crop;
 
     $("h_settings").textContent = t.h_settings;
     $("lbl_format").textContent = t.lbl_format;
@@ -971,7 +926,6 @@
     if(multiCount) multiCount.textContent = t.multi_count(files.length);
 
     syncToolLinks();
-    updateCropState();
   }
 
   function setLang(lang){
@@ -1070,16 +1024,12 @@
   }
 
   function updateCropState(){
-    const t = STR[LANG] || STR.en;
-
-    const ok = (files.length === 1 && files[0] && isImage(files[0].file));
-    idPhotoBigBtn.disabled = !ok;
-
-    if(ok){
-      idPhotoBigHint.textContent = t.idphoto_hint_on;
-    }else{
-      idPhotoBigHint.textContent = t.idphoto_hint_off;
+    // only 1 image => enable scissors
+    if(files.length === 1 && files[0] && isImage(files[0].file)){
+      cropBtn.disabled = false;
+      return;
     }
+    cropBtn.disabled = true;
   }
 
   async function previewActive(){
@@ -1496,8 +1446,8 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Big button: send selected single image to /id-photo/ via sessionStorage
-  idPhotoBigBtn.addEventListener("click", async ()=>{
+  // ✅ Scissors only: send selected image to /id-photo/
+  cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
     if(!f || !isImage(f)) return;
