@@ -440,7 +440,7 @@
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo crop page">
+            <button class="miniBtn" id="cropBtn" type="button" disabled title="Go to ID Photo">
               ✂️ <span id="cropLabel">Crop</span>
             </button>
           </div>
@@ -566,7 +566,7 @@
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       h_preview: "2) Preview",
-      crop: "Crop",
+      crop: "ID Photo",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
       h_settings: "3) Settings",
@@ -618,7 +618,7 @@
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       h_preview: "2) 미리보기",
-      crop: "자르기",
+      crop: "증명사진",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
       h_settings: "3) 설정",
@@ -670,7 +670,7 @@
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       h_preview: "2) プレビュー",
-      crop: "切り抜き",
+      crop: "証明写真",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
       h_settings: "3) 設定",
@@ -722,7 +722,7 @@
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       h_preview: "2) Vista previa",
-      crop: "Recortar",
+      crop: "Foto carnet",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
       h_settings: "3) Ajustes",
@@ -1038,7 +1038,7 @@
   }
 
   function updateCropState(){
-    // Crop is only meaningful for single IMAGE
+    // Crop is only meaningful for single IMAGE -> here, used as "Go to ID Photo"
     if(files.length === 1 && files[0] && isImage(files[0].file)){
       cropBtn.disabled = false;
       return;
@@ -1460,29 +1460,9 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Crop button: send selected single image to /id-photo/ via sessionStorage
-  cropBtn.addEventListener("click", async ()=>{
-    if(files.length !== 1) return;
-    const f = files[0]?.file;
-    if(!f || !isImage(f)) return;
-
-    try{
-      const dataUrl = await new Promise((resolve, reject)=>{
-        const r = new FileReader();
-        r.onload = ()=> resolve(r.result);
-        r.onerror = ()=> reject(new Error("read fail"));
-        r.readAsDataURL(f);
-      });
-
-      sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
-      sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
-
-      const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
-      location.href = url;
-    }catch(e){
-      // fallback: just go to page
-      location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
-    }
+  // ✅ Crop button: just go to /id-photo/ (NO image transfer)
+  cropBtn.addEventListener("click", ()=>{
+    location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
   });
 
   // init
