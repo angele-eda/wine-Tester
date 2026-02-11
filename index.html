@@ -226,7 +226,7 @@
     }
 
     .preview{
-      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
+      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:start;
       min-width:0;
     }
     .thumb{
@@ -343,6 +343,42 @@
       border-radius: 14px;
       pointer-events:none;
     }
+
+    /* ✅ Quick tools card (ID/Passport Photo) */
+    .quick-tools{ margin:12px 0 0; }
+    .quick-card{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      text-decoration:none;
+      color:#e9eef7;
+      box-shadow: 0 14px 32px rgba(0,0,0,.35);
+    }
+    .quick-card:hover{
+      border-color: rgba(47,109,246,.55);
+      background: rgba(47,109,246,.10);
+    }
+    .qt-title{
+      font-weight:900;
+      letter-spacing:-0.25px;
+      font-size:14px;
+      line-height:1.2;
+    }
+    .qt-sub{
+      margin-top:6px;
+      color: rgba(233,238,247,.75);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .qt-right{
+      font-size:26px;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
+    }
   </style>
 </head>
 
@@ -359,6 +395,17 @@
         <div class="langbtn" data-lang="es">🇪🇸 ES</div>
         <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
         <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+      </div>
+
+      <!-- ✅ ID/Passport Photo quick link -->
+      <div class="quick-tools" style="flex-basis:100%;">
+        <a class="quick-card" id="idPhotoLink" href="/id/">
+          <div class="qt-left">
+            <div class="qt-title" id="qtTitle">증명사진 · 여권사진 만들기</div>
+            <div class="qt-sub" id="qtSub">3×4 / 3.5×4.5 / US 2×2 · 서버 업로드 없음</div>
+          </div>
+          <div class="qt-right" aria-hidden="true">🪪</div>
+        </a>
       </div>
     </div>
 
@@ -399,7 +446,13 @@
 
         <h2 id="h_preview"></h2>
         <div class="preview">
-          <div class="thumb" id="thumb"></div>
+          <div>
+            <div class="thumb" id="thumb"></div>
+            <!-- ✅ Crop button (goes to /id/ subpage) -->
+            <button class="btn secondary inline" id="cropBtn" style="margin-top:8px; width:100%;">
+              ✂ Crop / ID Photo
+            </button>
+          </div>
           <div class="meta" id="meta"></div>
         </div>
 
@@ -498,6 +551,11 @@
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
+  const cropBtn     = $("cropBtn");
+  const idPhotoLink = $("idPhotoLink");
+  const qtTitleEl   = $("qtTitle");
+  const qtSubEl     = $("qtSub");
+
   $("year").textContent = new Date().getFullYear();
 
   // =========================
@@ -554,7 +612,12 @@
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Name: <b>${name}</b><br/>Type: <b>application/pdf</b><br/>Size: <b>${size}</b>`,
-      multi_count: (n) => `Selected: ${n} file(s)`
+      multi_count: (n) => `Selected: ${n} file(s)`,
+
+      // ✅ Added
+      qtTitle: "Passport / ID Photo Maker",
+      qtSub: "3×4 / 3.5×4.5 / US 2×2 · No server upload",
+      cropBtn: "✂ Crop / ID Photo"
     },
     ko: {
       seoTitle: "ConvertFiles24 – 무료 변환기 (이미지 & PDF)",
@@ -606,7 +669,12 @@
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `파일명: <b>${name}</b><br/>형식: <b>application/pdf</b><br/>크기: <b>${size}</b>`,
-      multi_count: (n) => `선택됨: ${n}개`
+      multi_count: (n) => `선택됨: ${n}개`,
+
+      // ✅ Added
+      qtTitle: "증명사진 · 여권사진 만들기",
+      qtSub: "3×4 / 3.5×4.5 / US 2×2 · 서버 업로드 없음",
+      cropBtn: "✂ 자르기 / 증명사진"
     },
     ja: {
       seoTitle: "ConvertFiles24 – 無料変換 (画像 & PDF)",
@@ -658,7 +726,12 @@
         `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `ファイル名: <b>${name}</b><br/>形式: <b>application/pdf</b><br/>サイズ: <b>${size}</b>`,
-      multi_count: (n) => `選択: ${n}件`
+      multi_count: (n) => `選択: ${n}件`,
+
+      // ✅ Added
+      qtTitle: "証明写真 / パスポート写真メーカー",
+      qtSub: "3×4 / 3.5×4.5 / US 2×2 · サーバー送信なし",
+      cropBtn: "✂ トリミング / 証明写真"
     },
     es: {
       seoTitle: "ConvertFiles24 – Convertidor Gratis (Imágenes y PDF)",
@@ -710,7 +783,12 @@
         `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b><br/>Resolución: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Nombre: <b>${name}</b><br/>Tipo: <b>application/pdf</b><br/>Tamaño: <b>${size}</b>`,
-      multi_count: (n) => `Seleccionados: ${n}`
+      multi_count: (n) => `Seleccionados: ${n}`,
+
+      // ✅ Added
+      qtTitle: "Creador de Foto Pasaporte / ID",
+      qtSub: "3×4 / 3.5×4.5 / US 2×2 · Sin subir al servidor",
+      cropBtn: "✂ Recortar / Foto ID"
     }
   };
 
@@ -879,6 +957,12 @@
     $("a4_label").textContent = t.a4_label;
     $("multi_note").textContent = t.multi_note;
 
+    // ✅ Quick link (ID/Passport) language + URL
+    if(idPhotoLink) idPhotoLink.href = "/id/?lang=" + LANG;
+    if(qtTitleEl) qtTitleEl.textContent = t.qtTitle || "ID Photo Maker";
+    if(qtSubEl) qtSubEl.textContent = t.qtSub || "";
+    if(cropBtn) cropBtn.textContent = t.cropBtn || "✂ Crop / ID Photo";
+
     if(files.length === 0){
       meta.textContent = t.meta_idle;
       thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
@@ -899,6 +983,11 @@
 
   document.querySelectorAll(".langbtn").forEach(b=>{
     b.addEventListener("click", ()=> setLang(b.dataset.lang));
+  });
+
+  // ✅ Crop button -> go to /id/ with current lang
+  cropBtn.addEventListener("click", ()=>{
+    location.href = "/id/?lang=" + (LANG || "en");
   });
 
   // =========================
