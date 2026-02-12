@@ -40,7 +40,7 @@
       text-rendering: geometricPrecision;
     }
 
-    /* ✅ Light animation (GPU-friendly) */
+    /* ✅ Light entrance animation (safe) */
     body:not(.loaded) .card,
     body:not(.loaded) .top{
       opacity:0;
@@ -121,7 +121,7 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
     }
 
-    /* ✅ Language: 항상 오른쪽 정렬 유지 */
+    /* ✅ Language: right aligned */
     .langRow{
       display:flex;
       flex-direction:column;
@@ -165,7 +165,7 @@
       .langSelect{ width:180px; }
     }
 
-    /* ✅ Local 강조 */
+    /* Local pill */
     .pill{
       width:100%;
       border:1px solid rgba(120, 200, 255, .22);
@@ -287,8 +287,6 @@
       outline:none;
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
-
-    /* ✅ ON(active) 강조 */
     .segBtn.active{
       color:#eef5ff;
       background:rgba(var(--blue), .18);
@@ -562,8 +560,8 @@
         <div style="height:10px;"></div>
 
         <div class="row">
-          <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom</button>
-          <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom</button>
+          <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom out</button>
+          <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom in</button>
         </div>
 
         <div style="height:12px;"></div>
@@ -584,7 +582,7 @@
               <option value="300" selected>300</option>
               <option value="600">600</option>
             </select>
-            <div class="small" id="dpi_hint">300dpi is enough for most printing.</div>
+            <div class="small" id="dpi_hint">300 dpi is sufficient for most printing.</div>
           </div>
           <div>
             <label id="lbl_format">Output</label>
@@ -656,14 +654,14 @@
       auto: "Auto center (recommended)",
       guide: "Show face guide",
       dpi: "DPI",
-      dpi_hint: "300 dpi is sufficient for most printing."
+      dpi_hint: "300 dpi is sufficient for most printing.",
       out: "Output",
       out_hint: "JPG recommended.",
       step3: "3) Download",
       download: "⬇️ Download",
       reset: "Reset",
       msg_need: "Please upload a photo first.",
-      msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom."
+      msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom.",
       msg_heic: "HEIC/HEIF may not work on some browsers. If preview fails, save as JPG/PNG and try again.",
       msg_fail: "Failed to load image.",
       meta_idle: "<b>Preview</b><br/>Upload a photo to start cropping.",
@@ -1232,8 +1230,8 @@
     }
   });
 
-  stage.addEventListener("pointercancel", (e)=>{
-    pointers.delete(e.pointerId);
+  stage.addEventListener("pointercancel", ()=>{
+    pointers.clear();
     lastPan = null;
     lastPinch = null;
   });
