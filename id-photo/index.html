@@ -20,6 +20,7 @@
       --pad:16px;
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
+      --ease: cubic-bezier(.2,.8,.2,1);
     }
     *{ box-sizing:border-box; }
 
@@ -37,6 +38,31 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
+    }
+
+    /* ✅ Light animation (GPU-friendly) */
+    body:not(.loaded) .card,
+    body:not(.loaded) .top{
+      opacity:0;
+      transform: translateY(8px);
+    }
+    body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
+    body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
+    body.loaded .card:nth-of-type(1){ animation-delay: .02s; }
+    body.loaded .card:nth-of-type(2){ animation-delay: .04s; }
+    body.loaded .card:nth-of-type(3){ animation-delay: .06s; }
+    body.loaded .card:nth-of-type(4){ animation-delay: .08s; }
+
+    @keyframes cfFadeUp{
+      from{ opacity:0; transform: translateY(8px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    /* Reduce motion support */
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card,
+      body:not(.loaded) .top{ opacity:1; transform:none; }
     }
 
     .wrap{
@@ -86,8 +112,14 @@
       user-select:none;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
       max-width:380px;
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
     }
     .homeBtn:hover{ background:rgba(47,109,246,.24); }
+    .homeBtn:active{ transform: scale(.99); }
+    .homeBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
+    }
 
     /* ✅ Language: 항상 오른쪽 정렬 유지 */
     .langRow{
@@ -97,7 +129,7 @@
       gap:8px;
       min-width:220px;
       max-width:100%;
-      margin-left:auto; /* 혹시 wrap되더라도 오른쪽으로 */
+      margin-left:auto;
     }
     .langLabel{
       font-size:12px;
@@ -119,6 +151,12 @@
       color:#e9eef7;
       outline:none;
       font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease), transform .08s var(--ease);
+    }
+    .langSelect:focus-visible{
+      outline:none;
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
     option{ background:#0b0f17; color:#e9eef7; }
 
@@ -151,6 +189,7 @@
       min-width:0;
       max-width:100%;
       overflow-x: clip;
+      will-change: transform, opacity;
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
@@ -175,9 +214,16 @@
       font-size:14px;
       letter-spacing: -0.2px;
       user-select:none;
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease);
     }
     .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
+    }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
 
     .drop{
       border:1px dashed rgba(255,255,255,.18);
@@ -186,15 +232,19 @@
       text-align:center;
       cursor:pointer;
       user-select:none;
-      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
+      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
       position: relative;
       min-height: 180px;
       display:flex; align-items:center; justify-content:center;
       max-width:100%;
       overflow:hidden;
     }
-    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
     .drop:active{ transform: scale(0.998); }
+    .drop:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
+    }
     .dropEmoji{
       font-size:42px;
       line-height:1;
@@ -229,7 +279,13 @@
       max-width:100%;
       overflow:hidden;
       text-overflow:ellipsis;
-      transition: background .12s, border-color .12s, box-shadow .12s, transform .05s;
+      transition: background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease), transform .05s var(--ease);
+    }
+    .segBtn:hover{ background:rgba(255,255,255,.06); }
+    .segBtn:active{ transform: scale(.99); }
+    .segBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
     /* ✅ ON(active) 강조 */
@@ -352,6 +408,11 @@
       outline:none;
       font-weight:900;
       max-width:100%;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    select:focus-visible{
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
     /* Country buttons equal width */
@@ -414,7 +475,6 @@
       <div class="langRow">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
-          <!-- ✅ 언어 드롭: 국기 제거 -->
           <option value="en">Global (English)</option>
           <option value="ko">한국어</option>
           <option value="es">Español</option>
@@ -431,7 +491,6 @@
         <div>
           <label id="lbl_country">Country</label>
           <div class="seg" id="countrySeg">
-            <!-- ✅ Country만 국기 유지 + 텍스트는 JS로 언어별 갱신 -->
             <div class="segBtn active" data-country="KR"><span class="flag">🇰🇷</span> <span class="txt" id="cty_KR">Korea</span></div>
             <div class="segBtn" data-country="US"><span class="flag">🇺🇸</span> <span class="txt" id="cty_US">USA</span></div>
             <div class="segBtn" data-country="EU"><span class="flag">🇪🇺</span> <span class="txt" id="cty_EU">EU</span></div>
@@ -567,6 +626,9 @@
   "use strict";
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
+
+  // ✅ add light entrance animation AFTER first paint
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   // ========= i18n =========
   const STR = {
