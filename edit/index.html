@@ -200,6 +200,28 @@
       max-height:100%;
     }
 
+    /* ✅ center crosshair overlay */
+    .crosshair{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:.9;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.7) 0 2px, transparent 3px);
+    }
+    .crosshair::before,
+    .crosshair::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(255,255,255,.55);
+      box-shadow:0 0 0 1px rgba(0,0,0,.35);
+    }
+    .crosshair::before{ width:2px; height:32px; border-radius:2px; }
+    .crosshair::after{ width:32px; height:2px; border-radius:2px; }
+
     .row{
       display:flex;
       gap:10px;
@@ -329,6 +351,7 @@
         <h2 id="h_stage">Preview / Edit</h2>
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
+          <div class="crosshair" aria-hidden="true"></div>
         </div>
         <div class="msg" id="msg"></div>
       </div>
@@ -340,6 +363,7 @@
         <div class="row">
           <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
           <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
+          <button class="btn secondary" id="resetViewBtn" type="button">↩ Reset view</button>
         </div>
 
         <div style="height:10px;"></div>
@@ -431,8 +455,6 @@
 
         <h2 id="h_download">Download</h2>
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
-        <div style="height:10px;"></div>
-        <button class="btn secondary" id="resetBtn" type="button" disabled>Reset</button>
 
         <div style="height:12px;"></div>
         <div class="meta" id="meta">
@@ -468,6 +490,7 @@
       controls: "Controls",
       fit: "↔ Fit",
       center: "🎯 Center",
+      resetView: "↩ Reset view",
       zoomOut: "➖ Zoom out",
       zoomIn: "➕ Zoom in",
       rotL: "⟲ Rotate",
@@ -489,7 +512,6 @@
 
       h_download: "Download",
       download: "⬇️ Download",
-      reset: "Reset",
 
       msg_need: "No image found. Go back to main page and press ✂️ next to Preview.",
       msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom.",
@@ -508,6 +530,7 @@
       controls: "조작",
       fit: "↔ 맞추기",
       center: "🎯 중앙",
+      resetView: "↩ 뷰 초기화",
       zoomOut: "➖ 축소",
       zoomIn: "➕ 확대",
       rotL: "⟲ 회전",
@@ -529,7 +552,6 @@
 
       h_download: "다운로드",
       download: "⬇️ 다운로드",
-      reset: "초기화",
 
       msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
       msg_ready: "준비 완료! 드래그로 이동, 핀치/버튼으로 확대하세요.",
@@ -548,6 +570,7 @@
       controls: "Controles",
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
+      resetView: "↩ Restablecer vista",
       zoomOut: "➖ Alejar",
       zoomIn: "➕ Acercar",
       rotL: "⟲ Rotar",
@@ -569,7 +592,6 @@
 
       h_download: "Descargar",
       download: "⬇️ Descargar",
-      reset: "Reiniciar",
 
       msg_need: "No se encontró imagen. Vuelve a la página principal y pulsa ✂️ junto a Vista previa.",
       msg_ready: "Listo. Arrastra para mover y usa pellizco/botones para zoom.",
@@ -588,6 +610,7 @@
       controls: "操作",
       fit: "↔ フィット",
       center: "🎯 中央",
+      resetView: "↩ 表示をリセット",
       zoomOut: "➖ 縮小",
       zoomIn: "➕ 拡大",
       rotL: "⟲ 回転",
@@ -609,7 +632,6 @@
 
       h_download: "ダウンロード",
       download: "⬇️ ダウンロード",
-      reset: "リセット",
 
       msg_need: "画像がありません。メインでプレビュー横の ✂️ を押して開いてください。",
       msg_ready: "準備OK。ドラッグで移動、ピンチ/ボタンでズーム。",
@@ -659,6 +681,7 @@
     $("h_controls").textContent = t().controls;
     $("fitBtn").textContent = t().fit;
     $("centerBtn").textContent = t().center;
+    $("resetViewBtn").textContent = t().resetView;
     $("zoomOutBtn").textContent = t().zoomOut;
     $("zoomInBtn").textContent = t().zoomIn;
     $("rotLBtn").textContent = t().rotL;
@@ -680,7 +703,6 @@
 
     $("h_download").textContent = t().h_download;
     $("downloadBtn").textContent = t().download;
-    $("resetBtn").textContent = t().reset;
 
     if(!img) $("meta").innerHTML = t().meta_idle;
     setTimeout(()=>resizeCanvas(), 0);
@@ -694,6 +716,7 @@
 
   const fitBtn = $("fitBtn");
   const centerBtn = $("centerBtn");
+  const resetViewBtn = $("resetViewBtn");
   const zoomInBtn = $("zoomInBtn");
   const zoomOutBtn = $("zoomOutBtn");
   const rotLBtn = $("rotLBtn");
@@ -709,7 +732,6 @@
   const aspectModeEl = $("aspectMode");
 
   const downloadBtn = $("downloadBtn");
-  const resetBtn = $("resetBtn");
   const msgEl = $("msg");
 
   let img = null;
@@ -783,12 +805,10 @@
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       downloadBtn.disabled = true;
-      resetBtn.disabled = true;
       return;
     }
     $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
     downloadBtn.disabled = false;
-    resetBtn.disabled = false;
 
     const mime = outFormatEl.value;
     const disableQ = (mime === "image/png");
@@ -850,6 +870,21 @@
     if(!img) return setMsg(t().msg_need, "err");
     centerOnly();
   });
+
+  // ✅ Reset view (back to initial loaded state)
+  resetViewBtn.addEventListener("click", ()=>{
+    if(!img) return setMsg(t().msg_need, "err");
+    view.rot = 0;
+    view.flipH = 1;
+    view.flipV = 1;
+    wEl.value = "";
+    hEl.value = "";
+    aspectLockEl.checked = true;
+    aspectModeEl.value = "contain";
+    fitToStage();
+    setMsg(t().msg_ready, "ok");
+  });
+
   zoomInBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     zoomBy(1.08);
@@ -892,14 +927,8 @@
     stage.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
-    const rect = stageRect();
     if(pointers.size === 1){
-      lastPan = {
-        x:e.clientX, y:e.clientY,
-        offX:view.offX, offY:view.offY,
-        rectLeft: rect.left, rectTop: rect.top,
-        rectW: rect.width, rectH: rect.height
-      };
+      lastPan = { x:e.clientX, y:e.clientY, offX:view.offX, offY:view.offY };
       lastPinch = null;
     } else if(pointers.size === 2){
       const pts = Array.from(pointers.values());
@@ -939,14 +968,8 @@
 
   stage.addEventListener("pointerup", (e)=>{
     pointers.delete(e.pointerId);
-    if(pointers.size === 1){
-      const pts = Array.from(pointers.values());
-      lastPan = { x:pts[0].x, y:pts[0].y, offX:view.offX, offY:view.offY };
-      lastPinch = null;
-    } else {
-      lastPan = null;
-      lastPinch = null;
-    }
+    lastPan = null;
+    lastPinch = null;
   });
 
   stage.addEventListener("pointercancel", ()=>{
@@ -1092,25 +1115,6 @@
     }catch(e){
       setMsg((e && e.message) ? e.message : "Download failed", "err");
     }
-  });
-
-  resetBtn.addEventListener("click", ()=>{
-    if(!img) return;
-
-    view.scale = 1;
-    view.offX = 0;
-    view.offY = 0;
-    view.rot = 0;
-    view.flipH = 1;
-    view.flipV = 1;
-
-    wEl.value = "";
-    hEl.value = "";
-    aspectLockEl.checked = true;
-    aspectModeEl.value = "contain";
-
-    fitToStage();
-    setMsg(t().msg_ready, "ok");
   });
 
   // init
