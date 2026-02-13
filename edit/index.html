@@ -964,8 +964,14 @@
 
   // ===== load from sessionStorage =====
   async function loadFromSession(){
-    const dataUrl = sessionStorage.getItem("cf24_edit_img");
-    const name = sessionStorage.getItem("cf24_edit_name") || "image";
+    const dataUrl =
+      sessionStorage.getItem("cf24_edit_img") ||
+      sessionStorage.getItem("cf24_idphoto_img");
+
+    const name =
+      sessionStorage.getItem("cf24_edit_name") ||
+      sessionStorage.getItem("cf24_idphoto_name") ||
+      "image";
 
     if(!dataUrl){
       setMsg(t().msg_need, "err");
