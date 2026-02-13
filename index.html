@@ -226,6 +226,31 @@
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
 
+    /* ✅ NEW: Local secure badge under upload box */
+    .localBadge{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid rgba(80,120,255,0.18);
+      background: rgba(80,120,255,0.08);
+      color:#bcd1ff;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:-0.2px;
+      user-select:none;
+    }
+    .localBadge small{
+      display:block;
+      font-size:12px;
+      font-weight:700;
+      color:#9fb0ca;
+      opacity:.95;
+    }
+
     .btn{
       appearance:none; border:none; cursor:pointer;
       background:#2f6df6; color:white; font-weight:800;
@@ -466,6 +491,11 @@
           </div>
         </div>
 
+        <!-- ✅ NEW: Secure badge (server upload 없음) -->
+        <div class="localBadge" id="localBadge">
+          🔒 <span id="localBadgeText">100% Local processing · No server upload</span>
+        </div>
+
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
@@ -487,12 +517,12 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview: ONLY ✂️ -->
+        <!-- ✅ Preview: ✏️ Edit -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo crop page">
-              ✂️ <span id="cropLabel">Crop</span>
+            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo edit page">
+              ✏️ <span id="cropLabel">Edit</span>
             </button>
           </div>
         </div>
@@ -615,6 +645,7 @@
   const toolIdPhoto = $("tool_idphoto");
 
   const langSelectEl = $("langSelect");
+  const localBadgeTextEl = $("localBadgeText");
 
   $("year").textContent = new Date().getFullYear();
 
@@ -632,8 +663,10 @@
       h_upload: "1) Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
+      local_badge: "100% Local processing · No server upload",
+
       h_preview: "2) Preview",
-      crop: "Crop",
+      crop: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
       h_settings: "3) Settings",
@@ -691,8 +724,10 @@
       h_upload: "1) 업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
+      local_badge: "🔒 100% 로컬 처리 · 서버 업로드 없음",
+
       h_preview: "2) 미리보기",
-      crop: "자르기",
+      crop: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
       h_settings: "3) 설정",
@@ -750,8 +785,10 @@
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
+      local_badge: "🔒 ローカル処理 · サーバー送信なし",
+
       h_preview: "2) プレビュー",
-      crop: "切り抜き",
+      crop: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
       h_settings: "3) 設定",
@@ -809,8 +846,10 @@
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
+      local_badge: "🔒 Procesamiento local · Sin subir al servidor",
+
       h_preview: "2) Vista previa",
-      crop: "Recortar",
+      crop: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
       h_settings: "3) Ajustes",
@@ -995,6 +1034,8 @@
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
     $("drop_hint").textContent = t.drop_hint;
+
+    if(localBadgeTextEl) localBadgeTextEl.textContent = t.local_badge;
 
     $("h_preview").textContent = t.h_preview;
     cropLabel.textContent = t.crop;
@@ -1565,7 +1606,7 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Crop (existing behavior)
+  // ✅ Edit (existing behavior)
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
