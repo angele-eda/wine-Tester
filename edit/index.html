@@ -166,6 +166,7 @@
       max-width:100%;
       overflow-x: clip;
       will-change: transform, opacity;
+      position: relative;
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
@@ -192,48 +193,22 @@
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    /* 중앙 십자가 */
-    .stage .crosshair{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      z-index:3;
-      opacity:.9;
-    }
-    .stage .crosshair::before,
-    .stage .crosshair::after{
-      content:"";
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      background:rgba(255,255,255,.92);
-      box-shadow: 0 1px 1px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.18);
-      border-radius:999px;
-    }
-    .stage .crosshair::before{ width:46px; height:3px; }
-    .stage .crosshair::after{ width:3px; height:46px; }
-
     canvas{
       display:block;
       width:100%;
       height:100%;
       max-width:100%;
       max-height:100%;
-      position:relative;
-      z-index:2;
     }
 
-    /* ✅ 기존처럼 “조작 버튼”은 2열 그리드로 고정 */
-    .ctrlGrid{
+    /* ===== 2-column controls layout ===== */
+    .grid2{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
+      min-width:0;
     }
-    .ctrlGrid .wide{ grid-column: 1 / -1; } /* 필요하면 전체폭 */
-    @media (max-width: 420px){
-      .ctrlGrid{ grid-template-columns: 1fr 1fr; } /* 모바일에서도 2열 유지 */
-    }
+    .grid2 > *{ min-width:0; }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -249,6 +224,33 @@
     .btn:active{ transform: scale(.99); }
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
     .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
+
+    /* reset icon button */
+    .resetIconBtn{
+      position:absolute;
+      right: 0;
+      top: -10px;
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      color:#e9eef7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    .resetIconBtn:hover{ background:rgba(255,255,255,.12); border-color: rgba(var(--blue), .35); }
+    .resetIconBtn:active{ transform: scale(.99); }
+    .resetIconBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.28), 0 10px 24px rgba(0,0,0,.22);
+    }
+    .resetIconBtn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
 
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     select, input[type="number"]{
@@ -266,19 +268,6 @@
     select:focus-visible, input[type="number"]:focus-visible{
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      min-width:0;
-    }
-    .row > *{
-      flex:1;
-      min-width:160px;
-      max-width:100%;
     }
 
     .chkRow{
@@ -326,9 +315,10 @@
     }
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+
+    input[type="file"]{ display:none; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="top">
@@ -362,7 +352,6 @@
         <h2 id="h_stage">Preview / Edit</h2>
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
-          <div class="crosshair" aria-hidden="true"></div>
         </div>
         <div class="msg" id="msg"></div>
       </div>
@@ -371,28 +360,41 @@
       <div class="card">
         <h2 id="h_controls">Controls</h2>
 
-        <!-- ✅ 2열 고정 컨트롤 -->
-        <div class="ctrlGrid">
-          <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
-          <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
+        <div style="position:relative; padding-top:6px;">
+          <button class="resetIconBtn" id="resetViewIcon" type="button" aria-label="Reset view" title="Reset view" disabled>↻</button>
 
-          <button class="btn secondary wide" id="resetViewBtn" type="button">↩ Reset view</button>
+          <div class="grid2">
+            <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
+            <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
+          </div>
+        </div>
 
+        <div style="height:10px;"></div>
+
+        <div class="grid2">
           <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom out</button>
           <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom in</button>
+        </div>
 
+        <div style="height:10px;"></div>
+
+        <div class="grid2">
           <button class="btn secondary" id="rotLBtn" type="button">⟲ Rotate</button>
           <button class="btn secondary" id="rotRBtn" type="button">⟳ Rotate</button>
+        </div>
 
+        <div style="height:10px;"></div>
+
+        <div class="grid2">
           <button class="btn secondary" id="flipHBtn" type="button">⇋ Flip H</button>
           <button class="btn secondary" id="flipVBtn" type="button">⇵ Flip V</button>
         </div>
 
-        <div style="height:14px;"></div>
+        <div style="height:12px;"></div>
 
         <h2 id="h_output">Output</h2>
 
-        <div class="row">
+        <div class="grid2">
           <div>
             <label id="lbl_format">Format</label>
             <select id="outFormat">
@@ -414,7 +416,7 @@
 
         <div style="height:10px;"></div>
 
-        <div class="row">
+        <div class="grid2">
           <div>
             <label id="lbl_w">Width (px)</label>
             <input id="w" type="number" min="1" placeholder="blank = stage size">
@@ -440,16 +442,14 @@
 
         <div style="height:8px;"></div>
 
-        <div class="row">
-          <div>
-            <label id="lbl_aspectMode">Mode</label>
-            <select id="aspectMode">
-              <option value="contain" selected>Contain (no crop)</option>
-              <option value="cover">Cover (crop)</option>
-              <option value="stretch">Stretch (fill)</option>
-            </select>
-            <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
-          </div>
+        <div>
+          <label id="lbl_aspectMode">Mode</label>
+          <select id="aspectMode">
+            <option value="contain" selected>Contain (no crop)</option>
+            <option value="cover">Cover (crop)</option>
+            <option value="stretch">Stretch (fill)</option>
+          </select>
+          <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
         </div>
 
         <div style="height:12px;"></div>
@@ -491,7 +491,6 @@
       controls: "Controls",
       fit: "↔ Fit",
       center: "🎯 Center",
-      resetView: "↩ Reset view",
       zoomOut: "➖ Zoom out",
       zoomIn: "➕ Zoom in",
       rotL: "⟲ Rotate",
@@ -514,8 +513,9 @@
       h_download: "Download",
       download: "⬇️ Download",
 
+      reset_view_title: "Reset view",
       msg_need: "No image found. Go back to main page and press ✂️ next to Preview.",
-      msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom. (PC: mouse wheel zoom)",
+      msg_ready: "Ready. Drag to move. Pinch/scroll wheel or use buttons to zoom.",
       msg_ok: "✅ Downloaded",
       meta_idle: "<b>Preview</b><br/>Open from main preview ✂️ button.",
       meta_info: (name, w, h) => `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px`
@@ -531,7 +531,6 @@
       controls: "조작",
       fit: "↔ 맞추기",
       center: "🎯 중앙",
-      resetView: "↩ 뷰 초기화",
       zoomOut: "➖ 축소",
       zoomIn: "➕ 확대",
       rotL: "⟲ 회전",
@@ -554,8 +553,9 @@
       h_download: "다운로드",
       download: "⬇️ 다운로드",
 
+      reset_view_title: "뷰 초기화",
       msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
-      msg_ready: "준비 완료! 드래그로 이동, 핀치/버튼으로 확대하세요. (PC: 마우스 휠 확대/축소)",
+      msg_ready: "준비 완료! 드래그로 이동, 핀치/마우스휠/버튼으로 확대하세요.",
       msg_ok: "✅ 다운로드 완료",
       meta_idle: "<b>미리보기</b><br/>메인 미리보기 옆 ✂️ 버튼으로 열어주세요.",
       meta_info: (name, w, h) => `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`
@@ -571,7 +571,6 @@
       controls: "Controles",
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
-      resetView: "↩ Reiniciar vista",
       zoomOut: "➖ Alejar",
       zoomIn: "➕ Acercar",
       rotL: "⟲ Rotar",
@@ -594,8 +593,9 @@
       h_download: "Descargar",
       download: "⬇️ Descargar",
 
+      reset_view_title: "Reiniciar vista",
       msg_need: "No se encontró imagen. Vuelve a la página principal y pulsa ✂️ junto a Vista previa.",
-      msg_ready: "Listo. Arrastra para mover y usa pellizco/botones para zoom. (PC: rueda del ratón)",
+      msg_ready: "Listo. Arrastra para mover y usa pellizco/rueda o botones para zoom.",
       msg_ok: "✅ Descargado",
       meta_idle: "<b>Vista previa</b><br/>Abrir desde el botón ✂️ junto a Vista previa en la página principal.",
       meta_info: (name, w, h) => `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px`
@@ -611,7 +611,6 @@
       controls: "操作",
       fit: "↔ フィット",
       center: "🎯 中央",
-      resetView: "↩ 表示を初期化",
       zoomOut: "➖ 縮小",
       zoomIn: "➕ 拡大",
       rotL: "⟲ 回転",
@@ -634,8 +633,9 @@
       h_download: "ダウンロード",
       download: "⬇️ ダウンロード",
 
+      reset_view_title: "表示をリセット",
       msg_need: "画像がありません。メインでプレビュー横の ✂️ を押して開いてください。",
-      msg_ready: "準備OK。ドラッグで移動、ピンチ/ボタンでズーム。(PC: マウスホイール)",
+      msg_ready: "準備OK。ドラッグで移動、ピンチ/マウスホイール/ボタンでズーム。",
       msg_ok: "✅ ダウンロード完了",
       meta_idle: "<b>プレビュー</b><br/>メインのプレビュー横 ✂️ から開いてください。",
       meta_info: (name, w, h) => `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px`
@@ -682,7 +682,6 @@
     $("h_controls").textContent = t().controls;
     $("fitBtn").textContent = t().fit;
     $("centerBtn").textContent = t().center;
-    $("resetViewBtn").textContent = t().resetView;
     $("zoomOutBtn").textContent = t().zoomOut;
     $("zoomInBtn").textContent = t().zoomIn;
     $("rotLBtn").textContent = t().rotL;
@@ -705,6 +704,9 @@
     $("h_download").textContent = t().h_download;
     $("downloadBtn").textContent = t().download;
 
+    $("resetViewIcon").title = t().reset_view_title;
+    $("resetViewIcon").setAttribute("aria-label", t().reset_view_title);
+
     if(!img) $("meta").innerHTML = t().meta_idle;
     setTimeout(()=>resizeCanvas(), 0);
   }
@@ -717,7 +719,6 @@
 
   const fitBtn = $("fitBtn");
   const centerBtn = $("centerBtn");
-  const resetViewBtn = $("resetViewBtn");
   const zoomInBtn = $("zoomInBtn");
   const zoomOutBtn = $("zoomOutBtn");
   const rotLBtn = $("rotLBtn");
@@ -733,6 +734,7 @@
   const aspectModeEl = $("aspectMode");
 
   const downloadBtn = $("downloadBtn");
+  const resetViewIcon = $("resetViewIcon");
   const msgEl = $("msg");
 
   let img = null;
@@ -746,10 +748,6 @@
     rot: 0,
     flipH: 1,
     flipV: 1
-  };
-
-  const initialView = {
-    scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1
   };
 
   function setMsg(text, cls){
@@ -810,10 +808,12 @@
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       downloadBtn.disabled = true;
+      resetViewIcon.disabled = true;
       return;
     }
     $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
     downloadBtn.disabled = false;
+    resetViewIcon.disabled = false;
 
     const mime = outFormatEl.value;
     const disableQ = (mime === "image/png");
@@ -863,6 +863,24 @@
     redraw();
   }
 
+  function resetAllToInitial(){
+    if(!img) return;
+    view.scale = 1;
+    view.offX = 0;
+    view.offY = 0;
+    view.rot = 0;
+    view.flipH = 1;
+    view.flipV = 1;
+
+    wEl.value = "";
+    hEl.value = "";
+    aspectLockEl.checked = true;
+    aspectModeEl.value = "contain";
+
+    fitToStage();
+    setMsg(t().msg_ready, "ok");
+  }
+
   fitBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     fitToStage();
@@ -871,25 +889,6 @@
     if(!img) return setMsg(t().msg_need, "err");
     centerOnly();
   });
-
-  resetViewBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
-    view.scale = initialView.scale;
-    view.offX  = initialView.offX;
-    view.offY  = initialView.offY;
-    view.rot   = initialView.rot;
-    view.flipH = initialView.flipH;
-    view.flipV = initialView.flipV;
-
-    wEl.value = "";
-    hEl.value = "";
-    aspectLockEl.checked = true;
-    aspectModeEl.value = "contain";
-
-    redraw();
-    setMsg(t().msg_ready, "ok");
-  });
-
   zoomInBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     zoomBy(1.08);
@@ -923,20 +922,12 @@
 
   outFormatEl.addEventListener("change", updateMeta);
 
-  // PC: wheel zoom
-  stage.addEventListener("wheel", (e)=>{
-    if(!img) return;
-    e.preventDefault();
-    const rect = stageRect();
-    const cx = e.clientX - rect.left;
-    const cy = e.clientY - rect.top;
+  resetViewIcon.addEventListener("click", ()=>{
+    if(!img) return setMsg(t().msg_need, "err");
+    resetAllToInitial();
+  });
 
-    const delta = Math.sign(e.deltaY);
-    const factor = (delta > 0) ? (1/1.08) : 1.08;
-    zoomBy(factor, cx, cy);
-  }, { passive:false });
-
-  // pointer events (pan + pinch zoom)
+  // ===== pointer events (pan + pinch zoom) =====
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
@@ -1009,7 +1000,28 @@
     return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
   }
 
-  // load from sessionStorage
+  // ===== Wheel zoom (PC) =====
+  stage.addEventListener("wheel", (e)=>{
+    if(!img) return;
+    // stop page scroll while zooming on stage
+    e.preventDefault();
+
+    const rect = stageRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
+
+    // normalize wheel: deltaY > 0 => zoom out, deltaY < 0 => zoom in
+    const dy = e.deltaY;
+    const base = 1.08;
+
+    // Smooth: big scroll -> multiple steps
+    const step = Math.min(3, Math.max(-3, dy / 120)); // roughly 1 step per 120
+    const factor = Math.pow(base, -step); // negative dy => zoom in
+
+    zoomBy(factor, cx, cy);
+  }, { passive:false });
+
+  // ===== load from sessionStorage =====
   async function loadFromSession(){
     const dataUrl =
       sessionStorage.getItem("cf24_edit_img") ||
@@ -1036,14 +1048,6 @@
       imgH = im.naturalHeight || 1;
 
       fitToStage();
-
-      initialView.scale = view.scale;
-      initialView.offX  = view.offX;
-      initialView.offY  = view.offY;
-      initialView.rot   = view.rot;
-      initialView.flipH = view.flipH;
-      initialView.flipV = view.flipV;
-
       setMsg(t().msg_ready, "ok");
       updateMeta();
       resizeCanvas();
@@ -1058,7 +1062,7 @@
     im.src = dataUrl;
   }
 
-  // download
+  // ===== download =====
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
