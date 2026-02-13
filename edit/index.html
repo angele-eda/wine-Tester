@@ -186,13 +186,13 @@
       position:relative;
       aspect-ratio: 4 / 3;
       min-height: 320px;
-      touch-action: none; /* pointer events (drag/pinch) */
+      touch-action: none;
       width:100%;
       max-width:100%;
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    /* 중앙 십자가(가이드) */
+    /* 중앙 십자가 */
     .stage .crosshair{
       position:absolute;
       inset:0;
@@ -224,20 +224,15 @@
       z-index:2;
     }
 
-    .row{
-      display:flex;
+    /* ✅ 기존처럼 “조작 버튼”은 2열 그리드로 고정 */
+    .ctrlGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      min-width:0;
     }
-    .row > *{
-      flex:1;
-      min-width:140px; /* 모바일에서 더 자연스럽게 줄바꿈 */
-      max-width:100%;
-    }
+    .ctrlGrid .wide{ grid-column: 1 / -1; } /* 필요하면 전체폭 */
     @media (max-width: 420px){
-      .row > *{ min-width: 180px; }
+      .ctrlGrid{ grid-template-columns: 1fr 1fr; } /* 모바일에서도 2열 유지 */
     }
 
     .btn{
@@ -271,6 +266,19 @@
     select:focus-visible, input[type="number"]:focus-visible{
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+    .row > *{
+      flex:1;
+      min-width:160px;
+      max-width:100%;
     }
 
     .chkRow{
@@ -318,10 +326,9 @@
     }
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
-
-    input[type="file"]{ display:none; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top">
@@ -364,35 +371,24 @@
       <div class="card">
         <h2 id="h_controls">Controls</h2>
 
-        <!-- 조작: 리셋뷰를 여기로 이동 -->
-        <div class="row">
+        <!-- ✅ 2열 고정 컨트롤 -->
+        <div class="ctrlGrid">
           <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
           <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
-          <button class="btn secondary" id="resetViewBtn" type="button">↩ Reset view</button>
-        </div>
 
-        <div style="height:10px;"></div>
+          <button class="btn secondary wide" id="resetViewBtn" type="button">↩ Reset view</button>
 
-        <div class="row">
           <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom out</button>
           <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom in</button>
-        </div>
 
-        <div style="height:10px;"></div>
-
-        <div class="row">
           <button class="btn secondary" id="rotLBtn" type="button">⟲ Rotate</button>
           <button class="btn secondary" id="rotRBtn" type="button">⟳ Rotate</button>
-        </div>
 
-        <div style="height:10px;"></div>
-
-        <div class="row">
           <button class="btn secondary" id="flipHBtn" type="button">⇋ Flip H</button>
           <button class="btn secondary" id="flipVBtn" type="button">⇵ Flip V</button>
         </div>
 
-        <div style="height:12px;"></div>
+        <div style="height:14px;"></div>
 
         <h2 id="h_output">Output</h2>
 
@@ -752,7 +748,6 @@
     flipV: 1
   };
 
-  // 들어올 때(불러온 직후) 상태를 저장해두고, "뷰 초기화"는 여기로 되돌림
   const initialView = {
     scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1
   };
@@ -837,13 +832,11 @@
     const w = parseInt(wEl.value, 10);
     const h = parseInt(hEl.value, 10);
 
-    // default: stage size
     const baseW = Math.max(1, Math.round(rect.width));
     const baseH = Math.max(1, Math.round(rect.height));
 
     if(!w && !h) return { W: baseW, H: baseH };
 
-    // preserve aspect automatically when only one is provided
     const aspect = baseW / baseH;
     if(w && !h) return { W: Math.max(1,w), H: Math.max(1, Math.round(w / aspect)) };
     if(!w && h) return { W: Math.max(1, Math.round(h * aspect)), H: Math.max(1,h) };
@@ -879,7 +872,6 @@
     centerOnly();
   });
 
-  // ✅ 뷰 초기화(사용자 혼란 방지): "처음 불러온 상태"로 되돌림
   resetViewBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     view.scale = initialView.scale;
@@ -931,7 +923,7 @@
 
   outFormatEl.addEventListener("change", updateMeta);
 
-  // ===== PC: 마우스 휠 확대/축소 =====
+  // PC: wheel zoom
   stage.addEventListener("wheel", (e)=>{
     if(!img) return;
     e.preventDefault();
@@ -939,13 +931,12 @@
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
 
-    // 자연스러운 확대/축소
     const delta = Math.sign(e.deltaY);
     const factor = (delta > 0) ? (1/1.08) : 1.08;
     zoomBy(factor, cx, cy);
   }, { passive:false });
 
-  // ===== pointer events (pan + pinch zoom) =====
+  // pointer events (pan + pinch zoom)
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
@@ -1018,7 +1009,7 @@
     return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
   }
 
-  // ===== load from sessionStorage =====
+  // load from sessionStorage
   async function loadFromSession(){
     const dataUrl =
       sessionStorage.getItem("cf24_edit_img") ||
@@ -1044,8 +1035,8 @@
       imgW = im.naturalWidth || 1;
       imgH = im.naturalHeight || 1;
 
-      // "처음 불러온 상태"를 저장해두기 (사용자 혼란 방지 핵심)
       fitToStage();
+
       initialView.scale = view.scale;
       initialView.offX  = view.offX;
       initialView.offY  = view.offY;
@@ -1067,7 +1058,7 @@
     im.src = dataUrl;
   }
 
-  // ===== download =====
+  // download
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -1101,7 +1092,6 @@
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
 
-    // map stage(canvas CSS size) -> output size
     const rect = stageRect();
     const stageW = rect.width;
     const stageH = rect.height;
@@ -1110,7 +1100,7 @@
     let sy = H / stageH;
 
     const keep = !!aspectLockEl.checked;
-    const mode = (aspectModeEl.value || "contain"); // contain | cover | stretch
+    const mode = (aspectModeEl.value || "contain");
 
     if(keep && mode !== "stretch"){
       const s = (mode === "cover") ? Math.max(sx, sy) : Math.min(sx, sy);
@@ -1122,12 +1112,10 @@
     const dx = (W - drawW) / 2;
     const dy = (H - drawH) / 2;
 
-    // draw the SAME pipeline as preview, but scaled into output
     octx.save();
     octx.translate(dx, dy);
     octx.scale(sx, sy);
 
-    // preview pipeline (in "stage coords")
     octx.translate(stageW/2, stageH/2);
     octx.translate(view.offX, view.offY);
     octx.rotate((view.rot * Math.PI) / 180);
