@@ -1582,9 +1582,9 @@
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
-      location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
+      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
     }catch(e){
-      location.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
+      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
     }
   });
 
