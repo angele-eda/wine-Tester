@@ -14,6 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ PDF generator (local in browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
   <style>
     :root{
       --radius:16px;
@@ -29,7 +32,6 @@
       --softBlueHi: rgba(120, 200, 255, .12);
     }
     *{ box-sizing:border-box; }
-
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
 
     body{
@@ -42,20 +44,19 @@
       text-rendering: geometricPrecision;
     }
 
-    /* ✅ SAFE entrance (no "blank screen" even if JS fails) */
-    .top{ animation: cfFadeUp .35s var(--ease) both; }
-    .card{ animation: cfFadeUp .38s var(--ease) both; }
-    .card:nth-of-type(1){ animation-delay: .02s; }
-    .card:nth-of-type(2){ animation-delay: .04s; }
-    .card:nth-of-type(3){ animation-delay: .06s; }
-    .card:nth-of-type(4){ animation-delay: .08s; }
-
-    @keyframes cfFadeUp{
-      from{ opacity:0; transform: translateY(8px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
+    /* entrance */
+    body:not(.loaded) .card,
+    body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
+    body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
+    body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
+    body.loaded .card:nth-of-type(1){ animation-delay: .02s; }
+    body.loaded .card:nth-of-type(2){ animation-delay: .04s; }
+    body.loaded .card:nth-of-type(3){ animation-delay: .06s; }
+    body.loaded .card:nth-of-type(4){ animation-delay: .08s; }
+    @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
     }
 
     .wrap{
@@ -151,10 +152,6 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
     option{ background:#0b0f17; color:#e9eef7; }
-    @media (max-width: 420px){
-      .langRow{ min-width:180px; }
-      .langSelect{ width:180px; }
-    }
 
     /* pill */
     .pill{
@@ -206,7 +203,6 @@
       margin-left:auto;
     }
 
-    /* icon circle buttons */
     .iconCircle{
       width:40px;
       height:40px;
@@ -240,12 +236,7 @@
       align-items:center;
       min-width:0;
     }
-    .row > *{
-      flex:1;
-      min-width:160px;
-      max-width:100%;
-      min-width:0;
-    }
+    .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -256,7 +247,6 @@
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
     }
-
     .btn.secondary{
       background: var(--softBlueBg);
       border: 1px solid var(--softBlueBd);
@@ -267,10 +257,7 @@
 
     .btn:hover{ filter: brightness(1.03); }
     .btn:active{ transform: scale(.99); }
-    .btn:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
-    }
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
 
     .btn:disabled{
       opacity:1;
@@ -305,10 +292,8 @@
     }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
     .drop:active{ transform: scale(0.998); }
-    .drop:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
-    }
+    .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
     .dropEmoji{
       font-size:42px;
       line-height:1;
@@ -319,13 +304,7 @@
     .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
 
     /* segmented */
-    .seg{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      min-width:0;
-      max-width:100%;
-    }
+    .seg{ display:flex; gap:8px; flex-wrap:wrap; min-width:0; max-width:100%; }
     .segBtn{
       border:var(--border);
       background:rgba(255,255,255,.04);
@@ -347,10 +326,7 @@
     }
     .segBtn:hover{ background:rgba(255,255,255,.06); }
     .segBtn:active{ transform: scale(.99); }
-    .segBtn:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
-    }
+    .segBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
     .segBtn.active{
       color:#eef5ff;
       background:rgba(var(--blue), .18);
@@ -361,15 +337,8 @@
         0 0 0 2px rgba(var(--blue), .10);
     }
 
-    /* toggles tighter */
     #togglesSeg{ gap:6px !important; }
     #togglesSeg .segBtn{ padding:9px 11px; }
-
-    /* print segs */
-    #printSeg{ gap:8px; }
-    #sheetSeg{ gap:8px; }
-    #sheetWrap{ display:none; }
-    #sheetWrap.show{ display:block; }
 
     /* stage */
     .stageWrap{
@@ -397,25 +366,15 @@
 
     canvas{ display:block; width:100%; height:100%; max-width:100%; max-height:100%; }
 
-    .overlay{
-      position:absolute; inset:0;
-      pointer-events:none;
-      max-width:100%;
-      overflow:hidden;
-    }
+    .overlay{ position:absolute; inset:0; pointer-events:none; max-width:100%; overflow:hidden; }
     .cropBox{
-      position:absolute;
-      left:50%; top:50%;
+      position:absolute; left:50%; top:50%;
       transform:translate(-50%,-50%);
       border:2px solid rgba(106,169,255,.85);
       box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
       border-radius:8px;
     }
-    .gridLines{
-      position:absolute; inset:0;
-      border-radius:8px;
-      overflow:hidden;
-    }
+    .gridLines{ position:absolute; inset:0; border-radius:8px; overflow:hidden; }
     .gridLines::before, .gridLines::after{
       content:"";
       position:absolute; left:0; top:0; right:0; bottom:0;
@@ -481,12 +440,10 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    /* equal width country/doc */
     #countrySeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:8px;
-      width:100%;
+      gap:8px; width:100%;
     }
     @media (min-width: 700px){
       #countrySeg{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -496,10 +453,13 @@
     #docSeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:8px;
-      width:100%;
+      gap:8px; width:100%;
     }
     #docSeg .segBtn{ width:100%; justify-content:center; text-align:center; }
+
+    /* Print sections */
+    #sheetWrap{ display:none; }
+    #sheetWrap.show{ display:block; }
 
     .small{ min-height: 36px; display:block; }
     @media (max-width: 380px){
@@ -507,9 +467,7 @@
     }
   </style>
 </head>
-
-<!-- ✅ IMPORTANT: always visible even if JS fails -->
-<body class="loaded">
+<body>
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
@@ -546,7 +504,6 @@
 
       <div class="row">
         <div>
-          <label id="lbl_country">Country</label>
           <div class="seg" id="countrySeg">
             <div class="segBtn active" data-country="KR"><span class="flag">🇰🇷</span> <span class="txt" id="cty_KR">Korea</span></div>
             <div class="segBtn" data-country="US"><span class="flag">🇺🇸</span> <span class="txt" id="cty_US">USA</span></div>
@@ -556,7 +513,6 @@
         </div>
 
         <div>
-          <label id="lbl_doc">Document type</label>
           <div class="seg" id="docSeg">
             <div class="segBtn" data-doc="ID"><span class="flag">🪪</span> <span class="txt" id="doc_ID">ID Photo</span></div>
             <div class="segBtn active" data-doc="PASS"><span class="flag">🛂</span> <span class="txt" id="doc_PASS">Passport</span></div>
@@ -595,7 +551,6 @@
 
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
-
           <div class="overlay" id="overlay">
             <div class="cropBox" id="cropBox"><div class="gridLines"></div></div>
             <div class="faceGuide" id="faceGuide"></div>
@@ -649,8 +604,38 @@
           </div>
         </div>
 
-        <div style="height:12px;"></div>
+        <div style="height:10px;"></div>
 
+        <!-- ✅ Print options -->
+        <h2 id="h_print">Print</h2>
+        <div class="seg" id="printSeg">
+          <div class="segBtn active" data-print="SINGLE" id="print_single">1 photo</div>
+          <div class="segBtn" data-print="A4" id="print_a4">A4 print</div>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div id="sheetWrap">
+          <label id="lbl_sheet">A4 layout</label>
+          <div class="seg" id="sheetSeg">
+            <div class="segBtn active" data-sheet="4" id="sheet_4">4</div>
+            <div class="segBtn" data-sheet="6" id="sheet_6">6</div>
+            <div class="segBtn" data-sheet="8" id="sheet_8">8</div>
+            <div class="segBtn" data-sheet="12" id="sheet_12">12</div>
+          </div>
+
+          <div style="height:10px;"></div>
+
+          <div class="seg" id="printOptsSeg" style="gap:6px;">
+            <div class="segBtn active" id="toggleCut"><span id="cut_icon">✅</span> <span id="cut_txt">Cut lines</span></div>
+            <div class="segBtn active" id="toggleBorder"><span id="border_icon">✅</span> <span id="border_txt">White border</span></div>
+          </div>
+
+          <div class="small" id="sheet_hint">A4 uses safe margins and cut lines. If PDF doesn’t open, download PNG.</div>
+          <div style="height:12px;"></div>
+        </div>
+
+        <!-- DPI / Format (single output) -->
         <div class="row">
           <div>
             <label id="lbl_dpi">DPI</label>
@@ -672,36 +657,19 @@
 
         <div style="height:12px;"></div>
 
-        <!-- Print mode ABOVE Download -->
-        <h2 id="h_print">Print</h2>
-        <div class="seg" id="printSeg">
-          <div class="segBtn active" data-print="SINGLE" id="print_single">1 photo</div>
-          <div class="segBtn" data-print="A4" id="print_a4">A4 print</div>
-        </div>
-
-        <div style="height:10px;"></div>
-
-        <div id="sheetWrap">
-          <label id="lbl_sheet">A4 layout</label>
-          <div class="seg" id="sheetSeg">
-            <div class="segBtn active" data-sheet="4" id="sheet_4">4</div>
-            <div class="segBtn" data-sheet="6" id="sheet_6">6</div>
-            <div class="segBtn" data-sheet="8" id="sheet_8">8</div>
-            <div class="segBtn" data-sheet="12" id="sheet_12">12</div>
-          </div>
-          <div class="small" id="sheet_hint">Choose how many photos to place on A4.</div>
-          <div style="height:12px;"></div>
-        </div>
-
         <h2 id="h_step3">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
+
+        <!-- ✅ SINGLE: one button.  A4: PDF primary + PNG fallback -->
+        <div class="row">
+          <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
+          <button class="btn secondary" id="downloadA4PngBtn" type="button" disabled style="display:none;">⬇️ A4 PNG (compat)</button>
+        </div>
+
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetBtn" type="button" disabled>Reset</button>
 
         <div style="height:12px;"></div>
-        <div class="meta" id="meta">
-          <b>Preview</b><br/>Upload a photo to start cropping.
-        </div>
+        <div class="meta" id="meta"><b>Preview</b><br/>Upload a photo to start cropping.</div>
       </div>
     </div>
 
@@ -721,6 +689,7 @@
   "use strict";
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   // ========= i18n =========
   const STR = {
@@ -731,8 +700,6 @@
       local: "Processed locally — no server upload",
       lang_label: "Language",
       step0: "Select",
-      country: "Country",
-      doc: "Document type",
       tip2: "Tip: Choose country first, then choose document type.",
       step1: "Upload photo",
       choose: "📁 Choose photo",
@@ -747,22 +714,26 @@
       zoomIn: "➕ Zoom in",
       auto: "Auto center (recommended)",
       guide: "Show face guide",
-      dpi: "DPI",
-      dpi_hint: "300 dpi is sufficient for most printing.",
-      out: "Output",
-      out_hint: "JPG recommended.",
       print: "Print",
       print_single: "1 photo",
       print_a4: "A4 print",
       a4_layout: "A4 layout",
-      a4_hint: "Choose how many photos to place on A4.",
+      cut: "Cut lines",
+      border: "White border",
+      sheet_hint: "A4 uses safe margins and cut lines. If PDF doesn’t open, download PNG.",
+      dpi: "DPI",
+      dpi_hint: "300 dpi is sufficient for most printing.",
+      out: "Output",
+      out_hint: "JPG recommended.",
       step3: "Download",
       download: "⬇️ Download",
+      download_png: "⬇️ A4 PNG (compat)",
       reset: "Reset",
       msg_need: "Please upload a photo first.",
       msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom.",
       msg_heic: "HEIC/HEIF may not work on some browsers. If preview fails, save as JPG/PNG and try again.",
       msg_fail: "Failed to load image.",
+      msg_pdf_fail: "PDF 생성에 실패했어요. A4 PNG(compat)로 내려받아 보세요.",
       meta_idle: "<b>Preview</b><br/>Upload a photo to start cropping.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Photo: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} photos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Image</b><br/>${w}×${h}px`,
@@ -776,8 +747,6 @@
       local: "로컬 처리 — 서버 업로드 없음",
       lang_label: "언어",
       step0: "선택",
-      country: "국가",
-      doc: "문서 타입",
       tip2: "팁: 국가를 먼저 고른 뒤, 문서 타입(ID/여권)을 선택하세요.",
       step1: "사진 업로드",
       choose: "📁 파일 선택",
@@ -792,22 +761,26 @@
       zoomIn: "➕ 확대",
       auto: "자동 중앙(권장)",
       guide: "얼굴 가이드 표시",
-      dpi: "DPI",
-      dpi_hint: "일반 출력은 300dpi면 충분해요.",
-      out: "출력",
-      out_hint: "JPG 권장",
       print: "출력용",
       print_single: "1장(파일 제출용)",
       print_a4: "A4 인쇄용",
       a4_layout: "A4 배치",
-      a4_hint: "A4에 넣을 장수를 선택하세요.",
+      cut: "자르기선",
+      border: "흰 테두리",
+      sheet_hint: "A4는 여백 + 자르기선을 포함해요. PDF가 안 열리면 PNG(호환)으로 받으세요.",
+      dpi: "DPI",
+      dpi_hint: "일반 출력은 300dpi면 충분해요.",
+      out: "출력",
+      out_hint: "JPG 권장",
       step3: "다운로드",
       download: "⬇️ 다운로드",
+      download_png: "⬇️ A4 PNG(호환)",
       reset: "초기화",
       msg_need: "먼저 사진을 업로드해 주세요.",
       msg_ready: "준비 완료! 드래그로 이동, 핀치/버튼으로 확대하세요.",
       msg_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. 미리보기가 실패하면 JPG/PNG로 저장 후 다시 시도해 주세요.",
       msg_fail: "이미지 로드 실패",
+      msg_pdf_fail: "PDF 생성에 실패했어요. A4 PNG(호환)으로 내려받아 보세요.",
       meta_idle: "<b>미리보기</b><br/>사진을 업로드하면 크롭을 시작할 수 있어요.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>사진: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4 인쇄</b><br/>${cnt}장 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>원본</b><br/>${w}×${h}px`,
@@ -821,8 +794,6 @@
       local: "Procesado local — sin servidor",
       lang_label: "Idioma",
       step0: "Seleccionar",
-      country: "País",
-      doc: "Tipo de documento",
       tip2: "Consejo: Elige primero el país y luego el tipo (ID/Pasaporte).",
       step1: "Subir foto",
       choose: "📁 Elegir foto",
@@ -837,22 +808,26 @@
       zoomIn: "➕ Acercar",
       auto: "Centrado automático (recomendado)",
       guide: "Mostrar guía de rostro",
-      dpi: "DPI",
-      dpi_hint: "300dpi suele ser suficiente.",
-      out: "Salida",
-      out_hint: "JPG recomendado.",
       print: "Imprimir",
       print_single: "1 foto",
       print_a4: "Imprimir A4",
       a4_layout: "Diseño A4",
-      a4_hint: "Elige cuántas fotos colocar en A4.",
+      cut: "Líneas de corte",
+      border: "Borde blanco",
+      sheet_hint: "A4 incluye márgenes y líneas de corte. Si PDF no abre, descarga PNG.",
+      dpi: "DPI",
+      dpi_hint: "300dpi suele ser suficiente.",
+      out: "Salida",
+      out_hint: "JPG recomendado.",
       step3: "Descargar",
       download: "⬇️ Descargar",
+      download_png: "⬇️ A4 PNG (compat)",
       reset: "Reiniciar",
       msg_need: "Primero sube una foto.",
       msg_ready: "Listo. Arrastra para mover y usa pellizco/botones para zoom.",
       msg_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
       msg_fail: "No se pudo cargar la imagen.",
+      msg_pdf_fail: "Falló crear PDF. Descarga A4 PNG (compat).",
       meta_idle: "<b>Vista previa</b><br/>Sube una foto para empezar.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Foto: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} fotos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Imagen</b><br/>${w}×${h}px`,
@@ -866,8 +841,6 @@
       local: "ローカル処理 — サーバーなし",
       lang_label: "言語",
       step0: "選択",
-      country: "国",
-      doc: "書類タイプ",
       tip2: "ヒント: 国を選んでから、ID/パスポートを選択します。",
       step1: "写真アップロード",
       choose: "📁 写真を選択",
@@ -882,22 +855,26 @@
       zoomIn: "➕ 拡大",
       auto: "自動中央（推奨）",
       guide: "顔ガイド表示",
-      dpi: "DPI",
-      dpi_hint: "通常は300dpiで十分です。",
-      out: "出力",
-      out_hint: "JPG推奨",
       print: "印刷",
       print_single: "1枚",
       print_a4: "A4印刷",
       a4_layout: "A4レイアウト",
-      a4_hint: "A4に配置する枚数を選択。",
+      cut: "裁断線",
+      border: "白い縁",
+      sheet_hint: "A4は余白と裁断線つき。PDFが開けない場合はPNGを。",
+      dpi: "DPI",
+      dpi_hint: "通常は300dpiで十分です。",
+      out: "出力",
+      out_hint: "JPG推奨",
       step3: "ダウンロード",
       download: "⬇️ ダウンロード",
+      download_png: "⬇️ A4 PNG(互換)",
       reset: "リセット",
       msg_need: "先に写真をアップロードしてください。",
       msg_ready: "準備OK。ドラッグで移動、ピンチ/ボタンでズーム。",
       msg_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGでお試しください。",
       msg_fail: "画像の読み込みに失敗しました。",
+      msg_pdf_fail: "PDF作成に失敗。A4 PNG(互換)で保存してください。",
       meta_idle: "<b>プレビュー</b><br/>写真をアップロードしてください。",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>出力: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>元画像</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>写真: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt}枚 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>元画像</b><br/>${w}×${h}px`,
@@ -952,8 +929,6 @@
     $("lang_label").textContent = t().lang_label;
 
     $("h_step0").textContent = t().step0;
-    $("lbl_country").textContent = t().country;
-    $("lbl_doc").textContent = t().doc;
     $("hint_2step").textContent = t().tip2;
 
     $("h_step1").textContent = t().step1;
@@ -972,19 +947,22 @@
     $("auto_txt").textContent = t().auto;
     $("guide_txt").textContent = t().guide;
 
+    $("h_print").textContent = t().print;
+    $("print_single").textContent = t().print_single;
+    $("print_a4").textContent = t().print_a4;
+    $("lbl_sheet").textContent = t().a4_layout;
+    $("cut_txt").textContent = t().cut;
+    $("border_txt").textContent = t().border;
+    $("sheet_hint").textContent = t().sheet_hint;
+
     $("lbl_dpi").textContent = t().dpi;
     $("dpi_hint").textContent = t().dpi_hint;
     $("lbl_format").textContent = t().out;
     $("fmt_hint").textContent = t().out_hint;
 
-    $("h_print").textContent = t().print;
-    $("print_single").textContent = t().print_single;
-    $("print_a4").textContent = t().print_a4;
-    $("lbl_sheet").textContent = t().a4_layout;
-    $("sheet_hint").textContent = t().a4_hint;
-
     $("h_step3").textContent = t().step3;
     $("downloadBtn").textContent = t().download;
+    $("downloadA4PngBtn").textContent = t().download_png;
     $("resetBtn").textContent = t().reset;
 
     updateChoiceLabels();
@@ -1044,16 +1022,23 @@
 
   // ========= Print mode =========
   let PRINT_MODE = "SINGLE";   // SINGLE | A4
-  let A4_COUNT = 4;           // 4,6,8,12
+  let A4_COUNT = 4;            // 4,6,8,12
+  let showCut = true;          // cut marks on A4
+  let whiteBorder = true;      // add thin white border (A4 + single)
 
   function setPrintMode(mode){
     PRINT_MODE = mode;
     document.querySelectorAll("#printSeg .segBtn").forEach(b=>{
       b.classList.toggle("active", b.dataset.print === mode);
     });
+
     const wrap = $("sheetWrap");
     if(mode === "A4") wrap.classList.add("show");
     else wrap.classList.remove("show");
+
+    // A4 PNG fallback button visible only in A4
+    $("downloadA4PngBtn").style.display = (mode === "A4") ? "" : "none";
+
     updateMeta();
   }
   function setA4Count(cnt){
@@ -1063,12 +1048,22 @@
     });
     updateMeta();
   }
+
   document.querySelectorAll("#printSeg .segBtn").forEach(b=>{
     b.addEventListener("click", ()=> setPrintMode(b.dataset.print));
   });
   document.querySelectorAll("#sheetSeg .segBtn").forEach(b=>{
     b.addEventListener("click", ()=> setA4Count(parseInt(b.dataset.sheet,10)));
   });
+
+  function syncPrintToggles(){
+    $("toggleCut").classList.toggle("active", showCut);
+    $("toggleBorder").classList.toggle("active", whiteBorder);
+    $("cut_icon").textContent = showCut ? "✅" : "☐";
+    $("border_icon").textContent = whiteBorder ? "✅" : "☐";
+  }
+  $("toggleCut").addEventListener("click", ()=>{ showCut = !showCut; syncPrintToggles(); });
+  $("toggleBorder").addEventListener("click", ()=>{ whiteBorder = !whiteBorder; syncPrintToggles(); });
 
   // ========= Upload / Image =========
   const pickInput = $("pickInput");
@@ -1084,18 +1079,13 @@
     const ext = (name||"").toLowerCase().split(".").pop();
     return ext === "heic" || ext === "heif";
   }
-
   pickInput.addEventListener("change", (e)=> { const f = e.target.files && e.target.files[0]; if(f) loadFile(f); });
   camInput.addEventListener("change", (e)=> { const f = e.target.files && e.target.files[0]; if(f) loadFile(f); });
 
   function openDropPicker(){ pickInput.value = ""; pickInput.click(); }
-
   drop.addEventListener("click", openDropPicker);
   drop.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      openDropPicker();
-    }
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
   });
 
   ["dragenter","dragover"].forEach(evt=>{
@@ -1182,7 +1172,6 @@
     syncToggleUI();
     redraw();
   });
-
   $("toggleGuide").addEventListener("click", ()=>{
     showGuide = !showGuide;
     syncToggleUI();
@@ -1193,7 +1182,6 @@
     pushUndoState(snap());
     fitToCrop();
   });
-
   $("centerBtn").addEventListener("click", ()=>{
     if(!imgEl) return setMsg(t().msg_need, "err");
     pushUndoState(snap());
@@ -1228,7 +1216,6 @@
     m.textContent = text || "";
     m.className = "msg " + (cls || "");
   }
-
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
   function resizeCanvas(){
@@ -1259,12 +1246,10 @@
       h = maxH;
       w = h * ratio;
     }
-
     const x = (rect.width - w)/2;
     const y = (rect.height - h)/2;
     return { x, y, w, h };
   }
-
   function updateCropBox(){
     const r = cropRectInStage();
     cropBoxEl.style.width = r.w + "px";
@@ -1312,28 +1297,32 @@
     return { cols:3, rows:4 }; // 12
   }
 
+  function mmToPx(mm, dpi){ return (mm/25.4) * dpi; }
+
   function updateMeta(){
     const p = currentPreset();
     const dpi = parseInt($("dpi").value, 10) || 300;
-
-    const pxW = Math.round((p.mmW / 25.4) * dpi);
-    const pxH = Math.round((p.mmH / 25.4) * dpi);
+    const pxW = Math.round(mmToPx(p.mmW, dpi));
+    const pxH = Math.round(mmToPx(p.mmH, dpi));
 
     if(!imgEl){
       $("meta").innerHTML = t().meta_idle;
       $("downloadBtn").disabled = true;
+      $("downloadA4PngBtn").disabled = true;
       $("resetBtn").disabled = true;
       clearUndo();
       return;
     }
 
     if(PRINT_MODE === "A4"){
-      const a4Wpx = Math.round((210/25.4) * dpi);
-      const a4Hpx = Math.round((297/25.4) * dpi);
+      const a4Wpx = Math.round(mmToPx(210, dpi));
+      const a4Hpx = Math.round(mmToPx(297, dpi));
       const g = a4Grid(A4_COUNT);
       $("meta").innerHTML = t().meta_info_a4(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi, A4_COUNT, g.cols, g.rows, a4Wpx, a4Hpx);
+      $("downloadA4PngBtn").disabled = false;
     } else {
       $("meta").innerHTML = t().meta_info_single(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
+      $("downloadA4PngBtn").disabled = true;
     }
 
     $("downloadBtn").disabled = false;
@@ -1343,7 +1332,6 @@
 
   async function loadFile(file){
     if(!file) return;
-
     if(isHeic(file.name)) setMsg(t().msg_heic, "");
     else setMsg("", "");
 
@@ -1480,11 +1468,11 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function buildName(){
+  function buildName(extOverride){
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
     const doc = (DOC === "PASS") ? "passport" : "id";
     const mode = (PRINT_MODE === "A4") ? `a4_${A4_COUNT}` : "single";
+    const ext = extOverride || ($("outFormat").value === "image/png" ? "png" : "jpg");
     return `cf24_${COUNTRY}_${doc}_${mode}_${stamp}.${ext}`;
   }
 
@@ -1502,39 +1490,69 @@
     const p = currentPreset();
     const dpi = parseInt($("dpi").value, 10) || 300;
 
-    const outW = Math.round((p.mmW / 25.4) * dpi);
-    const outH = Math.round((p.mmH / 25.4) * dpi);
-
+    const outW = Math.round(mmToPx(p.mmW, dpi));
+    const outH = Math.round(mmToPx(p.mmH, dpi));
     const { ix0, iy0, srcW, srcH } = computeCropSourceRect();
+
+    // ✅ optional thin white border (like photo studio)
+    const borderMm = whiteBorder ? 1.0 : 0.0; // 1mm border
+    const b = Math.round(mmToPx(borderMm, dpi));
+    const innerW = Math.max(1, outW - b*2);
+    const innerH = Math.max(1, outH - b*2);
 
     const out = document.createElement("canvas");
     out.width = Math.max(1, outW);
     out.height = Math.max(1, outH);
-    const octx = out.getContext("2d", { alpha:true });
+    const octx = out.getContext("2d", { alpha:false });
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
-    octx.drawImage(imgEl, ix0, iy0, srcW, srcH, 0, 0, out.width, out.height);
+
+    // white base
+    octx.fillStyle = "#ffffff";
+    octx.fillRect(0,0,out.width,out.height);
+
+    // draw crop into inner rect
+    octx.drawImage(imgEl, ix0, iy0, srcW, srcH, b, b, innerW, innerH);
+
     return out;
   }
 
-  // ✅ cutting lines on A4 (black thin, printer friendly)
-  function drawCutMarks(ctx, x, y, w, h, len, lw){
-    ctx.lineWidth = lw;
-    ctx.strokeStyle = "#000000";
-    ctx.beginPath();
+  function drawCutMarks(sctx, x, y, w, h, dpi){
+    if(!showCut) return;
+    const len = Math.max(6, Math.round(mmToPx(3, dpi))); // 3mm
+    const off = Math.max(3, Math.round(mmToPx(1.2, dpi))); // small offset
+    sctx.save();
+    sctx.strokeStyle = "#000000";
+    sctx.globalAlpha = 0.55;
+    sctx.lineWidth = Math.max(1, Math.round(mmToPx(0.2, dpi))); // ~0.2mm
+
     // top-left
-    ctx.moveTo(x, y); ctx.lineTo(x + len, y);
-    ctx.moveTo(x, y); ctx.lineTo(x, y + len);
+    sctx.beginPath();
+    sctx.moveTo(x - off, y);
+    sctx.lineTo(x - off + len, y);
+    sctx.moveTo(x, y - off);
+    sctx.lineTo(x, y - off + len);
+
     // top-right
-    ctx.moveTo(x + w, y); ctx.lineTo(x + w - len, y);
-    ctx.moveTo(x + w, y); ctx.lineTo(x + w, y + len);
+    sctx.moveTo(x + w + off, y);
+    sctx.lineTo(x + w + off - len, y);
+    sctx.moveTo(x + w, y - off);
+    sctx.lineTo(x + w, y - off + len);
+
     // bottom-left
-    ctx.moveTo(x, y + h); ctx.lineTo(x + len, y + h);
-    ctx.moveTo(x, y + h); ctx.lineTo(x, y + h - len);
+    sctx.moveTo(x - off, y + h);
+    sctx.lineTo(x - off + len, y + h);
+    sctx.moveTo(x, y + h + off);
+    sctx.lineTo(x, y + h + off - len);
+
     // bottom-right
-    ctx.moveTo(x + w, y + h); ctx.lineTo(x + w - len, y + h);
-    ctx.moveTo(x + w, y + h); ctx.lineTo(x + w, y + h - len);
-    ctx.stroke();
+    sctx.moveTo(x + w + off, y + h);
+    sctx.lineTo(x + w + off - len, y + h);
+    sctx.moveTo(x + w, y + h + off);
+    sctx.lineTo(x + w, y + h + off - len);
+
+    sctx.stroke();
+    sctx.restore();
   }
 
   function makeA4Canvas(){
@@ -1542,17 +1560,14 @@
     const p = currentPreset();
     const dpi = parseInt($("dpi").value, 10) || 300;
 
-    const a4W = Math.round((210/25.4) * dpi);
-    const a4H = Math.round((297/25.4) * dpi);
-
-    const photoW = Math.round((p.mmW / 25.4) * dpi);
-    const photoH = Math.round((p.mmH / 25.4) * dpi);
+    const a4W = Math.round(mmToPx(210, dpi));
+    const a4H = Math.round(mmToPx(297, dpi));
 
     const g = a4Grid(A4_COUNT);
 
-    // margins & spacing (mm)
-    const margin = Math.round((10/25.4) * dpi); // ~10mm
-    const gap = Math.round((6/25.4) * dpi);     // ~6mm
+    // ✅ safe margins & spacing
+    const margin = Math.round(mmToPx(12, dpi)); // 12mm safe margin
+    const gap = Math.round(mmToPx(8, dpi));     // 8mm spacing between cells
 
     const usableW = a4W - margin*2;
     const usableH = a4H - margin*2;
@@ -1560,10 +1575,13 @@
     let cellW = Math.floor((usableW - gap*(g.cols-1)) / g.cols);
     let cellH = Math.floor((usableH - gap*(g.rows-1)) / g.rows);
 
-    // scale-down only if needed
-    const s = Math.min(1, cellW / photoW, cellH / photoH);
-    const drawW = Math.floor(photoW * s);
-    const drawH = Math.floor(photoH * s);
+    // Prepare single photo (already includes white border option)
+    const single = makeSingleOutputCanvas();
+
+    // Fit photo inside cell (keep size unless too large)
+    const s = Math.min(1, cellW / single.width, cellH / single.height);
+    const drawW = Math.floor(single.width * s);
+    const drawH = Math.floor(single.height * s);
 
     const sheet = document.createElement("canvas");
     sheet.width = a4W;
@@ -1577,18 +1595,10 @@
     sctx.fillStyle = "#ffffff";
     sctx.fillRect(0,0,a4W,a4H);
 
-    // prepare cropped photo once
-    const single = makeSingleOutputCanvas();
-
-    const gridW = cellW*g.cols + gap*(g.cols-1);
-    const gridH = cellH*g.rows + gap*(g.rows-1);
-
-    const startX = margin + Math.floor((usableW - gridW) / 2);
-    const startY = margin + Math.floor((usableH - gridH) / 2);
-
-    // cut marks length / line width
-    const markLen = Math.max(6, Math.round((2/25.4)*dpi)); // ~2mm, min 6px
-    const lineW = Math.max(0.8, (dpi >= 600 ? 1.2 : 0.9));
+    const totalW = cellW*g.cols + gap*(g.cols-1);
+    const totalH = cellH*g.rows + gap*(g.rows-1);
+    const startX = margin + Math.floor((usableW - totalW)/2);
+    const startY = margin + Math.floor((usableH - totalH)/2);
 
     let placed = 0;
     for(let r=0; r<g.rows; r++){
@@ -1603,32 +1613,71 @@
 
         sctx.drawImage(single, 0,0,single.width,single.height, x,y, drawW,drawH);
 
-        // ✅ draw cut marks around the actual photo box
-        drawCutMarks(sctx, x, y, drawW, drawH, markLen, lineW);
+        // ✅ cut marks around each photo
+        drawCutMarks(sctx, x, y, drawW, drawH, dpi);
 
         placed++;
       }
     }
+
     return sheet;
   }
 
-  function canvasToBlob(canvas){
-    const outMime = $("outFormat").value;
+  function canvasToBlob(canvas, mime, quality){
     return new Promise((resolve, reject)=>{
-      if(outMime === "image/png"){
-        canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
-      }else{
-        canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
-      }
+      canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), mime, quality);
     });
+  }
+
+  async function downloadSingleImage(){
+    const canvas = makeSingleOutputCanvas();
+    const outMime = $("outFormat").value;
+    const blob = await canvasToBlob(canvas, outMime, (outMime==="image/jpeg"?0.92:undefined));
+    downloadBlob(blob, buildName());
+    setMsg("✅ " + t().download, "ok");
+  }
+
+  async function downloadA4Png(){
+    const sheet = makeA4Canvas();
+    const blob = await canvasToBlob(sheet, "image/png");
+    downloadBlob(blob, buildName("png"));
+    setMsg("✅ " + t().download_png, "ok");
+  }
+
+  async function downloadA4Pdf(){
+    const sheet = makeA4Canvas();
+
+    // Convert sheet to JPEG data URL (smaller PDF, better compatibility)
+    const dataUrl = sheet.toDataURL("image/jpeg", 0.92);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4", compress:true });
+
+    // A4 size in mm
+    pdf.addImage(dataUrl, "JPEG", 0, 0, 210, 297, undefined, "FAST");
+    pdf.save(buildName("pdf"));
+    setMsg("✅ PDF", "ok");
   }
 
   $("downloadBtn").addEventListener("click", async ()=>{
     try{
-      const canvas = (PRINT_MODE === "A4") ? makeA4Canvas() : makeSingleOutputCanvas();
-      const blob = await canvasToBlob(canvas);
-      downloadBlob(blob, buildName());
-      setMsg("✅ " + t().download, "ok");
+      if(!imgEl) return setMsg(t().msg_need, "err");
+      if(PRINT_MODE === "A4"){
+        // ✅ A4 default is PDF (professional)
+        await downloadA4Pdf();
+      } else {
+        await downloadSingleImage();
+      }
+    }catch(e){
+      if(PRINT_MODE === "A4") setMsg(t().msg_pdf_fail, "err");
+      else setMsg((e && e.message) ? e.message : "Download failed", "err");
+    }
+  });
+
+  $("downloadA4PngBtn").addEventListener("click", async ()=>{
+    try{
+      if(!imgEl) return setMsg(t().msg_need, "err");
+      await downloadA4Png();
     }catch(e){
       setMsg((e && e.message) ? e.message : "Download failed", "err");
     }
@@ -1651,6 +1700,7 @@
   // init
   setLang(LANG);
   syncToggleUI();
+  syncPrintToggles();
   resizeCanvas();
   refreshPresetPill();
   setPrintMode("SINGLE");
