@@ -22,7 +22,7 @@
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
 
-      /* ===== ID Photo accent (soft blue) ===== */
+      /* soft blue */
       --softBlueBg: rgba(120, 200, 255, .06);
       --softBlueBd: rgba(120, 200, 255, .22);
       --softBlueTx: #cfe6ff;
@@ -30,11 +30,7 @@
     }
     *{ box-sizing:border-box; }
 
-    html, body{
-      width:100%;
-      max-width:100%;
-      overflow-x:hidden;
-    }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
 
     body{
       margin:0;
@@ -46,7 +42,7 @@
       text-rendering: geometricPrecision;
     }
 
-    /* ✅ Light entrance animation (safe) */
+    /* entrance */
     body:not(.loaded) .card,
     body:not(.loaded) .top{
       opacity:0;
@@ -58,13 +54,10 @@
     body.loaded .card:nth-of-type(2){ animation-delay: .04s; }
     body.loaded .card:nth-of-type(3){ animation-delay: .06s; }
     body.loaded .card:nth-of-type(4){ animation-delay: .08s; }
-
     @keyframes cfFadeUp{
       from{ opacity:0; transform: translateY(8px); }
       to{ opacity:1; transform: translateY(0); }
     }
-
-    /* Reduce motion support */
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
       body:not(.loaded) .card,
@@ -127,7 +120,6 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
     }
 
-    /* ✅ Language: right aligned */
     .langRow{
       display:flex;
       flex-direction:column;
@@ -165,13 +157,12 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
     option{ background:#0b0f17; color:#e9eef7; }
-
     @media (max-width: 420px){
       .langRow{ min-width:180px; }
       .langSelect{ width:180px; }
     }
 
-    /* Local pill */
+    /* pill */
     .pill{
       width:100%;
       border:1px solid rgba(120, 200, 255, .22);
@@ -184,6 +175,13 @@
       display:flex; align-items:center; justify-content:center; gap:10px;
       min-width:0;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    /* make 🛡 pop */
+    .pill .shield{
+      font-size:16px;
+      line-height:1;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,.32)) drop-shadow(0 0 10px rgba(120,200,255,.20));
+      transform: translateY(-.5px);
     }
 
     .card{
@@ -199,7 +197,7 @@
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
-    /* header row inside card (for Controls title + icons) */
+    /* Controls header row */
     .cardHead{
       display:flex;
       align-items:center;
@@ -208,41 +206,40 @@
       margin:0 0 10px;
     }
     .cardHead h2{ margin:0; }
-
     .headActions{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:12px; /* ✅ spaced more so not mis-tapped */
       margin-left:auto;
     }
 
-    /* icon-only buttons (no background) */
-    .iconBtn{
-      appearance:none;
-      border:none;
-      background:transparent;
-      padding:0;
-      cursor:pointer;
+    /* icon circle buttons */
+    .iconCircle{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:none;                 /* ✅ remove any outline border */
+      background: rgba(255,255,255,.06);
       color:#cfe6ff;
-      line-height:1;
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      cursor:pointer;
       user-select:none;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
-      transition: transform .08s var(--ease), opacity .12s var(--ease);
-      font-size:22px;
-      font-weight:900;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.22);
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease), opacity .12s var(--ease);
+      padding:0;
     }
-    .iconBtn:active{ transform: scale(.96); }
-    .iconBtn:disabled{ opacity:.35; cursor:not-allowed; transform:none; }
-    .iconBtn:focus-visible{
+    .iconCircle:hover{ background: rgba(255,255,255,.08); }
+    .iconCircle:active{ transform: scale(.96); }
+    .iconCircle:disabled{ opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
+    .iconCircle:focus-visible{
       outline:none;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25)) drop-shadow(0 0 0 rgba(0,0,0,0));
-      box-shadow: 0 0 0 3px rgba(var(--blue),.20);
-      border-radius:10px;
-      padding:2px 6px;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.28), inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.22);
     }
+    .iconCircle svg{ width:20px; height:20px; display:block; }
+    /* undo should feel more round */
+    #undoBtn svg{ width:21px; height:21px; }
 
     .row{
       display:flex;
@@ -268,7 +265,6 @@
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
     }
 
-    /* soft-blue secondary controls */
     .btn.secondary{
       background: var(--softBlueBg);
       border: 1px solid var(--softBlueBd);
@@ -284,18 +280,14 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
 
-    /* ✅ FIX: disabled button text NOT blurry */
+    /* ✅ disabled text NOT blurry */
     .btn:disabled{
       opacity:1;
       cursor:not-allowed;
       transform:none;
       box-shadow:none;
       filter: saturate(.7);
-      background: linear-gradient(
-        180deg,
-        rgba(47,109,246,.40),
-        rgba(47,109,246,.30)
-      );
+      background: linear-gradient(180deg, rgba(47,109,246,.40), rgba(47,109,246,.30));
       color:#ffffff;
     }
     .btn.secondary:disabled{
@@ -335,7 +327,7 @@
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
 
-    /* Segmented buttons */
+    /* segmented */
     .seg{
       display:flex;
       gap:8px;
@@ -378,11 +370,17 @@
         0 0 0 2px rgba(var(--blue), .10);
     }
 
-    /* reduce gap between the two check seg buttons */
+    /* toggles tighter */
     #togglesSeg{ gap:6px !important; }
     #togglesSeg .segBtn{ padding:9px 11px; }
 
-    /* Crop stage */
+    /* print segs */
+    #printSeg{ gap:8px; }
+    #sheetSeg{ gap:8px; }
+    #sheetWrap{ display:none; }
+    #sheetWrap.show{ display:block; }
+
+    /* stage */
     .stageWrap{
       display:grid;
       grid-template-columns: 1.2fr .8fr;
@@ -406,13 +404,7 @@
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    canvas{
-      display:block;
-      width:100%;
-      height:100%;
-      max-width:100%;
-      max-height:100%;
-    }
+    canvas{ display:block; width:100%; height:100%; max-width:100%; max-height:100%; }
 
     .overlay{
       position:absolute; inset:0;
@@ -498,7 +490,7 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    /* Country buttons equal width */
+    /* equal width country/doc */
     #countrySeg{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -508,11 +500,7 @@
     @media (min-width: 700px){
       #countrySeg{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
-    #countrySeg .segBtn{
-      width:100%;
-      justify-content:center;
-      text-align:center;
-    }
+    #countrySeg .segBtn{ width:100%; justify-content:center; text-align:center; }
 
     #docSeg{
       display:grid;
@@ -520,16 +508,9 @@
       gap:8px;
       width:100%;
     }
-    #docSeg .segBtn{
-      width:100%;
-      justify-content:center;
-      text-align:center;
-    }
+    #docSeg .segBtn{ width:100%; justify-content:center; text-align:center; }
 
-    .small{
-      min-height: 36px;
-      display:block;
-    }
+    .small{ min-height: 36px; display:block; }
     @media (max-width: 380px){
       .small{ min-height: 44px; }
     }
@@ -540,15 +521,16 @@
     <div class="top">
       <div style="flex:1; min-width:240px;">
         <h1 class="title" id="page_title">ID Photo / Passport</h1>
-        <p class="sub" id="page_sub">Upload → adjust position/zoom → download. 100% local processing (no server upload).</p>
+        <!-- ✅ removed local-processing duplication here -->
+        <p class="sub" id="page_sub">Upload → adjust position/zoom → download.</p>
 
         <div style="margin-top:10px;">
           <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
         </div>
 
         <div style="margin-top:10px;">
-          <!-- CHANGED: 🛡️ emoji -->
-          <div class="pill">🛡️ <span id="local_processing">Processed locally — no server upload</span></div>
+          <!-- ✅ 🛡 more visible -->
+          <div class="pill"><span class="shield">🛡</span> <span id="local_processing">Processed locally — no server upload</span></div>
         </div>
 
         <div style="margin-top:10px;">
@@ -597,7 +579,7 @@
     </div>
 
     <div class="stageWrap">
-      <!-- Left: upload + crop stage -->
+      <!-- Left -->
       <div class="card">
         <h2 id="h_step1">Upload photo</h2>
 
@@ -624,9 +606,7 @@
           <canvas id="cv"></canvas>
 
           <div class="overlay" id="overlay">
-            <div class="cropBox" id="cropBox">
-              <div class="gridLines"></div>
-            </div>
+            <div class="cropBox" id="cropBox"><div class="gridLines"></div></div>
             <div class="faceGuide" id="faceGuide"></div>
           </div>
         </div>
@@ -634,14 +614,28 @@
         <div class="msg" id="msg"></div>
       </div>
 
-      <!-- Right: controls -->
+      <!-- Right -->
       <div class="card">
-        <!-- CHANGED: title + right icons -->
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
           <div class="headActions" aria-label="Quick actions">
-            <button class="iconBtn" id="imgIconBtn" type="button" title="Load another image" aria-label="Load another image">🖼️</button>
-            <button class="iconBtn" id="undoBtn" type="button" title="Undo" aria-label="Undo" disabled>↶</button>
+            <!-- ✅ SVG image icon (no yellow outline / no emoji border) -->
+            <button class="iconCircle" id="imgIconBtn" type="button" title="Load another image" aria-label="Load another image">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4.5 6.8c0-1.1.9-2 2-2h11c1.1 0 2 .9 2 2v10.4c0 1.1-.9 2-2 2h-11c-1.1 0-2-.9-2-2V6.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M8 13.4l2.2-2.2a1.1 1.1 0 0 1 1.6 0l2.6 2.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.6 12.8l1-1a1.1 1.1 0 0 1 1.6 0l2.2 2.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9.1 9.2h.01" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <!-- ✅ rounder undo icon -->
+            <button class="iconCircle" id="undoBtn" type="button" title="Undo" aria-label="Undo" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9.2 7.2H6.3V4.3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6.4 7.2c1.8-2 4.4-3.2 7.3-3.2 5 0 9 3.9 9 8.8s-4 8.8-9 8.8c-3.5 0-6.6-1.9-8.2-4.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -689,6 +683,27 @@
 
         <div style="height:12px;"></div>
 
+        <!-- ✅ Print/Download mode ABOVE Download -->
+        <h2 id="h_print">Print</h2>
+        <div class="seg" id="printSeg">
+          <div class="segBtn active" data-print="SINGLE" id="print_single">1 photo</div>
+          <div class="segBtn" data-print="A4" id="print_a4">A4 print</div>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div id="sheetWrap">
+          <label id="lbl_sheet">A4 layout</label>
+          <div class="seg" id="sheetSeg">
+            <div class="segBtn active" data-sheet="4" id="sheet_4">4</div>
+            <div class="segBtn" data-sheet="6" id="sheet_6">6</div>
+            <div class="segBtn" data-sheet="8" id="sheet_8">8</div>
+            <div class="segBtn" data-sheet="12" id="sheet_12">12</div>
+          </div>
+          <div class="small" id="sheet_hint">Choose how many photos to place on A4.</div>
+          <div style="height:12px;"></div>
+        </div>
+
         <h2 id="h_step3">Download</h2>
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
         <div style="height:10px;"></div>
@@ -717,15 +732,13 @@
   "use strict";
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
-
-  // ✅ add light entrance animation AFTER first paint
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   // ========= i18n =========
   const STR = {
     en: {
       page_title: "ID Photo / Passport",
-      page_sub: "Upload → adjust position/zoom → download. 100% local processing (no server upload).",
+      page_sub: "Upload → adjust position/zoom → download.",
       home: "🏠 Home",
       local: "Processed locally — no server upload",
       lang_label: "Language",
@@ -750,6 +763,11 @@
       dpi_hint: "300 dpi is sufficient for most printing.",
       out: "Output",
       out_hint: "JPG recommended.",
+      print: "Print",
+      print_single: "1 photo",
+      print_a4: "A4 print",
+      a4_layout: "A4 layout",
+      a4_hint: "Choose how many photos to place on A4.",
       step3: "Download",
       download: "⬇️ Download",
       reset: "Reset",
@@ -758,13 +776,14 @@
       msg_heic: "HEIC/HEIF may not work on some browsers. If preview fails, save as JPG/PNG and try again.",
       msg_fail: "Failed to load image.",
       meta_idle: "<b>Preview</b><br/>Upload a photo to start cropping.",
-      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Crop ratio: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`,
+      meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`,
+      meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Photo: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} photos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Image</b><br/>${w}×${h}px`,
       cty: { KR:"Korea", US:"USA", EU:"EU", JP:"Japan" },
       docTxt: { ID:"ID Photo", PASS:"Passport" }
     },
     ko: {
       page_title: "ID Photo / Passport",
-      page_sub: "업로드 → 위치/확대 조절 → 다운로드. 100% 로컬 처리(서버 업로드 없음).",
+      page_sub: "업로드 → 위치/확대 조절 → 다운로드.",
       home: "🏠 홈으로",
       local: "로컬 처리 — 서버 업로드 없음",
       lang_label: "언어",
@@ -789,6 +808,11 @@
       dpi_hint: "일반 출력은 300dpi면 충분해요.",
       out: "출력",
       out_hint: "JPG 권장",
+      print: "출력용",
+      print_single: "1장(파일 제출용)",
+      print_a4: "A4 인쇄용",
+      a4_layout: "A4 배치",
+      a4_hint: "A4에 넣을 장수를 선택하세요.",
       step3: "다운로드",
       download: "⬇️ 다운로드",
       reset: "초기화",
@@ -797,13 +821,14 @@
       msg_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. 미리보기가 실패하면 JPG/PNG로 저장 후 다시 시도해 주세요.",
       msg_fail: "이미지 로드 실패",
       meta_idle: "<b>미리보기</b><br/>사진을 업로드하면 크롭을 시작할 수 있어요.",
-      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>비율: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`,
+      meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`,
+      meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>사진: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4 인쇄</b><br/>${cnt}장 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>원본</b><br/>${w}×${h}px`,
       cty: { KR:"한국", US:"미국", EU:"EU", JP:"일본" },
       docTxt: { ID:"증명사진", PASS:"여권사진" }
     },
     es: {
       page_title: "ID Photo / Passport",
-      page_sub: "Sube → ajusta posición/zoom → descarga. Procesado 100% local (sin servidor).",
+      page_sub: "Sube → ajusta posición/zoom → descarga.",
       home: "🏠 Inicio",
       local: "Procesado local — sin servidor",
       lang_label: "Idioma",
@@ -828,6 +853,11 @@
       dpi_hint: "300dpi suele ser suficiente.",
       out: "Salida",
       out_hint: "JPG recomendado.",
+      print: "Imprimir",
+      print_single: "1 foto",
+      print_a4: "Imprimir A4",
+      a4_layout: "Diseño A4",
+      a4_hint: "Elige cuántas fotos colocar en A4.",
       step3: "Descargar",
       download: "⬇️ Descargar",
       reset: "Reiniciar",
@@ -836,13 +866,14 @@
       msg_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
       msg_fail: "No se pudo cargar la imagen.",
       meta_idle: "<b>Vista previa</b><br/>Sube una foto para empezar.",
-      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Relación: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`,
+      meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`,
+      meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Foto: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} fotos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Imagen</b><br/>${w}×${h}px`,
       cty: { KR:"Corea", US:"EE.UU.", EU:"UE", JP:"Japón" },
       docTxt: { ID:"Foto ID", PASS:"Pasaporte" }
     },
     ja: {
       page_title: "ID Photo / Passport",
-      page_sub: "アップロード → 位置/ズーム調整 → ダウンロード。100% ローカル処理（サーバーなし）。",
+      page_sub: "アップロード → 位置/ズーム調整 → ダウンロード。",
       home: "🏠 ホーム",
       local: "ローカル処理 — サーバーなし",
       lang_label: "言語",
@@ -867,6 +898,11 @@
       dpi_hint: "通常は300dpiで十分です。",
       out: "出力",
       out_hint: "JPG推奨",
+      print: "印刷",
+      print_single: "1枚",
+      print_a4: "A4印刷",
+      a4_layout: "A4レイアウト",
+      a4_hint: "A4に配置する枚数を選択。",
       step3: "ダウンロード",
       download: "⬇️ ダウンロード",
       reset: "リセット",
@@ -875,7 +911,8 @@
       msg_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGでお試しください。",
       msg_fail: "画像の読み込みに失敗しました。",
       meta_idle: "<b>プレビュー</b><br/>写真をアップロードしてください。",
-      meta_info: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>プリセット</b><br/>比率: ${mmW}×${mmH} mm<br/>出力: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>元画像</b><br/>${w}×${h}px`,
+      meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>出力: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>元画像</b><br/>${w}×${h}px`,
+      meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>写真: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt}枚 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>元画像</b><br/>${w}×${h}px`,
       cty: { KR:"韓国", US:"米国", EU:"EU", JP:"日本" },
       docTxt: { ID:"ID写真", PASS:"パスポート" }
     }
@@ -889,21 +926,17 @@
     }catch(e){}
     return null;
   }
-
   function detectLang(){
     const q = getQueryLang();
     if(q) return q;
-
     const saved = localStorage.getItem("cf24_lang");
     if(saved && STR[saved]) return saved;
-
     const nav = (navigator.language || "").toLowerCase();
     if(nav.startsWith("ko")) return "ko";
     if(nav.startsWith("ja")) return "ja";
     if(nav.startsWith("es")) return "es";
     return "en";
   }
-
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
@@ -913,7 +946,6 @@
     $("cty_US").textContent = s.cty.US;
     $("cty_EU").textContent = s.cty.EU;
     $("cty_JP").textContent = s.cty.JP;
-
     $("doc_ID").textContent = s.docTxt.ID;
     $("doc_PASS").textContent = s.docTxt.PASS;
   }
@@ -923,7 +955,6 @@
     LANG = lang;
     localStorage.setItem("cf24_lang", lang);
     $("langSelect").value = lang;
-
     document.documentElement.lang = lang;
 
     $("page_title").textContent = t().page_title;
@@ -958,17 +989,21 @@
     $("lbl_format").textContent = t().out;
     $("fmt_hint").textContent = t().out_hint;
 
+    $("h_print").textContent = t().print;
+    $("print_single").textContent = t().print_single;
+    $("print_a4").textContent = t().print_a4;
+    $("lbl_sheet").textContent = t().a4_layout;
+    $("sheet_hint").textContent = t().a4_hint;
+
     $("h_step3").textContent = t().step3;
     $("downloadBtn").textContent = t().download;
     $("resetBtn").textContent = t().reset;
 
     updateChoiceLabels();
-
     if(!imgEl) $("meta").innerHTML = t().meta_idle;
     refreshPresetPill();
     setTimeout(()=>resizeCanvas(), 0);
   }
-
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
   // ========= Presets =========
@@ -1018,6 +1053,34 @@
     $("presetPill").textContent = `Preset: ${p.name}`;
     updateMeta();
   }
+
+  // ========= Print mode =========
+  let PRINT_MODE = "SINGLE";   // SINGLE | A4
+  let A4_COUNT = 4;           // 4,6,8,12
+
+  function setPrintMode(mode){
+    PRINT_MODE = mode;
+    document.querySelectorAll("#printSeg .segBtn").forEach(b=>{
+      b.classList.toggle("active", b.dataset.print === mode);
+    });
+    const wrap = $("sheetWrap");
+    if(mode === "A4") wrap.classList.add("show");
+    else wrap.classList.remove("show");
+    updateMeta();
+  }
+  function setA4Count(cnt){
+    A4_COUNT = cnt;
+    document.querySelectorAll("#sheetSeg .segBtn").forEach(b=>{
+      b.classList.toggle("active", parseInt(b.dataset.sheet,10) === cnt);
+    });
+    updateMeta();
+  }
+  document.querySelectorAll("#printSeg .segBtn").forEach(b=>{
+    b.addEventListener("click", ()=> setPrintMode(b.dataset.print));
+  });
+  document.querySelectorAll("#sheetSeg .segBtn").forEach(b=>{
+    b.addEventListener("click", ()=> setA4Count(parseInt(b.dataset.sheet,10)));
+  });
 
   // ========= Upload / Image =========
   const pickInput = $("pickInput");
@@ -1079,7 +1142,7 @@
   // ===== Undo stack =====
   const undoBtn = $("undoBtn");
   const imgIconBtn = $("imgIconBtn");
-  const history = []; // stack of previous states (before change)
+  const history = [];
 
   function snap(){ return { scale, offsetX, offsetY }; }
   function sameState(a,b){
@@ -1115,7 +1178,6 @@
     undoBtn.disabled = history.length === 0;
   });
 
-  // Image icon = load another image
   imgIconBtn.addEventListener("click", ()=> openDropPicker());
 
   function syncToggleUI(){
@@ -1254,6 +1316,14 @@
     updateMeta();
   }
 
+  // A4 layout mapping
+  function a4Grid(count){
+    if(count === 4) return { cols:2, rows:2 };
+    if(count === 6) return { cols:2, rows:3 };
+    if(count === 8) return { cols:2, rows:4 };
+    return { cols:3, rows:4 }; // 12
+  }
+
   function updateMeta(){
     const p = currentPreset();
     const dpi = parseInt($("dpi").value, 10) || 300;
@@ -1265,12 +1335,19 @@
       $("meta").innerHTML = t().meta_idle;
       $("downloadBtn").disabled = true;
       $("resetBtn").disabled = true;
-      imgIconBtn.disabled = false;
       clearUndo();
       return;
     }
 
-    $("meta").innerHTML = t().meta_info(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
+    if(PRINT_MODE === "A4"){
+      const a4Wpx = Math.round((210/25.4) * dpi);
+      const a4Hpx = Math.round((297/25.4) * dpi);
+      const g = a4Grid(A4_COUNT);
+      $("meta").innerHTML = t().meta_info_a4(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi, A4_COUNT, g.cols, g.rows, a4Wpx, a4Hpx);
+    } else {
+      $("meta").innerHTML = t().meta_info_single(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
+    }
+
     $("downloadBtn").disabled = false;
     $("resetBtn").disabled = false;
     undoBtn.disabled = history.length === 0;
@@ -1290,8 +1367,8 @@
       imgW = img.naturalWidth || 0;
       imgH = img.naturalHeight || 0;
 
-      clearUndo();          // reset undo when new image loads
-      smartCenter(false);   // center without pushing undo
+      clearUndo();
+      smartCenter(false);
       redraw();
       setMsg(t().msg_ready, "ok");
       updateMeta();
@@ -1310,7 +1387,7 @@
     img.src = url;
   }
 
-  // ========= pointer events (drag/pinch) =========
+  // pointer events
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
@@ -1372,7 +1449,6 @@
   stage.addEventListener("pointerup", (e)=>{
     pointers.delete(e.pointerId);
 
-    // gesture ended
     if(pointers.size === 0 && imgEl){
       if(gestureStart && !sameState(gestureStart, snap())){
         pushUndoState(gestureStart);
@@ -1404,7 +1480,7 @@
     return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
   }
 
-  // ========= Download =========
+  // ========= Download helpers =========
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -1420,28 +1496,28 @@
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
     const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
     const doc = (DOC === "PASS") ? "passport" : "id";
-    return `cf24_${COUNTRY}_${doc}_${stamp}.${ext}`;
+    const mode = (PRINT_MODE === "A4") ? `a4_${A4_COUNT}` : "single";
+    return `cf24_${COUNTRY}_${doc}_${mode}_${stamp}.${ext}`;
   }
 
-  function stageToOutput(){
-    if(!imgEl) throw new Error(t().msg_need);
-
-    const p = currentPreset();
-    const dpi = parseInt($("dpi").value, 10) || 300;
-    const outMime = $("outFormat").value;
-
-    const outW = Math.round((p.mmW / 25.4) * dpi);
-    const outH = Math.round((p.mmH / 25.4) * dpi);
-
+  function computeCropSourceRect(){
     const cr = cropRectInStage();
-
     const ix0 = (cr.x - offsetX) / scale;
     const iy0 = (cr.y - offsetY) / scale;
     const ix1 = (cr.x + cr.w - offsetX) / scale;
     const iy1 = (cr.y + cr.h - offsetY) / scale;
+    return { ix0, iy0, srcW:(ix1-ix0), srcH:(iy1-iy0) };
+  }
 
-    const srcW = ix1 - ix0;
-    const srcH = iy1 - iy0;
+  function makeSingleOutputCanvas(){
+    if(!imgEl) throw new Error(t().msg_need);
+    const p = currentPreset();
+    const dpi = parseInt($("dpi").value, 10) || 300;
+
+    const outW = Math.round((p.mmW / 25.4) * dpi);
+    const outH = Math.round((p.mmH / 25.4) * dpi);
+
+    const { ix0, iy0, srcW, srcH } = computeCropSourceRect();
 
     const out = document.createElement("canvas");
     out.width = Math.max(1, outW);
@@ -1449,21 +1525,90 @@
     const octx = out.getContext("2d", { alpha:true });
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
-
     octx.drawImage(imgEl, ix0, iy0, srcW, srcH, 0, 0, out.width, out.height);
+    return out;
+  }
 
+  function makeA4Canvas(){
+    if(!imgEl) throw new Error(t().msg_need);
+    const p = currentPreset();
+    const dpi = parseInt($("dpi").value, 10) || 300;
+
+    const a4W = Math.round((210/25.4) * dpi);
+    const a4H = Math.round((297/25.4) * dpi);
+
+    const photoW = Math.round((p.mmW / 25.4) * dpi);
+    const photoH = Math.round((p.mmH / 25.4) * dpi);
+
+    const g = a4Grid(A4_COUNT);
+
+    // margins & spacing
+    const margin = Math.round((10/25.4) * dpi); // ~10mm
+    const gap = Math.round((6/25.4) * dpi);     // ~6mm
+
+    const usableW = a4W - margin*2;
+    const usableH = a4H - margin*2;
+
+    // if overflow, reduce gap first, then margin slightly (safe clamp)
+    let cellW = Math.floor((usableW - gap*(g.cols-1)) / g.cols);
+    let cellH = Math.floor((usableH - gap*(g.rows-1)) / g.rows);
+
+    // fit photo into cell while keeping size (we do "center inside")
+    // if photo bigger than cell, we scale down for sheet only
+    const s = Math.min(1, cellW / photoW, cellH / photoH);
+    const drawW = Math.floor(photoW * s);
+    const drawH = Math.floor(photoH * s);
+
+    const sheet = document.createElement("canvas");
+    sheet.width = a4W;
+    sheet.height = a4H;
+
+    const sctx = sheet.getContext("2d", { alpha:false });
+    sctx.imageSmoothingEnabled = true;
+    sctx.imageSmoothingQuality = "high";
+
+    // white page
+    sctx.fillStyle = "#ffffff";
+    sctx.fillRect(0,0,a4W,a4H);
+
+    // prepare cropped photo canvas once
+    const single = makeSingleOutputCanvas();
+
+    const startX = margin + Math.floor((usableW - (cellW*g.cols + gap*(g.cols-1))) / 2);
+    const startY = margin + Math.floor((usableH - (cellH*g.rows + gap*(g.rows-1))) / 2);
+
+    let placed = 0;
+    for(let r=0; r<g.rows; r++){
+      for(let c=0; c<g.cols; c++){
+        if(placed >= A4_COUNT) break;
+        const cellX = startX + c*(cellW + gap);
+        const cellY = startY + r*(cellH + gap);
+
+        const x = cellX + Math.floor((cellW - drawW)/2);
+        const y = cellY + Math.floor((cellH - drawH)/2);
+
+        sctx.drawImage(single, 0,0,single.width,single.height, x,y, drawW,drawH);
+        placed++;
+      }
+    }
+    return sheet;
+  }
+
+  function canvasToBlob(canvas){
+    const outMime = $("outFormat").value;
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
-        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
-      } else {
-        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
+        canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+      }else{
+        canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
       }
     });
   }
 
   $("downloadBtn").addEventListener("click", async ()=>{
     try{
-      const blob = await stageToOutput();
+      const canvas = (PRINT_MODE === "A4") ? makeA4Canvas() : makeSingleOutputCanvas();
+      const blob = await canvasToBlob(canvas);
       downloadBlob(blob, buildName());
       setMsg("✅ " + t().download, "ok");
     }catch(e){
@@ -1490,6 +1635,8 @@
   syncToggleUI();
   resizeCanvas();
   refreshPresetPill();
+  setPrintMode("SINGLE");
+  setA4Count(4);
 })();
 </script>
 </body>
