@@ -176,9 +176,10 @@
       min-width:0;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
-    /* shield svg pop */
-    .pill .shieldSvg{
-      width:18px; height:18px; flex:0 0 auto;
+    /* make 🛡 pop */
+    .pill .shield{
+      font-size:16px;
+      line-height:1;
       filter: drop-shadow(0 10px 16px rgba(0,0,0,.32)) drop-shadow(0 0 10px rgba(120,200,255,.20));
       transform: translateY(-.5px);
     }
@@ -208,7 +209,7 @@
     .headActions{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:12px; /* spaced more so not mis-tapped */
       margin-left:auto;
     }
 
@@ -237,18 +238,7 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.28), inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.22);
     }
     .iconCircle svg{ width:20px; height:20px; display:block; }
-
-    /* ✅ make #1 and #2 feel colored (keep #3 current) */
-    #imgIconBtn{
-      background: rgba(47,109,246,.18);
-      box-shadow: inset 0 0 0 1px rgba(47,109,246,.35), 0 10px 18px rgba(0,0,0,.22);
-    }
-    #imgIconBtn:hover{ background: rgba(47,109,246,.22); }
-    #undoBtn{
-      background: rgba(120, 200, 255, .14);
-      box-shadow: inset 0 0 0 1px rgba(120, 200, 255, .28), 0 10px 18px rgba(0,0,0,.22);
-    }
-    #undoBtn:hover{ background: rgba(120, 200, 255, .18); }
+    #undoBtn svg{ width:21px; height:21px; }
 
     .row{
       display:flex;
@@ -537,15 +527,7 @@
         </div>
 
         <div style="margin-top:10px;">
-          <div class="pill">
-            <!-- ✅ color shield svg -->
-            <svg class="shieldSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 2.5l7 3.2v6.3c0 5.2-3.4 9.2-7 10.5-3.6-1.3-7-5.3-7-10.5V5.7L12 2.5Z"
-                    fill="rgba(47,109,246,.22)" stroke="rgba(120,200,255,.85)" stroke-width="1.4" />
-              <path d="M9.2 12.4l1.9 1.9 3.7-4.1" stroke="rgba(207,230,255,.95)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span id="local_processing">Processed locally — no server upload</span>
-          </div>
+          <div class="pill"><span class="shield">🛡</span> <span id="local_processing">Processed locally — no server upload</span></div>
         </div>
 
         <div style="margin-top:10px;">
@@ -689,7 +671,6 @@
             <select id="outFormat">
               <option value="image/jpeg" selected>JPG</option>
               <option value="image/png">PNG</option>
-              <option value="application/pdf">PDF (A4 only)</option>
             </select>
             <div class="small" id="fmt_hint">JPG recommended.</div>
           </div>
@@ -717,6 +698,10 @@
           <div class="small" id="sheet_hint">Choose how many photos to place on A4.</div>
           <div style="height:12px;"></div>
         </div>
+
+        <!-- A4 Print button (safe cross-browser) -->
+        <button class="btn secondary" id="printBtn" type="button" disabled>🖨 Print / Save PDF (A4)</button>
+        <div style="height:12px;"></div>
 
         <h2 id="h_step3">Download</h2>
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
@@ -782,6 +767,7 @@
       print_a4: "A4 print",
       a4_layout: "A4 layout",
       a4_hint: "Choose how many photos to place on A4.",
+      print_btn: "🖨 Print / Save PDF (A4)",
       step3: "Download",
       download: "⬇️ Download",
       reset: "Reset",
@@ -789,6 +775,7 @@
       msg_ready: "Ready. Drag to move. Pinch or use buttons to zoom.",
       msg_heic: "HEIC/HEIF may not work on some browsers. If preview fails, save as JPG/PNG and try again.",
       msg_fail: "Failed to load image.",
+      msg_popup: "Popup blocked. Allow popups for printing.",
       meta_idle: "<b>Preview</b><br/>Upload a photo to start cropping.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Output: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Image</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Size: ${mmW}×${mmH} mm<br/>Photo: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} photos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Image</b><br/>${w}×${h}px`,
@@ -827,6 +814,7 @@
       print_a4: "A4 인쇄용",
       a4_layout: "A4 배치",
       a4_hint: "A4에 넣을 장수를 선택하세요.",
+      print_btn: "🖨 인쇄 / PDF로 저장 (A4)",
       step3: "다운로드",
       download: "⬇️ 다운로드",
       reset: "초기화",
@@ -834,6 +822,7 @@
       msg_ready: "준비 완료! 드래그로 이동, 핀치/버튼으로 확대하세요.",
       msg_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. 미리보기가 실패하면 JPG/PNG로 저장 후 다시 시도해 주세요.",
       msg_fail: "이미지 로드 실패",
+      msg_popup: "팝업이 차단됐어요. 인쇄를 위해 팝업 허용 후 다시 시도해 주세요.",
       meta_idle: "<b>미리보기</b><br/>사진을 업로드하면 크롭을 시작할 수 있어요.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>출력: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>원본</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>프리셋</b><br/>크기: ${mmW}×${mmH} mm<br/>사진: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4 인쇄</b><br/>${cnt}장 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>원본</b><br/>${w}×${h}px`,
@@ -872,6 +861,7 @@
       print_a4: "Imprimir A4",
       a4_layout: "Diseño A4",
       a4_hint: "Elige cuántas fotos colocar en A4.",
+      print_btn: "🖨 Imprimir / Guardar PDF (A4)",
       step3: "Descargar",
       download: "⬇️ Descargar",
       reset: "Reiniciar",
@@ -879,6 +869,7 @@
       msg_ready: "Listo. Arrastra para mover y usa pellizco/botones para zoom.",
       msg_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
       msg_fail: "No se pudo cargar la imagen.",
+      msg_popup: "Ventana emergente bloqueada. Permite popups para imprimir.",
       meta_idle: "<b>Vista previa</b><br/>Sube una foto para empezar.",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Salida: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>Imagen</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>Preset</b><br/>Tamaño: ${mmW}×${mmH} mm<br/>Foto: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt} fotos (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>Imagen</b><br/>${w}×${h}px`,
@@ -895,7 +886,7 @@
       country: "国",
       doc: "書類タイプ",
       tip2: "ヒント: 国を選んでから、ID/パスポートを選択します。",
-      step1: "写真アップロード",
+      step1: "사진アップロード",
       choose: "📁 写真を選択",
       camera: "📷 カメラを開く",
       drop_title: "ここに写真をドロップ<br/>またはタップして選択",
@@ -917,6 +908,7 @@
       print_a4: "A4印刷",
       a4_layout: "A4レイアウト",
       a4_hint: "A4に配置する枚数を選択。",
+      print_btn: "🖨 印刷 / PDF保存 (A4)",
       step3: "ダウンロード",
       download: "⬇️ ダウンロード",
       reset: "リセット",
@@ -924,6 +916,7 @@
       msg_ready: "準備OK。ドラッグで移動、ピンチ/ボタンでズーム。",
       msg_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGでお試しください。",
       msg_fail: "画像の読み込みに失敗しました。",
+      msg_popup: "ポップアップがブロックされました。印刷のためポップアップを許可してください。",
       meta_idle: "<b>プレビュー</b><br/>写真をアップロードしてください。",
       meta_info_single: (w,h,mmW,mmH,pxW,pxH,dpi)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>出力: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>元画像</b><br/>${w}×${h}px`,
       meta_info_a4: (w,h,mmW,mmH,pxW,pxH,dpi,cnt,cols,rows,a4Wpx,a4Hpx)=>`<b>プリセット</b><br/>サイズ: ${mmW}×${mmH} mm<br/>写真: ${pxW}×${pxH}px @ ${dpi}dpi<br/><b>A4</b><br/>${cnt}枚 (${cols}×${rows}) · A4: ${a4Wpx}×${a4Hpx}px<br/><b>元画像</b><br/>${w}×${h}px`,
@@ -1008,6 +1001,7 @@
     $("print_a4").textContent = t().print_a4;
     $("lbl_sheet").textContent = t().a4_layout;
     $("sheet_hint").textContent = t().a4_hint;
+    $("printBtn").textContent = t().print_btn;
 
     $("h_step3").textContent = t().step3;
     $("downloadBtn").textContent = t().download;
@@ -1080,19 +1074,6 @@
     const wrap = $("sheetWrap");
     if(mode === "A4") wrap.classList.add("show");
     else wrap.classList.remove("show");
-
-    // ✅ A4면 출력 형식 PDF로 자동 고정
-    const fmt = $("outFormat");
-    if(mode === "A4"){
-      fmt.value = "application/pdf";
-      fmt.disabled = true;
-      $("fmt_hint").textContent = (LANG === "ko") ? "A4는 PDF로 저장됩니다." : "A4 is saved as PDF.";
-    }else{
-      fmt.disabled = false;
-      if(fmt.value === "application/pdf") fmt.value = "image/jpeg";
-      $("fmt_hint").textContent = t().out_hint;
-    }
-
     updateMeta();
   }
   function setA4Count(cnt){
@@ -1363,6 +1344,9 @@
       $("downloadBtn").disabled = true;
       $("resetBtn").disabled = true;
       clearUndo();
+
+      $("printBtn").disabled = true;
+      $("printBtn").style.display = "none";
       return;
     }
 
@@ -1371,8 +1355,14 @@
       const a4Hpx = Math.round((297/25.4) * dpi);
       const g = a4Grid(A4_COUNT);
       $("meta").innerHTML = t().meta_info_a4(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi, A4_COUNT, g.cols, g.rows, a4Wpx, a4Hpx);
+
+      $("printBtn").disabled = false;
+      $("printBtn").style.display = "block";
     } else {
       $("meta").innerHTML = t().meta_info_single(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
+
+      $("printBtn").disabled = true;
+      $("printBtn").style.display = "none";
     }
 
     $("downloadBtn").disabled = false;
@@ -1519,8 +1509,9 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function buildName(ext){
+  function buildName(){
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
     const doc = (DOC === "PASS") ? "passport" : "id";
     const mode = (PRINT_MODE === "A4") ? `a4_${A4_COUNT}` : "single";
     return `cf24_${COUNTRY}_${doc}_${mode}_${stamp}.${ext}`;
@@ -1555,51 +1546,37 @@
     return out;
   }
 
-  // ✅ draw crop marks around photo (outside corners)
-  function drawCropMarks(ctx, x, y, w, h, dpi){
-    const mm = (v)=> Math.round((v/25.4) * dpi);
-    const offset = mm(1.6);   // distance from photo edge outward
-    const len = mm(4.5);      // mark length
-    const lw = Math.max(1, mm(0.25)); // ~0.25mm
-
-    ctx.save();
-    ctx.strokeStyle = "#111111";
-    ctx.lineWidth = lw;
-    ctx.lineCap = "square";
+  // Cut lines for A4 (very light grey)
+  function drawCutMarks(ctx, x, y, w, h, len, inset){
+    // len: mark length, inset: distance from photo edge
+    const x0 = x - inset, y0 = y - inset;
+    const x1 = x + w + inset, y1 = y + h + inset;
 
     // top-left
     ctx.beginPath();
-    ctx.moveTo(x - offset, y);
-    ctx.lineTo(x - offset - len, y);
-    ctx.moveTo(x, y - offset);
-    ctx.lineTo(x, y - offset - len);
-    ctx.stroke();
+    ctx.moveTo(x0, y);
+    ctx.lineTo(x0 + len, y);
+    ctx.moveTo(x, y0);
+    ctx.lineTo(x, y0 + len);
 
     // top-right
-    ctx.beginPath();
-    ctx.moveTo(x + w + offset, y);
-    ctx.lineTo(x + w + offset + len, y);
-    ctx.moveTo(x + w, y - offset);
-    ctx.lineTo(x + w, y - offset - len);
-    ctx.stroke();
+    ctx.moveTo(x1 - len, y);
+    ctx.lineTo(x1, y);
+    ctx.moveTo(x + w, y0);
+    ctx.lineTo(x + w, y0 + len);
 
     // bottom-left
-    ctx.beginPath();
-    ctx.moveTo(x - offset, y + h);
-    ctx.lineTo(x - offset - len, y + h);
-    ctx.moveTo(x, y + h + offset);
-    ctx.lineTo(x, y + h + offset + len);
-    ctx.stroke();
+    ctx.moveTo(x0, y + h);
+    ctx.lineTo(x0 + len, y + h);
+    ctx.moveTo(x, y1 - len);
+    ctx.lineTo(x, y1);
 
     // bottom-right
-    ctx.beginPath();
-    ctx.moveTo(x + w + offset, y + h);
-    ctx.lineTo(x + w + offset + len, y + h);
-    ctx.moveTo(x + w, y + h + offset);
-    ctx.lineTo(x + w, y + h + offset + len);
+    ctx.moveTo(x1 - len, y + h);
+    ctx.lineTo(x1, y + h);
+    ctx.moveTo(x + w, y1 - len);
+    ctx.lineTo(x + w, y1);
     ctx.stroke();
-
-    ctx.restore();
   }
 
   function makeA4Canvas(){
@@ -1615,7 +1592,7 @@
 
     const g = a4Grid(A4_COUNT);
 
-    // margins & spacing
+    // margins & spacing (in mm)
     const margin = Math.round((10/25.4) * dpi); // ~10mm
     const gap = Math.round((6/25.4) * dpi);     // ~6mm
 
@@ -1625,6 +1602,7 @@
     let cellW = Math.floor((usableW - gap*(g.cols-1)) / g.cols);
     let cellH = Math.floor((usableH - gap*(g.rows-1)) / g.rows);
 
+    // scale down if needed (sheet only)
     const s = Math.min(1, cellW / photoW, cellH / photoH);
     const drawW = Math.floor(photoW * s);
     const drawH = Math.floor(photoH * s);
@@ -1641,17 +1619,21 @@
     sctx.fillStyle = "#ffffff";
     sctx.fillRect(0,0,a4W,a4H);
 
-    // cropped photo once
+    // prepare cropped photo once
     const single = makeSingleOutputCanvas();
 
     const startX = margin + Math.floor((usableW - (cellW*g.cols + gap*(g.cols-1))) / 2);
     const startY = margin + Math.floor((usableH - (cellH*g.rows + gap*(g.rows-1))) / 2);
 
     let placed = 0;
+    const marksLen = Math.round((3/25.4) * dpi);   // 3mm
+    const marksInset = Math.round((1/25.4) * dpi); // 1mm
+    sctx.strokeStyle = "rgba(0,0,0,.22)";
+    sctx.lineWidth = Math.max(1, Math.round(dpi/300));
+
     for(let r=0; r<g.rows; r++){
       for(let c=0; c<g.cols; c++){
         if(placed >= A4_COUNT) break;
-
         const cellX = startX + c*(cellW + gap);
         const cellY = startY + r*(cellH + gap);
 
@@ -1660,8 +1642,8 @@
 
         sctx.drawImage(single, 0,0,single.width,single.height, x,y, drawW,drawH);
 
-        // ✅ crop marks for each photo
-        drawCropMarks(sctx, x, y, drawW, drawH, dpi);
+        // cut marks around each photo
+        drawCutMarks(sctx, x, y, drawW, drawH, marksLen, marksInset);
 
         placed++;
       }
@@ -1669,7 +1651,7 @@
     return sheet;
   }
 
-  function canvasToImageBlob(canvas){
+  function canvasToBlob(canvas){
     const outMime = $("outFormat").value;
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
@@ -1680,109 +1662,62 @@
     });
   }
 
-  // ✅ minimal 1-page PDF writer (A4) from JPEG bytes
-  async function canvasToPdfBlobA4(canvas){
-    // PDF is easiest with JPEG stream
-    const jpegBlob = await new Promise((resolve, reject)=>{
-      canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
-    });
-
-    const jpgBytes = new Uint8Array(await jpegBlob.arrayBuffer());
-
-    // A4 in points (72dpi): 595.28 x 841.89
-    const pageW = 595.28;
-    const pageH = 841.89;
-
-    // Build PDF objects
-    const chunks = [];
-    const pushStr = (s)=> chunks.push(new TextEncoder().encode(s));
-    const pushBytes = (b)=> chunks.push(b);
-
-    const offsets = [];
-    let pos = 0;
-    const addObj = (objNum, contentBytes)=>{
-      offsets[objNum] = pos;
-      pushStr(`${objNum} 0 obj\n`);
-      pushBytes(contentBytes);
-      pushStr(`\nendobj\n`);
-      pos = chunks.reduce((a,c)=>a+c.length,0);
-    };
-
-    // Header
-    pushStr(`%PDF-1.4\n%âãÏÓ\n`);
-    pos = chunks.reduce((a,c)=>a+c.length,0);
-
-    // 1: Catalog
-    addObj(1, new TextEncoder().encode(`<< /Type /Catalog /Pages 2 0 R >>`));
-
-    // 2: Pages
-    addObj(2, new TextEncoder().encode(`<< /Type /Pages /Kids [3 0 R] /Count 1 >>`));
-
-    // 3: Page
-    addObj(3, new TextEncoder().encode(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] ` +
-      `/Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> ` +
-      `/Contents 5 0 R >>`
-    ));
-
-    // 4: Image XObject (JPEG)
-    addObj(4, new TextEncoder().encode(
-      `<< /Type /XObject /Subtype /Image /Name /Im0 /Filter /DCTDecode ` +
-      `/Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 ` +
-      `/Length ${jpgBytes.length} >>\nstream\n`
-    ));
-    // Insert raw jpeg stream then endstream/endobj manually
-    pushBytes(jpgBytes); pos = chunks.reduce((a,c)=>a+c.length,0);
-    pushStr(`\nendstream\nendobj\n`); pos = chunks.reduce((a,c)=>a+c.length,0);
-    // fix offset for object 4 already set to start of "4 0 obj" (OK)
-
-    // 5: Contents (draw image to fill page)
-    // Scale image to page: use PDF user space points, map full page
-    const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ\n`;
-    const contentBytes = new TextEncoder().encode(content);
-    addObj(5, new TextEncoder().encode(`<< /Length ${contentBytes.length} >>\nstream\n${content}endstream`));
-
-    // xref
-    const xrefPos = chunks.reduce((a,c)=>a+c.length,0);
-    const objCount = 6; // 0..5
-    pushStr(`xref\n0 ${objCount}\n`);
-    pushStr(`0000000000 65535 f \n`);
-    for(let i=1;i<objCount;i++){
-      const off = offsets[i] || 0;
-      pushStr(String(off).padStart(10,"0") + " 00000 n \n");
-    }
-
-    // trailer
-    pushStr(
-      `trailer\n<< /Size ${objCount} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`
-    );
-
-    // merge chunks
-    const total = chunks.reduce((a,c)=>a+c.length,0);
-    const out = new Uint8Array(total);
-    let o=0;
-    for(const c of chunks){ out.set(c,o); o+=c.length; }
-
-    return new Blob([out], { type:"application/pdf" });
-  }
-
   $("downloadBtn").addEventListener("click", async ()=>{
     try{
-      if(!imgEl) throw new Error(t().msg_need);
-
-      if(PRINT_MODE === "A4"){
-        const sheet = makeA4Canvas();
-        const pdfBlob = await canvasToPdfBlobA4(sheet);
-        downloadBlob(pdfBlob, buildName("pdf"));
-      }else{
-        const canvas = makeSingleOutputCanvas();
-        const blob = await canvasToImageBlob(canvas);
-        const ext = ($("outFormat").value === "image/png") ? "png" : "jpg";
-        downloadBlob(blob, buildName(ext));
-      }
+      const canvas = (PRINT_MODE === "A4") ? makeA4Canvas() : makeSingleOutputCanvas();
+      const blob = await canvasToBlob(canvas);
+      downloadBlob(blob, buildName());
       setMsg("✅ " + t().download, "ok");
     }catch(e){
       setMsg((e && e.message) ? e.message : "Download failed", "err");
+    }
+  });
+
+  // ✅ A4 Print/Safe PDF (open print dialog; user can save as PDF)
+  $("printBtn").addEventListener("click", ()=>{
+    try{
+      if(!imgEl) throw new Error(t().msg_need);
+      if(PRINT_MODE !== "A4") throw new Error("Switch to A4 print mode first.");
+
+      const sheet = makeA4Canvas();
+      const dataUrl = sheet.toDataURL("image/png");
+
+      const w = window.open("", "_blank");
+      if(!w) throw new Error(t().msg_popup);
+
+      w.document.open();
+      w.document.write(`
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Print A4</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    html, body { margin:0; padding:0; background:#fff; }
+    .page { width: 210mm; height: 297mm; margin:0 auto; }
+    img { width: 210mm; height: 297mm; display:block; }
+    @media print { .noPrint { display:none !important; } }
+    .noPrint{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      padding:10px;
+      color:#111;
+    }
+  </style>
+</head>
+<body>
+  <div class="noPrint">인쇄 화면입니다. 프린터에서 “PDF로 저장”을 선택하면 PDF로 저장됩니다.</div>
+  <div class="page"><img src="${dataUrl}" alt="A4 sheet"></div>
+  <script>
+    setTimeout(()=>{ window.focus(); window.print(); }, 300);
+  </script>
+</body>
+</html>
+      `);
+      w.document.close();
+    }catch(e){
+      setMsg((e && e.message) ? e.message : "Print failed", "err");
     }
   });
 
@@ -1798,6 +1733,7 @@
   });
 
   $("dpi").addEventListener("change", updateMeta);
+  $("outFormat").addEventListener("change", updateMeta);
 
   // init
   setLang(LANG);
@@ -1806,6 +1742,7 @@
   refreshPresetPill();
   setPrintMode("SINGLE");
   setA4Count(4);
+  $("printBtn").style.display = "none";
 })();
 </script>
 </body>
