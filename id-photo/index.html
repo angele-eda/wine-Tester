@@ -21,6 +21,12 @@
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
+
+      /* ===== ID Photo accent (soft blue) ===== */
+      --softBlueBg: rgba(120, 200, 255, .06);            /* CHANGED */
+      --softBlueBd: rgba(120, 200, 255, .22);            /* CHANGED */
+      --softBlueTx: #cfe6ff;                              /* CHANGED */
+      --softBlueHi: rgba(120, 200, 255, .12);            /* CHANGED */
     }
     *{ box-sizing:border-box; }
 
@@ -216,7 +222,16 @@
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease);
     }
-    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+
+    /* ===== CHANGED: make all secondary control buttons soft-blue ===== */
+    .btn.secondary{
+      background: var(--softBlueBg);                      /* CHANGED */
+      border: 1px solid var(--softBlueBd);                /* CHANGED */
+      color: var(--softBlueTx);                           /* CHANGED */
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);  /* CHANGED */
+    }
+    .btn.secondary:hover{ background: var(--softBlueHi); } /* CHANGED */
+
     .btn:hover{ filter: brightness(1.03); }
     .btn:active{ transform: scale(.99); }
     .btn:focus-visible{
@@ -296,6 +311,10 @@
         0 8px 18px rgba(0,0,0,.22),
         0 0 0 2px rgba(var(--blue), .10);
     }
+
+    /* ===== CHANGED: reduce gap between the two check seg buttons ===== */
+    #togglesSeg{ gap:6px !important; }                    /* CHANGED */
+    #togglesSeg .segBtn{ padding:9px 11px; }              /* CHANGED */
 
     /* Crop stage */
     .stageWrap{
@@ -483,7 +502,7 @@
 
     <!-- 0) Country & Doc type -->
     <div class="card">
-      <h2 id="h_step0">0) Select</h2>
+      <h2 id="h_step0">Select</h2> <!-- CHANGED: removed "0)" -->
 
       <div class="row">
         <div>
@@ -513,7 +532,7 @@
     <div class="stageWrap">
       <!-- Left: upload + crop stage -->
       <div class="card">
-        <h2 id="h_step1">1) Upload photo</h2>
+        <h2 id="h_step1">Upload photo</h2> <!-- CHANGED -->
 
         <div class="row">
           <button class="btn secondary" id="pickBtn" type="button">📁 Choose photo</button>
@@ -532,7 +551,7 @@
 
         <div style="height:12px;"></div>
 
-        <h2 id="h_step2">2) Preview / Crop</h2>
+        <h2 id="h_step2">Preview / Crop</h2> <!-- CHANGED -->
 
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
@@ -567,7 +586,8 @@
         <div style="height:12px;"></div>
 
         <div class="row">
-          <div class="seg" style="gap:8px;">
+          <!-- CHANGED: add id for spacing control -->
+          <div class="seg" id="togglesSeg" style="gap:8px;">
             <div class="segBtn active" id="toggleAuto"><span id="auto_icon">✅</span> <span id="auto_txt">Auto center (recommended)</span></div>
             <div class="segBtn active" id="toggleGuide"><span id="guide_icon">✅</span> <span id="guide_txt">Show face guide</span></div>
           </div>
@@ -596,7 +616,7 @@
 
         <div style="height:12px;"></div>
 
-        <h2 id="h_step3">3) Download</h2>
+        <h2 id="h_step3">Download</h2> <!-- CHANGED -->
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetBtn" type="button" disabled>Reset</button>
@@ -636,16 +656,16 @@
       home: "🏠 Home",
       local: "Processed locally — no server upload",
       lang_label: "Language",
-      step0: "0) Select",
+      step0: "Select",                 // CHANGED
       country: "Country",
       doc: "Document type",
       tip2: "Tip: Choose country first, then choose document type.",
-      step1: "1) Upload photo",
+      step1: "Upload photo",           // CHANGED
       choose: "📁 Choose photo",
       camera: "📷 Open camera",
       drop_title: "Drop photo here<br/>or tap to upload",
       drop_hint: "Supports: JPG, PNG, WebP (HEIC may not work on some devices)",
-      step2: "2) Preview / Crop",
+      step2: "Preview / Crop",         // CHANGED
       controls: "Controls",
       fit: "↔ Fit",
       center: "🎯 Center",
@@ -657,7 +677,7 @@
       dpi_hint: "300 dpi is sufficient for most printing.",
       out: "Output",
       out_hint: "JPG recommended.",
-      step3: "3) Download",
+      step3: "Download",               // CHANGED
       download: "⬇️ Download",
       reset: "Reset",
       msg_need: "Please upload a photo first.",
@@ -675,16 +695,16 @@
       home: "🏠 홈으로",
       local: "로컬 처리 — 서버 업로드 없음",
       lang_label: "언어",
-      step0: "0) 선택",
+      step0: "선택",                   // CHANGED
       country: "국가",
       doc: "문서 타입",
       tip2: "팁: 국가를 먼저 고른 뒤, 문서 타입(ID/여권)을 선택하세요.",
-      step1: "1) 사진 업로드",
+      step1: "사진 업로드",             // CHANGED
       choose: "📁 파일 선택",
       camera: "📷 카메라 열기",
       drop_title: "여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택",
       drop_hint: "지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안 될 수 있어요)",
-      step2: "2) 미리보기 / 크롭",
+      step2: "미리보기 / 크롭",         // CHANGED
       controls: "조작",
       fit: "↔ 맞추기",
       center: "🎯 중앙",
@@ -696,7 +716,7 @@
       dpi_hint: "일반 출력은 300dpi면 충분해요.",
       out: "출력",
       out_hint: "JPG 권장",
-      step3: "3) 다운로드",
+      step3: "다운로드",               // CHANGED
       download: "⬇️ 다운로드",
       reset: "초기화",
       msg_need: "먼저 사진을 업로드해 주세요.",
@@ -714,16 +734,16 @@
       home: "🏠 Inicio",
       local: "Procesado local — sin servidor",
       lang_label: "Idioma",
-      step0: "0) Seleccionar",
+      step0: "Seleccionar",            // CHANGED
       country: "País",
       doc: "Tipo de documento",
       tip2: "Consejo: Elige primero el país y luego el tipo (ID/Pasaporte).",
-      step1: "1) Subir foto",
+      step1: "Subir foto",             // CHANGED
       choose: "📁 Elegir foto",
       camera: "📷 Abrir cámara",
       drop_title: "Suelta la foto aquí<br/>o toca para subir",
       drop_hint: "Soporta: JPG, PNG, WebP (HEIC puede fallar en algunos dispositivos)",
-      step2: "2) Vista previa / Recorte",
+      step2: "Vista previa / Recorte", // CHANGED
       controls: "Controles",
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
@@ -735,7 +755,7 @@
       dpi_hint: "300dpi suele ser suficiente.",
       out: "Salida",
       out_hint: "JPG recomendado.",
-      step3: "3) Descargar",
+      step3: "Descargar",              // CHANGED
       download: "⬇️ Descargar",
       reset: "Reiniciar",
       msg_need: "Primero sube una foto.",
@@ -753,16 +773,16 @@
       home: "🏠 ホーム",
       local: "ローカル処理 — サーバーなし",
       lang_label: "言語",
-      step0: "0) 選択",
+      step0: "選択",                   // CHANGED
       country: "国",
       doc: "書類タイプ",
       tip2: "ヒント: 国を選んでから、ID/パスポートを選択します。",
-      step1: "1) 写真アップロード",
+      step1: "写真アップロード",       // CHANGED
       choose: "📁 写真を選択",
       camera: "📷 カメラを開く",
       drop_title: "ここに写真をドロップ<br/>またはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP（HEICは一部非対応）",
-      step2: "2) プレビュー / 切り抜き",
+      step2: "プレビュー / 切り抜き",   // CHANGED
       controls: "操作",
       fit: "↔ フィット",
       center: "🎯 中央",
@@ -774,7 +794,7 @@
       dpi_hint: "通常は300dpiで十分です。",
       out: "出力",
       out_hint: "JPG推奨",
-      step3: "3) ダウンロード",
+      step3: "ダウンロード",           // CHANGED
       download: "⬇️ ダウンロード",
       reset: "リセット",
       msg_need: "先に写真をアップロードしてください。",
