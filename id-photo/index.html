@@ -23,10 +23,10 @@
       --ease: cubic-bezier(.2,.8,.2,1);
 
       /* ===== ID Photo accent (soft blue) ===== */
-      --softBlueBg: rgba(120, 200, 255, .06);            /* CHANGED */
-      --softBlueBd: rgba(120, 200, 255, .22);            /* CHANGED */
-      --softBlueTx: #cfe6ff;                              /* CHANGED */
-      --softBlueHi: rgba(120, 200, 255, .12);            /* CHANGED */
+      --softBlueBg: rgba(120, 200, 255, .06);
+      --softBlueBd: rgba(120, 200, 255, .22);
+      --softBlueTx: #cfe6ff;
+      --softBlueHi: rgba(120, 200, 255, .12);
     }
     *{ box-sizing:border-box; }
 
@@ -199,6 +199,51 @@
     }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
+    /* header row inside card (for Controls title + icons) */
+    .cardHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+    }
+    .cardHead h2{ margin:0; }
+
+    .headActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-left:auto;
+    }
+
+    /* icon-only buttons (no background) */
+    .iconBtn{
+      appearance:none;
+      border:none;
+      background:transparent;
+      padding:0;
+      cursor:pointer;
+      color:#cfe6ff;
+      line-height:1;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+      transition: transform .08s var(--ease), opacity .12s var(--ease);
+      font-size:22px;
+      font-weight:900;
+    }
+    .iconBtn:active{ transform: scale(.96); }
+    .iconBtn:disabled{ opacity:.35; cursor:not-allowed; transform:none; }
+    .iconBtn:focus-visible{
+      outline:none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25)) drop-shadow(0 0 0 rgba(0,0,0,0));
+      box-shadow: 0 0 0 3px rgba(var(--blue),.20);
+      border-radius:10px;
+      padding:2px 6px;
+    }
+
     .row{
       display:flex;
       gap:10px;
@@ -220,17 +265,17 @@
       font-size:14px;
       letter-spacing: -0.2px;
       user-select:none;
-      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease);
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
     }
 
-    /* ===== CHANGED: make all secondary control buttons soft-blue ===== */
+    /* soft-blue secondary controls */
     .btn.secondary{
-      background: var(--softBlueBg);                      /* CHANGED */
-      border: 1px solid var(--softBlueBd);                /* CHANGED */
-      color: var(--softBlueTx);                           /* CHANGED */
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);  /* CHANGED */
+      background: var(--softBlueBg);
+      border: 1px solid var(--softBlueBd);
+      color: var(--softBlueTx);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
-    .btn.secondary:hover{ background: var(--softBlueHi); } /* CHANGED */
+    .btn.secondary:hover{ background: var(--softBlueHi); }
 
     .btn:hover{ filter: brightness(1.03); }
     .btn:active{ transform: scale(.99); }
@@ -238,7 +283,28 @@
       outline:none;
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
+
+    /* ✅ FIX: disabled button text NOT blurry */
+    .btn:disabled{
+      opacity:1;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+      filter: saturate(.7);
+      background: linear-gradient(
+        180deg,
+        rgba(47,109,246,.40),
+        rgba(47,109,246,.30)
+      );
+      color:#ffffff;
+    }
+    .btn.secondary:disabled{
+      filter: none;
+      background: rgba(120, 200, 255, .05);
+      border: 1px solid rgba(120, 200, 255, .16);
+      color: rgba(207, 230, 255, .70);
+      box-shadow:none;
+    }
 
     .drop{
       border:1px dashed rgba(255,255,255,.18);
@@ -312,9 +378,9 @@
         0 0 0 2px rgba(var(--blue), .10);
     }
 
-    /* ===== CHANGED: reduce gap between the two check seg buttons ===== */
-    #togglesSeg{ gap:6px !important; }                    /* CHANGED */
-    #togglesSeg .segBtn{ padding:9px 11px; }              /* CHANGED */
+    /* reduce gap between the two check seg buttons */
+    #togglesSeg{ gap:6px !important; }
+    #togglesSeg .segBtn{ padding:9px 11px; }
 
     /* Crop stage */
     .stageWrap{
@@ -481,7 +547,8 @@
         </div>
 
         <div style="margin-top:10px;">
-          <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+          <!-- CHANGED: 🛡️ emoji -->
+          <div class="pill">🛡️ <span id="local_processing">Processed locally — no server upload</span></div>
         </div>
 
         <div style="margin-top:10px;">
@@ -500,9 +567,9 @@
       </div>
     </div>
 
-    <!-- 0) Country & Doc type -->
+    <!-- Country & Doc type -->
     <div class="card">
-      <h2 id="h_step0">Select</h2> <!-- CHANGED: removed "0)" -->
+      <h2 id="h_step0">Select</h2>
 
       <div class="row">
         <div>
@@ -532,7 +599,7 @@
     <div class="stageWrap">
       <!-- Left: upload + crop stage -->
       <div class="card">
-        <h2 id="h_step1">Upload photo</h2> <!-- CHANGED -->
+        <h2 id="h_step1">Upload photo</h2>
 
         <div class="row">
           <button class="btn secondary" id="pickBtn" type="button">📁 Choose photo</button>
@@ -551,7 +618,7 @@
 
         <div style="height:12px;"></div>
 
-        <h2 id="h_step2">Preview / Crop</h2> <!-- CHANGED -->
+        <h2 id="h_step2">Preview / Crop</h2>
 
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
@@ -569,7 +636,14 @@
 
       <!-- Right: controls -->
       <div class="card">
-        <h2 id="h_controls">Controls</h2>
+        <!-- CHANGED: title + right icons -->
+        <div class="cardHead">
+          <h2 id="h_controls">Controls</h2>
+          <div class="headActions" aria-label="Quick actions">
+            <button class="iconBtn" id="imgIconBtn" type="button" title="Load another image" aria-label="Load another image">🖼️</button>
+            <button class="iconBtn" id="undoBtn" type="button" title="Undo" aria-label="Undo" disabled>↶</button>
+          </div>
+        </div>
 
         <div class="row">
           <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
@@ -586,7 +660,6 @@
         <div style="height:12px;"></div>
 
         <div class="row">
-          <!-- CHANGED: add id for spacing control -->
           <div class="seg" id="togglesSeg" style="gap:8px;">
             <div class="segBtn active" id="toggleAuto"><span id="auto_icon">✅</span> <span id="auto_txt">Auto center (recommended)</span></div>
             <div class="segBtn active" id="toggleGuide"><span id="guide_icon">✅</span> <span id="guide_txt">Show face guide</span></div>
@@ -616,7 +689,7 @@
 
         <div style="height:12px;"></div>
 
-        <h2 id="h_step3">Download</h2> <!-- CHANGED -->
+        <h2 id="h_step3">Download</h2>
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetBtn" type="button" disabled>Reset</button>
@@ -656,16 +729,16 @@
       home: "🏠 Home",
       local: "Processed locally — no server upload",
       lang_label: "Language",
-      step0: "Select",                 // CHANGED
+      step0: "Select",
       country: "Country",
       doc: "Document type",
       tip2: "Tip: Choose country first, then choose document type.",
-      step1: "Upload photo",           // CHANGED
+      step1: "Upload photo",
       choose: "📁 Choose photo",
       camera: "📷 Open camera",
       drop_title: "Drop photo here<br/>or tap to upload",
       drop_hint: "Supports: JPG, PNG, WebP (HEIC may not work on some devices)",
-      step2: "Preview / Crop",         // CHANGED
+      step2: "Preview / Crop",
       controls: "Controls",
       fit: "↔ Fit",
       center: "🎯 Center",
@@ -677,7 +750,7 @@
       dpi_hint: "300 dpi is sufficient for most printing.",
       out: "Output",
       out_hint: "JPG recommended.",
-      step3: "Download",               // CHANGED
+      step3: "Download",
       download: "⬇️ Download",
       reset: "Reset",
       msg_need: "Please upload a photo first.",
@@ -695,16 +768,16 @@
       home: "🏠 홈으로",
       local: "로컬 처리 — 서버 업로드 없음",
       lang_label: "언어",
-      step0: "선택",                   // CHANGED
+      step0: "선택",
       country: "국가",
       doc: "문서 타입",
       tip2: "팁: 국가를 먼저 고른 뒤, 문서 타입(ID/여권)을 선택하세요.",
-      step1: "사진 업로드",             // CHANGED
+      step1: "사진 업로드",
       choose: "📁 파일 선택",
       camera: "📷 카메라 열기",
       drop_title: "여기에 사진을 끌어다 놓거나<br/>탭해서 사진 선택",
       drop_hint: "지원: JPG, PNG, WebP (HEIC는 기기/브라우저에 따라 안 될 수 있어요)",
-      step2: "미리보기 / 크롭",         // CHANGED
+      step2: "미리보기 / 크롭",
       controls: "조작",
       fit: "↔ 맞추기",
       center: "🎯 중앙",
@@ -716,7 +789,7 @@
       dpi_hint: "일반 출력은 300dpi면 충분해요.",
       out: "출력",
       out_hint: "JPG 권장",
-      step3: "다운로드",               // CHANGED
+      step3: "다운로드",
       download: "⬇️ 다운로드",
       reset: "초기화",
       msg_need: "먼저 사진을 업로드해 주세요.",
@@ -734,16 +807,16 @@
       home: "🏠 Inicio",
       local: "Procesado local — sin servidor",
       lang_label: "Idioma",
-      step0: "Seleccionar",            // CHANGED
+      step0: "Seleccionar",
       country: "País",
       doc: "Tipo de documento",
       tip2: "Consejo: Elige primero el país y luego el tipo (ID/Pasaporte).",
-      step1: "Subir foto",             // CHANGED
+      step1: "Subir foto",
       choose: "📁 Elegir foto",
       camera: "📷 Abrir cámara",
       drop_title: "Suelta la foto aquí<br/>o toca para subir",
       drop_hint: "Soporta: JPG, PNG, WebP (HEIC puede fallar en algunos dispositivos)",
-      step2: "Vista previa / Recorte", // CHANGED
+      step2: "Vista previa / Recorte",
       controls: "Controles",
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
@@ -755,7 +828,7 @@
       dpi_hint: "300dpi suele ser suficiente.",
       out: "Salida",
       out_hint: "JPG recomendado.",
-      step3: "Descargar",              // CHANGED
+      step3: "Descargar",
       download: "⬇️ Descargar",
       reset: "Reiniciar",
       msg_need: "Primero sube una foto.",
@@ -773,16 +846,16 @@
       home: "🏠 ホーム",
       local: "ローカル処理 — サーバーなし",
       lang_label: "言語",
-      step0: "選択",                   // CHANGED
+      step0: "選択",
       country: "国",
       doc: "書類タイプ",
       tip2: "ヒント: 国を選んでから、ID/パスポートを選択します。",
-      step1: "写真アップロード",       // CHANGED
+      step1: "写真アップロード",
       choose: "📁 写真を選択",
       camera: "📷 カメラを開く",
       drop_title: "ここに写真をドロップ<br/>またはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP（HEICは一部非対応）",
-      step2: "プレビュー / 切り抜き",   // CHANGED
+      step2: "プレビュー / 切り抜き",
       controls: "操作",
       fit: "↔ フィット",
       center: "🎯 中央",
@@ -794,7 +867,7 @@
       dpi_hint: "通常は300dpiで十分です。",
       out: "出力",
       out_hint: "JPG推奨",
-      step3: "ダウンロード",           // CHANGED
+      step3: "ダウンロード",
       download: "⬇️ ダウンロード",
       reset: "リセット",
       msg_need: "先に写真をアップロードしてください。",
@@ -922,7 +995,7 @@
       setSegActive("countrySeg", "country", COUNTRY);
       refreshPresetPill();
       updateCropBox();
-      if(autoCenter) smartCenter();
+      if(autoCenter) smartCenter(true);
       redraw();
       resizeCanvas();
     });
@@ -934,7 +1007,7 @@
       setSegActive("docSeg", "doc", DOC);
       refreshPresetPill();
       updateCropBox();
-      if(autoCenter) smartCenter();
+      if(autoCenter) smartCenter(true);
       redraw();
       resizeCanvas();
     });
@@ -1003,6 +1076,48 @@
   let autoCenter = true;
   let showGuide = true;
 
+  // ===== Undo stack =====
+  const undoBtn = $("undoBtn");
+  const imgIconBtn = $("imgIconBtn");
+  const history = []; // stack of previous states (before change)
+
+  function snap(){ return { scale, offsetX, offsetY }; }
+  function sameState(a,b){
+    if(!a || !b) return false;
+    return Math.abs(a.scale-b.scale) < 1e-6 &&
+           Math.abs(a.offsetX-b.offsetX) < 0.01 &&
+           Math.abs(a.offsetY-b.offsetY) < 0.01;
+  }
+  function pushUndoState(prev){
+    if(!imgEl || !prev) return;
+    const last = history[history.length-1];
+    if(last && sameState(last, prev)) return;
+    history.push(prev);
+    if(history.length > 80) history.shift();
+    undoBtn.disabled = history.length === 0;
+  }
+  function clearUndo(){
+    history.length = 0;
+    undoBtn.disabled = true;
+  }
+  function applyState(st){
+    if(!st) return;
+    scale = st.scale;
+    offsetX = st.offsetX;
+    offsetY = st.offsetY;
+  }
+
+  undoBtn.addEventListener("click", ()=>{
+    if(!imgEl || history.length === 0) return;
+    const prev = history.pop();
+    applyState(prev);
+    redraw();
+    undoBtn.disabled = history.length === 0;
+  });
+
+  // Image icon = load another image
+  imgIconBtn.addEventListener("click", ()=> openDropPicker());
+
   function syncToggleUI(){
     $("toggleAuto").classList.toggle("active", autoCenter);
     $("toggleGuide").classList.toggle("active", showGuide);
@@ -1013,7 +1128,7 @@
 
   $("toggleAuto").addEventListener("click", ()=>{
     autoCenter = !autoCenter;
-    if(autoCenter && imgEl) smartCenter();
+    if(autoCenter && imgEl) smartCenter(true);
     syncToggleUI();
     redraw();
   });
@@ -1025,12 +1140,14 @@
 
   $("fitBtn").addEventListener("click", ()=>{
     if(!imgEl) return setMsg(t().msg_need, "err");
+    pushUndoState(snap());
     fitToCrop();
   });
 
   $("centerBtn").addEventListener("click", ()=>{
     if(!imgEl) return setMsg(t().msg_need, "err");
-    smartCenter();
+    pushUndoState(snap());
+    smartCenter(false);
     redraw();
   });
 
@@ -1039,6 +1156,8 @@
 
   function zoomBy(factor){
     if(!imgEl) return setMsg(t().msg_need, "err");
+    pushUndoState(snap());
+
     const rect = stage.getBoundingClientRect();
     const cx = rect.width/2;
     const cy = rect.height/2;
@@ -1116,7 +1235,10 @@
     redraw();
   }
 
-  function smartCenter(){ fitToCrop(); }
+  function smartCenter(pushUndo){
+    if(pushUndo) pushUndoState(snap());
+    fitToCrop();
+  }
 
   function redraw(){
     const rect = stage.getBoundingClientRect();
@@ -1143,12 +1265,15 @@
       $("meta").innerHTML = t().meta_idle;
       $("downloadBtn").disabled = true;
       $("resetBtn").disabled = true;
+      imgIconBtn.disabled = false;
+      clearUndo();
       return;
     }
 
     $("meta").innerHTML = t().meta_info(imgW, imgH, p.mmW, p.mmH, pxW, pxH, dpi);
     $("downloadBtn").disabled = false;
     $("resetBtn").disabled = false;
+    undoBtn.disabled = history.length === 0;
   }
 
   async function loadFile(file){
@@ -1165,7 +1290,8 @@
       imgW = img.naturalWidth || 0;
       imgH = img.naturalHeight || 0;
 
-      if(autoCenter) smartCenter();
+      clearUndo();          // reset undo when new image loads
+      smartCenter(false);   // center without pushing undo
       redraw();
       setMsg(t().msg_ready, "ok");
       updateMeta();
@@ -1175,6 +1301,7 @@
       URL.revokeObjectURL(url);
       imgEl = null;
       imgW = imgH = 0;
+      clearUndo();
       redraw();
       setMsg(t().msg_fail, "err");
       updateMeta();
@@ -1183,18 +1310,22 @@
     img.src = url;
   }
 
-  // ========= pointer events =========
+  // ========= pointer events (drag/pinch) =========
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
+  let gestureStart = null;
 
   stage.addEventListener("pointerdown", (e)=>{
     stage.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    if(pointers.size === 1){
+
+    if(imgEl && pointers.size === 1){
+      gestureStart = snap();
       lastPan = { x:e.clientX, y:e.clientY, ox:offsetX, oy:offsetY };
       lastPinch = null;
-    } else if(pointers.size === 2){
+    } else if(imgEl && pointers.size === 2){
+      gestureStart = snap();
       const pts = Array.from(pointers.values());
       lastPinch = pinchState(pts[0], pts[1]);
       lastPan = null;
@@ -1240,6 +1371,15 @@
 
   stage.addEventListener("pointerup", (e)=>{
     pointers.delete(e.pointerId);
+
+    // gesture ended
+    if(pointers.size === 0 && imgEl){
+      if(gestureStart && !sameState(gestureStart, snap())){
+        pushUndoState(gestureStart);
+      }
+      gestureStart = null;
+    }
+
     if(pointers.size === 1){
       const pts = Array.from(pointers.values());
       lastPan = { x:pts[0].x, y:pts[0].y, ox:offsetX, oy:offsetY };
@@ -1254,6 +1394,7 @@
     pointers.clear();
     lastPan = null;
     lastPinch = null;
+    gestureStart = null;
   });
 
   function pinchState(a,b){
@@ -1335,6 +1476,7 @@
     imgW = imgH = 0;
     scale = 1; offsetX = 0; offsetY = 0;
     setMsg("", "");
+    clearUndo();
     redraw();
     updateMeta();
     resizeCanvas();
