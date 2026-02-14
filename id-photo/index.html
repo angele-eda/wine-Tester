@@ -176,10 +176,9 @@
       min-width:0;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
-    /* make 🛡 pop */
-    .pill .shield{
-      font-size:16px;
-      line-height:1;
+    /* shield svg pop */
+    .pill .shieldSvg{
+      width:18px; height:18px; flex:0 0 auto;
       filter: drop-shadow(0 10px 16px rgba(0,0,0,.32)) drop-shadow(0 0 10px rgba(120,200,255,.20));
       transform: translateY(-.5px);
     }
@@ -209,7 +208,7 @@
     .headActions{
       display:flex;
       align-items:center;
-      gap:12px; /* ✅ spaced more so not mis-tapped */
+      gap:12px;
       margin-left:auto;
     }
 
@@ -218,7 +217,7 @@
       width:40px;
       height:40px;
       border-radius:999px;
-      border:none;                 /* ✅ remove any outline border */
+      border:none;
       background: rgba(255,255,255,.06);
       color:#cfe6ff;
       display:inline-flex;
@@ -238,8 +237,18 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.28), inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.22);
     }
     .iconCircle svg{ width:20px; height:20px; display:block; }
-    /* undo should feel more round */
-    #undoBtn svg{ width:21px; height:21px; }
+
+    /* ✅ make #1 and #2 feel colored (keep #3 current) */
+    #imgIconBtn{
+      background: rgba(47,109,246,.18);
+      box-shadow: inset 0 0 0 1px rgba(47,109,246,.35), 0 10px 18px rgba(0,0,0,.22);
+    }
+    #imgIconBtn:hover{ background: rgba(47,109,246,.22); }
+    #undoBtn{
+      background: rgba(120, 200, 255, .14);
+      box-shadow: inset 0 0 0 1px rgba(120, 200, 255, .28), 0 10px 18px rgba(0,0,0,.22);
+    }
+    #undoBtn:hover{ background: rgba(120, 200, 255, .18); }
 
     .row{
       display:flex;
@@ -280,7 +289,7 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
 
-    /* ✅ disabled text NOT blurry */
+    /* disabled text NOT blurry */
     .btn:disabled{
       opacity:1;
       cursor:not-allowed;
@@ -521,7 +530,6 @@
     <div class="top">
       <div style="flex:1; min-width:240px;">
         <h1 class="title" id="page_title">ID Photo / Passport</h1>
-        <!-- ✅ removed local-processing duplication here -->
         <p class="sub" id="page_sub">Upload → adjust position/zoom → download.</p>
 
         <div style="margin-top:10px;">
@@ -529,8 +537,15 @@
         </div>
 
         <div style="margin-top:10px;">
-          <!-- ✅ 🛡 more visible -->
-          <div class="pill"><span class="shield">🛡</span> <span id="local_processing">Processed locally — no server upload</span></div>
+          <div class="pill">
+            <!-- ✅ color shield svg -->
+            <svg class="shieldSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2.5l7 3.2v6.3c0 5.2-3.4 9.2-7 10.5-3.6-1.3-7-5.3-7-10.5V5.7L12 2.5Z"
+                    fill="rgba(47,109,246,.22)" stroke="rgba(120,200,255,.85)" stroke-width="1.4" />
+              <path d="M9.2 12.4l1.9 1.9 3.7-4.1" stroke="rgba(207,230,255,.95)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="local_processing">Processed locally — no server upload</span>
+          </div>
         </div>
 
         <div style="margin-top:10px;">
@@ -619,7 +634,6 @@
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
           <div class="headActions" aria-label="Quick actions">
-            <!-- ✅ SVG image icon (no yellow outline / no emoji border) -->
             <button class="iconCircle" id="imgIconBtn" type="button" title="Load another image" aria-label="Load another image">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M4.5 6.8c0-1.1.9-2 2-2h11c1.1 0 2 .9 2 2v10.4c0 1.1-.9 2-2 2h-11c-1.1 0-2-.9-2-2V6.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -629,7 +643,6 @@
               </svg>
             </button>
 
-            <!-- ✅ rounder undo icon -->
             <button class="iconCircle" id="undoBtn" type="button" title="Undo" aria-label="Undo" disabled>
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M9.2 7.2H6.3V4.3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
@@ -676,6 +689,7 @@
             <select id="outFormat">
               <option value="image/jpeg" selected>JPG</option>
               <option value="image/png">PNG</option>
+              <option value="application/pdf">PDF (A4 only)</option>
             </select>
             <div class="small" id="fmt_hint">JPG recommended.</div>
           </div>
@@ -683,7 +697,7 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Print/Download mode ABOVE Download -->
+        <!-- Print/Download mode ABOVE Download -->
         <h2 id="h_print">Print</h2>
         <div class="seg" id="printSeg">
           <div class="segBtn active" data-print="SINGLE" id="print_single">1 photo</div>
@@ -1066,6 +1080,19 @@
     const wrap = $("sheetWrap");
     if(mode === "A4") wrap.classList.add("show");
     else wrap.classList.remove("show");
+
+    // ✅ A4면 출력 형식 PDF로 자동 고정
+    const fmt = $("outFormat");
+    if(mode === "A4"){
+      fmt.value = "application/pdf";
+      fmt.disabled = true;
+      $("fmt_hint").textContent = (LANG === "ko") ? "A4는 PDF로 저장됩니다." : "A4 is saved as PDF.";
+    }else{
+      fmt.disabled = false;
+      if(fmt.value === "application/pdf") fmt.value = "image/jpeg";
+      $("fmt_hint").textContent = t().out_hint;
+    }
+
     updateMeta();
   }
   function setA4Count(cnt){
@@ -1492,9 +1519,8 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function buildName(){
+  function buildName(ext){
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    const ext = $("outFormat").value === "image/png" ? "png" : "jpg";
     const doc = (DOC === "PASS") ? "passport" : "id";
     const mode = (PRINT_MODE === "A4") ? `a4_${A4_COUNT}` : "single";
     return `cf24_${COUNTRY}_${doc}_${mode}_${stamp}.${ext}`;
@@ -1529,6 +1555,53 @@
     return out;
   }
 
+  // ✅ draw crop marks around photo (outside corners)
+  function drawCropMarks(ctx, x, y, w, h, dpi){
+    const mm = (v)=> Math.round((v/25.4) * dpi);
+    const offset = mm(1.6);   // distance from photo edge outward
+    const len = mm(4.5);      // mark length
+    const lw = Math.max(1, mm(0.25)); // ~0.25mm
+
+    ctx.save();
+    ctx.strokeStyle = "#111111";
+    ctx.lineWidth = lw;
+    ctx.lineCap = "square";
+
+    // top-left
+    ctx.beginPath();
+    ctx.moveTo(x - offset, y);
+    ctx.lineTo(x - offset - len, y);
+    ctx.moveTo(x, y - offset);
+    ctx.lineTo(x, y - offset - len);
+    ctx.stroke();
+
+    // top-right
+    ctx.beginPath();
+    ctx.moveTo(x + w + offset, y);
+    ctx.lineTo(x + w + offset + len, y);
+    ctx.moveTo(x + w, y - offset);
+    ctx.lineTo(x + w, y - offset - len);
+    ctx.stroke();
+
+    // bottom-left
+    ctx.beginPath();
+    ctx.moveTo(x - offset, y + h);
+    ctx.lineTo(x - offset - len, y + h);
+    ctx.moveTo(x, y + h + offset);
+    ctx.lineTo(x, y + h + offset + len);
+    ctx.stroke();
+
+    // bottom-right
+    ctx.beginPath();
+    ctx.moveTo(x + w + offset, y + h);
+    ctx.lineTo(x + w + offset + len, y + h);
+    ctx.moveTo(x + w, y + h + offset);
+    ctx.lineTo(x + w, y + h + offset + len);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
   function makeA4Canvas(){
     if(!imgEl) throw new Error(t().msg_need);
     const p = currentPreset();
@@ -1549,12 +1622,9 @@
     const usableW = a4W - margin*2;
     const usableH = a4H - margin*2;
 
-    // if overflow, reduce gap first, then margin slightly (safe clamp)
     let cellW = Math.floor((usableW - gap*(g.cols-1)) / g.cols);
     let cellH = Math.floor((usableH - gap*(g.rows-1)) / g.rows);
 
-    // fit photo into cell while keeping size (we do "center inside")
-    // if photo bigger than cell, we scale down for sheet only
     const s = Math.min(1, cellW / photoW, cellH / photoH);
     const drawW = Math.floor(photoW * s);
     const drawH = Math.floor(photoH * s);
@@ -1571,7 +1641,7 @@
     sctx.fillStyle = "#ffffff";
     sctx.fillRect(0,0,a4W,a4H);
 
-    // prepare cropped photo canvas once
+    // cropped photo once
     const single = makeSingleOutputCanvas();
 
     const startX = margin + Math.floor((usableW - (cellW*g.cols + gap*(g.cols-1))) / 2);
@@ -1581,6 +1651,7 @@
     for(let r=0; r<g.rows; r++){
       for(let c=0; c<g.cols; c++){
         if(placed >= A4_COUNT) break;
+
         const cellX = startX + c*(cellW + gap);
         const cellY = startY + r*(cellH + gap);
 
@@ -1588,13 +1659,17 @@
         const y = cellY + Math.floor((cellH - drawH)/2);
 
         sctx.drawImage(single, 0,0,single.width,single.height, x,y, drawW,drawH);
+
+        // ✅ crop marks for each photo
+        drawCropMarks(sctx, x, y, drawW, drawH, dpi);
+
         placed++;
       }
     }
     return sheet;
   }
 
-  function canvasToBlob(canvas){
+  function canvasToImageBlob(canvas){
     const outMime = $("outFormat").value;
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
@@ -1605,11 +1680,106 @@
     });
   }
 
+  // ✅ minimal 1-page PDF writer (A4) from JPEG bytes
+  async function canvasToPdfBlobA4(canvas){
+    // PDF is easiest with JPEG stream
+    const jpegBlob = await new Promise((resolve, reject)=>{
+      canvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", 0.92);
+    });
+
+    const jpgBytes = new Uint8Array(await jpegBlob.arrayBuffer());
+
+    // A4 in points (72dpi): 595.28 x 841.89
+    const pageW = 595.28;
+    const pageH = 841.89;
+
+    // Build PDF objects
+    const chunks = [];
+    const pushStr = (s)=> chunks.push(new TextEncoder().encode(s));
+    const pushBytes = (b)=> chunks.push(b);
+
+    const offsets = [];
+    let pos = 0;
+    const addObj = (objNum, contentBytes)=>{
+      offsets[objNum] = pos;
+      pushStr(`${objNum} 0 obj\n`);
+      pushBytes(contentBytes);
+      pushStr(`\nendobj\n`);
+      pos = chunks.reduce((a,c)=>a+c.length,0);
+    };
+
+    // Header
+    pushStr(`%PDF-1.4\n%âãÏÓ\n`);
+    pos = chunks.reduce((a,c)=>a+c.length,0);
+
+    // 1: Catalog
+    addObj(1, new TextEncoder().encode(`<< /Type /Catalog /Pages 2 0 R >>`));
+
+    // 2: Pages
+    addObj(2, new TextEncoder().encode(`<< /Type /Pages /Kids [3 0 R] /Count 1 >>`));
+
+    // 3: Page
+    addObj(3, new TextEncoder().encode(
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] ` +
+      `/Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> ` +
+      `/Contents 5 0 R >>`
+    ));
+
+    // 4: Image XObject (JPEG)
+    addObj(4, new TextEncoder().encode(
+      `<< /Type /XObject /Subtype /Image /Name /Im0 /Filter /DCTDecode ` +
+      `/Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 ` +
+      `/Length ${jpgBytes.length} >>\nstream\n`
+    ));
+    // Insert raw jpeg stream then endstream/endobj manually
+    pushBytes(jpgBytes); pos = chunks.reduce((a,c)=>a+c.length,0);
+    pushStr(`\nendstream\nendobj\n`); pos = chunks.reduce((a,c)=>a+c.length,0);
+    // fix offset for object 4 already set to start of "4 0 obj" (OK)
+
+    // 5: Contents (draw image to fill page)
+    // Scale image to page: use PDF user space points, map full page
+    const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ\n`;
+    const contentBytes = new TextEncoder().encode(content);
+    addObj(5, new TextEncoder().encode(`<< /Length ${contentBytes.length} >>\nstream\n${content}endstream`));
+
+    // xref
+    const xrefPos = chunks.reduce((a,c)=>a+c.length,0);
+    const objCount = 6; // 0..5
+    pushStr(`xref\n0 ${objCount}\n`);
+    pushStr(`0000000000 65535 f \n`);
+    for(let i=1;i<objCount;i++){
+      const off = offsets[i] || 0;
+      pushStr(String(off).padStart(10,"0") + " 00000 n \n");
+    }
+
+    // trailer
+    pushStr(
+      `trailer\n<< /Size ${objCount} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`
+    );
+
+    // merge chunks
+    const total = chunks.reduce((a,c)=>a+c.length,0);
+    const out = new Uint8Array(total);
+    let o=0;
+    for(const c of chunks){ out.set(c,o); o+=c.length; }
+
+    return new Blob([out], { type:"application/pdf" });
+  }
+
   $("downloadBtn").addEventListener("click", async ()=>{
     try{
-      const canvas = (PRINT_MODE === "A4") ? makeA4Canvas() : makeSingleOutputCanvas();
-      const blob = await canvasToBlob(canvas);
-      downloadBlob(blob, buildName());
+      if(!imgEl) throw new Error(t().msg_need);
+
+      if(PRINT_MODE === "A4"){
+        const sheet = makeA4Canvas();
+        const pdfBlob = await canvasToPdfBlobA4(sheet);
+        downloadBlob(pdfBlob, buildName("pdf"));
+      }else{
+        const canvas = makeSingleOutputCanvas();
+        const blob = await canvasToImageBlob(canvas);
+        const ext = ($("outFormat").value === "image/png") ? "png" : "jpg";
+        downloadBlob(blob, buildName(ext));
+      }
       setMsg("✅ " + t().download, "ok");
     }catch(e){
       setMsg((e && e.message) ? e.message : "Download failed", "err");
@@ -1628,7 +1798,6 @@
   });
 
   $("dpi").addEventListener("change", updateMeta);
-  $("outFormat").addEventListener("change", updateMeta);
 
   // init
   setLang(LANG);
