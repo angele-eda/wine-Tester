@@ -150,7 +150,7 @@
 
     /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
     .langArea{
-      margin-left:auto;
+      margin-left:auto;               /* ✅ 핵심 */
       display:flex;
       flex-direction:column;
       gap:8px;
@@ -167,7 +167,7 @@
       gap:8px;
       opacity:.95;
     }
-    .langbar{ display:none !important; }
+    .langbar{ display:none !important; } /* ✅ hide old buttons */
 
     .langSelect{
       width: 100%;
@@ -243,29 +243,55 @@
       letter-spacing:-0.2px;
       user-select:none;
     }
+    .localBadge small{
+      display:block;
+      font-size:12px;
+      font-weight:700;
+      color:#9fb0ca;
+      opacity:.95;
+    }
 
+    /* ===========================
+       ✅ (수정) Download 버튼: 연한 블루
+       - 글씨 너무 밝지 않게
+       - disabled 글씨 "허리멍텅" 방지
+       =========================== */
     .btn{
       appearance:none; border:none; cursor:pointer;
-      background:#2f6df6; color:white; font-weight:800;
+      background: rgba(47,109,246,.28);          /* ✅ 연한 블루 */
+      border: 1px solid rgba(47,109,246,.38);    /* ✅ 톤 맞춘 테두리 */
+      color: rgba(233,238,247,.92);              /* ✅ 너무 새하얗지 않게 */
+      font-weight:800;
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
       letter-spacing: -0.2px;
-      transition: transform .08s ease, filter .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+      transition: background .12s ease, border-color .12s ease, transform .06s ease, box-shadow .12s ease;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
-
-    /* ✅ disabled: 글씨 허리멍텅 제거 */
+    .btn:hover{
+      background: rgba(47,109,246,.34);
+      border-color: rgba(47,109,246,.48);
+      box-shadow: 0 10px 26px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+    .btn:active{ transform: scale(.995); }
     .btn:disabled{
-      background: rgba(255,255,255,.08);
-      color:#dbe7ff;
-      opacity:1;
       cursor:not-allowed;
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:none;
-      filter:none;
+      background: rgba(255,255,255,.06);         /* ✅ 눌림 느낌 최소 */
+      border-color: rgba(255,255,255,.14);
+      color: rgba(233,238,247,.62);              /* ✅ 글씨 살아있게 */
+      opacity: 1;                                 /* ✅ opacity로 죽이지 않기 */
+      box-shadow: none;
       transform:none;
     }
 
-    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    /* secondary = reset */
+    .btn.secondary{
+      background: rgba(255,255,255,.10);
+      border: var(--border);
+      color: rgba(233,238,247,.86);
+      box-shadow: none;
+    }
+    .btn.secondary:hover{ background: rgba(255,255,255,.13); }
 
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row > * { flex:1; min-width:160px; }
@@ -279,7 +305,7 @@
       outline:none;
     }
 
-    /* ✅ Preview + Action buttons */
+    /* ✅ Preview + Crop button layout */
     .previewHead{
       display:flex;
       align-items:center;
@@ -303,11 +329,8 @@
       align-items:center;
       gap:8px;
       white-space:nowrap;
-      transition: transform .08s ease, background .12s ease, border-color .12s ease;
     }
-    .miniBtn:hover{ background:rgba(255,255,255,.08); }
-    .miniBtn:active{ transform: scale(.99); }
-    .miniBtn:disabled{ opacity:.55; cursor:not-allowed; }
+    .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
 
     .preview{
       display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
@@ -334,10 +357,7 @@
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
-
     .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
-    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
-    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
     select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
     option { background-color: #0b0f17; color:#e9eef7; }
@@ -382,7 +402,6 @@
       background:rgba(255,255,255,.02);
       margin-bottom:8px;
       overflow:hidden;
-      cursor:pointer;
     }
     .fileName{
       flex:1; min-width:0;
@@ -403,6 +422,9 @@
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
+
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
     /* ================================
        Samsung Internet upload box fix
@@ -456,6 +478,7 @@
         <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
+        <!-- ✅ Top: ONLY ID Photo (sub feature) -->
         <div class="tools">
           <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
             🪪 <span id="tool_idphoto_text">ID Photo</span>
@@ -464,6 +487,7 @@
         </div>
       </div>
 
+      <!-- ✅ Language (dropdown) -->
       <div class="langArea" aria-label="Language selector">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
 
@@ -474,6 +498,7 @@
           <option value="ko">한국어</option>
         </select>
 
+        <!-- old buttons hidden -->
         <div class="langbar" aria-hidden="true">
           <div class="langbtn" data-lang="en">🇺🇸 EN</div>
           <div class="langbtn" data-lang="es">🇪🇸 ES</div>
@@ -522,15 +547,10 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview: + Add more + ✏️ Edit -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
-            <button class="miniBtn" id="addMoreBtn" type="button" disabled title="Add more files">
-              ➕ <span id="addMoreLabel">Add more</span>
-            </button>
-
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open edit page">
+            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo edit page">
               ✏️ <span id="cropLabel">Edit</span>
             </button>
           </div>
@@ -648,10 +668,8 @@
 
   const cropBtn     = $("cropBtn");
   const cropLabel   = $("cropLabel");
-  const addMoreBtn  = $("addMoreBtn");
-  const addMoreLabel= $("addMoreLabel");
-
   const toolIdPhoto = $("tool_idphoto");
+
   const langSelectEl = $("langSelect");
   const localBadgeTextEl = $("localBadgeText");
 
@@ -668,17 +686,17 @@
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
 
-      h_upload: "1) Upload",
+      /* ✅ (수정) 숫자 제거 */
+      h_upload: "Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
       local_badge: "100% Local processing · No server upload",
 
-      h_preview: "2) Preview",
-      add_more: "Add more",
+      h_preview: "Preview",
       crop: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
-      h_settings: "3) Settings",
+      h_settings: "Settings",
       lbl_format: "Output",
       lbl_quality: "Quality (JPG/WebP only)",
       q_095: "Max (0.95)",
@@ -690,7 +708,7 @@
       ph_w: "e.g., 1200",
       ph_h: "e.g., 800",
       size_hint: "If you enter only one side, aspect ratio is preserved automatically.",
-      h_download: "4) Download",
+      h_download: "Download",
       convert: "Convert & Download",
       reset: "Reset",
 
@@ -730,17 +748,17 @@
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
 
-      h_upload: "1) 업로드",
+      /* ✅ (수정) 숫자 제거 */
+      h_upload: "업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
       local_badge: "100% 로컬 처리 · 서버 업로드 없음",
 
-      h_preview: "2) 미리보기",
-      add_more: "추가하기",
+      h_preview: "미리보기",
       crop: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
-      h_settings: "3) 설정",
+      h_settings: "설정",
       lbl_format: "출력",
       lbl_quality: "품질 (JPG/WebP만)",
       q_095: "최고(0.95)",
@@ -752,7 +770,7 @@
       ph_w: "예: 1200",
       ph_h: "예: 800",
       size_hint: "가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.",
-      h_download: "4) 다운로드",
+      h_download: "다운로드",
       convert: "변환 / 합치기",
       reset: "초기화",
 
@@ -792,17 +810,17 @@
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
 
-      h_upload: "1) アップロード",
+      /* ✅ (수정) 숫자 제거 */
+      h_upload: "アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
       local_badge: "ローカル処理 · サーバー送信なし",
 
-      h_preview: "2) プレビュー",
-      add_more: "追加",
+      h_preview: "プレビュー",
       crop: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
-      h_settings: "3) 設定",
+      h_settings: "設定",
       lbl_format: "出力",
       lbl_quality: "品質（JPG/WebPのみ）",
       q_095: "最高(0.95)",
@@ -814,7 +832,7 @@
       ph_w: "例: 1200",
       ph_h: "例: 800",
       size_hint: "片方だけ入力すると、比率を維持して自動計算します。",
-      h_download: "4) ダウンロード",
+      h_download: "ダウンロード",
       convert: "変換 / 結合",
       reset: "リセット",
 
@@ -827,7 +845,7 @@
       a4_label: "A4統一(PDF結合)",
       multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
       msg_loading: "読み込み中…",
-      msg_ready: "準備OK！変換 / 結合を押してください。",
+      msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
       msg_pdf_one: "画像→PDFは保存されます。（複数画像は1つのPDFに結合）",
       msg_pdf_merge: "PDF+PDF結合は1つの結合PDFとして保存されます。",
@@ -854,17 +872,17 @@
       tool_idphoto: "ID Photo",
       tool_badge: "NEW",
 
-      h_upload: "1) Subir",
+      /* ✅ (수정) 숫자 제거 */
+      h_upload: "Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
       local_badge: "Procesamiento local · Sin subir al servidor",
 
-      h_preview: "2) Vista previa",
-      add_more: "Agregar",
+      h_preview: "Vista previa",
       crop: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
-      h_settings: "3) Ajustes",
+      h_settings: "Ajustes",
       lbl_format: "Salida",
       lbl_quality: "Calidad (solo JPG/WebP)",
       q_095: "Máx (0.95)",
@@ -876,7 +894,7 @@
       ph_w: "p. ej., 1200",
       ph_h: "p. ej., 800",
       size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
-      h_download: "4) Descargar",
+      h_download: "Descargar",
       convert: "Convertir / Unir",
       reset: "Reiniciar",
 
@@ -1010,9 +1028,6 @@
     langSelectEl.value = LANG;
   }
 
-  // =========================
-  // State
-  // =========================
   let files = [];
   let activeIndex = 0;
 
@@ -1038,6 +1053,7 @@
     }
 
     $("subtitle").innerHTML = t.subtitle;
+
     $("lang_label").textContent = t.lang_label;
     $("tool_idphoto_text").textContent = t.tool_idphoto;
     $("tool_badge").textContent = t.tool_badge;
@@ -1049,7 +1065,6 @@
     if(localBadgeTextEl) localBadgeTextEl.textContent = t.local_badge;
 
     $("h_preview").textContent = t.h_preview;
-    if(addMoreLabel) addMoreLabel.textContent = t.add_more;
     cropLabel.textContent = t.crop;
 
     $("h_settings").textContent = t.h_settings;
@@ -1110,7 +1125,6 @@
     updateQualityState();
     renderFileList();
     updateCropState();
-    updateAddMoreState();
   }
 
   if(langSelectEl){
@@ -1197,10 +1211,6 @@
     previewActive();
   }
 
-  function updateAddMoreState(){
-    addMoreBtn.disabled = (files.length === 0);
-  }
-
   function updateCropState(){
     if(files.length === 1 && files[0] && isImage(files[0].file)){
       cropBtn.disabled = false;
@@ -1217,7 +1227,6 @@
       btnConvert.disabled = true;
       btnReset.disabled = true;
       updateCropState();
-      updateAddMoreState();
       return;
     }
 
@@ -1226,7 +1235,6 @@
 
     btnConvert.disabled = false;
     btnReset.disabled = false;
-    updateAddMoreState();
 
     if(isImage(f)){
       const ext = extLower(f.name);
@@ -1284,7 +1292,6 @@
     updateCropState();
   }
 
-  // ✅ 누적 추가 + 중복 방지 (핵심)
   async function handleFiles(selected){
     const t = STR[LANG] || STR.en;
     if(!selected || selected.length === 0) return;
@@ -1296,26 +1303,8 @@
       return;
     }
 
-    const hadNone = (files.length === 0);
-
-    const existingKey = new Set(files.map(x =>
-      `${x.file.name}|${x.file.size}|${x.file.lastModified}|${x.file.type}`
-    ));
-
-    for(const f of ok){
-      const key = `${f.name}|${f.size}|${f.lastModified}|${f.type}`;
-      if(existingKey.has(key)) continue;
-      files.push({ file: f, id: `${Date.now()}_${Math.random()}` });
-      existingKey.add(key);
-    }
-
-    if(files.length === 0){
-      setMessage(t.err_only_supported, "err");
-      return;
-    }
-
-    if(hadNone) activeIndex = 0;
-    if(activeIndex >= files.length) activeIndex = files.length - 1;
+    files = ok.map((file, i)=>({ file, id: `${Date.now()}_${i}` }));
+    activeIndex = 0;
 
     drop.classList.add("active");
     btnReset.disabled = false;
@@ -1326,7 +1315,6 @@
     await previewActive();
     updateQualityState();
     updateCropState();
-    updateAddMoreState();
 
     const outMime = selFormat.value;
     const imagesCount = files.filter(x => isImage(x.file)).length;
@@ -1640,18 +1628,11 @@
     renderTexts();
     renderFileList();
     updateCropState();
-    updateAddMoreState();
   }
 
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Add more
-  addMoreBtn.addEventListener("click", ()=>{
-    openFilePicker();
-  });
-
-  // ✅ Edit (single image only)
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
@@ -1674,7 +1655,6 @@
     }
   });
 
-  // init
   setLang(LANG);
   resetAll();
 })();
