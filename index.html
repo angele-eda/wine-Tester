@@ -250,8 +250,8 @@
     /* ✅ Buttons */
     .btn{
       appearance:none; border:none; cursor:pointer;
-      background: rgba(47,109,246,.78);         /* 연한 블루 */
-      color: rgba(233,238,247,.92);             /* 글씨 너무 밝지 않게 */
+      background: rgba(47,109,246,.78);
+      color: rgba(233,238,247,.92);
       font-weight:900;
       padding:12px 14px;
       border-radius:14px;
@@ -264,7 +264,6 @@
     .btn:active{ transform: scale(.99); }
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(47,109,246,.22); }
 
-    /* ✅ Disabled: 허리멍텅 느낌 줄이기 */
     .btn:disabled{
       cursor:not-allowed;
       opacity: 1;
@@ -295,7 +294,6 @@
       font-weight:900;
     }
 
-    /* ✅ Preview + actions */
     .previewHead{
       display:flex;
       align-items:center;
@@ -429,9 +427,6 @@
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    /* ================================
-       Samsung Internet upload box fix
-       ================================ */
     html[data-samsung="true"] .drop{
       border: none !important;
       outline: none !important;
@@ -446,7 +441,6 @@
       pointer-events:none;
     }
 
-    /* ✅ collapse helper */
     .detailsBox{
       margin-top:10px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -1237,10 +1231,7 @@
   }
 
   function updateCropState(){
-    // ✅ add more: 파일이 하나라도 있으면 활성
     addMoreBtn.disabled = (files.length === 0);
-
-    // ✅ edit: 이미지 1장일 때만
     if(files.length === 1 && files[0] && isImage(files[0].file)){
       cropBtn.disabled = false;
       return;
@@ -1326,7 +1317,6 @@
     updateZipAvailability();
   }
 
-  // ✅ append (Add more)
   function appendFiles(selected){
     const t = STR[LANG] || STR.en;
     if(!selected || selected.length === 0) return;
@@ -1356,12 +1346,10 @@
     updateZipAvailability();
   }
 
-  // ✅ new selection (tap upload box)
   async function handleFiles(selected){
     const t = STR[LANG] || STR.en;
     if(!selected || selected.length === 0) return;
 
-    // 새로 선택이면 기존 비우고 시작
     files = [];
     activeIndex = 0;
 
@@ -1402,7 +1390,6 @@
     }
   }
 
-  // ✅ Add more picker (append only)
   function openFilePickerAppend(){
     const tmp = document.createElement("input");
     tmp.type = "file";
@@ -1454,34 +1441,28 @@
     selQuality.style.opacity = disableQuality ? ".6" : "1";
   }
 
+  // ✅ ZIP은 "항상 체크 가능" (disabled 금지)
+  // - 다만 자동체크는 "이미지 2개 이상 + 출력이 이미지"일 때만
+  // - PDF 출력 + ZIP 체크면 A4(병합용)은 비활성
   function updateZipAvailability(){
     const outMime = selFormat.value;
     const images = files.filter(x => isImage(x.file));
     const pdfs   = files.filter(x => isPDF(x.file));
 
-    // 기본: ZIP 비활성
-    zipModeEl.disabled = true;
-    zipModeEl.checked = false;
+    // ✅ 절대 막지 않음
+    zipModeEl.disabled = false;
 
-    // 이미지 출력 + 이미지 2개 이상 => ZIP 가능 + 자동 체크
-    if(outMime !== "application/pdf" && images.length >= 2){
-      zipModeEl.disabled = false;
+    // ✅ 자동 체크: 이미지 출력 + 이미지 2개 이상 (사용자가 이미 체크/해제했다면 건드리지 않음)
+    const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
+
+    if(shouldAutoZip && zipModeEl.checked === false){
+      // 자동 체크는 "추천" 성격으로 1회만 해주고 싶으면 플래그를 둘 수도 있는데,
+      // 여기선 단순히 조건 만족 시 체크가 꺼져있으면 켜준다.
       zipModeEl.checked = true;
     }
 
-    // PDF 출력 + PDF 2개 이상 => ZIP 가능 (체크는 자동 X)
-    if(outMime === "application/pdf" && pdfs.length >= 2){
-      zipModeEl.disabled = false;
-    }
-
-    // 라벨 시각 처리
-    if(zipChkLabel){
-      zipChkLabel.style.opacity = zipModeEl.disabled ? ".55" : "1";
-      zipChkLabel.style.cursor = zipModeEl.disabled ? "not-allowed" : "pointer";
-    }
-
-    // ZIP 체크 + PDF 출력이면 A4 통일(병합용) 의미 없으니 비활성
-    if(zipModeEl.checked && outMime === "application/pdf"){
+    // ✅ PDF 출력에서 ZIP 체크면 A4는 의미 없으니 잠시 비활성
+    if(outMime === "application/pdf" && zipModeEl.checked){
       a4ModeEl.checked = false;
       a4ModeEl.disabled = true;
       if(a4ChkLabel){
@@ -1495,6 +1476,15 @@
         a4ChkLabel.style.cursor = "pointer";
       }
     }
+
+    // 라벨은 항상 활성처럼 보이게
+    if(zipChkLabel){
+      zipChkLabel.style.opacity = "1";
+      zipChkLabel.style.cursor = "pointer";
+    }
+
+    // (참고) pdfs 변수는 onConvert에서 로직에 사용됨 (pdf 2개 이상 + zip 체크 -> zip 다운로드)
+    void pdfs;
   }
 
   selFormat.addEventListener("change", ()=>{
@@ -1516,7 +1506,6 @@
     }
   });
 
-  // ZIP 체크 바뀌면 A4 비활성/활성도 다시 적용
   zipModeEl.addEventListener("change", updateZipAvailability);
 
   function getTargetSize(origW, origH){
@@ -1703,7 +1692,7 @@
           return;
         }
 
-        // 이미지 -> PDF (기존)
+        // 이미지 -> PDF (기본: 여러 이미지는 1개 PDF로 합침)
         if(images.length >= 1){
           const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
@@ -1773,7 +1762,6 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Edit (single image only) -> /edit/ with sessionStorage
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
@@ -1789,7 +1777,6 @@
 
       sessionStorage.setItem("cf24_edit_img", String(dataUrl));
       sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
