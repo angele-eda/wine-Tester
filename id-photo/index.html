@@ -479,7 +479,8 @@
         </div>
 
         <div style="margin-top:10px;">
-          <div class="pill"><span class="shield">🛡</span> <span id="local_processing">Processed locally — no server upload</span></div>
+          <!-- ✅ CHANGE #1: 🛡 -> 🔒 -->
+          <div class="pill"><span class="shield">🔒</span> <span id="local_processing">Processed locally — no server upload</span></div>
         </div>
 
         <div style="margin-top:10px;">
@@ -915,6 +916,11 @@
     $("doc_PASS").textContent = s.docTxt.PASS;
   }
 
+  // ✅ CHANGE #2: A4 mode -> add (PDF) next to Download label (language-aware)
+  function syncDownloadLabel(){
+    $("downloadBtn").textContent = (PRINT_MODE === "A4") ? (t().download + " (PDF)") : t().download;
+  }
+
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
@@ -961,13 +967,14 @@
     $("fmt_hint").textContent = t().out_hint;
 
     $("h_step3").textContent = t().step3;
-    $("downloadBtn").textContent = t().download;
+    // NOTE: downloadBtn text is controlled by syncDownloadLabel()
     $("downloadA4PngBtn").textContent = t().download_png;
     $("resetBtn").textContent = t().reset;
 
     updateChoiceLabels();
     if(!imgEl) $("meta").innerHTML = t().meta_idle;
     refreshPresetPill();
+    syncDownloadLabel(); // ✅ ensure label updated after language change
     setTimeout(()=>resizeCanvas(), 0);
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
@@ -1039,6 +1046,7 @@
     // A4 PNG fallback button visible only in A4
     $("downloadA4PngBtn").style.display = (mode === "A4") ? "" : "none";
 
+    syncDownloadLabel(); // ✅ update label when switching print mode
     updateMeta();
   }
   function setA4Count(cnt){
