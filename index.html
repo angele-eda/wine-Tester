@@ -91,11 +91,12 @@
       text-rendering: geometricPrecision;
     }
 
-    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+    /* ✅ 상단 공백 줄임 */
+    .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 44px; }
 
     .top{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
-      flex-wrap:wrap; margin-bottom:14px;
+      flex-wrap:wrap; margin-bottom:10px;
     }
 
     .site-title{
@@ -389,6 +390,7 @@
       cursor:pointer; user-select:none;
       font-size:12px; color:#cfe0ff;
       white-space:nowrap;
+      transition: opacity .12s ease;
     }
     .chk input{ width:16px; height:16px; }
 
@@ -528,11 +530,11 @@
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
             <div class="toggle">
-              <label class="chk" title="Download multiple outputs as ZIP">
+              <label class="chk" id="zipChkLabel" title="Download multiple outputs as ZIP">
                 <input type="checkbox" id="zipMode" />
                 <span id="zip_label"></span>
               </label>
-              <label class="chk" title="PDF page size A4 normalization (when merging PDFs)">
+              <label class="chk" id="a4ChkLabel" title="PDF page size A4 normalization (when merging PDFs)">
                 <input type="checkbox" id="a4Mode" />
                 <span id="a4_label"></span>
               </label>
@@ -667,6 +669,9 @@
   const fileListEl  = $("fileList");
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
+
+  const zipChkLabel = $("zipChkLabel");
+  const a4ChkLabel  = $("a4ChkLabel");
 
   const cropBtn      = $("cropBtn");
   const cropLabel    = $("cropLabel");
@@ -1142,7 +1147,7 @@
     updateQualityState();
     renderFileList();
     updateCropState();
-    updateAutoOptions(); // ✅ NEW
+    updateZipAvailability();
   }
 
   if(langSelectEl){
@@ -1216,7 +1221,7 @@
     if(activeIndex === from) activeIndex = to;
     renderFileList();
     previewActive();
-    updateAutoOptions(); // ✅ NEW
+    updateZipAvailability();
   }
 
   function removeAt(idx){
@@ -1228,7 +1233,7 @@
       return;
     }
     previewActive();
-    updateAutoOptions(); // ✅ NEW
+    updateZipAvailability();
   }
 
   function updateCropState(){
@@ -1251,7 +1256,7 @@
       btnConvert.disabled = true;
       btnReset.disabled = true;
       updateCropState();
-      updateAutoOptions(); // ✅ NEW
+      updateZipAvailability();
       return;
     }
 
@@ -1288,7 +1293,7 @@
 
         if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
         updateCropState();
-        updateAutoOptions(); // ✅ NEW
+        updateZipAvailability();
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
@@ -1296,7 +1301,7 @@
         meta.textContent = t.err_preview;
         setMessage(t.err_preview, "err");
         updateCropState();
-        updateAutoOptions(); // ✅ NEW
+        updateZipAvailability();
       };
       img.src = url;
       img.style.width = "100%";
@@ -1310,7 +1315,7 @@
       meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
       setMessage(t.msg_ready, "ok");
       updateCropState();
-      updateAutoOptions(); // ✅ NEW
+      updateZipAvailability();
       return;
     }
 
@@ -1318,42 +1323,7 @@
     setMessage(t.err_only_supported, "err");
     btnConvert.disabled = true;
     updateCropState();
-    updateAutoOptions(); // ✅ NEW
-  }
-
-  // ✅ NEW: ZIP 자동/비활성 정책 (PDF는 병합이 기본이므로 ZIP 의미 없음)
-  function updateAutoOptions(){
-    const outMime = selFormat.value;
-
-    const imagesCount = files.filter(x => isImage(x.file)).length;
-
-    // 출력이 PDF면 ZIP은 끄고 비활성화
-    if(outMime === "application/pdf"){
-      zipModeEl.checked = false;
-      zipModeEl.disabled = true;
-
-      const wrap = zipModeEl.closest(".chk");
-      if(wrap){
-        wrap.style.opacity = ".55";
-        wrap.style.cursor = "not-allowed";
-      }
-      return;
-    }
-
-    // 출력이 이미지면 ZIP 사용 가능
-    zipModeEl.disabled = false;
-    const wrap = zipModeEl.closest(".chk");
-    if(wrap){
-      wrap.style.opacity = "1";
-      wrap.style.cursor = "pointer";
-    }
-
-    // 이미지 2개 이상이면 ZIP 자동 체크 (기본값)
-    if(imagesCount >= 2){
-      zipModeEl.checked = true;
-    }else{
-      zipModeEl.checked = false;
-    }
+    updateZipAvailability();
   }
 
   // ✅ append (Add more)
@@ -1383,7 +1353,7 @@
     previewActive();
     updateQualityState();
     updateCropState();
-    updateAutoOptions(); // ✅ NEW
+    updateZipAvailability();
   }
 
   // ✅ new selection (tap upload box)
@@ -1399,9 +1369,6 @@
 
     const mime = selFormat.value;
 
-    // ✅ NEW: ZIP 자동 정책 적용
-    updateAutoOptions();
-
     if(mime === "image/png"){
       setMessage(t.msg_png_q, "");
     } else if(mime === "application/pdf"){
@@ -1410,6 +1377,8 @@
     } else {
       setMessage(t.msg_ready, "ok");
     }
+
+    updateZipAvailability();
   }
 
   function openFilePicker(){
@@ -1485,14 +1454,55 @@
     selQuality.style.opacity = disableQuality ? ".6" : "1";
   }
 
+  function updateZipAvailability(){
+    const outMime = selFormat.value;
+    const images = files.filter(x => isImage(x.file));
+    const pdfs   = files.filter(x => isPDF(x.file));
+
+    // 기본: ZIP 비활성
+    zipModeEl.disabled = true;
+    zipModeEl.checked = false;
+
+    // 이미지 출력 + 이미지 2개 이상 => ZIP 가능 + 자동 체크
+    if(outMime !== "application/pdf" && images.length >= 2){
+      zipModeEl.disabled = false;
+      zipModeEl.checked = true;
+    }
+
+    // PDF 출력 + PDF 2개 이상 => ZIP 가능 (체크는 자동 X)
+    if(outMime === "application/pdf" && pdfs.length >= 2){
+      zipModeEl.disabled = false;
+    }
+
+    // 라벨 시각 처리
+    if(zipChkLabel){
+      zipChkLabel.style.opacity = zipModeEl.disabled ? ".55" : "1";
+      zipChkLabel.style.cursor = zipModeEl.disabled ? "not-allowed" : "pointer";
+    }
+
+    // ZIP 체크 + PDF 출력이면 A4 통일(병합용) 의미 없으니 비활성
+    if(zipModeEl.checked && outMime === "application/pdf"){
+      a4ModeEl.checked = false;
+      a4ModeEl.disabled = true;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = ".55";
+        a4ChkLabel.style.cursor = "not-allowed";
+      }
+    } else {
+      a4ModeEl.disabled = false;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = "1";
+        a4ChkLabel.style.cursor = "pointer";
+      }
+    }
+  }
+
   selFormat.addEventListener("change", ()=>{
     updateQualityState();
+    updateZipAvailability();
+
     const t = STR[LANG] || STR.en;
-
     const mime = selFormat.value;
-
-    // ✅ NEW: ZIP 자동 정책 적용
-    updateAutoOptions();
 
     if(mime === "image/png"){
       setMessage(t.msg_png_q, "");
@@ -1505,6 +1515,9 @@
       setMessage("", "");
     }
   });
+
+  // ZIP 체크 바뀌면 A4 비활성/활성도 다시 적용
+  zipModeEl.addEventListener("change", updateZipAvailability);
 
   function getTargetSize(origW, origH){
     const w = parseInt(inW.value, 10);
@@ -1634,6 +1647,20 @@
     return await zip.generateAsync({ type:"blob" });
   }
 
+  // ✅ PDF들을 "그대로" ZIP로 (병합 X)
+  async function zipOriginalPDFs(pdfItems){
+    if(!window.JSZip) throw new Error("ZIP library is not ready.");
+    const zip = new window.JSZip();
+
+    for(const it of pdfItems){
+      const f = it.file;
+      const buf = await f.arrayBuffer();
+      zip.file(f.name || buildName("file","pdf"), buf);
+    }
+
+    return await zip.generateAsync({ type:"blob" });
+  }
+
   async function onConvert(){
     const t = STR[LANG] || STR.en;
     if(files.length === 0){
@@ -1651,8 +1678,23 @@
     const pdfs   = files.filter(x => isPDF(x.file));
 
     try{
+      // =====================
+      // PDF output
+      // =====================
       if(outMime === "application/pdf"){
         if(pdfs.length >= 1){
+
+          // ✅ PDF 2개 이상 + ZIP 체크 => 병합 대신 "원본 PDF 그대로 ZIP"
+          if(pdfs.length >= 2 && zipModeEl.checked){
+            const zipBlob = await zipOriginalPDFs(pdfs);
+            const name = buildName("pdf_files", "zip");
+            downloadBlob(zipBlob, name);
+            setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
+            btnConvert.disabled = false;
+            return;
+          }
+
+          // ✅ 기본: 병합 PDF 1개 만들기
           const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
           const name = buildName("merged_pdf", "pdf");
           downloadBlob(merged, name);
@@ -1661,6 +1703,7 @@
           return;
         }
 
+        // 이미지 -> PDF (기존)
         if(images.length >= 1){
           const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
@@ -1673,6 +1716,9 @@
         throw new Error(t.err_only_supported);
       }
 
+      // =====================
+      // Image output
+      // =====================
       if(images.length === 0){
         throw new Error(t.err_only_supported);
       }
@@ -1721,7 +1767,7 @@
     renderTexts();
     renderFileList();
     updateCropState();
-    updateAutoOptions(); // ✅ NEW
+    updateZipAvailability();
   }
 
   btnConvert.addEventListener("click", onConvert);
@@ -1741,11 +1787,9 @@
         r.readAsDataURL(f);
       });
 
-      // keep compatibility with your edit page loader
       sessionStorage.setItem("cf24_edit_img", String(dataUrl));
       sessionStorage.setItem("cf24_edit_name", f.name || "image");
 
-      // also keep old keys (just in case)
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
