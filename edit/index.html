@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Edit Image | ConvertFiles24</title>
-  <meta name="description" content="Edit images online: crop, move/zoom/rotate/flip, resize, and download. 100% local processing (no server upload)." />
+  <meta name="description" content="Edit images online: crop-free move/zoom/rotate/flip, resize, and download. 100% local processing (no server upload)." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
@@ -177,23 +177,17 @@
 
     .cardHead{
       display:flex;
-      align-items:center;
+      align-items:center; /* header baseline */
       justify-content:space-between;
       gap:10px;
       margin:0 0 10px;
     }
     .cardHead h2{ margin:0; }
 
-    .iconBtns{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
     .resetIconBtn{
       appearance:none;
       border:none;
-      background:transparent;
+      background:transparent; /* no background by default */
       color:#dbe7ff;
       cursor:pointer;
       width:36px; height:36px;
@@ -206,7 +200,10 @@
       opacity:.92;
       padding:0;
     }
-    .resetIconBtn:hover{ background: rgba(47,109,246,.07); opacity:1; }
+    .resetIconBtn:hover{
+      background: rgba(47,109,246,.07);
+      opacity:1;
+    }
     .resetIconBtn:active{ transform: scale(.98); }
     .resetIconBtn:focus-visible{
       outline:none;
@@ -215,7 +212,6 @@
       opacity:1;
     }
     .resetIconBtn svg{ width:20px; height:20px; display:block; }
-    .resetIconBtn:disabled{ opacity:.45; cursor:not-allowed; background:transparent; box-shadow:none; }
 
     .stageWrap{
       display:grid;
@@ -248,15 +244,16 @@
       max-height:100%;
     }
 
-    /* Crosshair overlay */
+    /* Crosshair overlay (lighter & centered) */
     .crosshair{
       position:absolute;
       left:50%; top:50%;
       width:56px; height:56px;
       transform:translate(-50%,-50%);
       pointer-events:none;
-      opacity:.62;
+      opacity:.78;
       filter: drop-shadow(0 2px 8px rgba(0,0,0,.45));
+      z-index: 3;
     }
     .crosshair:before,
     .crosshair:after{
@@ -280,62 +277,29 @@
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
     }
 
-    /* ===== Crop overlay (draggable + resizable) ===== */
+    /* ✅ Crop overlay (draggable + resizable) */
     .overlay{
-      position:absolute; inset:0;
-      pointer-events:none;
-    }
-    .cropShade{
-      position:absolute; inset:0;
-      background: rgba(0,0,0,.35);
-      opacity:0;
-      transition: opacity .12s var(--ease);
-    }
-    .cropOn .cropShade{ opacity:1; }
-
-    .cropBox{
-      position:absolute;
-      left:50%; top:50%;
-      transform: translate(-50%,-50%);
-      border: 2px solid rgba(106,169,255,.90);
-      border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
-      opacity:0;
-      transition: opacity .12s var(--ease);
-      pointer-events:auto; /* ✅ enable drag/resize */
-      touch-action:none;
-    }
-    .cropOn .cropBox{ opacity:1; }
-
-    .cropBadge{
-      position:absolute;
-      top:10px; left:10px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      color:#eaf2ff;
-      background: rgba(47,109,246,.18);
-      border: 1px solid rgba(47,109,246,.35);
-      box-shadow: 0 10px 20px rgba(0,0,0,.20);
-      pointer-events:none;
-      opacity:0;
-      transform: translateY(-2px);
-      transition: opacity .12s var(--ease), transform .12s var(--ease);
-    }
-    .cropOn .cropBadge{ opacity:1; transform: translateY(0); }
-
-    .gridLines{
       position:absolute;
       inset:0;
-      border-radius:10px;
+      z-index: 4;
+      pointer-events:none; /* allow stage pan unless crop box/handles */
+    }
+    .cropBox{
+      position:absolute;
+      border:2px solid rgba(106,169,255,.9);
+      border-radius:12px;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
+      pointer-events:auto;
+      touch-action:none;
+    }
+    .cropGrid{
+      position:absolute;
+      inset:0;
+      border-radius:12px;
       overflow:hidden;
       pointer-events:none;
     }
-    .gridLines::before{
+    .cropGrid::before{
       content:"";
       position:absolute; inset:0;
       background:
@@ -345,34 +309,24 @@
         linear-gradient(to bottom, rgba(255,255,255,.35) 0 0) 0 66.66%/100% 1px no-repeat;
       opacity:.35;
     }
-
-    /* handles */
     .handle{
       position:absolute;
       width:18px; height:18px;
       border-radius:999px;
       border:2px solid rgba(235,245,255,.95);
-      background: rgba(11,15,23,.55);
-      box-shadow: 0 10px 20px rgba(0,0,0,.25);
-      transform: translate(-50%,-50%);
+      background: rgba(11,15,23,.45);
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
       pointer-events:auto;
       touch-action:none;
     }
-    .h-nw{ left:0; top:0; cursor:nwse-resize; }
-    .h-n { left:50%; top:0; cursor:ns-resize; }
-    .h-ne{ left:100%; top:0; cursor:nesw-resize; }
-    .h-e { left:100%; top:50%; cursor:ew-resize; }
-    .h-se{ left:100%; top:100%; cursor:nwse-resize; }
-    .h-s { left:50%; top:100%; cursor:ns-resize; }
-    .h-sw{ left:0; top:100%; cursor:nesw-resize; }
-    .h-w { left:0; top:50%; cursor:ew-resize; }
-
-    /* crop box "move" cursor */
-    .cropMoveArea{
-      position:absolute; inset:0;
-      cursor:move;
-      border-radius:10px;
-    }
+    .handle.nw{ left:-9px; top:-9px; cursor:nwse-resize; }
+    .handle.ne{ right:-9px; top:-9px; cursor:nesw-resize; }
+    .handle.sw{ left:-9px; bottom:-9px; cursor:nesw-resize; }
+    .handle.se{ right:-9px; bottom:-9px; cursor:nwse-resize; }
+    .handle.n{ left:50%; top:-9px; transform:translateX(-50%); cursor:ns-resize; }
+    .handle.s{ left:50%; bottom:-9px; transform:translateX(-50%); cursor:ns-resize; }
+    .handle.w{ left:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
+    .handle.e{ right:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize; }
 
     .row{
       display:flex;
@@ -397,6 +351,8 @@
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
+
+    /* controls: lighter + "home tone" */
     .btn.secondary{
       background: rgba(47,109,246,.14);
       color:#e9eef7;
@@ -407,6 +363,7 @@
       background: rgba(47,109,246,.18);
       border-color: rgba(47,109,246,.36);
     }
+
     .btn:hover{ filter: brightness(1.02); }
     .btn:active{ transform: scale(.99); }
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
@@ -429,6 +386,29 @@
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
+
+    .chkRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chk{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      border:var(--border);
+      background:rgba(255,255,255,.04);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      color:#cfe0ff;
+      white-space:nowrap;
+      width: fit-content;
+    }
+    .chk input{ width:16px; height:16px; }
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
@@ -456,13 +436,12 @@
     input[type="file"]{ display:none; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
         <h1 class="title" id="page_title">Edit</h1>
-        <p class="sub" id="page_sub">Move/zoom/rotate/flip → crop → resize → download. 100% local processing.</p>
+        <p class="sub" id="page_sub">Move/zoom/rotate/flip → resize → download. 100% local processing.</p>
 
         <div style="margin-top:10px;">
           <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
@@ -488,37 +467,28 @@
       <!-- Left: stage -->
       <div class="card">
         <h2 id="h_stage">Preview / Edit</h2>
-
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
+
+          <!-- ✅ crop overlay -->
+          <div class="overlay" id="overlay" aria-hidden="true">
+            <div class="cropBox" id="cropBox">
+              <div class="cropGrid"></div>
+              <div class="handle nw" data-h="nw"></div>
+              <div class="handle ne" data-h="ne"></div>
+              <div class="handle sw" data-h="sw"></div>
+              <div class="handle se" data-h="se"></div>
+              <div class="handle n"  data-h="n"></div>
+              <div class="handle s"  data-h="s"></div>
+              <div class="handle w"  data-h="w"></div>
+              <div class="handle e"  data-h="e"></div>
+            </div>
+          </div>
 
           <div class="crosshair" aria-hidden="true">
             <div class="crossDot" aria-hidden="true"></div>
           </div>
-
-          <!-- Crop Overlay -->
-          <div class="overlay" id="overlay">
-            <div class="cropShade"></div>
-
-            <div class="cropBadge" id="cropBadge">✂️ <span id="cropBadgeTxt">Crop mode</span></div>
-
-            <div class="cropBox" id="cropBox" aria-label="Crop box">
-              <div class="gridLines"></div>
-              <div class="cropMoveArea" id="cropMoveArea" aria-hidden="true"></div>
-
-              <div class="handle h-nw" data-h="nw"></div>
-              <div class="handle h-n"  data-h="n"></div>
-              <div class="handle h-ne" data-h="ne"></div>
-              <div class="handle h-e"  data-h="e"></div>
-              <div class="handle h-se" data-h="se"></div>
-              <div class="handle h-s"  data-h="s"></div>
-              <div class="handle h-sw" data-h="sw"></div>
-              <div class="handle h-w"  data-h="w"></div>
-            </div>
-          </div>
         </div>
-
-        <div class="hint" id="stage_hint">Tip: drag to move image · pinch / mouse wheel to zoom · ✂️ crop box drag/resize</div>
         <div class="msg" id="msg"></div>
       </div>
 
@@ -526,29 +496,18 @@
       <div class="card">
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
-
-          <div class="iconBtns">
-            <!-- ✅ Load image icon (new) -->
-            <button class="resetIconBtn" id="loadImgBtn" type="button" aria-label="Load image" title="Load image">
-              <!-- folder/image icon -->
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                <path d="M8 16l2-2 2 2 3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-
-            <!-- Reset view (your style) -->
-            <button class="resetIconBtn" id="resetViewBtn" type="button" aria-label="Reset view" title="Reset view">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M20 12a8 8 0 1 1-2.35-5.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
+          <button class="resetIconBtn" id="resetViewBtn" type="button" aria-label="Reset view" title="Reset view">
+            <!-- rounded arrow -->
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.35-5.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
 
+        <!-- ✅ 버튼 순서 변경 + '자르기' (즉시 잘라내기) -->
         <div class="row">
-          <button class="btn secondary" id="cropToggleBtn" type="button">✂️ Crop: ON</button>
+          <button class="btn secondary" id="applyCropBtn" type="button" disabled>✂️ Crop</button>
           <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
         </div>
 
@@ -556,27 +515,26 @@
 
         <div class="row">
           <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
-          <button class="btn secondary" id="resetCropBtn" type="button">✂️ Reset crop</button>
-        </div>
-
-        <div style="height:10px;"></div>
-
-        <div class="row">
           <button class="btn secondary" id="zoomOutBtn" type="button">➖ Zoom out</button>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="row">
           <button class="btn secondary" id="zoomInBtn" type="button">➕ Zoom in</button>
-        </div>
-
-        <div style="height:10px;"></div>
-
-        <div class="row">
           <button class="btn secondary" id="rotLBtn" type="button">⟲ Rotate</button>
-          <button class="btn secondary" id="rotRBtn" type="button">⟳ Rotate</button>
         </div>
 
         <div style="height:10px;"></div>
 
         <div class="row">
+          <button class="btn secondary" id="rotRBtn" type="button">⟳ Rotate</button>
           <button class="btn secondary" id="flipHBtn" type="button">⇋ Flip H</button>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="row">
           <button class="btn secondary" id="flipVBtn" type="button">⇵ Flip V</button>
         </div>
 
@@ -609,15 +567,40 @@
         <div class="row">
           <div>
             <label id="lbl_w">Width (px)</label>
-            <input id="w" type="number" min="1" placeholder="blank = crop size">
+            <input id="w" type="number" min="1" placeholder="blank = stage size">
           </div>
           <div>
             <label id="lbl_h">Height (px)</label>
-            <input id="h" type="number" min="1" placeholder="blank = crop size">
+            <input id="h" type="number" min="1" placeholder="blank = stage size">
           </div>
         </div>
 
         <div class="hint" id="size_hint">If you fill only one side, aspect ratio is preserved automatically.</div>
+
+        <div style="height:12px;"></div>
+
+        <h2 id="h_aspect">Aspect</h2>
+
+        <div class="chkRow">
+          <label class="chk" title="Keep aspect ratio when exporting">
+            <input type="checkbox" id="aspectLock" checked>
+            <span id="aspect_lock_txt">Keep aspect ratio</span>
+          </label>
+        </div>
+
+        <div style="height:8px;"></div>
+
+        <div class="row">
+          <div>
+            <label id="lbl_aspectMode">Mode</label>
+            <select id="aspectMode">
+              <option value="contain" selected>Contain (no crop)</option>
+              <option value="cover">Cover (crop)</option>
+              <option value="stretch">Stretch (fill)</option>
+            </select>
+            <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
+          </div>
+        </div>
 
         <div style="height:12px;"></div>
 
@@ -626,7 +609,7 @@
 
         <div style="height:12px;"></div>
         <div class="meta" id="meta">
-          <b>Preview</b><br/>Open from main preview ✂️ button or use the image icon above.
+          <b>Preview</b><br/>Open from main preview ✂️ button.
         </div>
       </div>
     </div>
@@ -637,9 +620,6 @@
       <a href="/terms.html">Terms</a>
     </div>
   </div>
-
-  <!-- hidden file input (for load icon) -->
-  <input id="loadInput" type="file" accept="image/*">
 
 <script>
 (() => {
@@ -652,14 +632,14 @@
   const STR = {
     en: {
       page_title: "Edit",
-      page_sub: "Move/zoom/rotate/flip → crop → resize → download. 100% local processing.",
+      page_sub: "Move/zoom/rotate/flip → resize → download. 100% local processing.",
       home: "🏠 Home",
       local: "Processed locally — no server upload",
       lang_label: "Language",
 
       h_stage: "Preview / Edit",
-      stage_hint: "Tip: drag to move image · pinch / mouse wheel to zoom · ✂️ crop box drag/resize",
       controls: "Controls",
+      crop_apply: "✂️ Crop",
       fit: "↔ Fit",
       center: "🎯 Center",
       zoomOut: "➖ Zoom out",
@@ -669,11 +649,6 @@
       flipH: "⇋ Flip H",
       flipV: "⇵ Flip V",
       resetView: "Reset view",
-      loadImg: "Load image",
-      cropToggleOn: "✂️ Crop: ON",
-      cropToggleOff: "✂️ Crop: OFF",
-      cropMode: "Crop mode",
-      cropReset: "✂️ Reset crop",
 
       h_output: "Output",
       format: "Format",
@@ -682,27 +657,31 @@
       h: "Height (px)",
       size_hint: "If you fill only one side, aspect ratio is preserved automatically.",
 
+      h_aspect: "Aspect",
+      aspect_lock: "Keep aspect ratio",
+      aspect_mode: "Mode",
+      aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
+
       h_download: "Download",
       download: "⬇️ Download",
 
-      msg_need: "No image found. Go back to main and press ✂️ next to Preview, or load here.",
-      msg_ready: "Ready. Drag image to move. Pinch/wheel to zoom. Crop box drag/resize.",
+      msg_need: "No image found. Go back to main page and press ✂️ next to Preview.",
+      msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
       msg_ok: "✅ Downloaded",
-      meta_idle: "<b>Preview</b><br/>Open from main preview ✂️ button or use the image icon above.",
-      meta_info: (name, w, h, cropOn) =>
-        `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px` +
-        `<br/><b>Crop</b><br/>${cropOn ? "ON" : "OFF"}`
+      msg_cropped: "✅ Cropped",
+      meta_idle: "<b>Preview</b><br/>Open from main preview ✂️ button.",
+      meta_info: (name, w, h) => `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px`
     },
     ko: {
       page_title: "편집",
-      page_sub: "이동/확대/회전/반전 → 크롭 → 크기 조절 → 다운로드. 100% 로컬 처리.",
+      page_sub: "이동/확대/회전/반전 → 크기 조절 → 다운로드. 100% 로컬 처리.",
       home: "🏠 홈으로",
       local: "로컬 처리 — 서버 업로드 없음",
       lang_label: "언어",
 
       h_stage: "미리보기 / 편집",
-      stage_hint: "팁: 드래그로 이미지 이동 · 핀치/휠로 확대 · ✂️ 크롭박스 이동/크기조절",
       controls: "조작",
+      crop_apply: "✂️ 자르기",
       fit: "↔ 맞추기",
       center: "🎯 중앙",
       zoomOut: "➖ 축소",
@@ -712,11 +691,6 @@
       flipH: "⇋ 좌우반전",
       flipV: "⇵ 상하반전",
       resetView: "뷰 초기화",
-      loadImg: "이미지 불러오기",
-      cropToggleOn: "✂️ 크롭: ON",
-      cropToggleOff: "✂️ 크롭: OFF",
-      cropMode: "크롭 모드",
-      cropReset: "✂️ 크롭 초기화",
 
       h_output: "출력",
       format: "형식",
@@ -725,27 +699,31 @@
       h: "세로(px)",
       size_hint: "한쪽만 입력하면 비율 유지로 자동 계산됩니다.",
 
+      h_aspect: "비율",
+      aspect_lock: "비율 유지",
+      aspect_mode: "모드",
+      aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
+
       h_download: "다운로드",
       download: "⬇️ 다운로드",
 
-      msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르거나, 여기서 불러오세요.",
-      msg_ready: "준비 완료! 드래그 이동, 핀치/휠 확대, ✂️ 크롭박스 크기조절 가능!",
+      msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
+      msg_ready: "준비 완료! 드래그로 이동, 핀치/마우스휠/버튼으로 확대하세요.",
       msg_ok: "✅ 다운로드 완료",
-      meta_idle: "<b>미리보기</b><br/>메인 미리보기 옆 ✂️ 버튼 또는 위의 이미지 아이콘으로 열어주세요.",
-      meta_info: (name, w, h, cropOn) =>
-        `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px` +
-        `<br/><b>크롭</b><br/>${cropOn ? "ON" : "OFF"}`
+      msg_cropped: "✅ 잘라내기 완료",
+      meta_idle: "<b>미리보기</b><br/>메인 미리보기 옆 ✂️ 버튼으로 열어주세요.",
+      meta_info: (name, w, h) => `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`
     },
     es: {
       page_title: "Editar",
-      page_sub: "Mover/zoom/rotar/voltear → recortar → redimensionar → descargar. 100% local.",
+      page_sub: "Mover/zoom/rotar/voltear → redimensionar → descargar. 100% local.",
       home: "🏠 Inicio",
       local: "Procesado local — sin servidor",
       lang_label: "Idioma",
 
       h_stage: "Vista previa / Editar",
-      stage_hint: "Tip: arrastra para mover · pellizco/rueda para zoom · ✂️ caja de recorte mover/tamaño",
       controls: "Controles",
+      crop_apply: "✂️ Recortar",
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
       zoomOut: "➖ Alejar",
@@ -755,11 +733,6 @@
       flipH: "⇋ Voltear H",
       flipV: "⇵ Voltear V",
       resetView: "Reiniciar vista",
-      loadImg: "Cargar imagen",
-      cropToggleOn: "✂️ Recorte: ON",
-      cropToggleOff: "✂️ Recorte: OFF",
-      cropMode: "Modo recorte",
-      cropReset: "✂️ Reiniciar recorte",
 
       h_output: "Salida",
       format: "Formato",
@@ -768,27 +741,31 @@
       h: "Alto (px)",
       size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
 
+      h_aspect: "Proporción",
+      aspect_lock: "Mantener proporción",
+      aspect_mode: "Modo",
+      aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
+
       h_download: "Descargar",
       download: "⬇️ Descargar",
 
-      msg_need: "No se encontró imagen. Vuelve al inicio y pulsa ✂️ junto a Vista previa, o carga aquí.",
-      msg_ready: "Listo. Arrastra para mover, pellizco/rueda para zoom, caja ✂️ redimensionable.",
+      msg_need: "No se encontró imagen. Vuelve a la página principal y pulsa ✂️ junto a Vista previa.",
+      msg_ready: "Listo. Arrastra para mover. Pellizca / rueda del ratón / botones para zoom.",
       msg_ok: "✅ Descargado",
-      meta_idle: "<b>Vista previa</b><br/>Abrir con ✂️ en la página principal o con el icono de imagen arriba.",
-      meta_info: (name, w, h, cropOn) =>
-        `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px` +
-        `<br/><b>Recorte</b><br/>${cropOn ? "ON" : "OFF"}`
+      msg_cropped: "✅ Recortado",
+      meta_idle: "<b>Vista previa</b><br/>Abrir desde el botón ✂️ junto a Vista previa en la página principal.",
+      meta_info: (name, w, h) => `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px`
     },
     ja: {
       page_title: "編集",
-      page_sub: "移動/ズーム/回転/反転 → 切り抜き → リサイズ → ダウンロード。100% ローカル処理。",
+      page_sub: "移動/ズーム/回転/反転 → リサイズ → ダウンロード。100% ローカル処理。",
       home: "🏠 ホーム",
       local: "ローカル処理 — サーバーなし",
       lang_label: "言語",
 
       h_stage: "プレビュー / 編集",
-      stage_hint: "ヒント: ドラッグ移動 · ピンチ/ホイールでズーム · ✂️ 枠移動/サイズ変更",
       controls: "操作",
+      crop_apply: "✂️ 切り抜き",
       fit: "↔ フィット",
       center: "🎯 中央",
       zoomOut: "➖ 縮小",
@@ -798,11 +775,6 @@
       flipH: "⇋ 左右反転",
       flipV: "⇵ 上下反転",
       resetView: "表示をリセット",
-      loadImg: "画像を読み込む",
-      cropToggleOn: "✂️ 切り抜き: ON",
-      cropToggleOff: "✂️ 切り抜き: OFF",
-      cropMode: "切り抜きモード",
-      cropReset: "✂️ 切り抜きリセット",
 
       h_output: "出力",
       format: "形式",
@@ -811,16 +783,20 @@
       h: "高さ(px)",
       size_hint: "片方だけ入力すると比率を維持して自動計算します。",
 
+      h_aspect: "比率",
+      aspect_lock: "比率を維持",
+      aspect_mode: "モード",
+      aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
+
       h_download: "ダウンロード",
       download: "⬇️ ダウンロード",
 
-      msg_need: "画像がありません。メインで ✂️ を押すか、ここで読み込んでください。",
-      msg_ready: "準備OK。ドラッグで移動、ピンチ/ホイールでズーム、✂️ 枠サイズ変更できます。",
+      msg_need: "画像がありません。メインでプレビュー横の ✂️ を押して開いてください。",
+      msg_ready: "準備OK。ドラッグで移動、ピンチ/マウスホイール/ボタンでズーム。",
       msg_ok: "✅ ダウンロード完了",
-      meta_idle: "<b>プレビュー</b><br/>メインの ✂️ または上の画像アイコンから開いてください。",
-      meta_info: (name, w, h, cropOn) =>
-        `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px` +
-        `<br/><b>切り抜き</b><br/>${cropOn ? "ON" : "OFF"}`
+      msg_cropped: "✅ 切り抜き完了",
+      meta_idle: "<b>プレビュー</b><br/>メインのプレビュー横 ✂️ から開いてください。",
+      meta_info: (name, w, h) => `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px`
     }
   };
 
@@ -861,9 +837,9 @@
     $("lang_label").textContent = t().lang_label;
 
     $("h_stage").textContent = t().h_stage;
-    $("stage_hint").textContent = t().stage_hint;
-
     $("h_controls").textContent = t().controls;
+
+    $("applyCropBtn").textContent = t().crop_apply;
     $("fitBtn").textContent = t().fit;
     $("centerBtn").textContent = t().center;
     $("zoomOutBtn").textContent = t().zoomOut;
@@ -872,13 +848,9 @@
     $("rotRBtn").textContent = t().rotR;
     $("flipHBtn").textContent = t().flipH;
     $("flipVBtn").textContent = t().flipV;
+
     $("resetViewBtn").setAttribute("aria-label", t().resetView);
     $("resetViewBtn").setAttribute("title", t().resetView);
-    $("loadImgBtn").setAttribute("aria-label", t().loadImg);
-    $("loadImgBtn").setAttribute("title", t().loadImg);
-
-    $("cropBadgeTxt").textContent = t().cropMode;
-    $("resetCropBtn").textContent = t().cropReset;
 
     $("h_output").textContent = t().h_output;
     $("lbl_format").textContent = t().format;
@@ -887,12 +859,15 @@
     $("lbl_h").textContent = t().h;
     $("size_hint").textContent = t().size_hint;
 
+    $("h_aspect").textContent = t().h_aspect;
+    $("aspect_lock_txt").textContent = t().aspect_lock;
+    $("lbl_aspectMode").textContent = t().aspect_mode;
+    $("aspect_hint").textContent = t().aspect_hint;
+
     $("h_download").textContent = t().h_download;
     $("downloadBtn").textContent = t().download;
 
-    updateCropToggleText();
     if(!img) $("meta").innerHTML = t().meta_idle;
-
     setTimeout(()=>resizeCanvas(), 0);
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
@@ -911,19 +886,16 @@
   const flipHBtn = $("flipHBtn");
   const flipVBtn = $("flipVBtn");
   const resetViewBtn = $("resetViewBtn");
-  const loadImgBtn = $("loadImgBtn");
-  const loadInput = $("loadInput");
+  const applyCropBtn = $("applyCropBtn");
 
-  const cropToggleBtn = $("cropToggleBtn");
-  const resetCropBtn = $("resetCropBtn");
-  const overlay = $("overlay");
   const cropBoxEl = $("cropBox");
-  const cropMoveArea = $("cropMoveArea");
 
   const outFormatEl = $("outFormat");
   const qualityEl = $("quality");
   const wEl = $("w");
   const hEl = $("h");
+  const aspectLockEl = $("aspectLock");
+  const aspectModeEl = $("aspectMode");
 
   const downloadBtn = $("downloadBtn");
   const msgEl = $("msg");
@@ -932,29 +904,30 @@
   let imgName = "image";
   let imgW = 0, imgH = 0;
 
-  // view state
+  // snapshot for "reset view" to original loaded state
   const initialView = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
-  const view = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
 
-  // crop state (in stage px)
+  const view = {
+    scale: 1,
+    offX: 0,
+    offY: 0,
+    rot: 0,
+    flipH: 1,
+    flipV: 1
+  };
+
+  // ✅ crop rect in stage coords
   const crop = { x: 0, y: 0, w: 0, h: 0 };
-  let cropEnabled = true;
 
   function setMsg(text, cls){
     msgEl.textContent = text || "";
     msgEl.className = "msg " + (cls || "");
   }
-  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-  function stageRect(){ return stage.getBoundingClientRect(); }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
   function resizeCanvas(){
-    const rect = stageRect();
+    const rect = stage.getBoundingClientRect();
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     cv.width = Math.round(rect.width * dpr);
     cv.height = Math.round(rect.height * dpr);
@@ -962,11 +935,49 @@
     cv.style.height = rect.height + "px";
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
-    ensureCropInit();
-    syncCropDom();
+    // keep crop box inside on resize
+    if(crop.w <= 0 || crop.h <= 0) resetCrop();
+    else clampCropToStage();
+
+    syncCropUI();
     redraw();
   }
   window.addEventListener("resize", resizeCanvas);
+
+  function stageRect(){ return stage.getBoundingClientRect(); }
+
+  function resetCrop(){
+    const r = stageRect();
+    const pad = 18;
+    const maxW = Math.max(80, r.width - pad*2);
+    const maxH = Math.max(80, r.height - pad*2);
+
+    const w = Math.round(maxW * 0.78);
+    const h = Math.round(maxH * 0.78);
+
+    crop.w = clamp(w, 80, maxW);
+    crop.h = clamp(h, 80, maxH);
+    crop.x = Math.round((r.width - crop.w) / 2);
+    crop.y = Math.round((r.height - crop.h) / 2);
+
+    syncCropUI();
+  }
+
+  function clampCropToStage(){
+    const r = stageRect();
+    const minSize = 60;
+    crop.w = clamp(crop.w, minSize, r.width);
+    crop.h = clamp(crop.h, minSize, r.height);
+    crop.x = clamp(crop.x, 0, r.width - crop.w);
+    crop.y = clamp(crop.y, 0, r.height - crop.h);
+  }
+
+  function syncCropUI(){
+    cropBoxEl.style.left = crop.x + "px";
+    cropBoxEl.style.top = crop.y + "px";
+    cropBoxEl.style.width = crop.w + "px";
+    cropBoxEl.style.height = crop.h + "px";
+  }
 
   function fitToStage(){
     if(!img) return;
@@ -977,6 +988,7 @@
     view.offY = 0;
     redraw();
   }
+
   function centerOnly(){
     if(!img) return;
     view.offX = 0;
@@ -1005,18 +1017,15 @@
       $("meta").innerHTML = t().meta_idle;
       downloadBtn.disabled = true;
       resetViewBtn.disabled = true;
-      resetCropBtn.disabled = true;
-      cropToggleBtn.disabled = true;
-      loadImgBtn.disabled = false;
+      resetViewBtn.style.opacity = ".55";
+      applyCropBtn.disabled = true;
       return;
     }
-
-    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH, cropEnabled);
+    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
     downloadBtn.disabled = false;
     resetViewBtn.disabled = false;
-    resetCropBtn.disabled = false;
-    cropToggleBtn.disabled = false;
-    loadImgBtn.disabled = false;
+    resetViewBtn.style.opacity = "";
+    applyCropBtn.disabled = false;
 
     const mime = outFormatEl.value;
     const disableQ = (mime === "image/png");
@@ -1024,54 +1033,11 @@
     qualityEl.style.opacity = disableQ ? ".6" : "1";
   }
 
-  // ===== Crop helpers =====
-  function ensureCropInit(){
-    const rect = stageRect();
-    if(crop.w > 0 && crop.h > 0) return;
-    const margin = 22;
-    const w = Math.max(120, rect.width - margin*2);
-    const h = Math.max(120, rect.height - margin*2);
-    const factor = 0.72;
-    crop.w = Math.round(w * factor);
-    crop.h = Math.round(h * factor);
-    crop.x = Math.round((rect.width - crop.w) / 2);
-    crop.y = Math.round((rect.height - crop.h) / 2);
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
   }
-
-  function syncCropDom(){
-    cropBoxEl.style.left = crop.x + "px";
-    cropBoxEl.style.top  = crop.y + "px";
-    cropBoxEl.style.width = crop.w + "px";
-    cropBoxEl.style.height= crop.h + "px";
-    cropBoxEl.style.transform = "none";
-  }
-
-  function setCropEnabled(on){
-    cropEnabled = !!on;
-    document.body.classList.toggle("cropOn", cropEnabled);
-    updateCropToggleText();
-    redraw();
-  }
-
-  function updateCropToggleText(){
-    cropToggleBtn.textContent = cropEnabled ? t().cropToggleOn : t().cropToggleOff;
-  }
-
-  function resetCrop(){
-    crop.w = 0; crop.h = 0; crop.x = 0; crop.y = 0;
-    ensureCropInit();
-    syncCropDom();
-  }
-
-  // ===== Buttons =====
-  fitBtn.addEventListener("click", ()=> {
-    if(!img) return setMsg(t().msg_need, "err");
-    fitToStage();
-  });
-  centerBtn.addEventListener("click", ()=> {
-    if(!img) return setMsg(t().msg_need, "err");
-    centerOnly();
-  });
 
   function zoomBy(factor, cx, cy){
     if(!img) return;
@@ -1079,9 +1045,11 @@
     const x = (typeof cx === "number") ? cx : rect.width/2;
     const y = (typeof cy === "number") ? cy : rect.height/2;
 
+    // convert screen point -> world (stage center space)
     const px = x - rect.width/2;
     const py = y - rect.height/2;
 
+    // before zoom: point in view space relative to translation
     const beforeX = (px - view.offX) / view.scale;
     const beforeY = (py - view.offY) / view.scale;
 
@@ -1093,6 +1061,32 @@
     redraw();
   }
 
+  function resetView(){
+    if(!img) return;
+    view.scale = initialView.scale;
+    view.offX = initialView.offX;
+    view.offY = initialView.offY;
+    view.rot  = initialView.rot;
+    view.flipH = initialView.flipH;
+    view.flipV = initialView.flipV;
+
+    wEl.value = "";
+    hEl.value = "";
+    aspectLockEl.checked = true;
+    aspectModeEl.value = "contain";
+
+    redraw();
+    setMsg(t().msg_ready, "ok");
+  }
+
+  fitBtn.addEventListener("click", ()=>{
+    if(!img) return setMsg(t().msg_need, "err");
+    fitToStage();
+  });
+  centerBtn.addEventListener("click", ()=>{
+    if(!img) return setMsg(t().msg_need, "err");
+    centerOnly();
+  });
   zoomInBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     zoomBy(1.08);
@@ -1112,6 +1106,7 @@
     view.rot = (view.rot + 90) % 360;
     redraw();
   });
+
   flipHBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     view.flipH *= -1;
@@ -1123,45 +1118,19 @@
     redraw();
   });
 
-  function resetView(){
-    if(!img) return;
-    view.scale = initialView.scale;
-    view.offX = initialView.offX;
-    view.offY = initialView.offY;
-    view.rot  = initialView.rot;
-    view.flipH = initialView.flipH;
-    view.flipV = initialView.flipV;
-
-    wEl.value = "";
-    hEl.value = "";
-
-    redraw();
-    setMsg(t().msg_ready, "ok");
-  }
   resetViewBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     resetView();
   });
 
-  cropToggleBtn.addEventListener("click", ()=>{
-    setCropEnabled(!cropEnabled);
-  });
-  resetCropBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
-    resetCrop();
-    setCropEnabled(true);
-    setMsg(t().msg_ready, "ok");
-  });
-
   outFormatEl.addEventListener("change", updateMeta);
 
-  // ===== pointer events: image pan + pinch =====
+  // ===== pointer events (pan + pinch zoom) =====
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
 
   stage.addEventListener("pointerdown", (e)=>{
-    // crop box handles will stop propagation to stage (see crop events below)
     stage.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
@@ -1229,214 +1198,28 @@
     return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
   }
 
-  // ===== mouse wheel zoom =====
+  // ===== mouse wheel zoom (PC) =====
   stage.addEventListener("wheel", (e)=>{
     if(!img) return;
     e.preventDefault();
     const rect = stageRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
-    const dir = (e.deltaY > 0) ? -1 : 1;
+    const dir = (e.deltaY > 0) ? -1 : 1; // natural feel
     const factor = dir > 0 ? 1.08 : 1/1.08;
     zoomBy(factor, cx, cy);
   }, { passive:false });
 
-  // ===== Crop drag/resize (pointer events) =====
-  let cropDrag = null;
-
-  function stopStagePan(e){
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  function cropStart(type, handle, e){
-    if(!cropEnabled) return;
-    if(!img) return;
-
-    stopStagePan(e);
-    cropBoxEl.setPointerCapture(e.pointerId);
-
-    cropDrag = {
-      type,
-      handle,
-      startX: e.clientX,
-      startY: e.clientY,
-      x: crop.x, y: crop.y, w: crop.w, h: crop.h
-    };
-  }
-
-  function cropMove(e){
-    if(!cropDrag) return;
-    stopStagePan(e);
-
-    const rect = stageRect();
-    const minSize = 80;
-
-    const dx = e.clientX - cropDrag.startX;
-    const dy = e.clientY - cropDrag.startY;
-
-    let nx = cropDrag.x, ny = cropDrag.y, nw = cropDrag.w, nh = cropDrag.h;
-
-    if(cropDrag.type === "move"){
-      nx = cropDrag.x + dx;
-      ny = cropDrag.y + dy;
-    } else {
-      const h = cropDrag.handle;
-
-      if(h.includes("w")){
-        nx = cropDrag.x + dx;
-        nw = cropDrag.w - dx;
-      }
-      if(h.includes("e")){
-        nw = cropDrag.w + dx;
-      }
-      if(h.includes("n")){
-        ny = cropDrag.y + dy;
-        nh = cropDrag.h - dy;
-      }
-      if(h.includes("s")){
-        nh = cropDrag.h + dy;
-      }
-
-      // enforce min size
-      if(nw < minSize){
-        const diff = minSize - nw;
-        nw = minSize;
-        if(h.includes("w")) nx -= diff;
-      }
-      if(nh < minSize){
-        const diff = minSize - nh;
-        nh = minSize;
-        if(h.includes("n")) ny -= diff;
-      }
-    }
-
-    // clamp inside stage
-    nx = clamp(nx, 0, rect.width - nw);
-    ny = clamp(ny, 0, rect.height - nh);
-
-    // final assign
-    crop.x = Math.round(nx);
-    crop.y = Math.round(ny);
-    crop.w = Math.round(clamp(nw, 1, rect.width));
-    crop.h = Math.round(clamp(nh, 1, rect.height));
-
-    syncCropDom();
-  }
-
-  function cropEnd(e){
-    if(!cropDrag) return;
-    stopStagePan(e);
-    cropDrag = null;
-  }
-
-  // move area
-  cropMoveArea.addEventListener("pointerdown", (e)=> cropStart("move", "", e));
-  cropBoxEl.addEventListener("pointermove", cropMove);
-  cropBoxEl.addEventListener("pointerup", cropEnd);
-  cropBoxEl.addEventListener("pointercancel", cropEnd);
-
-  // handles
-  cropBoxEl.querySelectorAll(".handle").forEach(h=>{
-    h.addEventListener("pointerdown", (e)=>{
-      const key = h.getAttribute("data-h") || "";
-      cropStart("resize", key, e);
-    });
-  });
-
-  // ===== Load image button (new) =====
-  loadImgBtn.addEventListener("click", ()=>{
-    loadInput.value = "";
-    loadInput.click();
-  });
-
-  loadInput.addEventListener("change", (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFromFile(f);
-  });
-
-  async function loadFromFile(file){
-    if(!file) return;
-    imgName = file.name || "image";
-
-    const url = URL.createObjectURL(file);
-    const im = new Image();
-    im.onload = ()=>{
-      URL.revokeObjectURL(url);
-      img = im;
-      imgW = im.naturalWidth || 1;
-      imgH = im.naturalHeight || 1;
-
-      // initial = fit
-      const rect = stageRect();
-      const s = Math.min(rect.width / imgW, rect.height / imgH);
-      initialView.scale = s;
-      initialView.offX = 0;
-      initialView.offY = 0;
-      initialView.rot = 0;
-      initialView.flipH = 1;
-      initialView.flipV = 1;
-
-      // save to sessionStorage so refresh still works
-      try{
-        const fr = new FileReader();
-        fr.onload = ()=>{
-          const dataUrl = String(fr.result || "");
-          if(dataUrl.startsWith("data:image/")){
-            sessionStorage.setItem("cf24_edit_img", dataUrl);
-            sessionStorage.setItem("cf24_edit_name", imgName);
-          }
-        };
-        fr.readAsDataURL(file);
-      }catch(err){}
-
-      resetCrop();
-      setCropEnabled(true);
-      resetView();
-      setMsg(t().msg_ready, "ok");
-      updateMeta();
-      resizeCanvas();
-    };
-    im.onerror = ()=>{
-      URL.revokeObjectURL(url);
-      img = null; imgW = imgH = 0;
-      setMsg(t().msg_need, "err");
-      updateMeta();
-      resizeCanvas();
-    };
-    im.src = url;
-  }
-
-  // ===== Load from sessionStorage (more robust) =====
-  function getSessionFirst(keys){
-    for(const k of keys){
-      const v = sessionStorage.getItem(k);
-      if(v && String(v).startsWith("data:image/")) return String(v);
-    }
-    return null;
-  }
-  function getSessionNameFirst(keys){
-    for(const k of keys){
-      const v = sessionStorage.getItem(k);
-      if(v && String(v).trim()) return String(v);
-    }
-    return "image";
-  }
-
+  // ===== load from sessionStorage =====
   async function loadFromSession(){
-    const dataUrl = getSessionFirst([
-      "cf24_edit_img",
-      "cf24_preview_img",
-      "cf24_idphoto_img",
-      "cf24_main_preview_img"
-    ]);
+    const dataUrl =
+      sessionStorage.getItem("cf24_edit_img") ||
+      sessionStorage.getItem("cf24_idphoto_img");
 
-    const name = getSessionNameFirst([
-      "cf24_edit_name",
-      "cf24_preview_name",
-      "cf24_idphoto_name",
-      "cf24_main_preview_name"
-    ]);
+    const name =
+      sessionStorage.getItem("cf24_edit_name") ||
+      sessionStorage.getItem("cf24_idphoto_name") ||
+      "image";
 
     if(!dataUrl){
       setMsg(t().msg_need, "err");
@@ -1447,13 +1230,13 @@
     }
 
     imgName = name;
-
     const im = new Image();
     im.onload = ()=>{
       img = im;
       imgW = im.naturalWidth || 1;
       imgH = im.naturalHeight || 1;
 
+      // initial state = "fit to stage"
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
       initialView.scale = s;
@@ -1464,14 +1247,16 @@
       initialView.flipV = 1;
 
       resetCrop();
-      setCropEnabled(true);
+      syncCropUI();
+
       resetView();
       setMsg(t().msg_ready, "ok");
       updateMeta();
       resizeCanvas();
     };
     im.onerror = ()=>{
-      img = null; imgW = imgH = 0;
+      img = null;
+      imgW = imgH = 0;
       setMsg(t().msg_need, "err");
       updateMeta();
       resizeCanvas();
@@ -1479,7 +1264,7 @@
     im.src = dataUrl;
   }
 
-  // ===== Download with crop =====
+  // ===== download =====
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -1499,6 +1284,183 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
+  // ✅ (핵심 수정) "현재 위치/회전/반전/확대" 그대로 유지 + "이미지 영역만" 잘라서 저장
+  function computeTransformedBBox(stageW, stageH){
+    // stage center + user offset
+    const cx = stageW/2 + view.offX;
+    const cy = stageH/2 + view.offY;
+
+    // local corners around image center
+    const hx = imgW/2;
+    const hy = imgH/2;
+
+    // scale & flips
+    const sx = view.scale * view.flipH;
+    const sy = view.scale * view.flipV;
+
+    // rotation
+    const a = (view.rot * Math.PI) / 180;
+    const cos = Math.cos(a);
+    const sin = Math.sin(a);
+
+    // 4 corners in local space
+    const pts = [
+      {x:-hx, y:-hy},
+      {x: hx, y:-hy},
+      {x: hx, y: hy},
+      {x:-hx, y: hy}
+    ];
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for(const p of pts){
+      // apply scale/flip
+      const x1 = p.x * sx;
+      const y1 = p.y * sy;
+      // rotate
+      const xr = x1 * cos - y1 * sin;
+      const yr = x1 * sin + y1 * cos;
+      // translate to stage
+      const xs = xr + cx;
+      const ys = yr + cy;
+
+      if(xs < minX) minX = xs;
+      if(ys < minY) minY = ys;
+      if(xs > maxX) maxX = xs;
+      if(ys > maxY) maxY = ys;
+    }
+
+    // pad 1px to avoid edge cut by rounding
+    return {
+      minX: Math.floor(minX) - 1,
+      minY: Math.floor(minY) - 1,
+      maxX: Math.ceil(maxX) + 1,
+      maxY: Math.ceil(maxY) + 1
+    };
+  }
+
+  function getOutputSizeFromBBox(bw, bh){
+    // default = bbox size
+    let W = Math.max(1, Math.round(bw));
+    let H = Math.max(1, Math.round(bh));
+
+    const wIn = parseInt(wEl.value, 10);
+    const hIn = parseInt(hEl.value, 10);
+
+    if(!wIn && !hIn) return { W, H };
+
+    const keep = !!aspectLockEl.checked;
+    const mode = (aspectModeEl.value || "contain"); // contain | cover | stretch
+
+    // base aspect from bbox
+    const aspect = W / H;
+
+    if(wIn && !hIn){
+      W = Math.max(1, wIn);
+      H = keep ? Math.max(1, Math.round(W / aspect)) : H;
+      return { W, H };
+    }
+    if(!wIn && hIn){
+      H = Math.max(1, hIn);
+      W = keep ? Math.max(1, Math.round(H * aspect)) : W;
+      return { W, H };
+    }
+    // both provided
+    W = Math.max(1, wIn);
+    H = Math.max(1, hIn);
+
+    // if keep ratio, interpret as contain/cover inside requested box
+    if(keep && mode !== "stretch"){
+      const s = (mode === "cover")
+        ? Math.max(W / bw, H / bh)
+        : Math.min(W / bw, H / bh);
+      return {
+        W: Math.max(1, Math.round(bw * s)),
+        H: Math.max(1, Math.round(bh * s))
+      };
+    }
+    return { W, H };
+  }
+
+  function stageToOutput(){
+    if(!img) throw new Error(t().msg_need);
+
+    const rect = stageRect();
+    const stageW = rect.width;
+    const stageH = rect.height;
+
+    // bbox in stage coordinate
+    const bb = computeTransformedBBox(stageW, stageH);
+    const bw = Math.max(1, bb.maxX - bb.minX);
+    const bh = Math.max(1, bb.maxY - bb.minY);
+
+    // output size decision (keep UI inputs working)
+    const { W, H } = getOutputSizeFromBBox(bw, bh);
+
+    const outMime = outFormatEl.value;
+    const q = parseFloat(qualityEl.value || "0.9");
+
+    // PNG/WebP => transparent background 유지
+    // JPG => 투명 불가 (흰색으로 깔끔히 채움)
+    const alpha = (outMime !== "image/jpeg");
+
+    const out = document.createElement("canvas");
+    out.width = W;
+    out.height = H;
+
+    const octx = out.getContext("2d", { alpha });
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
+
+    if(!alpha){
+      octx.fillStyle = "#ffffff";
+      octx.fillRect(0,0,W,H);
+    } else {
+      octx.clearRect(0,0,W,H);
+    }
+
+    // map: bbox -> output canvas (fit exactly)
+    const sx = W / bw;
+    const sy = H / bh;
+
+    octx.save();
+    octx.scale(sx, sy);
+
+    // shift bbox top-left to (0,0)
+    octx.translate(-bb.minX, -bb.minY);
+
+    // draw same as stage (but without stage background)
+    octx.translate(stageW/2, stageH/2);
+    octx.translate(view.offX, view.offY);
+    octx.rotate((view.rot * Math.PI) / 180);
+    octx.scale(view.scale * view.flipH, view.scale * view.flipV);
+    octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
+
+    octx.restore();
+
+    return new Promise((resolve, reject)=>{
+      if(outMime === "image/png"){
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+      } else if(outMime === "image/webp"){
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
+      } else {
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
+      }
+    });
+  }
+
+  downloadBtn.addEventListener("click", async ()=>{
+    try{
+      const blob = await stageToOutput();
+      const name = buildName();
+      downloadBlob(blob, name);
+      setMsg(t().msg_ok, "ok");
+    }catch(e){
+      setMsg((e && e.message) ? e.message : "Download failed", "err");
+    }
+  });
+
+  // ✅ 현재 stage를 그대로 렌더한 캔버스
   function renderStageToCanvas(){
     const rect = stageRect();
     const out = document.createElement("canvas");
@@ -1508,7 +1470,10 @@
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
 
-    // draw like stage (but no stage bg)
+    if(!img) return out;
+
+    octx.clearRect(0,0,out.width,out.height);
+
     octx.save();
     octx.translate(rect.width/2, rect.height/2);
     octx.translate(view.offX, view.offY);
@@ -1516,105 +1481,204 @@
     octx.scale(view.scale * view.flipH, view.scale * view.flipV);
     octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
     octx.restore();
+
     return out;
   }
 
-  function cropCanvas(srcCanvas){
-    if(!cropEnabled){
-      return srcCanvas;
+  // ✅ 자르기: crop box 영역만 "즉시 잘라내기"로 확정 (img 자체 교체)
+  function applyCropNow(){
+    if(!img) return setMsg(t().msg_need, "err");
+
+    clampCropToStage();
+    syncCropUI();
+
+    const stageCanvas = renderStageToCanvas();
+
+    const x = Math.round(clamp(crop.x, 0, stageCanvas.width - 1));
+    const y = Math.round(clamp(crop.y, 0, stageCanvas.height - 1));
+    const w = Math.round(clamp(crop.w, 2, stageCanvas.width - x));
+    const h = Math.round(clamp(crop.h, 2, stageCanvas.height - y));
+
+    const cut = document.createElement("canvas");
+    cut.width = Math.max(1, w);
+    cut.height = Math.max(1, h);
+
+    const cctx = cut.getContext("2d", { alpha:true });
+    cctx.imageSmoothingEnabled = true;
+    cctx.imageSmoothingQuality = "high";
+    cctx.clearRect(0,0,cut.width,cut.height);
+    cctx.drawImage(stageCanvas, x, y, w, h, 0, 0, cut.width, cut.height);
+
+    const dataUrl = cut.toDataURL("image/png");
+
+    const im = new Image();
+    im.onload = ()=>{
+      img = im;
+      imgW = im.naturalWidth || 1;
+      imgH = im.naturalHeight || 1;
+
+      // update name (session)
+      try{
+        const base = (imgName || "image").replace(/\.[^.]+$/, "");
+        imgName = base + "_cropped.png";
+        sessionStorage.setItem("cf24_edit_img", dataUrl);
+        sessionStorage.setItem("cf24_edit_name", imgName);
+      }catch(e){}
+
+      // initial state = fit
+      const rect = stageRect();
+      const s = Math.min(rect.width / imgW, rect.height / imgH);
+      initialView.scale = s;
+      initialView.offX = 0;
+      initialView.offY = 0;
+      initialView.rot = 0;
+      initialView.flipH = 1;
+      initialView.flipV = 1;
+
+      resetCrop();
+      resetView();
+      setMsg(t().msg_cropped, "ok");
+      updateMeta();
+      resizeCanvas();
+    };
+    im.onerror = ()=> setMsg("Crop failed", "err");
+    im.src = dataUrl;
+  }
+  applyCropBtn.addEventListener("click", applyCropNow);
+
+  // ===== crop drag/resize (pointer) =====
+  let cropPointerId = null;
+  let cropMode = null; // "move" or handle key
+  let cropStart = null;
+
+  function pointInCrop(px, py){
+    return (px >= crop.x && px <= crop.x+crop.w && py >= crop.y && py <= crop.y+crop.h);
+  }
+
+  function getStageLocal(e){
+    const r = stageRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  function beginCrop(e, mode){
+    if(!img) return;
+    cropPointerId = e.pointerId;
+    cropMode = mode;
+    cropStart = {
+      x: crop.x, y: crop.y, w: crop.w, h: crop.h,
+      px: getStageLocal(e).x,
+      py: getStageLocal(e).y
+    };
+    cropBoxEl.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function updateCropByPointer(e){
+    if(!img) return;
+    if(cropPointerId == null || e.pointerId !== cropPointerId) return;
+    if(!cropStart) return;
+
+    const r = stageRect();
+    const p = getStageLocal(e);
+    const dx = p.x - cropStart.px;
+    const dy = p.y - cropStart.py;
+
+    const minSize = 60;
+
+    if(cropMode === "move"){
+      crop.x = cropStart.x + dx;
+      crop.y = cropStart.y + dy;
+      clampCropToStage();
+      syncCropUI();
+      return;
     }
-    const rect = stageRect();
-    const x = clamp(crop.x, 0, rect.width);
-    const y = clamp(crop.y, 0, rect.height);
-    const w = clamp(crop.w, 1, rect.width - x);
-    const h = clamp(crop.h, 1, rect.height - y);
 
-    const out = document.createElement("canvas");
-    out.width = Math.max(1, Math.round(w));
-    out.height = Math.max(1, Math.round(h));
-    const octx = out.getContext("2d", { alpha:true });
-    octx.imageSmoothingEnabled = true;
-    octx.imageSmoothingQuality = "high";
+    // resize
+    let x = cropStart.x, y = cropStart.y, w = cropStart.w, h = cropStart.h;
 
-    octx.drawImage(srcCanvas, x, y, w, h, 0, 0, out.width, out.height);
-    return out;
-  }
+    const right = cropStart.x + cropStart.w;
+    const bottom = cropStart.y + cropStart.h;
 
-  function resizeOutput(srcCanvas){
-    const wIn = parseInt(wEl.value, 10);
-    const hIn = parseInt(hEl.value, 10);
+    const mode = cropMode;
 
-    if(!wIn && !hIn) return srcCanvas;
+    const moveLeft   = (mode === "w" || mode === "nw" || mode === "sw");
+    const moveRight  = (mode === "e" || mode === "ne" || mode === "se");
+    const moveTop    = (mode === "n" || mode === "nw" || mode === "ne");
+    const moveBottom = (mode === "s" || mode === "sw" || mode === "se");
 
-    const sw = srcCanvas.width;
-    const sh = srcCanvas.height;
+    let newLeft = x;
+    let newTop = y;
+    let newRight = right;
+    let newBottom = bottom;
 
-    let W = sw, H = sh;
-    if(wIn && !hIn){
-      W = Math.max(1, wIn);
-      H = Math.max(1, Math.round(W * (sh / sw)));
-    }else if(!wIn && hIn){
-      H = Math.max(1, hIn);
-      W = Math.max(1, Math.round(H * (sw / sh)));
-    }else{
-      W = Math.max(1, wIn);
-      H = Math.max(1, hIn);
+    if(moveLeft)  newLeft = x + dx;
+    if(moveRight) newRight = right + dx;
+    if(moveTop)   newTop = y + dy;
+    if(moveBottom)newBottom = bottom + dy;
+
+    // enforce min size
+    if(newRight - newLeft < minSize){
+      if(moveLeft) newLeft = newRight - minSize;
+      else newRight = newLeft + minSize;
+    }
+    if(newBottom - newTop < minSize){
+      if(moveTop) newTop = newBottom - minSize;
+      else newBottom = newTop + minSize;
     }
 
-    const out = document.createElement("canvas");
-    out.width = W;
-    out.height = H;
-    const octx = out.getContext("2d", { alpha:true });
-    octx.imageSmoothingEnabled = true;
-    octx.imageSmoothingQuality = "high";
-    octx.drawImage(srcCanvas, 0, 0, W, H);
-    return out;
+    // clamp to stage bounds
+    newLeft = clamp(newLeft, 0, r.width - minSize);
+    newTop = clamp(newTop, 0, r.height - minSize);
+    newRight = clamp(newRight, minSize, r.width);
+    newBottom = clamp(newBottom, minSize, r.height);
+
+    // re-enforce min size after clamp
+    if(newRight - newLeft < minSize) newRight = newLeft + minSize;
+    if(newBottom - newTop < minSize) newBottom = newTop + minSize;
+
+    crop.x = Math.round(newLeft);
+    crop.y = Math.round(newTop);
+    crop.w = Math.round(newRight - newLeft);
+    crop.h = Math.round(newBottom - newTop);
+
+    clampCropToStage();
+    syncCropUI();
   }
 
-  async function canvasToBlob(canvas, mime, q){
-    return new Promise((resolve, reject)=>{
-      if(mime === "image/png"){
-        canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
-      } else if(mime === "image/webp"){
-        canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
-      } else {
-        // JPG: fill white background
-        const out = document.createElement("canvas");
-        out.width = canvas.width;
-        out.height = canvas.height;
-        const c = out.getContext("2d", { alpha:false });
-        c.fillStyle = "#ffffff";
-        c.fillRect(0,0,out.width,out.height);
-        c.drawImage(canvas, 0, 0);
-        out.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
-      }
+  function endCrop(e){
+    if(cropPointerId == null || e.pointerId !== cropPointerId) return;
+    cropPointerId = null;
+    cropMode = null;
+    cropStart = null;
+  }
+
+  // start move by clicking inside box (not on handle)
+  cropBoxEl.addEventListener("pointerdown", (e)=>{
+    const tEl = e.target;
+    if(tEl && tEl.classList && tEl.classList.contains("handle")) return; // handle has own handler
+    beginCrop(e, "move");
+  });
+  cropBoxEl.addEventListener("pointermove", updateCropByPointer);
+  cropBoxEl.addEventListener("pointerup", endCrop);
+  cropBoxEl.addEventListener("pointercancel", endCrop);
+
+  cropBoxEl.querySelectorAll(".handle").forEach(h=>{
+    h.addEventListener("pointerdown", (e)=>{
+      const key = h.dataset.h;
+      beginCrop(e, key);
     });
-  }
-
-  downloadBtn.addEventListener("click", async ()=>{
-    try{
-      if(!img) throw new Error(t().msg_need);
-
-      const stageCanvas = renderStageToCanvas();
-      const cropped = cropCanvas(stageCanvas);
-      const resized = resizeOutput(cropped);
-
-      const mime = outFormatEl.value;
-      const q = parseFloat(qualityEl.value || "0.9");
-      const blob = await canvasToBlob(resized, mime, q);
-
-      downloadBlob(blob, buildName());
-      setMsg(t().msg_ok, "ok");
-    }catch(e){
-      setMsg((e && e.message) ? e.message : "Download failed", "err");
-    }
+    h.addEventListener("pointermove", updateCropByPointer);
+    h.addEventListener("pointerup", endCrop);
+    h.addEventListener("pointercancel", endCrop);
   });
 
   // init
   setLang(LANG);
   updateMeta();
   resizeCanvas();
-  setCropEnabled(true);
+  resetCrop();
+  syncCropUI();
   loadFromSession();
 })();
 </script>
