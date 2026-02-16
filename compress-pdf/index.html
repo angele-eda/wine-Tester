@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Compress PDF | ConvertFiles24</title>
+  <meta name="description" content="Compress PDFs by rebuilding pages as optimized images. 100% local processing (no server upload)." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f17" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- pdf.js (render pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
+  <!-- PDF-lib (rebuild PDF) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+  <style>
+    :root{
+      --radius:16px;
+      --pad:16px;
+      --border:1px solid rgba(255,255,255,.12);
+      --blue: 47,109,246;
+      --ease: cubic-bezier(.2,.8,.2,1);
+
+      --softBlueBg: rgba(120, 200, 255, .06);
+      --softBlueBd: rgba(120, 200, 255, .22);
+      --softBlueTx: #cfe6ff;
+      --softBlueHi: rgba(120, 200, 255, .12);
+    }
+    *{ box-sizing:border-box; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+    body{
+      margin:0;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
+      background:#0b0f17;
+      color:#e9eef7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+
+    body:not(.loaded) .card, body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
+    body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
+    body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
+    @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
+    }
+
+    .wrap{ max-width:980px; width:100%; margin:0 auto; padding:22px 14px 44px; overflow-x: clip; }
+    .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; min-width:0; }
+    .title{ margin:0; font-weight:900; letter-spacing:-0.35px; line-height:1.15; color:#fff; font-size:22px; }
+    .sub{ margin:8px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+
+    .homeBtn{
+      width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px; border-radius:999px;
+      border:1px solid rgba(47,109,246,.55);
+      background:rgba(47,109,246,.18);
+      color:#e9eef7; font-weight:900; cursor:pointer; text-decoration:none; user-select:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      max-width:380px;
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
+    }
+    .homeBtn:hover{ background:rgba(47,109,246,.24); }
+    .homeBtn:active{ transform: scale(.99); }
+    .homeBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25); }
+
+    .langRow{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:220px; max-width:100%; margin-left:auto; }
+    .langLabel{ font-size:12px; font-weight:900; color:#9fb0ca; letter-spacing:-0.2px; display:flex; align-items:center; gap:8px; opacity:.95; }
+    .langSelect{
+      width:220px; max-width:100%; padding:12px 12px; border-radius:999px;
+      border:var(--border); background:rgba(255,255,255,.06); color:#e9eef7; outline:none; font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease), transform .08s var(--ease);
+    }
+    .langSelect:focus-visible{ outline:none; border-color: rgba(var(--blue), .55); box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+    option{ background:#0b0f17; color:#e9eef7; }
+
+    .pill{
+      width:100%; border:1px solid rgba(120, 200, 255, .22);
+      background:rgba(120, 200, 255, .06);
+      border-radius:999px; padding:10px 14px; color:#cfe6ff; font-size:13px; font-weight:900;
+      display:flex; align-items:center; justify-content:center; gap:10px; min-width:0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .card{ border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:var(--pad); margin-top:12px; min-width:0; max-width:100%; overflow-x: clip; }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
+
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      background:rgba(255,255,255,.02);
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
+      position: relative;
+      min-height: 160px;
+      display:flex; align-items:center; justify-content:center;
+      max-width:100%;
+      overflow:hidden;
+    }
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
+    .drop:active{ transform: scale(0.998); }
+    .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
+    .dropEmoji{ font-size:42px; line-height:1; margin:10px 0 8px; filter: drop-shadow(0 10px 22px rgba(0,0,0,.28)); }
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; min-width:0; }
+    .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:#2f6df6; color:white; font-weight:900;
+      padding:12px 14px; border-radius:14px; width:100%;
+      font-size:14px;
+      letter-spacing: -0.2px;
+      user-select:none;
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
+    }
+    .btn.secondary{
+      background: var(--softBlueBg);
+      border: 1px solid var(--softBlueBd);
+      color: var(--softBlueTx);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .btn.secondary:hover{ background: var(--softBlueHi); }
+
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+    .btn:disabled{
+      opacity:1; cursor:not-allowed; transform:none; box-shadow:none;
+      filter: saturate(.7);
+      background: linear-gradient(180deg, rgba(47,109,246,.40), rgba(47,109,246,.30));
+      color:#ffffff;
+    }
+    .btn.secondary:disabled{
+      filter:none;
+      background: rgba(120, 200, 255, .05);
+      border: 1px solid rgba(120, 200, 255, .16);
+      color: rgba(207, 230, 255, .70);
+      box-shadow:none;
+    }
+
+    input[type="file"]{ display:none; }
+    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+    select, input[type="number"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      border:var(--border);
+      outline:none;
+      font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    select:focus-visible, input[type="number"]:focus-visible{
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
+    }
+
+    input[type="range"]{ width:100%; }
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .msg.err{ color:#ffb4b4; }
+    .msg.ok{ color:#b8ffcc; }
+
+    .meta{ color:#b7c3d9; font-size:13px; line-height:1.5; word-break:break-word; min-width:0; }
+    .meta b{ color:#e9eef7; }
+
+    .footer{ margin-top:16px; color:#94a6c2; font-size:12px; text-align:center; }
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+
+    .bar{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      margin-top:8px;
+      display:none;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: rgba(47,109,246,.9);
+      transition: width .15s var(--ease);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div style="flex:1; min-width:240px;">
+        <h1 class="title" id="page_title">Compress PDF</h1>
+        <p class="sub" id="page_sub">Upload → choose quality → compress → download. 100% local processing.</p>
+
+        <div style="margin-top:10px;">
+          <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+        </div>
+      </div>
+
+      <div class="langRow">
+        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+        <select class="langSelect" id="langSelect" aria-label="Language">
+          <option value="en">Global (English)</option>
+          <option value="ko">한국어</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="h_step1">Upload PDF</h2>
+
+      <div class="row">
+        <button class="btn secondary" id="pickBtn" type="button">📄 Choose PDF</button>
+        <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
+        <div style="width:100%;">
+          <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop PDF here<br/>or tap to upload</div>
+          <div class="dropEmoji" aria-hidden="true">🗜️</div>
+          <div class="hint" id="drop_hint">This compresses by rebuilding pages as images (may remove selectable text).</div>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
+      <div class="bar" id="bar"><div id="barFill"></div></div>
+    </div>
+
+    <div class="card">
+      <h2 id="h_step2">Compression</h2>
+
+      <div class="row">
+        <div>
+          <label id="lbl_quality">Image quality</label>
+          <select id="quality" disabled>
+            <option value="0.85">High (0.85)</option>
+            <option value="0.75" selected>Medium (0.75)</option>
+            <option value="0.60">Small (0.60)</option>
+          </select>
+          <div class="small" id="q_hint">Lower = smaller file.</div>
+        </div>
+        <div>
+          <label id="lbl_scale">Render scale</label>
+          <select id="scale" disabled>
+            <option value="1.0" selected>1.0 (fast)</option>
+            <option value="1.5">1.5 (balanced)</option>
+            <option value="2.0">2.0 (sharp)</option>
+          </select>
+          <div class="small" id="s_hint">Higher = sharper but larger.</div>
+        </div>
+      </div>
+
+      <div style="height:12px;"></div>
+
+      <div class="row">
+        <button class="btn" id="compressBtn" type="button" disabled>⬇️ Compress & Download PDF</button>
+      </div>
+
+      <div style="height:12px;"></div>
+      <div class="meta" id="meta"><b>Status</b><br/>Upload a PDF to start.</div>
+    </div>
+
+    <div class="footer">
+      © <span id="year"></span> ConvertFiles24 ·
+      <a href="/privacy.html">Privacy</a> ·
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+
+  <input id="pickInput" type="file" accept="application/pdf">
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id)=>document.getElementById(id);
+  $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
+
+  // pdf.js worker
+  if (window.pdfjsLib) {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
+  }
+
+  const STR = {
+    en:{
+      page_title:"Compress PDF",
+      page_sub:"Upload → choose quality → compress → download. 100% local processing.",
+      home:"🏠 Home",
+      local:"Processed locally — no server upload",
+      lang_label:"Language",
+      h1:"Upload PDF",
+      pick:"📄 Choose PDF",
+      clear:"🧹 Clear",
+      drop_title:"Drop PDF here<br/>or tap to upload",
+      drop_hint:"This compresses by rebuilding pages as images (may remove selectable text).",
+      h2:"Compression",
+      lbl_quality:"Image quality",
+      q_hint:"Lower = smaller file.",
+      lbl_scale:"Render scale",
+      s_hint:"Higher = sharper but larger.",
+      go:"⬇️ Compress & Download PDF",
+      meta_idle:"<b>Status</b><br/>Upload a PDF to start.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Pages</b><br/>${p}`,
+      msg_need:"Please upload a PDF first.",
+      msg_work:"Working… keep this tab open.",
+      msg_done:"✅ Done",
+      msg_fail:"Failed to compress PDF."
+    },
+    ko:{
+      page_title:"PDF 압축",
+      page_sub:"업로드 → 품질 선택 → 압축 → 다운로드. 100% 로컬 처리.",
+      home:"🏠 홈으로",
+      local:"로컬 처리 — 서버 업로드 없음",
+      lang_label:"언어",
+      h1:"PDF 업로드",
+      pick:"📄 PDF 선택",
+      clear:"🧹 비우기",
+      drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
+      drop_hint:"이미지로 다시 만들어 압축합니다(텍스트 선택/검색이 사라질 수 있어요).",
+      h2:"압축 설정",
+      lbl_quality:"이미지 품질",
+      q_hint:"낮을수록 용량이 작아져요.",
+      lbl_scale:"렌더 스케일",
+      s_hint:"높을수록 선명하지만 커질 수 있어요.",
+      go:"⬇️ 압축 PDF 다운로드",
+      meta_idle:"<b>상태</b><br/>PDF를 업로드하면 시작할 수 있어요.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>페이지</b><br/>${p}`,
+      msg_need:"먼저 PDF를 업로드해 주세요.",
+      msg_work:"작업 중… 이 탭을 닫지 마세요.",
+      msg_done:"✅ 완료",
+      msg_fail:"PDF 압축 실패"
+    },
+    es:{
+      page_title:"Comprimir PDF",
+      page_sub:"Sube → elige calidad → comprime → descarga. 100% local.",
+      home:"🏠 Inicio",
+      local:"Procesado local — sin servidor",
+      lang_label:"Idioma",
+      h1:"Subir PDF",
+      pick:"📄 Elegir PDF",
+      clear:"🧹 Limpiar",
+      drop_title:"Suelta el PDF aquí<br/>o toca para subir",
+      drop_hint:"Comprime recreando páginas como imágenes (puede perder texto seleccionable).",
+      h2:"Compresión",
+      lbl_quality:"Calidad de imagen",
+      q_hint:"Menor = más pequeño.",
+      lbl_scale:"Escala de render",
+      s_hint:"Mayor = más nítido pero más grande.",
+      go:"⬇️ Comprimir y descargar PDF",
+      meta_idle:"<b>Estado</b><br/>Sube un PDF para empezar.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Páginas</b><br/>${p}`,
+      msg_need:"Primero sube un PDF.",
+      msg_work:"Trabajando… no cierres esta pestaña.",
+      msg_done:"✅ Hecho",
+      msg_fail:"Error al comprimir PDF."
+    },
+    ja:{
+      page_title:"PDF 圧縮",
+      page_sub:"アップロード → 品質選択 → 圧縮 → ダウンロード。100% ローカル処理。",
+      home:"🏠 ホーム",
+      local:"ローカル処理 — サーバーなし",
+      lang_label:"言語",
+      h1:"PDF アップロード",
+      pick:"📄 PDF を選択",
+      clear:"🧹 クリア",
+      drop_title:"ここにPDFをドロップ<br/>またはタップして選択",
+      drop_hint:"画像として再生成して圧縮します（テキスト選択が失われる場合あり）。",
+      h2:"圧縮設定",
+      lbl_quality:"画像品質",
+      q_hint:"低いほど小さくなります。",
+      lbl_scale:"レンダースケール",
+      s_hint:"高いほど鮮明ですが大きくなる可能性。",
+      go:"⬇️ 圧縮PDFをダウンロード",
+      meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>ページ</b><br/>${p}`,
+      msg_need:"先にPDFをアップロードしてください。",
+      msg_work:"処理中… このタブを閉じないでください。",
+      msg_done:"✅ 完了",
+      msg_fail:"PDF圧縮に失敗しました。"
+    }
+  };
+
+  const pickInput = $("pickInput");
+  const pickBtn = $("pickBtn");
+  const clearBtn = $("clearBtn");
+  const drop = $("drop");
+  const msgEl = $("msg");
+  const metaEl = $("meta");
+  const qualityEl = $("quality");
+  const scaleEl = $("scale");
+  const compressBtn = $("compressBtn");
+  const bar = $("bar");
+  const barFill = $("barFill");
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+  function setMsg(text, cls){
+    msgEl.textContent = text || "";
+    msgEl.className = "msg " + (cls || "");
+  }
+  function setProg(pct){
+    bar.style.display = "block";
+    barFill.style.width = Math.max(0, Math.min(100, pct)) + "%";
+  }
+  function hideProg(){
+    bar.style.display = "none";
+    barFill.style.width = "0%";
+  }
+
+  function getQueryLang(){
+    try{
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toLowerCase();
+      if(q && STR[q]) return q;
+    }catch(e){}
+    return null;
+  }
+  function detectLang(){
+    const q = getQueryLang();
+    if(q) return q;
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("es")) return "es";
+    return "en";
+  }
+  let LANG = detectLang();
+  function t(){ return STR[LANG] || STR.en; }
+
+  function setLang(lang){
+    if(!STR[lang]) lang = "en";
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+    $("langSelect").value = lang;
+    document.documentElement.lang = lang;
+
+    $("page_title").textContent = t().page_title;
+    $("page_sub").textContent = t().page_sub;
+    $("home_btn").textContent = t().home;
+    $("local_processing").textContent = t().local;
+    $("lang_label").textContent = t().lang_label;
+
+    $("h_step1").textContent = t().h1;
+    pickBtn.textContent = t().pick;
+    clearBtn.textContent = t().clear;
+    $("drop_title").innerHTML = t().drop_title;
+    $("drop_hint").textContent = t().drop_hint;
+
+    $("h_step2").textContent = t().h2;
+    $("lbl_quality").textContent = t().lbl_quality;
+    $("q_hint").textContent = t().q_hint;
+    $("lbl_scale").textContent = t().lbl_scale;
+    $("s_hint").textContent = t().s_hint;
+    compressBtn.textContent = t().go;
+
+    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
+  }
+  $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
+
+  let pdfBytes = null;
+  let pdfName = "document.pdf";
+  let pageCount = 0;
+
+  pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
+  pickInput.addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  function openDropPicker(){ pickInput.value=""; pickInput.click(); }
+  drop.addEventListener("click", openDropPicker);
+  drop.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
+  });
+  ["dragenter","dragover"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
+  });
+  drop.addEventListener("drop", (e)=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+
+  clearBtn.addEventListener("click", ()=>{
+    pdfBytes = null; pdfName="document.pdf"; pageCount=0;
+    qualityEl.disabled = true;
+    scaleEl.disabled = true;
+    compressBtn.disabled = true;
+    clearBtn.disabled = true;
+    metaEl.innerHTML = t().meta_idle;
+    setMsg("", "");
+    hideProg();
+  });
+
+  async function loadFile(file){
+    try{
+      setMsg("", "");
+      hideProg();
+      const buf = await file.arrayBuffer();
+      const loadingTask = window.pdfjsLib.getDocument({ data: buf });
+      const pdf = await loadingTask.promise;
+      pageCount = pdf.numPages;
+      pdfBytes = buf;
+      pdfName = file.name || "document.pdf";
+
+      qualityEl.disabled = false;
+      scaleEl.disabled = false;
+      compressBtn.disabled = false;
+      clearBtn.disabled = false;
+
+      metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
+    }catch(e){
+      pdfBytes = null; pageCount=0;
+      qualityEl.disabled = true;
+      scaleEl.disabled = true;
+      compressBtn.disabled = true;
+      clearBtn.disabled = true;
+      metaEl.innerHTML = t().meta_idle;
+      setMsg(t().msg_fail, "err");
+      hideProg();
+    }
+  }
+
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+
+  function buildName(){
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+    return `${base}_compressed_${stamp}.pdf`;
+  }
+
+  async function renderPageToJpegDataUrl(pdf, pageNum, scale, quality){
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { alpha:false });
+
+    canvas.width = Math.max(1, Math.floor(viewport.width));
+    canvas.height = Math.max(1, Math.floor(viewport.height));
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const dataUrl = canvas.toDataURL("image/jpeg", quality);
+    return { dataUrl, w: canvas.width, h: canvas.height };
+  }
+
+  compressBtn.addEventListener("click", async ()=>{
+    try{
+      if(!pdfBytes) return setMsg(t().msg_need, "err");
+
+      compressBtn.disabled = true;
+      pickBtn.disabled = true;
+      clearBtn.disabled = true;
+      qualityEl.disabled = true;
+      scaleEl.disabled = true;
+
+      setMsg(t().msg_work, "");
+      setProg(1);
+
+      const q = parseFloat(qualityEl.value || "0.75");
+      const scale = parseFloat(scaleEl.value || "1.0");
+
+      const loadingTask = window.pdfjsLib.getDocument({ data: pdfBytes });
+      const pdf = await loadingTask.promise;
+
+      const { PDFDocument } = window.PDFLib;
+      const out = await PDFDocument.create();
+
+      for(let i=1;i<=pdf.numPages;i++){
+        setProg(Math.round((i-1)/pdf.numPages*90) + 5);
+
+        const { dataUrl, w, h } = await renderPageToJpegDataUrl(pdf, i, scale, q);
+
+        const jpgBytes = await fetch(dataUrl).then(r=>r.arrayBuffer());
+        const jpg = await out.embedJpg(jpgBytes);
+
+        // Use pixel as PDF points 1:1 to keep sharpness (simple)
+        const page = out.addPage([w, h]);
+        page.drawImage(jpg, { x:0, y:0, width:w, height:h });
+      }
+
+      setProg(96);
+      const bytes = await out.save({ useObjectStreams:true });
+      const blob = new Blob([bytes], { type:"application/pdf" });
+
+      downloadBlob(blob, buildName());
+      setProg(100);
+      setMsg(t().msg_done, "ok");
+    }catch(e){
+      setMsg(t().msg_fail, "err");
+      hideProg();
+    }finally{
+      // re-enable if pdf exists
+      const has = !!pdfBytes;
+      compressBtn.disabled = !has;
+      pickBtn.disabled = false;
+      clearBtn.disabled = !has;
+      qualityEl.disabled = !has;
+      scaleEl.disabled = !has;
+    }
+  });
+
+  // init
+  setLang(LANG);
+})();
+</script>
+</body>
+</html>
