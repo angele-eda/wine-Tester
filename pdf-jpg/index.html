@@ -1,20 +1,18 @@
 <!doctype html>
-<html lang="en" translate="no">
+<html lang="ko" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>PDF to JPG/PNG | ConvertFiles24</title>
-  <meta name="description" content="Convert PDF pages to JPG/PNG instantly. 100% local processing (no server upload)." />
+  <title>PDF → JPG/PNG | ConvertFiles24</title>
+  <meta name="description" content="Convert PDF pages to JPG/PNG locally in your browser. No server upload." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-  <!-- pdf.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
 
   <style>
     :root{
@@ -23,56 +21,80 @@
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
-
-      --softBlueBg: rgba(120, 200, 255, .06);
-      --softBlueBd: rgba(120, 200, 255, .22);
-      --softBlueTx: #cfe6ff;
-      --softBlueHi: rgba(120, 200, 255, .12);
+      --bg:#0b0f17;
     }
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
     body{
       margin:0;
       font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
-      background:#0b0f17;
+      background:var(--bg);
       color:#e9eef7;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
 
+    /* entrance */
     body:not(.loaded) .card, body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
     body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
     body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
     @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
+    }
 
-    .wrap{ max-width:980px; width:100%; margin:0 auto; padding:22px 14px 44px; overflow-x: clip; }
-    .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; min-width:0; }
-    .title{ margin:0; font-weight:900; letter-spacing:-0.35px; line-height:1.15; color:#fff; font-size:22px; }
-    .sub{ margin:8px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+    .wrap{
+      max-width:980px;
+      width:100%;
+      margin:0 auto;
+      padding:22px 14px 44px;
+      overflow-x: clip;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      min-width:0;
+    }
+    .title{
+      margin:0;
+      font-weight:900;
+      letter-spacing:-0.35px;
+      line-height:1.15;
+      color:#ffffff;
+      font-size:26px;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:#a7b3c7;
+      font-size:13px;
+      line-height:1.45;
+    }
 
     .homeBtn{
-      width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
-      padding:12px 14px; border-radius:999px;
+      width:100%;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
       border:1px solid rgba(47,109,246,.55);
       background:rgba(47,109,246,.18);
-      color:#e9eef7; font-weight:900; cursor:pointer; text-decoration:none; user-select:none;
+      color:#e9eef7;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      user-select:none;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      max-width:380px;
+      max-width:420px;
       transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
     }
     .homeBtn:hover{ background:rgba(47,109,246,.24); }
     .homeBtn:active{ transform: scale(.99); }
-
-    .langRow{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:220px; max-width:100%; margin-left:auto; }
-    .langLabel{ font-size:12px; font-weight:900; color:#9fb0ca; letter-spacing:-0.2px; display:flex; align-items:center; gap:8px; opacity:.95; }
-    .langSelect{
-      width:220px; max-width:100%; padding:12px 12px; border-radius:999px;
-      border:var(--border); background:rgba(255,255,255,.06); color:#e9eef7; outline:none; font-weight:900;
-      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
-    }
-    .langSelect:focus-visible{ border-color: rgba(var(--blue), .55); box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
-    option{ background:#0b0f17; color:#e9eef7; }
 
     .pill{
       width:100%;
@@ -84,32 +106,80 @@
       font-size:13px;
       font-weight:900;
       display:flex; align-items:center; justify-content:center; gap:10px;
+      min-width:0;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
 
-    .card{ border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:var(--pad); margin-top:12px; }
-    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
-
-    .drop{
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      background:rgba(255,255,255,.02);
-      text-align:center;
-      cursor:pointer;
-      user-select:none;
-      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease);
-      min-height: 160px;
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
+    .langRow{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      min-width:220px;
+      max-width:100%;
+      margin-left:auto;
     }
-    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
+    .langLabel{
+      font-size:12px;
+      font-weight:900;
+      color:#9fb0ca;
+      letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.95;
+    }
+    .langSelect{
+      width:220px;
+      max-width:100%;
+      padding:12px 12px;
+      border-radius:999px;
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      outline:none;
+      font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease), transform .08s var(--ease);
+    }
+    .langSelect:focus-visible{
+      outline:none;
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
+    }
+    option{ background:#0b0f17; color:#e9eef7; }
 
-    .dropEmoji{ font-size:42px; line-height:1; margin:10px 0 8px; filter: drop-shadow(0 10px 22px rgba(0,0,0,.28)); }
-    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
-    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
+    .card{
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      margin-top:12px;
+      min-width:0;
+      max-width:100%;
+      overflow-x: clip;
+      will-change: transform, opacity;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:15px;
+      color:#dbe7ff;
+      letter-spacing:-0.2px;
+      line-height:1.2;
+    }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .row > *{ flex:1; min-width:160px; }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+    .row > *{
+      flex:1;
+      min-width:160px;
+      max-width:100%;
+      min-width:0;
+    }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -118,35 +188,26 @@
       font-size:14px;
       letter-spacing: -0.2px;
       user-select:none;
-      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
-    .btn.secondary{
-      background: var(--softBlueBg);
-      border: 1px solid var(--softBlueBd);
-      color: var(--softBlueTx);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
-    }
-    .btn.secondary:hover{ background: var(--softBlueHi); }
-
-    .btn:hover{ filter: brightness(1.03); }
+    .btn:hover{ filter: brightness(1.02); }
     .btn:active{ transform: scale(.99); }
-    .btn:disabled{
-      opacity:1; cursor:not-allowed; transform:none; box-shadow:none;
-      filter: saturate(.7);
-      background: linear-gradient(180deg, rgba(47,109,246,.40), rgba(47,109,246,.30));
-      color:#ffffff;
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
+
+    .btn.secondary{
+      background: rgba(47,109,246,.14);
+      color:#e9eef7;
+      border: 1px solid rgba(47,109,246,.30);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
-    .btn.secondary:disabled{
-      filter:none;
-      background: rgba(120, 200, 255, .05);
-      border: 1px solid rgba(120, 200, 255, .16);
-      color: rgba(207, 230, 255, .70);
-      box-shadow:none;
+    .btn.secondary:hover{
+      background: rgba(47,109,246,.18);
+      border-color: rgba(47,109,246,.36);
     }
 
-    input[type="file"]{ display:none; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-    select{
+    select, input[type="number"]{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
@@ -155,34 +216,146 @@
       border:var(--border);
       outline:none;
       font-weight:900;
+      max-width:100%;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    select:focus-visible, input[type="number"]:focus-visible{
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
+    /* ✅ 드롭박스 통일 + 색 변화 */
+    .dropbox{
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.22);
+      background: rgba(47,109,246,.06);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      padding:18px 16px;
+      min-height: 170px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      transition: background .14s var(--ease), border-color .14s var(--ease), transform .08s var(--ease), box-shadow .14s var(--ease);
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+      overflow:hidden;
+    }
+    .dropbox:hover{
+      background: rgba(47,109,246,.08);
+    }
+    .dropbox.dragover{
+      background: rgba(47,109,246,.15);
+      border-color: rgba(47,109,246,.55);
+      box-shadow: 0 0 0 3px rgba(47,109,246,.18), inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .dropbox.loaded{
+      background: rgba(120,200,255,.08); /* ✅ 파일 올라오면 살짝 다른 톤 */
+      border-color: rgba(120,200,255,.28);
+    }
+    .dropTitle{
+      font-weight:900;
+      font-size:18px;
+      letter-spacing:-0.2px;
+      color:#e9eef7;
+      margin-bottom:8px;
+    }
+    .dropSub{
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.5;
+    }
+    .hint{
+      margin-top:10px;
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.5;
+    }
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
     .msg.err{ color:#ffb4b4; }
     .msg.ok{ color:#b8ffcc; }
-
-    .meta{ color:#b7c3d9; font-size:13px; line-height:1.5; word-break:break-word; }
+    .meta{
+      color:#b7c3d9;
+      font-size:13px;
+      line-height:1.5;
+      word-break:break-word;
+      min-width:0;
+    }
     .meta b{ color:#e9eef7; }
 
-    .footer{ margin-top:16px; color:#94a6c2; font-size:12px; text-align:center; }
+    .list{
+      margin-top:10px;
+      display:grid;
+      gap:8px;
+    }
+    .fileItem{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius:14px;
+      padding:10px 12px;
+      min-width:0;
+    }
+    .fileLeft{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-width:0;
+    }
+    .fileIcon{
+      width:34px;height:34px;
+      border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background: rgba(47,109,246,.14);
+      border:1px solid rgba(47,109,246,.25);
+      flex:0 0 auto;
+    }
+    .fileName{
+      font-weight:900;
+      font-size:13px;
+      color:#e9eef7;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 52vw;
+    }
+    .fileInfo{
+      font-size:12px;
+      color:#9fb0ca;
+      margin-top:2px;
+    }
+    .badge{
+      flex:0 0 auto;
+      font-size:12px;
+      font-weight:900;
+      color:#cfe0ff;
+      border:1px solid rgba(120,200,255,.22);
+      background: rgba(120,200,255,.07);
+      border-radius:999px;
+      padding:6px 10px;
+      white-space:nowrap;
+    }
+
+    .footer{
+      margin-top:16px;
+      color:#94a6c2;
+      font-size:12px;
+      text-align:center;
+    }
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
 
-    .bar{
-      height:10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      overflow:hidden;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
-      margin-top:8px;
-      display:none;
-    }
-    .bar > div{
-      height:100%;
-      width:0%;
-      background: rgba(47,109,246,.9);
-      transition: width .15s var(--ease);
-    }
+    input[type="file"]{ display:none; }
+
+    /* ✅ 간격(모바일/PC 둘 다 예쁘게) */
+    .sp8{ height:8px; }
+    .sp10{ height:10px; }
+    .sp12{ height:12px; }
+    .sp14{ height:14px; }
   </style>
 </head>
 
@@ -190,23 +363,23 @@
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
-        <h1 class="title" id="page_title">PDF to JPG/PNG</h1>
-        <p class="sub" id="page_sub">Upload → convert → download images. 100% local processing.</p>
+        <h1 class="title" id="page_title">PDF → JPG/PNG</h1>
+        <p class="sub" id="page_sub">업로드 → 변환 → 이미지 다운로드. 100% 로컬 처리.</p>
 
         <div style="margin-top:10px;">
-          <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+          <a class="homeBtn" href="/" id="home_btn">🏠 홈으로</a>
         </div>
 
         <div style="margin-top:10px;">
-          <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+          <div class="pill">🔒 <span id="local_processing">로컬 처리 — 서버 업로드 없음</span></div>
         </div>
       </div>
 
       <div class="langRow">
-        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+        <div class="langLabel">🌐 <span id="lang_label">언어</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
-          <option value="en">Global (English)</option>
           <option value="ko">한국어</option>
+          <option value="en">Global (English)</option>
           <option value="es">Español</option>
           <option value="ja">日本語</option>
         </select>
@@ -214,58 +387,60 @@
     </div>
 
     <div class="card">
-      <h2 id="h_step1">Upload PDF</h2>
+      <h2 id="h_file">PDF 업로드</h2>
 
-      <div class="row">
-        <button class="btn secondary" id="pickBtn" type="button">📄 Choose PDF</button>
-        <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
-      </div>
+      <!-- ✅ 파일 선택(중복 버튼/중복 input 제거) -->
+      <input id="pdfInput" type="file" accept="application/pdf" />
 
-      <div style="height:10px;"></div>
-
-      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
-        <div style="width:100%;">
-          <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop PDF here<br/>or tap to upload</div>
-          <div class="dropEmoji" aria-hidden="true">🖼️</div>
-          <div class="hint" id="drop_hint">You can download each page as an image.</div>
+      <!-- ✅ 드롭박스 통일 -->
+      <div class="dropbox" id="dropbox" role="button" tabindex="0" aria-label="PDF dropzone">
+        <div>
+          <div class="dropTitle" id="drop_title">여기에 PDF를 끌어다 놓거나 탭해서 업로드</div>
+          <div class="dropSub" id="drop_sub">팁: 각 페이지를 이미지로 내려받을 수 있어요.</div>
         </div>
       </div>
 
+      <!-- ✅ 비우기(드롭박스 바로 아래) -->
+      <div class="sp10"></div>
+      <div class="row">
+        <button class="btn secondary" id="pickBtn" type="button">📄 PDF 선택</button>
+        <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 비우기</button>
+      </div>
+
+      <div class="list" id="fileList" style="display:none;"></div>
       <div class="msg" id="msg"></div>
-      <div class="bar" id="bar"><div id="barFill"></div></div>
     </div>
 
     <div class="card">
-      <h2 id="h_step2">Convert</h2>
+      <h2 id="h_convert">변환</h2>
 
       <div class="row">
         <div>
-          <label id="lbl_format">Format</label>
-          <select id="fmt" disabled>
+          <label id="lbl_format">형식</label>
+          <select id="outFormat">
             <option value="image/jpeg" selected>JPG</option>
             <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
           </select>
-          <div class="small" id="fmt_hint">JPG is smaller, PNG keeps crisp text.</div>
         </div>
         <div>
-          <label id="lbl_scale">Render scale</label>
-          <select id="scale" disabled>
-            <option value="1.0" selected>1.0 (fast)</option>
-            <option value="1.5">1.5 (balanced)</option>
-            <option value="2.0">2.0 (sharp)</option>
+          <label id="lbl_quality">품질</label>
+          <select id="quality">
+            <option value="0.95">Max (0.95)</option>
+            <option value="0.90" selected>High (0.90)</option>
+            <option value="0.80">Normal (0.80)</option>
+            <option value="0.70">Small (0.70)</option>
           </select>
-          <div class="small" id="scale_hint">Higher = sharper but slower.</div>
         </div>
       </div>
 
-      <div style="height:12px;"></div>
+      <div class="hint" id="convert_hint">여러 페이지면 ZIP으로 묶어서 내려받습니다.</div>
 
-      <div class="row">
-        <button class="btn" id="convertBtn" type="button" disabled>⬇️ Convert & Download pages</button>
-      </div>
+      <div class="sp12"></div>
+      <button class="btn" id="convertBtn" type="button" disabled>🧩 변환 후 다운로드</button>
 
-      <div style="height:12px;"></div>
-      <div class="meta" id="meta"><b>Status</b><br/>Upload a PDF to start.</div>
+      <div class="sp10"></div>
+      <div class="meta" id="meta"><b>상태</b><br/>PDF를 먼저 선택하세요.</div>
     </div>
 
     <div class="footer">
@@ -275,349 +450,433 @@
     </div>
   </div>
 
-  <input id="pickInput" type="file" accept="application/pdf">
+  <!-- ✅ PDF.js + JSZip (변환 실패 원인 대부분: pdf.js 미로딩) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-<script>
-(() => {
-  "use strict";
-  const $ = (id)=>document.getElementById(id);
-  $("year").textContent = new Date().getFullYear();
-  requestAnimationFrame(()=> document.body.classList.add("loaded"));
+  <script>
+  (() => {
+    "use strict";
+    const $ = (id)=>document.getElementById(id);
 
-  if (window.pdfjsLib) {
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
-  }
+    $("year").textContent = new Date().getFullYear();
+    requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  const STR = {
-    en:{
-      page_title:"PDF to JPG/PNG",
-      page_sub:"Upload → convert → download images. 100% local processing.",
-      home:"🏠 Home",
-      local:"Processed locally — no server upload",
-      lang_label:"Language",
-      h1:"Upload PDF",
-      pick:"📄 Choose PDF",
-      clear:"🧹 Clear",
-      drop_title:"Drop PDF here<br/>or tap to upload",
-      drop_hint:"You can download each page as an image.",
-      h2:"Convert",
-      lbl_format:"Format",
-      fmt_hint:"JPG is smaller, PNG keeps crisp text.",
-      lbl_scale:"Render scale",
-      scale_hint:"Higher = sharper but slower.",
-      go:"⬇️ Convert & Download pages",
-      meta_idle:"<b>Status</b><br/>Upload a PDF to start.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Pages</b><br/>${p}`,
-      msg_need:"Please upload a PDF first.",
-      msg_work:"Converting… keep this tab open.",
-      msg_done:"✅ Done",
-      msg_fail:"Failed to convert."
-    },
-    ko:{
-      page_title:"PDF → JPG/PNG",
-      page_sub:"업로드 → 변환 → 이미지 다운로드. 100% 로컬 처리.",
-      home:"🏠 홈으로",
-      local:"로컬 처리 — 서버 업로드 없음",
-      lang_label:"언어",
-      h1:"PDF 업로드",
-      pick:"📄 PDF 선택",
-      clear:"🧹 비우기",
-      drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
-      drop_hint:"각 페이지를 이미지로 내려받을 수 있어요.",
-      h2:"변환",
-      lbl_format:"형식",
-      fmt_hint:"JPG는 작고, PNG는 글자가 또렷해요.",
-      lbl_scale:"렌더 스케일",
-      scale_hint:"높을수록 선명하지만 느릴 수 있어요.",
-      go:"⬇️ 변환 후 페이지 다운로드",
-      meta_idle:"<b>상태</b><br/>PDF를 업로드하면 시작할 수 있어요.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>페이지</b><br/>${p}`,
-      msg_need:"먼저 PDF를 업로드해 주세요.",
-      msg_work:"변환 중… 이 탭을 닫지 마세요.",
-      msg_done:"✅ 완료",
-      msg_fail:"변환 실패"
-    },
-    es:{
-      page_title:"PDF a JPG/PNG",
-      page_sub:"Sube → convierte → descarga imágenes. 100% local.",
-      home:"🏠 Inicio",
-      local:"Procesado local — sin servidor",
-      lang_label:"Idioma",
-      h1:"Subir PDF",
-      pick:"📄 Elegir PDF",
-      clear:"🧹 Limpiar",
-      drop_title:"Suelta el PDF aquí<br/>o toca para subir",
-      drop_hint:"Descarga cada página como imagen.",
-      h2:"Convertir",
-      lbl_format:"Formato",
-      fmt_hint:"JPG es más pequeño, PNG es más nítido.",
-      lbl_scale:"Escala",
-      scale_hint:"Mayor = más nítido pero más lento.",
-      go:"⬇️ Convertir y descargar páginas",
-      meta_idle:"<b>Estado</b><br/>Sube un PDF para empezar.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Páginas</b><br/>${p}`,
-      msg_need:"Primero sube un PDF.",
-      msg_work:"Convirtiendo… no cierres esta pestaña.",
-      msg_done:"✅ Hecho",
-      msg_fail:"Error al convertir."
-    },
-    ja:{
-      page_title:"PDF → JPG/PNG",
-      page_sub:"アップロード → 変換 → 画像ダウンロード。100% ローカル処理。",
-      home:"🏠 ホーム",
-      local:"ローカル処理 — サーバーなし",
-      lang_label:"言語",
-      h1:"PDF アップロード",
-      pick:"📄 PDF を選択",
-      clear:"🧹 クリア",
-      drop_title:"ここにPDFをドロップ<br/>またはタップして選択",
-      drop_hint:"各ページを画像として保存できます。",
-      h2:"変換",
-      lbl_format:"形式",
-      fmt_hint:"JPGは小さく、PNGはくっきり。",
-      lbl_scale:"スケール",
-      scale_hint:"高いほど鮮明ですが遅くなります。",
-      go:"⬇️ 変換してページを保存",
-      meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>ページ</b><br/>${p}`,
-      msg_need:"先にPDFをアップロードしてください。",
-      msg_work:"変換中… このタブを閉じないでください。",
-      msg_done:"✅ 完了",
-      msg_fail:"変換に失敗しました。"
-    }
-  };
+    // ========== i18n (간단 유지) ==========
+    const STR = {
+      ko: {
+        page_title: "PDF → JPG/PNG",
+        page_sub: "업로드 → 변환 → 이미지 다운로드. 100% 로컬 처리.",
+        home: "🏠 홈으로",
+        local: "로컬 처리 — 서버 업로드 없음",
+        lang_label: "언어",
 
-  function esc(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
-  function setMsg(text, cls){
-    msgEl.textContent = text || "";
-    msgEl.className = "msg " + (cls || "");
-  }
-  function setProg(pct){
-    bar.style.display = "block";
-    barFill.style.width = Math.max(0, Math.min(100, pct)) + "%";
-  }
-  function hideProg(){
-    bar.style.display = "none";
-    barFill.style.width = "0%";
-  }
+        h_file: "PDF 업로드",
+        drop_title: "여기에 PDF를 끌어다 놓거나 탭해서 업로드",
+        drop_sub: "팁: 각 페이지를 이미지로 내려받을 수 있어요.",
+        pick: "📄 PDF 선택",
+        clear: "🧹 비우기",
 
-  function getQueryLang(){
-    try{
-      const u = new URL(location.href);
-      const q = (u.searchParams.get("lang")||"").toLowerCase();
-      if(q && STR[q]) return q;
-    }catch(e){}
-    return null;
-  }
-  function detectLang(){
-    const q = getQueryLang();
-    if(q) return q;
-    const saved = localStorage.getItem("cf24_lang");
-    if(saved && STR[saved]) return saved;
-    const nav = (navigator.language || "").toLowerCase();
-    if(nav.startsWith("ko")) return "ko";
-    if(nav.startsWith("ja")) return "ja";
-    if(nav.startsWith("es")) return "es";
-    return "en";
-  }
-  let LANG = detectLang();
-  function t(){ return STR[LANG] || STR.en; }
+        h_convert: "변환",
+        format: "형식",
+        quality: "품질",
+        convert_hint: "여러 페이지면 ZIP으로 묶어서 내려받습니다.",
+        convert: "🧩 변환 후 다운로드",
 
-  function setLang(lang){
-    if(!STR[lang]) lang = "en";
-    LANG = lang;
-    localStorage.setItem("cf24_lang", lang);
-    $("langSelect").value = lang;
-    document.documentElement.lang = lang;
+        msg_ready: "준비 완료! 변환 버튼을 눌러주세요.",
+        msg_cleared: "초기화 완료.",
+        msg_bad: "PDF만 업로드할 수 있어요.",
+        msg_fail: "변환 실패: ",
+        msg_busy: "변환 중… (페이지가 많으면 시간이 걸릴 수 있어요)",
+        meta_none: "<b>상태</b><br/>PDF를 먼저 선택하세요.",
+        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>파일명: ${escapeHtml(name)}<br/>크기: ${sizeMB}MB`
+      },
+      en: {
+        page_title: "PDF → JPG/PNG",
+        page_sub: "Upload → convert → download images. 100% local processing.",
+        home: "🏠 Home",
+        local: "Processed locally — no server upload",
+        lang_label: "Language",
 
-    $("page_title").textContent = t().page_title;
-    $("page_sub").textContent = t().page_sub;
-    $("home_btn").textContent = t().home;
-    $("local_processing").textContent = t().local;
-    $("lang_label").textContent = t().lang_label;
+        h_file: "Upload PDF",
+        drop_title: "Drop PDF here or tap to upload",
+        drop_sub: "Tip: Download each page as an image.",
+        pick: "📄 Choose PDF",
+        clear: "🧹 Clear",
 
-    $("h_step1").textContent = t().h1;
-    pickBtn.textContent = t().pick;
-    clearBtn.textContent = t().clear;
-    $("drop_title").innerHTML = t().drop_title;
-    $("drop_hint").textContent = t().drop_hint;
+        h_convert: "Convert",
+        format: "Format",
+        quality: "Quality",
+        convert_hint: "Multi-page PDFs will be downloaded as a ZIP.",
+        convert: "🧩 Convert & Download",
 
-    $("h_step2").textContent = t().h2;
-    $("lbl_format").textContent = t().lbl_format;
-    $("fmt_hint").textContent = t().fmt_hint;
-    $("lbl_scale").textContent = t().lbl_scale;
-    $("scale_hint").textContent = t().scale_hint;
-    convertBtn.textContent = t().go;
+        msg_ready: "Ready. Press convert.",
+        msg_cleared: "Cleared.",
+        msg_bad: "Only PDF files are supported.",
+        msg_fail: "Failed: ",
+        msg_busy: "Converting…",
+        meta_none: "<b>Status</b><br/>Select a PDF first.",
+        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>Name: ${escapeHtml(name)}<br/>Size: ${sizeMB}MB`
+      },
+      es: {
+        page_title: "PDF → JPG/PNG",
+        page_sub: "Sube → convierte → descarga imágenes. 100% local.",
+        home: "🏠 Inicio",
+        local: "Procesado local — sin servidor",
+        lang_label: "Idioma",
 
-    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
-  }
-  $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
+        h_file: "Subir PDF",
+        drop_title: "Suelta un PDF aquí o toca para subir",
+        drop_sub: "Consejo: descarga cada página como imagen.",
+        pick: "📄 Elegir PDF",
+        clear: "🧹 Vaciar",
 
-  const pickInput = $("pickInput");
-  const pickBtn = $("pickBtn");
-  const clearBtn = $("clearBtn");
-  const drop = $("drop");
-  const msgEl = $("msg");
-  const metaEl = $("meta");
-  const fmtEl = $("fmt");
-  const scaleEl = $("scale");
-  const convertBtn = $("convertBtn");
-  const bar = $("bar");
-  const barFill = $("barFill");
+        h_convert: "Convertir",
+        format: "Formato",
+        quality: "Calidad",
+        convert_hint: "Si hay varias páginas, se descarga como ZIP.",
+        convert: "🧩 Convertir y descargar",
 
-  let pdfBytes = null;
-  let pdfName = "document.pdf";
-  let pageCount = 0;
+        msg_ready: "Listo. Pulsa convertir.",
+        msg_cleared: "Listo.",
+        msg_bad: "Solo se admite PDF.",
+        msg_fail: "Error: ",
+        msg_busy: "Convirtiendo…",
+        meta_none: "<b>Estado</b><br/>Selecciona un PDF.",
+        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>Nombre: ${escapeHtml(name)}<br/>Tamaño: ${sizeMB}MB`
+      },
+      ja: {
+        page_title: "PDF → JPG/PNG",
+        page_sub: "アップロード → 変換 → 画像ダウンロード。100% ローカル処理。",
+        home: "🏠 ホーム",
+        local: "ローカル処理 — サーバーなし",
+        lang_label: "言語",
 
-  pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
-  pickInput.addEventListener("change", (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
-  });
+        h_file: "PDF アップロード",
+        drop_title: "ここにPDFをドロップ、またはタップして選択",
+        drop_sub: "ヒント：各ページを画像で保存できます。",
+        pick: "📄 PDFを選択",
+        clear: "🧹 クリア",
 
-  function openDropPicker(){ pickInput.value=""; pickInput.click(); }
-  drop.addEventListener("click", openDropPicker);
-  drop.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
-  });
-  ["dragenter","dragover"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
-  });
-  ["dragleave","drop"].forEach(evt=>{
-    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
-  });
-  drop.addEventListener("drop", (e)=>{
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) loadFile(f);
-  });
+        h_convert: "変換",
+        format: "形式",
+        quality: "品質",
+        convert_hint: "複数ページはZIPでダウンロードされます。",
+        convert: "🧩 変換してダウンロード",
 
-  clearBtn.addEventListener("click", ()=>{
-    pdfBytes = null; pdfName="document.pdf"; pageCount=0;
-    fmtEl.disabled = true;
-    scaleEl.disabled = true;
-    convertBtn.disabled = true;
-    clearBtn.disabled = true;
-    metaEl.innerHTML = t().meta_idle;
-    setMsg("", "");
-    hideProg();
-  });
+        msg_ready: "準備OK。変換ボタンを押してください。",
+        msg_cleared: "初期化しました。",
+        msg_bad: "PDFのみ対応です。",
+        msg_fail: "失敗: ",
+        msg_busy: "変換中…",
+        meta_none: "<b>状態</b><br/>PDFを選択してください。",
+        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>名前: ${escapeHtml(name)}<br/>サイズ: ${sizeMB}MB`
+      }
+    };
 
-  async function loadFile(file){
-    try{
-      setMsg("", "");
-      hideProg();
-      const buf = await file.arrayBuffer();
-      const loadingTask = window.pdfjsLib.getDocument({ data: buf });
-      const pdf = await loadingTask.promise;
-      pageCount = pdf.numPages;
-      pdfBytes = buf;
-      pdfName = file.name || "document.pdf";
-
-      fmtEl.disabled = false;
-      scaleEl.disabled = false;
-      convertBtn.disabled = false;
-      clearBtn.disabled = false;
-
-      metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
-    }catch(e){
-      pdfBytes = null; pageCount=0;
-      fmtEl.disabled = true;
-      scaleEl.disabled = true;
-      convertBtn.disabled = true;
-      clearBtn.disabled = true;
-      metaEl.innerHTML = t().meta_idle;
-      setMsg(t().msg_fail, "err");
-      hideProg();
-    }
-  }
-
-  function downloadDataUrl(dataUrl, filename){
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-
-  function buildName(pageNum, ext){
-    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
-    return `${base}_p${String(pageNum).padStart(3,"0")}_${stamp}.${ext}`;
-  }
-
-  async function renderPage(pdf, pageNum, scale, mime){
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale });
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { alpha: mime !== "image/jpeg" });
-
-    canvas.width = Math.max(1, Math.floor(viewport.width));
-    canvas.height = Math.max(1, Math.floor(viewport.height));
-
-    if(mime === "image/jpeg"){
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (m)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[m]));
     }
 
-    await page.render({ canvasContext: ctx, viewport }).promise;
-
-    if(mime === "image/png"){
-      return canvas.toDataURL("image/png");
+    function getQueryLang(){
+      try{
+        const u = new URL(location.href);
+        const q = (u.searchParams.get("lang")||"").toLowerCase();
+        if(q && STR[q]) return q;
+      }catch(e){}
+      return null;
     }
-    return canvas.toDataURL("image/jpeg", 0.92);
-  }
 
-  convertBtn.addEventListener("click", async ()=>{
-    try{
-      if(!pdfBytes) return setMsg(t().msg_need, "err");
+    function detectLang(){
+      const q = getQueryLang();
+      if(q) return q;
+      const saved = localStorage.getItem("cf24_lang");
+      if(saved && STR[saved]) return saved;
+      const nav = (navigator.language || "").toLowerCase();
+      if(nav.startsWith("ko")) return "ko";
+      if(nav.startsWith("ja")) return "ja";
+      if(nav.startsWith("es")) return "es";
+      return "en";
+    }
 
-      convertBtn.disabled = true;
-      pickBtn.disabled = true;
-      clearBtn.disabled = true;
-      fmtEl.disabled = true;
-      scaleEl.disabled = true;
+    let LANG = detectLang();
+    const t = ()=> STR[LANG] || STR.en;
 
-      setMsg(t().msg_work, "");
-      setProg(1);
+    function setLang(lang){
+      if(!STR[lang]) lang = "en";
+      LANG = lang;
+      localStorage.setItem("cf24_lang", lang);
+      $("langSelect").value = lang;
+      document.documentElement.lang = lang;
 
-      const loadingTask = window.pdfjsLib.getDocument({ data: pdfBytes });
-      const pdf = await loadingTask.promise;
+      $("page_title").textContent = t().page_title;
+      $("page_sub").textContent = t().page_sub;
+      $("home_btn").textContent = t().home;
+      $("local_processing").textContent = t().local;
+      $("lang_label").textContent = t().lang_label;
 
-      const mime = fmtEl.value;
-      const ext = (mime === "image/png") ? "png" : "jpg";
-      const scale = parseFloat(scaleEl.value || "1.0");
+      $("h_file").textContent = t().h_file;
+      $("drop_title").textContent = t().drop_title;
+      $("drop_sub").textContent = t().drop_sub;
+      $("pickBtn").textContent = t().pick;
+      $("clearBtn").textContent = t().clear;
 
-      for(let i=1;i<=pdf.numPages;i++){
-        setProg(Math.round((i-1)/pdf.numPages*90) + 5);
-        const dataUrl = await renderPage(pdf, i, scale, mime);
-        downloadDataUrl(dataUrl, buildName(i, ext));
+      $("h_convert").textContent = t().h_convert;
+      $("lbl_format").textContent = t().format;
+      $("lbl_quality").textContent = t().quality;
+      $("convert_hint").textContent = t().convert_hint;
+      $("convertBtn").textContent = t().convert;
+
+      if(!state.file) $("meta").innerHTML = t().meta_none;
+    }
+
+    $("langSelect").addEventListener("change", e=> setLang(e.target.value));
+
+    // ========== state ==========
+    const state = {
+      file: null,
+      fileName: "",
+      busy: false
+    };
+
+    // ========== UI refs ==========
+    const pdfInput = $("pdfInput");
+    const dropbox  = $("dropbox");
+    const pickBtn  = $("pickBtn");
+    const clearBtn = $("clearBtn");
+    const convertBtn = $("convertBtn");
+    const msgEl = $("msg");
+    const fileList = $("fileList");
+    const metaEl = $("meta");
+
+    const outFormatEl = $("outFormat");
+    const qualityEl = $("quality");
+
+    function setMsg(text, cls){
+      msgEl.textContent = text || "";
+      msgEl.className = "msg " + (cls || "");
+    }
+
+    function setBusy(b){
+      state.busy = b;
+      pickBtn.disabled = b;
+      clearBtn.disabled = b || !state.file;
+      convertBtn.disabled = b || !state.file;
+      dropbox.style.opacity = b ? ".7" : "1";
+    }
+
+    function bytesToMB(b){
+      return (b / (1024*1024)).toFixed(2);
+    }
+
+    function renderFileCard(){
+      if(!state.file){
+        fileList.style.display = "none";
+        dropbox.classList.remove("loaded");
+        metaEl.innerHTML = t().meta_none;
+        return;
+      }
+      dropbox.classList.add("loaded");
+      fileList.style.display = "grid";
+      fileList.innerHTML = `
+        <div class="fileItem">
+          <div class="fileLeft">
+            <div class="fileIcon" aria-hidden="true">📄</div>
+            <div style="min-width:0;">
+              <div class="fileName">${escapeHtml(state.fileName)}</div>
+              <div class="fileInfo">${bytesToMB(state.file.size)} MB</div>
+            </div>
+          </div>
+          <div class="badge">PDF</div>
+        </div>
+      `;
+      metaEl.innerHTML = t().meta_file(state.fileName, bytesToMB(state.file.size));
+    }
+
+    function resetAll(){
+      state.file = null;
+      state.fileName = "";
+      pdfInput.value = "";
+      setMsg(t().msg_cleared, "ok");
+      renderFileCard();
+      setBusy(false);
+    }
+
+    function acceptFile(file){
+      if(!file) return;
+      const isPdf = (file.type === "application/pdf") || (String(file.name||"").toLowerCase().endsWith(".pdf"));
+      if(!isPdf){
+        setMsg(t().msg_bad, "err");
+        return;
+      }
+      state.file = file;
+      state.fileName = file.name || "document.pdf";
+      setMsg(t().msg_ready, "ok");
+      renderFileCard();
+      setBusy(false);
+    }
+
+    // ========== drop events ==========
+    function prevent(e){ e.preventDefault(); e.stopPropagation(); }
+
+    ["dragenter","dragover"].forEach(ev=>{
+      dropbox.addEventListener(ev, (e)=>{
+        prevent(e);
+        dropbox.classList.add("dragover");
+      });
+    });
+    ["dragleave","drop"].forEach(ev=>{
+      dropbox.addEventListener(ev, (e)=>{
+        prevent(e);
+        dropbox.classList.remove("dragover");
+      });
+    });
+    dropbox.addEventListener("drop", (e)=>{
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      acceptFile(file);
+    });
+
+    // click / key open file
+    function openPicker(){ if(!state.busy) pdfInput.click(); }
+    dropbox.addEventListener("click", openPicker);
+    dropbox.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openPicker(); }
+    });
+    pickBtn.addEventListener("click", openPicker);
+    pdfInput.addEventListener("change", ()=> acceptFile(pdfInput.files && pdfInput.files[0]));
+
+    clearBtn.addEventListener("click", resetAll);
+
+    // quality disabled for PNG
+    outFormatEl.addEventListener("change", ()=>{
+      const mime = outFormatEl.value;
+      const disableQ = (mime === "image/png");
+      qualityEl.disabled = disableQ;
+      qualityEl.style.opacity = disableQ ? ".6" : "1";
+    });
+
+    // ========== convert engine ==========
+    // pdf.js worker
+    function ensurePdfjsWorker(){
+      // pdfjsLib is global from CDN
+      if(window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions){
+        // use same CDN version for worker
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.js";
+      }
+    }
+
+    function downloadBlob(blob, filename){
+      const a = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    }
+
+    function safeBaseName(name){
+      const base = (name || "pdf").replace(/\.[^.]+$/, "");
+      return base.replace(/[\\/:*?"<>|]+/g, "_");
+    }
+
+    async function fileToArrayBuffer(file){
+      return await file.arrayBuffer();
+    }
+
+    async function renderPageToImage(pdf, pageNum, mime, quality){
+      const page = await pdf.getPage(pageNum);
+
+      // scale: 모바일도 선명하게 (너무 무거워지지 않게 적당히)
+      const viewport = page.getViewport({ scale: 2.0 });
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d", { alpha: mime !== "image/jpeg" });
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+
+      // JPG는 배경 흰색
+      if(mime === "image/jpeg"){
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
       }
 
-      setProg(100);
-      setMsg(t().msg_done, "ok");
-    }catch(e){
-      setMsg(t().msg_fail, "err");
-      hideProg();
-    }finally{
-      const has = !!pdfBytes;
-      convertBtn.disabled = !has;
-      pickBtn.disabled = false;
-      clearBtn.disabled = !has;
-      fmtEl.disabled = !has;
-      scaleEl.disabled = !has;
-    }
-  });
+      await page.render({ canvasContext: ctx, viewport }).promise;
 
-  // init
-  setLang(LANG);
-})();
-</script>
+      const blob = await new Promise((resolve, reject)=>{
+        if(mime === "image/png"){
+          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+        }else if(mime === "image/webp"){
+          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", quality);
+        }else{
+          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", quality);
+        }
+      });
+
+      return blob;
+    }
+
+    async function convertPdf(){
+      if(!state.file) return;
+
+      try{
+        ensurePdfjsWorker();
+        if(!window.pdfjsLib) throw new Error("PDF engine not loaded (pdf.js).");
+
+        setBusy(true);
+        setMsg(t().msg_busy, "");
+
+        const mime = outFormatEl.value;
+        const q = parseFloat(qualityEl.value || "0.9");
+        const ext = (mime === "image/png") ? "png" : (mime === "image/webp" ? "webp" : "jpg");
+
+        const buf = await fileToArrayBuffer(state.file);
+        const loadingTask = window.pdfjsLib.getDocument({ data: buf });
+        const pdf = await loadingTask.promise;
+
+        const total = pdf.numPages || 1;
+        const base = safeBaseName(state.fileName);
+        const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+
+        if(total === 1){
+          const blob = await renderPageToImage(pdf, 1, mime, q);
+          downloadBlob(blob, `${base}_${stamp}.${ext}`);
+          setMsg("✅ 완료", "ok");
+          setBusy(false);
+          return;
+        }
+
+        // multi-page => zip
+        const zip = new JSZip();
+        for(let p=1; p<=total; p++){
+          setMsg(`${t().msg_busy} (${p}/${total})`, "");
+          const blob = await renderPageToImage(pdf, p, mime, q);
+          const arr = await blob.arrayBuffer();
+          zip.file(`${base}_p${String(p).padStart(3,"0")}.${ext}`, arr);
+        }
+
+        const zipBlob = await zip.generateAsync({ type:"blob", compression:"DEFLATE", compressionOptions:{ level: 6 } });
+        downloadBlob(zipBlob, `${base}_${stamp}_${ext}.zip`);
+
+        setMsg("✅ 완료", "ok");
+        setBusy(false);
+      }catch(err){
+        setBusy(false);
+        setMsg(t().msg_fail + (err && err.message ? err.message : "unknown"), "err");
+      }
+    }
+
+    convertBtn.addEventListener("click", convertPdf);
+
+    // init
+    setLang(LANG);
+    renderFileCard();
+    outFormatEl.dispatchEvent(new Event("change"));
+    setBusy(false);
+  })();
+  </script>
 </body>
 </html>
