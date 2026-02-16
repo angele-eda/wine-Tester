@@ -1142,6 +1142,7 @@
     updateQualityState();
     renderFileList();
     updateCropState();
+    updateAutoOptions(); // ✅ NEW
   }
 
   if(langSelectEl){
@@ -1215,6 +1216,7 @@
     if(activeIndex === from) activeIndex = to;
     renderFileList();
     previewActive();
+    updateAutoOptions(); // ✅ NEW
   }
 
   function removeAt(idx){
@@ -1226,6 +1228,7 @@
       return;
     }
     previewActive();
+    updateAutoOptions(); // ✅ NEW
   }
 
   function updateCropState(){
@@ -1248,6 +1251,7 @@
       btnConvert.disabled = true;
       btnReset.disabled = true;
       updateCropState();
+      updateAutoOptions(); // ✅ NEW
       return;
     }
 
@@ -1284,6 +1288,7 @@
 
         if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
         updateCropState();
+        updateAutoOptions(); // ✅ NEW
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
@@ -1291,6 +1296,7 @@
         meta.textContent = t.err_preview;
         setMessage(t.err_preview, "err");
         updateCropState();
+        updateAutoOptions(); // ✅ NEW
       };
       img.src = url;
       img.style.width = "100%";
@@ -1304,6 +1310,7 @@
       meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
       setMessage(t.msg_ready, "ok");
       updateCropState();
+      updateAutoOptions(); // ✅ NEW
       return;
     }
 
@@ -1311,6 +1318,42 @@
     setMessage(t.err_only_supported, "err");
     btnConvert.disabled = true;
     updateCropState();
+    updateAutoOptions(); // ✅ NEW
+  }
+
+  // ✅ NEW: ZIP 자동/비활성 정책 (PDF는 병합이 기본이므로 ZIP 의미 없음)
+  function updateAutoOptions(){
+    const outMime = selFormat.value;
+
+    const imagesCount = files.filter(x => isImage(x.file)).length;
+
+    // 출력이 PDF면 ZIP은 끄고 비활성화
+    if(outMime === "application/pdf"){
+      zipModeEl.checked = false;
+      zipModeEl.disabled = true;
+
+      const wrap = zipModeEl.closest(".chk");
+      if(wrap){
+        wrap.style.opacity = ".55";
+        wrap.style.cursor = "not-allowed";
+      }
+      return;
+    }
+
+    // 출력이 이미지면 ZIP 사용 가능
+    zipModeEl.disabled = false;
+    const wrap = zipModeEl.closest(".chk");
+    if(wrap){
+      wrap.style.opacity = "1";
+      wrap.style.cursor = "pointer";
+    }
+
+    // 이미지 2개 이상이면 ZIP 자동 체크 (기본값)
+    if(imagesCount >= 2){
+      zipModeEl.checked = true;
+    }else{
+      zipModeEl.checked = false;
+    }
   }
 
   // ✅ append (Add more)
@@ -1340,13 +1383,7 @@
     previewActive();
     updateQualityState();
     updateCropState();
-
-    // 자동 ZIP 체크
-    const outMime = selFormat.value;
-    const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && outMime !== "application/pdf"){
-      zipModeEl.checked = true;
-    }
+    updateAutoOptions(); // ✅ NEW
   }
 
   // ✅ new selection (tap upload box)
@@ -1361,13 +1398,9 @@
     appendFiles(selected);
 
     const mime = selFormat.value;
-    const imagesCount = files.filter(x => isImage(x.file)).length;
 
-    if(imagesCount >= 2 && mime !== "application/pdf"){
-      zipModeEl.checked = true;
-    } else {
-      zipModeEl.checked = false;
-    }
+    // ✅ NEW: ZIP 자동 정책 적용
+    updateAutoOptions();
 
     if(mime === "image/png"){
       setMessage(t.msg_png_q, "");
@@ -1400,7 +1433,7 @@
     }
   }
 
-  // ✅ Add more picker (append only) — use temp input so it doesn't trigger main reset flow
+  // ✅ Add more picker (append only)
   function openFilePickerAppend(){
     const tmp = document.createElement("input");
     tmp.type = "file";
@@ -1457,12 +1490,9 @@
     const t = STR[LANG] || STR.en;
 
     const mime = selFormat.value;
-    const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && mime !== "application/pdf"){
-      zipModeEl.checked = true;
-    } else {
-      zipModeEl.checked = false;
-    }
+
+    // ✅ NEW: ZIP 자동 정책 적용
+    updateAutoOptions();
 
     if(mime === "image/png"){
       setMessage(t.msg_png_q, "");
@@ -1691,6 +1721,7 @@
     renderTexts();
     renderFileList();
     updateCropState();
+    updateAutoOptions(); // ✅ NEW
   }
 
   btnConvert.addEventListener("click", onConvert);
