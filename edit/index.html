@@ -177,7 +177,7 @@
 
     .cardHead{
       display:flex;
-      align-items:center;
+      align-items:center; /* header baseline */
       justify-content:space-between;
       gap:10px;
       margin:0 0 10px;
@@ -187,7 +187,7 @@
     .resetIconBtn{
       appearance:none;
       border:none;
-      background:transparent;
+      background:transparent; /* no background by default */
       color:#dbe7ff;
       cursor:pointer;
       width:36px; height:36px;
@@ -244,7 +244,7 @@
       max-height:100%;
     }
 
-    /* Crosshair overlay */
+    /* Crosshair overlay (lighter & centered) */
     .crosshair{
       position:absolute;
       left:50%; top:50%;
@@ -263,8 +263,12 @@
       transform:translate(-50%,-50%);
       border-radius:999px;
     }
-    .crosshair:before{ width:2px; height:46px; }
-    .crosshair:after{ width:46px; height:2px; }
+    .crosshair:before{ /* vertical */
+      width:2px; height:46px;
+    }
+    .crosshair:after{ /* horizontal */
+      width:46px; height:2px;
+    }
     .crossDot{
       position:absolute;
       left:50%; top:50%;
@@ -300,6 +304,7 @@
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
 
+    /* controls: lighter + "home tone" */
     .btn.secondary{
       background: rgba(47,109,246,.14);
       color:#e9eef7;
@@ -383,7 +388,6 @@
     input[type="file"]{ display:none; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="top">
@@ -429,6 +433,7 @@
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
           <button class="resetIconBtn" id="resetViewBtn" type="button" aria-label="Reset view" title="Reset view">
+            <!-- rounded arrow -->
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M20 12a8 8 0 1 1-2.35-5.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -518,8 +523,8 @@
           <div>
             <label id="lbl_aspectMode">Mode</label>
             <select id="aspectMode">
-              <option value="contain" selected>Contain (no crop)</option>
-              <option value="cover">Cover (crop)</option>
+              <option value="contain">Contain (no crop)</option>
+              <option value="cover" selected>Cover (crop)</option>
               <option value="stretch">Stretch (fill)</option>
             </select>
             <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
@@ -815,6 +820,7 @@
   let imgName = "image";
   let imgW = 0, imgH = 0;
 
+  // snapshot for "reset view" to original loaded state
   const initialView = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
 
   const view = {
@@ -910,11 +916,13 @@
     const w = parseInt(wEl.value, 10);
     const h = parseInt(hEl.value, 10);
 
+    // default: stage size
     const baseW = Math.max(1, Math.round(rect.width));
     const baseH = Math.max(1, Math.round(rect.height));
 
     if(!w && !h) return { W: baseW, H: baseH };
 
+    // preserve aspect automatically when only one is provided
     const aspect = baseW / baseH;
     if(w && !h) return { W: Math.max(1,w), H: Math.max(1, Math.round(w / aspect)) };
     if(!w && h) return { W: Math.max(1, Math.round(h * aspect)), H: Math.max(1,h) };
@@ -927,9 +935,11 @@
     const x = (typeof cx === "number") ? cx : rect.width/2;
     const y = (typeof cy === "number") ? cy : rect.height/2;
 
+    // convert screen point -> world (stage center space)
     const px = x - rect.width/2;
     const py = y - rect.height/2;
 
+    // before zoom: point in view space relative to translation
     const beforeX = (px - view.offX) / view.scale;
     const beforeY = (py - view.offY) / view.scale;
 
@@ -953,7 +963,7 @@
     wEl.value = "";
     hEl.value = "";
     aspectLockEl.checked = true;
-    aspectModeEl.value = "contain";
+    aspectModeEl.value = "cover"; // ✅ default to COVER (no margins)
 
     redraw();
     setMsg(t().msg_ready, "ok");
@@ -1085,7 +1095,7 @@
     const rect = stageRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
-    const dir = (e.deltaY > 0) ? -1 : 1;
+    const dir = (e.deltaY > 0) ? -1 : 1; // natural feel
     const factor = dir > 0 ? 1.08 : 1/1.08;
     zoomBy(factor, cx, cy);
   }, { passive:false });
@@ -1116,6 +1126,7 @@
       imgW = im.naturalWidth || 1;
       imgH = im.naturalHeight || 1;
 
+      // initial state = "fit to stage"
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
       initialView.scale = s;
@@ -1124,6 +1135,9 @@
       initialView.rot = 0;
       initialView.flipH = 1;
       initialView.flipV = 1;
+
+      // ✅ force default mode to cover (avoid white margins)
+      aspectModeEl.value = "cover";
 
       resetView();
       setMsg(t().msg_ready, "ok");
@@ -1140,7 +1154,7 @@
     im.src = dataUrl;
   }
 
-  // ===== download helpers =====
+  // ===== download =====
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -1160,39 +1174,7 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
-  // ✅ Trim transparent margins so the downloaded file contains ONLY the image (no black viewer background)
-  function trimTransparent(canvas){
-    const c = canvas.getContext("2d");
-    const w = canvas.width, h = canvas.height;
-    const data = c.getImageData(0,0,w,h).data;
-
-    let top=h, left=w, right=-1, bottom=-1;
-
-    for(let y=0;y<h;y++){
-      for(let x=0;x<w;x++){
-        const a = data[(y*w + x)*4 + 3];
-        if(a !== 0){
-          if(x < left) left = x;
-          if(x > right) right = x;
-          if(y < top) top = y;
-          if(y > bottom) bottom = y;
-        }
-      }
-    }
-
-    // all transparent
-    if(right < 0 || bottom < 0) return canvas;
-
-    const tw = right - left + 1;
-    const th = bottom - top + 1;
-
-    const out = document.createElement("canvas");
-    out.width = tw; out.height = th;
-    out.getContext("2d").drawImage(canvas, left, top, tw, th, 0, 0, tw, th);
-    return out;
-  }
-
-  async function stageToOutputTrimmed(){
+  function stageToOutput(){
     if(!img) throw new Error(t().msg_need);
 
     const { W, H } = getTargetSize();
@@ -1206,12 +1188,6 @@
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
 
-    // ✅ JPG cannot be transparent, so fill white to avoid black in some viewers
-    if(outMime === "image/jpeg"){
-      octx.fillStyle = "#ffffff";
-      octx.fillRect(0,0,out.width,out.height);
-    }
-
     const rect = stageRect();
     const stageW = rect.width;
     const stageH = rect.height;
@@ -1220,7 +1196,7 @@
     let sy = H / stageH;
 
     const keep = !!aspectLockEl.checked;
-    const mode = (aspectModeEl.value || "contain"); // contain | cover | stretch
+    const mode = (aspectModeEl.value || "cover"); // ✅ default cover
 
     if(keep && mode !== "stretch"){
       const s = (mode === "cover") ? Math.max(sx, sy) : Math.min(sx, sy);
@@ -1241,25 +1217,23 @@
     octx.rotate((view.rot * Math.PI) / 180);
     octx.scale(view.scale * view.flipH, view.scale * view.flipV);
     octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
-    octx.restore();
 
-    // ✅ For PNG/WebP: trim transparent margins so the file is "image only"
-    const finalCanvas = (outMime === "image/jpeg") ? out : trimTransparent(out);
+    octx.restore();
 
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
-        finalCanvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
       } else if(outMime === "image/webp"){
-        finalCanvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
       } else {
-        finalCanvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
+        out.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
       }
     });
   }
 
   downloadBtn.addEventListener("click", async ()=>{
     try{
-      const blob = await stageToOutputTrimmed(); // ✅ changed (image-only output)
+      const blob = await stageToOutput();
       const name = buildName();
       downloadBlob(blob, name);
       setMsg(t().msg_ok, "ok");
