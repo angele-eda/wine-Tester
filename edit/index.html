@@ -177,7 +177,7 @@
 
     .cardHead{
       display:flex;
-      align-items:center;
+      align-items:center; /* header baseline */
       justify-content:space-between;
       gap:10px;
       margin:0 0 10px;
@@ -187,7 +187,7 @@
     .resetIconBtn{
       appearance:none;
       border:none;
-      background:transparent;
+      background:transparent; /* no background by default */
       color:#dbe7ff;
       cursor:pointer;
       width:36px; height:36px;
@@ -244,6 +244,7 @@
       max-height:100%;
     }
 
+    /* Crosshair overlay (lighter & centered) */
     .crosshair{
       position:absolute;
       left:50%; top:50%;
@@ -262,8 +263,12 @@
       transform:translate(-50%,-50%);
       border-radius:999px;
     }
-    .crosshair:before{ width:2px; height:46px; }
-    .crosshair:after{ width:46px; height:2px; }
+    .crosshair:before{ /* vertical */
+      width:2px; height:46px;
+    }
+    .crosshair:after{ /* horizontal */
+      width:46px; height:2px;
+    }
     .crossDot{
       position:absolute;
       left:50%; top:50%;
@@ -299,6 +304,7 @@
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
 
+    /* controls: lighter + "home tone" */
     .btn.secondary{
       background: rgba(47,109,246,.14);
       color:#e9eef7;
@@ -410,6 +416,7 @@
     </div>
 
     <div class="stageWrap">
+      <!-- Left: stage -->
       <div class="card">
         <h2 id="h_stage">Preview / Edit</h2>
         <div class="stage" id="stage">
@@ -421,10 +428,12 @@
         <div class="msg" id="msg"></div>
       </div>
 
+      <!-- Right: controls -->
       <div class="card">
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
           <button class="resetIconBtn" id="resetViewBtn" type="button" aria-label="Reset view" title="Reset view">
+            <!-- rounded arrow -->
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M20 12a8 8 0 1 1-2.35-5.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -811,6 +820,7 @@
   let imgName = "image";
   let imgW = 0, imgH = 0;
 
+  // snapshot for "reset view" to original loaded state
   const initialView = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
 
   const view = {
@@ -901,31 +911,17 @@
     }[m]));
   }
 
-  function getTargetSize(){
-    const rect = stageRect();
-    const w = parseInt(wEl.value, 10);
-    const h = parseInt(hEl.value, 10);
-
-    const baseW = Math.max(1, Math.round(rect.width));
-    const baseH = Math.max(1, Math.round(rect.height));
-
-    if(!w && !h) return { W: baseW, H: baseH };
-
-    const aspect = baseW / baseH;
-    if(w && !h) return { W: Math.max(1,w), H: Math.max(1, Math.round(w / aspect)) };
-    if(!w && h) return { W: Math.max(1, Math.round(h * aspect)), H: Math.max(1,h) };
-    return { W: Math.max(1,w), H: Math.max(1,h) };
-  }
-
   function zoomBy(factor, cx, cy){
     if(!img) return;
     const rect = stageRect();
     const x = (typeof cx === "number") ? cx : rect.width/2;
     const y = (typeof cy === "number") ? cy : rect.height/2;
 
+    // convert screen point -> world (stage center space)
     const px = x - rect.width/2;
     const py = y - rect.height/2;
 
+    // before zoom: point in view space relative to translation
     const beforeX = (px - view.offX) / view.scale;
     const beforeY = (py - view.offY) / view.scale;
 
@@ -1081,7 +1077,7 @@
     const rect = stageRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
-    const dir = (e.deltaY > 0) ? -1 : 1;
+    const dir = (e.deltaY > 0) ? -1 : 1; // natural feel
     const factor = dir > 0 ? 1.08 : 1/1.08;
     zoomBy(factor, cx, cy);
   }, { passive:false });
@@ -1112,6 +1108,7 @@
       imgW = im.naturalWidth || 1;
       imgH = im.naturalHeight || 1;
 
+      // initial state = "fit to stage"
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
       initialView.scale = s;
@@ -1156,57 +1153,152 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
-  // ✅ FIX: JPG는 투명 지원 X → 여백(투명)이 검정으로 변함
-  // 그래서 JPG일 때는 먼저 흰 배경을 깔아준다.
+  // ✅ (핵심 수정) "현재 위치/회전/반전/확대" 그대로 유지 + "이미지 영역만" 잘라서 저장
+  function computeTransformedBBox(stageW, stageH){
+    // stage center + user offset
+    const cx = stageW/2 + view.offX;
+    const cy = stageH/2 + view.offY;
+
+    // local corners around image center
+    const hx = imgW/2;
+    const hy = imgH/2;
+
+    // scale & flips
+    const sx = view.scale * view.flipH;
+    const sy = view.scale * view.flipV;
+
+    // rotation
+    const a = (view.rot * Math.PI) / 180;
+    const cos = Math.cos(a);
+    const sin = Math.sin(a);
+
+    // 4 corners in local space
+    const pts = [
+      {x:-hx, y:-hy},
+      {x: hx, y:-hy},
+      {x: hx, y: hy},
+      {x:-hx, y: hy}
+    ];
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for(const p of pts){
+      // apply scale/flip
+      const x1 = p.x * sx;
+      const y1 = p.y * sy;
+      // rotate
+      const xr = x1 * cos - y1 * sin;
+      const yr = x1 * sin + y1 * cos;
+      // translate to stage
+      const xs = xr + cx;
+      const ys = yr + cy;
+
+      if(xs < minX) minX = xs;
+      if(ys < minY) minY = ys;
+      if(xs > maxX) maxX = xs;
+      if(ys > maxY) maxY = ys;
+    }
+
+    // pad 1px to avoid edge cut by rounding
+    return {
+      minX: Math.floor(minX) - 1,
+      minY: Math.floor(minY) - 1,
+      maxX: Math.ceil(maxX) + 1,
+      maxY: Math.ceil(maxY) + 1
+    };
+  }
+
+  function getOutputSizeFromBBox(bw, bh){
+    // default = bbox size
+    let W = Math.max(1, Math.round(bw));
+    let H = Math.max(1, Math.round(bh));
+
+    const wIn = parseInt(wEl.value, 10);
+    const hIn = parseInt(hEl.value, 10);
+
+    if(!wIn && !hIn) return { W, H };
+
+    const keep = !!aspectLockEl.checked;
+    const mode = (aspectModeEl.value || "contain"); // contain | cover | stretch
+
+    // base aspect from bbox
+    const aspect = W / H;
+
+    if(wIn && !hIn){
+      W = Math.max(1, wIn);
+      H = keep ? Math.max(1, Math.round(W / aspect)) : H;
+      return { W, H };
+    }
+    if(!wIn && hIn){
+      H = Math.max(1, hIn);
+      W = keep ? Math.max(1, Math.round(H * aspect)) : W;
+      return { W, H };
+    }
+    // both provided
+    W = Math.max(1, wIn);
+    H = Math.max(1, hIn);
+
+    // if keep ratio, interpret as contain/cover inside requested box
+    if(keep && mode !== "stretch"){
+      const s = (mode === "cover")
+        ? Math.max(W / bw, H / bh)
+        : Math.min(W / bw, H / bh);
+      return {
+        W: Math.max(1, Math.round(bw * s)),
+        H: Math.max(1, Math.round(bh * s))
+      };
+    }
+    return { W, H };
+  }
+
   function stageToOutput(){
     if(!img) throw new Error(t().msg_need);
-
-    const { W, H } = getTargetSize();
-    const outMime = outFormatEl.value;
-    const q = parseFloat(qualityEl.value || "0.9");
-
-    const out = document.createElement("canvas");
-    out.width = Math.max(1, W);
-    out.height = Math.max(1, H);
-
-    // alpha는 그대로 두고(기존 유지), JPG일 때만 흰 배경을 채움
-    const octx = out.getContext("2d", { alpha:true });
-    octx.imageSmoothingEnabled = true;
-    octx.imageSmoothingQuality = "high";
-
-    // ✅ 여기 추가 (핵심)
-    if(outMime === "image/jpeg"){
-      octx.save();
-      octx.setTransform(1,0,0,1,0,0);
-      octx.fillStyle = "#ffffff";
-      octx.fillRect(0,0,out.width,out.height);
-      octx.restore();
-    }
 
     const rect = stageRect();
     const stageW = rect.width;
     const stageH = rect.height;
 
-    let sx = W / stageW;
-    let sy = H / stageH;
+    // bbox in stage coordinate
+    const bb = computeTransformedBBox(stageW, stageH);
+    const bw = Math.max(1, bb.maxX - bb.minX);
+    const bh = Math.max(1, bb.maxY - bb.minY);
 
-    const keep = !!aspectLockEl.checked;
-    const mode = (aspectModeEl.value || "contain"); // contain | cover | stretch
+    // output size decision (keep UI inputs working)
+    const { W, H } = getOutputSizeFromBBox(bw, bh);
 
-    if(keep && mode !== "stretch"){
-      const s = (mode === "cover") ? Math.max(sx, sy) : Math.min(sx, sy);
-      sx = s; sy = s;
+    const outMime = outFormatEl.value;
+    const q = parseFloat(qualityEl.value || "0.9");
+
+    // PNG/WebP => transparent background 유지
+    // JPG => 투명 불가 (흰색으로 깔끔히 채움)
+    const alpha = (outMime !== "image/jpeg");
+
+    const out = document.createElement("canvas");
+    out.width = W;
+    out.height = H;
+
+    const octx = out.getContext("2d", { alpha });
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
+
+    if(!alpha){
+      octx.fillStyle = "#ffffff";
+      octx.fillRect(0,0,W,H);
+    } else {
+      octx.clearRect(0,0,W,H);
     }
 
-    const drawW = stageW * sx;
-    const drawH = stageH * sy;
-    const dx = (W - drawW) / 2;
-    const dy = (H - drawH) / 2;
+    // map: bbox -> output canvas (fit exactly)
+    const sx = W / bw;
+    const sy = H / bh;
 
     octx.save();
-    octx.translate(dx, dy);
     octx.scale(sx, sy);
 
+    // shift bbox top-left to (0,0)
+    octx.translate(-bb.minX, -bb.minY);
+
+    // draw same as stage (but without stage background)
     octx.translate(stageW/2, stageH/2);
     octx.translate(view.offX, view.offY);
     octx.rotate((view.rot * Math.PI) / 180);
