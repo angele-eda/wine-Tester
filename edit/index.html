@@ -244,6 +244,7 @@
       max-height:100%;
     }
 
+    /* Crosshair overlay */
     .crosshair{
       position:absolute;
       left:50%; top:50%;
@@ -298,6 +299,7 @@
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
+
     .btn.secondary{
       background: rgba(47,109,246,.14);
       color:#e9eef7;
@@ -381,6 +383,7 @@
     input[type="file"]{ display:none; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top">
@@ -812,7 +815,6 @@
   let imgName = "image";
   let imgW = 0, imgH = 0;
 
-  // snapshot for "reset view" to original loaded state
   const initialView = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
 
   const view = {
@@ -1090,35 +1092,14 @@
 
   // ===== load from sessionStorage =====
   async function loadFromSession(){
-    // 기존 키 + 호환 키들을 넓게 수용
-    const candidates = [
-      "cf24_edit_img",
-      "cf24_idphoto_img",
-      "cf24_preview_img",
-      "cf24_main_preview_img",
-      "cf24_preview_dataurl",
-      "cf24_image_dataurl"
-    ];
-    const nameCandidates = [
-      "cf24_edit_name",
-      "cf24_idphoto_name",
-      "cf24_preview_name",
-      "cf24_file_name"
-    ];
+    const dataUrl =
+      sessionStorage.getItem("cf24_edit_img") ||
+      sessionStorage.getItem("cf24_idphoto_img");
 
-    let dataUrl = null;
-    for(const k of candidates){
-      const v = sessionStorage.getItem(k);
-      if(v && typeof v === "string" && v.startsWith("data:")){
-        dataUrl = v; break;
-      }
-    }
-
-    let name = "image";
-    for(const k of nameCandidates){
-      const v = sessionStorage.getItem(k);
-      if(v){ name = v; break; }
-    }
+    const name =
+      sessionStorage.getItem("cf24_edit_name") ||
+      sessionStorage.getItem("cf24_idphoto_name") ||
+      "image";
 
     if(!dataUrl){
       setMsg(t().msg_need, "err");
@@ -1129,7 +1110,6 @@
     }
 
     imgName = name;
-
     const im = new Image();
     im.onload = ()=>{
       img = im;
@@ -1180,68 +1160,57 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
-  // === 핵심: 알파(투명) 기준으로 "그려진 부분만" 자동 크롭 ===
-  function cropCanvasToAlpha(srcCanvas, alphaThreshold=1){
-    const w = srcCanvas.width;
-    const h = srcCanvas.height;
-    const sctx = srcCanvas.getContext("2d");
-    const imgData = sctx.getImageData(0,0,w,h);
-    const d = imgData.data;
+  // ✅ Trim transparent margins so the downloaded file contains ONLY the image (no black viewer background)
+  function trimTransparent(canvas){
+    const c = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+    const data = c.getImageData(0,0,w,h).data;
 
-    let minX = w, minY = h, maxX = -1, maxY = -1;
+    let top=h, left=w, right=-1, bottom=-1;
 
-    for(let y=0; y<h; y++){
-      for(let x=0; x<w; x++){
-        const a = d[(y*w + x)*4 + 3];
-        if(a >= alphaThreshold){
-          if(x < minX) minX = x;
-          if(y < minY) minY = y;
-          if(x > maxX) maxX = x;
-          if(y > maxY) maxY = y;
+    for(let y=0;y<h;y++){
+      for(let x=0;x<w;x++){
+        const a = data[(y*w + x)*4 + 3];
+        if(a !== 0){
+          if(x < left) left = x;
+          if(x > right) right = x;
+          if(y < top) top = y;
+          if(y > bottom) bottom = y;
         }
       }
     }
 
-    // 전부 투명이면 원본 반환
-    if(maxX < 0 || maxY < 0){
-      return srcCanvas;
-    }
+    // all transparent
+    if(right < 0 || bottom < 0) return canvas;
 
-    const cw = Math.max(1, (maxX - minX + 1));
-    const ch = Math.max(1, (maxY - minY + 1));
-
-    // 너무 작은 보더(안티에일리어싱) 잘림 방지로 1px 패드
-    const pad = 1;
-    const x0 = Math.max(0, minX - pad);
-    const y0 = Math.max(0, minY - pad);
-    const x1 = Math.min(w-1, maxX + pad);
-    const y1 = Math.min(h-1, maxY + pad);
+    const tw = right - left + 1;
+    const th = bottom - top + 1;
 
     const out = document.createElement("canvas");
-    out.width = (x1 - x0 + 1);
-    out.height = (y1 - y0 + 1);
-
-    const octx = out.getContext("2d");
-    octx.drawImage(srcCanvas, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+    out.width = tw; out.height = th;
+    out.getContext("2d").drawImage(canvas, left, top, tw, th, 0, 0, tw, th);
     return out;
   }
 
-  // ===== stage -> output (이미지만 저장) =====
-  async function stageToOutputBlob(){
+  async function stageToOutputTrimmed(){
     if(!img) throw new Error(t().msg_need);
 
     const { W, H } = getTargetSize();
     const outMime = outFormatEl.value;
     const q = parseFloat(qualityEl.value || "0.9");
 
-    // 1) 먼저 투명 캔버스에 렌더(항상 alpha로 만든 뒤 크롭)
-    const tmp = document.createElement("canvas");
-    tmp.width = Math.max(1, W);
-    tmp.height = Math.max(1, H);
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, W);
+    out.height = Math.max(1, H);
+    const octx = out.getContext("2d", { alpha:true });
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
 
-    const tctx = tmp.getContext("2d", { alpha:true });
-    tctx.imageSmoothingEnabled = true;
-    tctx.imageSmoothingQuality = "high";
+    // ✅ JPG cannot be transparent, so fill white to avoid black in some viewers
+    if(outMime === "image/jpeg"){
+      octx.fillStyle = "#ffffff";
+      octx.fillRect(0,0,out.width,out.height);
+    }
 
     const rect = stageRect();
     const stageW = rect.width;
@@ -1263,36 +1232,20 @@
     const dx = (W - drawW) / 2;
     const dy = (H - drawH) / 2;
 
-    tctx.save();
-    tctx.translate(dx, dy);
-    tctx.scale(sx, sy);
+    octx.save();
+    octx.translate(dx, dy);
+    octx.scale(sx, sy);
 
-    tctx.translate(stageW/2, stageH/2);
-    tctx.translate(view.offX, view.offY);
-    tctx.rotate((view.rot * Math.PI) / 180);
-    tctx.scale(view.scale * view.flipH, view.scale * view.flipV);
-    tctx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
+    octx.translate(stageW/2, stageH/2);
+    octx.translate(view.offX, view.offY);
+    octx.rotate((view.rot * Math.PI) / 180);
+    octx.scale(view.scale * view.flipH, view.scale * view.flipV);
+    octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
+    octx.restore();
 
-    tctx.restore();
+    // ✅ For PNG/WebP: trim transparent margins so the file is "image only"
+    const finalCanvas = (outMime === "image/jpeg") ? out : trimTransparent(out);
 
-    // 2) 그려진 부분만 자동 크롭(= 배경/여백 제거)
-    const cropped = cropCanvasToAlpha(tmp, 2);
-
-    // 3) 포맷별 처리
-    // JPG는 투명 불가 → 흰 배경에 합성(검정 배경 문제 방지)
-    let finalCanvas = cropped;
-    if(outMime === "image/jpeg"){
-      const white = document.createElement("canvas");
-      white.width = cropped.width;
-      white.height = cropped.height;
-      const wctx = white.getContext("2d");
-      wctx.fillStyle = "#ffffff";
-      wctx.fillRect(0,0,white.width, white.height);
-      wctx.drawImage(cropped, 0,0);
-      finalCanvas = white;
-    }
-
-    // 4) blob 생성
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
         finalCanvas.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
@@ -1304,9 +1257,9 @@
     });
   }
 
-  $("downloadBtn").addEventListener("click", async ()=>{
+  downloadBtn.addEventListener("click", async ()=>{
     try{
-      const blob = await stageToOutputBlob();
+      const blob = await stageToOutputTrimmed(); // ✅ changed (image-only output)
       const name = buildName();
       downloadBlob(blob, name);
       setMsg(t().msg_ok, "ok");
