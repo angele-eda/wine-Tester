@@ -66,30 +66,38 @@
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
   <style>
-    :root { --radius:16px; --pad:16px; --border:1px solid rgba(255,255,255,.12); }
+    :root{
+      --radius:16px;
+      --pad:16px;
+      --border:1px solid rgba(255,255,255,.12);
+      --blue: 47,109,246;
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
     *{ box-sizing:border-box; }
 
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
     body{
       margin:0;
       font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
       background:#0b0f17;
       color:#e9eef7;
-      overflow-x:hidden;
-
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
-      font-kerning: normal;
-      font-optical-sizing: auto;
+    }
+    button, input, select, textarea{ font-family:inherit; }
+
+    /* entrance */
+    body:not(.loaded) .card, body:not(.loaded) .top { opacity:0; transform: translateY(8px); }
+    body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
+    body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
+    @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
     }
 
-    button, input, select, textarea{
-      font-family: inherit;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-    }
-
-    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; }
+    .wrap{ max-width:980px; margin:0 auto; padding:22px 14px 44px; overflow-x:clip; }
 
     .top{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
@@ -98,7 +106,7 @@
 
     .site-title{
       margin:0;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-0.35px;
       line-height:1.15;
       color:#ffffff;
@@ -109,7 +117,6 @@
 
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ tools */
     .tools{
       margin-top:10px;
       display:flex;
@@ -117,8 +124,6 @@
       flex-wrap:wrap;
       align-items:center;
     }
-
-    /* === TOOL BUTTON (ID Photo) toned down (main is converter) === */
     .toolPrimary{
       display:inline-flex;
       align-items:center;
@@ -133,8 +138,10 @@
       background: rgba(255,255,255,.06);
       color:#e9eef7;
       box-shadow: none;
+      transition: transform .08s var(--ease), background .12s var(--ease);
     }
     .toolPrimary:hover{ background: rgba(255,255,255,.10); }
+    .toolPrimary:active{ transform: scale(.99); }
     .toolPrimary .badge{
       font-size:10px;
       font-weight:900;
@@ -148,14 +155,15 @@
       gap:6px;
     }
 
-    /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
+    /* ✅ Language */
     .langArea{
-      margin-left:auto;               /* ✅ 핵심 */
+      margin-left:auto;
       display:flex;
       flex-direction:column;
       gap:8px;
       align-items:flex-end;
       min-width: 220px;
+      max-width:100%;
     }
     .langLabel{
       font-size:12px;
@@ -167,8 +175,6 @@
       gap:8px;
       opacity:.95;
     }
-    .langbar{ display:none !important; } /* ✅ hide old buttons */
-
     .langSelect{
       width: 100%;
       max-width: 220px;
@@ -180,6 +186,12 @@
       font-weight: 900;
       font-size: 12px;
       outline: none;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    .langSelect:focus-visible{
+      outline:none;
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
     }
     .langSelect option{ background:#0b0f17; color:#e9eef7; }
 
@@ -192,24 +204,52 @@
       border-radius:var(--radius);
       padding:var(--pad);
       min-width:0;
+      overflow-x:clip;
+      will-change:transform, opacity;
     }
-    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
+    .card h2{
+      margin:0 0 10px;
+      font-size:15px;
+      color:#dbe7ff;
+      letter-spacing:-0.2px;
+      line-height:1.2;
+      font-weight:900;
+    }
+    /* ✅ Make Download heading look modern (no “허리멍텅”) */
+    .sectionTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+    }
+    .sectionTitle h2{ margin:0; font-weight:900; }
+    .sectionTitle .miniPill{
+      font-size:12px;
+      color:#b8c6dc;
+      border:1px solid rgba(255,255,255,.12);
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+    }
 
     .drop{
       border:1px dashed rgba(255,255,255,.18);
       border-radius:14px; padding:18px;
       display:flex; align-items:center; justify-content:center; text-align:center;
       background:rgba(255,255,255,.02);
-      min-width:0;
-
       cursor:pointer;
       user-select:none;
-      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
+      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
       position: relative;
       min-height: 240px;
+      min-width:0;
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
-
     #drop_title{ white-space: pre-line; }
     .drop:active{ transform: scale(0.998); }
     .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); }
@@ -226,7 +266,7 @@
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
 
-    /* ✅ NEW: Local secure badge under upload box */
+    /* ✅ Local badge (single lock icon only) */
     .localBadge{
       margin-top:12px;
       display:flex;
@@ -239,30 +279,36 @@
       background: rgba(80,120,255,0.08);
       color:#bcd1ff;
       font-size:13px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-0.2px;
       user-select:none;
-    }
-    .localBadge small{
-      display:block;
-      font-size:12px;
-      font-weight:700;
-      color:#9fb0ca;
-      opacity:.95;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
-      background:#2f6df6; color:white; font-weight:800;
+      background:#2f6df6; color:white; font-weight:900;
       padding:12px 14px; border-radius:14px; width:100%;
       font-size:15px;
       letter-spacing: -0.2px;
+      user-select:none;
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
     }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
-    .btn.secondary{ background:rgba(255,255,255,.10); color:#e9eef7; border:var(--border); }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > * { flex:1; min-width:160px; }
+    .btn.secondary{
+      background:rgba(255,255,255,.10);
+      color:#e9eef7;
+      border:var(--border);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .btn.secondary:hover{ background:rgba(255,255,255,.14); }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; min-width:0; }
+    .row > * { flex:1; min-width:160px; min-width:0; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     input[type="file"]{ display:none; }
 
@@ -271,9 +317,15 @@
       background:rgba(255,255,255,.06);
       color:#e9eef7; border:var(--border);
       outline:none;
+      font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    select:focus-visible, input[type="number"]:focus-visible{
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    /* ✅ Preview + Crop button layout */
+    /* ✅ Preview + actions */
     .previewHead{
       display:flex;
       align-items:center;
@@ -297,7 +349,11 @@
       align-items:center;
       gap:8px;
       white-space:nowrap;
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
     }
+    .miniBtn:hover{ background:rgba(255,255,255,.09); }
+    .miniBtn:active{ transform: scale(.99); }
+    .miniBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.20); }
     .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
 
     .preview{
@@ -309,12 +365,12 @@
       background:rgba(255,255,255,.03);
       display:flex; align-items:center; justify-content:center;
       overflow:hidden;
+      min-width:0;
     }
     @media (min-width: 1024px){
       .preview{ grid-template-columns: 180px 1fr; }
       .thumb{ width:180px; height:180px; }
     }
-
     .thumb img{ width:100%; height:100%; object-fit:cover; }
     .meta{
       color:#b7c3d9; font-size:13px; line-height:1.5;
@@ -325,11 +381,8 @@
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
-    .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
 
-    select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
-    option { background-color: #0b0f17; color:#e9eef7; }
-
+    /* ✅ Multi list */
     .list{
       margin-top:12px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -370,6 +423,14 @@
       background:rgba(255,255,255,.02);
       margin-bottom:8px;
       overflow:hidden;
+      cursor:pointer;
+      transition: background .12s var(--ease), border-color .12s var(--ease);
+    }
+    .fileRow:hover{ background:rgba(255,255,255,.04); }
+    .fileRow.active{
+      border-color: rgba(47,109,246,.40);
+      background: rgba(47,109,246,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
     }
     .fileName{
       flex:1; min-width:0;
@@ -387,31 +448,15 @@
       font-weight:900;
       line-height:1;
       min-width:42px;
+      transition: transform .08s var(--ease), background .12s var(--ease);
     }
-    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
+    .iconBtn:hover{ background:rgba(255,255,255,.09); }
+    .iconBtn:active{ transform: scale(.99); }
+    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
     .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
 
-    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
-    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
-
-    /* ================================
-       Samsung Internet upload box fix
-       ================================ */
-    html[data-samsung="true"] .drop{
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-    }
-    html[data-samsung="true"] .drop::before{
-      content:"";
-      position:absolute;
-      inset: 10px;
-      border: 1px dashed rgba(255,255,255,0.35);
-      border-radius: 14px;
-      pointer-events:none;
-    }
-
-    /* ✅ collapse helper for right-side long hints */
+    /* collapse details */
     .detailsBox{
       margin-top:10px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -436,6 +481,27 @@
       font-size:12px;
       line-height:1.55;
     }
+
+    .footer{ margin-top:14px; color:#94a6c2; font-size:12px; text-align:center; }
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+
+    /* ================================
+       Samsung Internet upload box fix
+       ================================ */
+    html[data-samsung="true"] .drop{
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    html[data-samsung="true"] .drop::before{
+      content:"";
+      position:absolute;
+      inset: 10px;
+      border: 1px dashed rgba(255,255,255,0.35);
+      border-radius: 14px;
+      pointer-events:none;
+    }
   </style>
 </head>
 
@@ -446,7 +512,6 @@
         <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Top: ONLY ID Photo (sub feature) -->
         <div class="tools">
           <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
             🪪 <span id="tool_idphoto_text">ID Photo</span>
@@ -455,28 +520,17 @@
         </div>
       </div>
 
-      <!-- ✅ Language (dropdown) -->
       <div class="langArea" aria-label="Language selector">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
-
         <select class="langSelect" id="langSelect" aria-label="Language">
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="ja">日本語</option>
           <option value="ko">한국어</option>
         </select>
-
-        <!-- old buttons hidden -->
-        <div class="langbar" aria-hidden="true">
-          <div class="langbtn" data-lang="en">🇺🇸 EN</div>
-          <div class="langbtn" data-lang="es">🇪🇸 ES</div>
-          <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
-          <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
-        </div>
       </div>
     </div>
 
-    <!-- ✅ Converter section only (Start here removed) -->
     <div class="grid" id="convertSection">
       <!-- Left -->
       <div class="card">
@@ -484,14 +538,13 @@
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
           <div style="width:100%;">
-            <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
+            <div style="font-weight:900; margin-bottom:6px;" id="drop_title"></div>
             <div class="dropEmoji" aria-hidden="true">📁</div>
             <input id="file" type="file" multiple accept="image/*,application/pdf" />
             <div class="hint" id="drop_hint"></div>
           </div>
         </div>
 
-        <!-- ✅ NEW: Secure badge (server upload 없음) -->
         <div class="localBadge" id="localBadge">
           🔒 <span id="localBadgeText">100% Local processing · No server upload</span>
         </div>
@@ -517,12 +570,11 @@
 
         <div style="height:12px;"></div>
 
-        <!-- ✅ Preview: ✏️ Edit -->
         <div class="previewHead">
           <h2 id="h_preview" style="margin:0;"></h2>
           <div class="previewActions">
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open ID Photo edit page">
-              ✏️ <span id="cropLabel">Edit</span>
+            <button class="miniBtn" id="editBtn" type="button" disabled title="Open editor">
+              ✏️ <span id="editLabel">Edit</span>
             </button>
           </div>
         </div>
@@ -577,12 +629,16 @@
 
         <div style="height:12px;"></div>
 
-        <h2 id="h_download"></h2>
+        <!-- ✅ Download section (modern title line) -->
+        <div class="sectionTitle">
+          <h2 id="h_download"></h2>
+          <div class="miniPill" id="dlPill">⚡ Local</div>
+        </div>
+
         <button class="btn" id="convert" disabled></button>
         <div style="height:10px;"></div>
         <button class="btn secondary" id="reset" disabled></button>
 
-        <!-- ✅ collapse long hints -->
         <div class="detailsBox">
           <details>
             <summary id="privacy_summary"></summary>
@@ -604,7 +660,6 @@
       </div>
     </div>
 
-    <!-- ✅ Footer -->
     <div class="footer">
       © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages ·
       <a href="/privacy.html">Privacy</a> ·
@@ -616,6 +671,7 @@
 (() => {
   "use strict";
 
+  // Samsung Internet fix
   if (/SamsungBrowser/i.test(navigator.userAgent)) {
     document.documentElement.dataset.samsung = "true";
   }
@@ -640,14 +696,15 @@
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
-  const cropBtn     = $("cropBtn");
-  const cropLabel   = $("cropLabel");
-  const toolIdPhoto = $("tool_idphoto");
+  const editBtn     = $("editBtn");
+  const editLabel   = $("editLabel");
 
+  const toolIdPhoto = $("tool_idphoto");
   const langSelectEl = $("langSelect");
   const localBadgeTextEl = $("localBadgeText");
 
   $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   const STR = {
     en: {
@@ -666,9 +723,10 @@
       local_badge: "100% Local processing · No server upload",
 
       h_preview: "2) Preview",
-      crop: "Edit",
+      edit: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
+
       h_settings: "3) Settings",
       lbl_format: "Output",
       lbl_quality: "Quality (JPG/WebP only)",
@@ -681,6 +739,7 @@
       ph_w: "e.g., 1200",
       ph_h: "e.g., 800",
       size_hint: "If you enter only one side, aspect ratio is preserved automatically.",
+
       h_download: "4) Download",
       convert: "Convert & Download",
       reset: "Reset",
@@ -692,18 +751,21 @@
 
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
-      multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+      multi_note: "Tip: Click a file row to preview. Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
       msg_pdf_one: "Image→PDF will be saved. (Multiple images become one merged PDF.)",
       msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
+
       err_only_supported: "Only images and PDFs are supported.",
       err_preview: "Failed to preview.",
       err_convert: "Conversion failed. Try different files/options.",
       err_pdf_lib: "PDF library is not ready. Please refresh and try again.",
       err_pdf_locked: "This PDF may be password-protected or corrupted. Please unlock it and try again.",
       err_heic: "HEIC/HEIF may not work on some browsers. Please save as JPG/PNG and try again.",
+
       dl_start: (name, size) => `Download started: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`,
@@ -724,12 +786,13 @@
       h_upload: "1) 업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
-      local_badge: "🔒 100% 로컬 처리 · 서버 업로드 없음",
+      local_badge: "100% 로컬 처리 · 서버 업로드 없음",
 
       h_preview: "2) 미리보기",
-      crop: "편집",
+      edit: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
+
       h_settings: "3) 설정",
       lbl_format: "출력",
       lbl_quality: "품질 (JPG/WebP만)",
@@ -742,6 +805,7 @@
       ph_w: "예: 1200",
       ph_h: "예: 800",
       size_hint: "가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.",
+
       h_download: "4) 다운로드",
       convert: "변환 / 합치기",
       reset: "초기화",
@@ -753,18 +817,21 @@
 
       zip_label: "ZIP 받기",
       a4_label: "A4 통일(PDF 병합)",
-      multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+      multi_note: "팁: 파일 줄을 눌러 미리보기 변경. ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+
       msg_loading: "로딩 중…",
       msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
       msg_pdf_one: "이미지→PDF는 저장됩니다. (여러 이미지는 1개 PDF로 합쳐집니다.)",
       msg_pdf_merge: "PDF+PDF 병합은 1개의 합쳐진 PDF로 저장됩니다.",
+
       err_only_supported: "이미지와 PDF만 지원합니다.",
       err_preview: "미리보기에 실패했어요.",
       err_convert: "변환 실패. 다른 파일/옵션으로 다시 시도해 주세요.",
       err_pdf_lib: "PDF 라이브러리가 준비되지 않았어요. 새로고침 후 다시 시도해 주세요.",
       err_pdf_locked: "PDF가 암호로 잠겼거나 손상된 것 같아요. 잠금 해제 후 다시 시도해 주세요.",
       err_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. JPG/PNG로 저장 후 다시 시도해 주세요.",
+
       dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`,
@@ -785,12 +852,13 @@
       h_upload: "1) アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
-      local_badge: "🔒 ローカル処理 · サーバー送信なし",
+      local_badge: "ローカル処理 · サーバー送信なし",
 
       h_preview: "2) プレビュー",
-      crop: "編集",
+      edit: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
+
       h_settings: "3) 設定",
       lbl_format: "出力",
       lbl_quality: "品質（JPG/WebPのみ）",
@@ -803,6 +871,7 @@
       ph_w: "例: 1200",
       ph_h: "例: 800",
       size_hint: "片方だけ入力すると、比率を維持して自動計算します。",
+
       h_download: "4) ダウンロード",
       convert: "変換 / 結合",
       reset: "リセット",
@@ -814,18 +883,21 @@
 
       zip_label: "ZIPで受け取る",
       a4_label: "A4統一(PDF結合)",
-      multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
+      multi_note: "ヒント: 行をクリックしてプレビュー切替。▲▼で順序変更、🗑️で削除できます。",
+
       msg_loading: "読み込み中…",
       msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
       msg_pdf_one: "画像→PDFは保存されます。（複数画像は1つのPDFに結合）",
       msg_pdf_merge: "PDF+PDF結合は1つの結合PDFとして保存されます。",
+
       err_only_supported: "画像とPDFのみ対応です。",
       err_preview: "プレビューに失敗しました。",
       err_convert: "変換に失敗しました。別のファイル/設定でお試しください。",
       err_pdf_lib: "PDFライブラリが準備できていません。更新して再試行してください。",
       err_pdf_locked: "PDFがパスワード保護または破損している可能性があります。解除して再試行してください。",
       err_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGで保存してお試しください。",
+
       dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`,
@@ -846,12 +918,13 @@
       h_upload: "1) Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
-      local_badge: "🔒 Procesamiento local · Sin subir al servidor",
+      local_badge: "Procesamiento local · Sin subir al servidor",
 
       h_preview: "2) Vista previa",
-      crop: "Editar",
+      edit: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
+
       h_settings: "3) Ajustes",
       lbl_format: "Salida",
       lbl_quality: "Calidad (solo JPG/WebP)",
@@ -864,6 +937,7 @@
       ph_w: "p. ej., 1200",
       ph_h: "p. ej., 800",
       size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
+
       h_download: "4) Descargar",
       convert: "Convertir / Unir",
       reset: "Reiniciar",
@@ -875,18 +949,21 @@
 
       zip_label: "Descargar en ZIP",
       a4_label: "Normalizar a A4 (unir PDF)",
-      multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
+      multi_note: "Consejo: Haz clic en una fila para cambiar la vista previa. Usa ▲▼ para reordenar y 🗑️ para eliminar.",
+
       msg_loading: "Cargando…",
       msg_ready: "¡Listo! Pulsa Convertir / Unir.",
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
       msg_pdf_one: "Imagen→PDF se guardará. (Varias imágenes se combinan en un solo PDF.)",
       msg_pdf_merge: "Unir PDF+PDF generará un solo PDF combinado.",
+
       err_only_supported: "Solo se admiten imágenes y PDFs.",
       err_preview: "Falló la vista previa.",
       err_convert: "Falló la conversión. Prueba con otros archivos/opciones.",
       err_pdf_lib: "La librería PDF no está lista. Actualiza y reintenta.",
       err_pdf_locked: "Este PDF puede estar protegido con contraseña o dañado. Desbloquéalo y reintenta.",
       err_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
+
       dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
         `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b><br/>Resolución: <b>${w} × ${h}</b>`,
@@ -927,6 +1004,8 @@
   }
 
   let LANG = detectLang();
+
+  function t(){ return STR[LANG] || STR.en; }
 
   function humanSize(bytes){
     const units = ["B","KB","MB","GB"];
@@ -989,12 +1068,10 @@
   }
 
   function syncToolLinks(){
-    const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
-    toolIdPhoto.href = url;
+    toolIdPhoto.href = "/id-photo/?lang=" + encodeURIComponent(LANG);
   }
 
   function syncLangSelect(){
-    if(!langSelectEl) return;
     langSelectEl.value = LANG;
   }
 
@@ -1005,16 +1082,16 @@
   let activeIndex = 0;
 
   function renderTexts(){
-    const t = STR[LANG] || STR.en;
+    const x = t();
 
     document.documentElement.lang = LANG;
+    document.title = x.seoTitle;
 
-    document.title = t.seoTitle;
-    if(META_DESC) META_DESC.setAttribute("content", t.seoDesc);
-    if(OG_TITLE)  OG_TITLE.setAttribute("content", t.ogTitle);
-    if(OG_DESC)   OG_DESC.setAttribute("content", t.ogDesc);
-    if(TW_TITLE)  TW_TITLE.setAttribute("content", t.ogTitle);
-    if(TW_DESC)   TW_DESC.setAttribute("content", t.ogDesc);
+    if(META_DESC) META_DESC.setAttribute("content", x.seoDesc);
+    if(OG_TITLE)  OG_TITLE.setAttribute("content", x.ogTitle);
+    if(OG_DESC)   OG_DESC.setAttribute("content", x.ogDesc);
+    if(TW_TITLE)  TW_TITLE.setAttribute("content", x.ogTitle);
+    if(TW_DESC)   TW_DESC.setAttribute("content", x.ogDesc);
 
     if(JSONLD){
       try{
@@ -1025,59 +1102,53 @@
       }catch(e){}
     }
 
-    $("subtitle").innerHTML = t.subtitle;
+    $("subtitle").innerHTML = x.subtitle;
 
-    $("lang_label").textContent = t.lang_label;
-    $("tool_idphoto_text").textContent = t.tool_idphoto;
-    $("tool_badge").textContent = t.tool_badge;
+    $("lang_label").textContent = x.lang_label;
+    $("tool_idphoto_text").textContent = x.tool_idphoto;
+    $("tool_badge").textContent = x.tool_badge;
 
-    $("h_upload").textContent = t.h_upload;
-    $("drop_title").textContent = t.drop_title;
-    $("drop_hint").textContent = t.drop_hint;
+    $("h_upload").textContent = x.h_upload;
+    $("drop_title").textContent = x.drop_title;
+    $("drop_hint").textContent = x.drop_hint;
+    if(localBadgeTextEl) localBadgeTextEl.textContent = x.local_badge;
 
-    if(localBadgeTextEl) localBadgeTextEl.textContent = t.local_badge;
+    $("h_preview").textContent = x.h_preview;
+    editLabel.textContent = x.edit;
 
-    $("h_preview").textContent = t.h_preview;
-    cropLabel.textContent = t.crop;
+    $("h_settings").textContent = x.h_settings;
+    $("lbl_format").textContent = x.lbl_format;
+    $("lbl_quality").textContent = x.lbl_quality;
+    $("q_095").textContent = x.q_095;
+    $("q_090").textContent = x.q_090;
+    $("q_080").textContent = x.q_080;
+    $("q_070").textContent = x.q_070;
 
-    $("h_settings").textContent = t.h_settings;
-    $("lbl_format").textContent = t.lbl_format;
-    $("lbl_quality").textContent = t.lbl_quality;
+    $("lbl_w").textContent = x.lbl_w;
+    $("lbl_h").textContent = x.lbl_h;
+    inW.placeholder = x.ph_w;
+    inH.placeholder = x.ph_h;
+    $("size_hint").textContent = x.size_hint;
 
-    $("q_095").textContent = t.q_095;
-    $("q_090").textContent = t.q_090;
-    $("q_080").textContent = t.q_080;
-    $("q_070").textContent = t.q_070;
+    $("h_download").textContent = x.h_download;
+    btnConvert.textContent = x.convert;
+    btnReset.textContent = x.reset;
 
-    $("lbl_w").textContent = t.lbl_w;
-    $("lbl_h").textContent = t.lbl_h;
-    inW.placeholder = t.ph_w;
-    inH.placeholder = t.ph_h;
-    $("size_hint").textContent = t.size_hint;
+    $("privacy_summary").textContent = x.privacy_summary;
+    $("privacy_body").innerHTML = x.privacy_body;
+    $("pdfzip_summary").textContent = x.pdfzip_summary;
+    $("pdfzip_body").innerHTML = x.pdfzip_body;
 
-    $("h_download").textContent = t.h_download;
-    btnConvert.textContent = t.convert;
-    btnReset.textContent = t.reset;
-
-    const ps = $("privacy_summary");
-    const pb = $("privacy_body");
-    const zs = $("pdfzip_summary");
-    const zb = $("pdfzip_body");
-    if(ps) ps.textContent = t.privacy_summary;
-    if(pb) pb.innerHTML = t.privacy_body;
-    if(zs) zs.textContent = t.pdfzip_summary;
-    if(zb) zb.innerHTML = t.pdfzip_body;
-
-    $("zip_label").textContent = t.zip_label;
-    $("a4_label").textContent = t.a4_label;
-    $("multi_note").textContent = t.multi_note;
+    $("zip_label").textContent = x.zip_label;
+    $("a4_label").textContent = x.a4_label;
+    $("multi_note").textContent = x.multi_note;
 
     if(files.length === 0){
-      meta.textContent = t.meta_idle;
-      thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
+      meta.textContent = x.meta_idle;
+      thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${x.thumb_label}</span>`;
     }
 
-    if(multiCount) multiCount.textContent = t.multi_count(files.length);
+    if(multiCount) multiCount.textContent = x.multi_count(files.length);
 
     syncToolLinks();
     syncLangSelect();
@@ -1097,27 +1168,22 @@
     renderTexts();
     updateQualityState();
     renderFileList();
-    updateCropState();
+    updateEditState();
   }
 
-  if(langSelectEl){
-    langSelectEl.addEventListener("change", ()=> setLang(langSelectEl.value));
-  }
+  langSelectEl.addEventListener("change", ()=> setLang(langSelectEl.value));
 
   function renderFileList(){
-    if(files.length <= 1){
-      multiPanel.style.display = "none";
-    } else {
-      multiPanel.style.display = "block";
-    }
+    if(files.length <= 1) multiPanel.style.display = "none";
+    else multiPanel.style.display = "block";
 
-    const t = STR[LANG] || STR.en;
-    multiCount.textContent = t.multi_count(files.length);
+    const x = t();
+    multiCount.textContent = x.multi_count(files.length);
 
     fileListEl.innerHTML = "";
     files.forEach((item, idx) => {
       const row = document.createElement("div");
-      row.className = "fileRow";
+      row.className = "fileRow" + (idx === activeIndex ? " active" : "");
 
       const name = document.createElement("div");
       name.className = "fileName";
@@ -1156,6 +1222,7 @@
 
       row.addEventListener("click", ()=>{
         activeIndex = idx;
+        renderFileList();
         previewActive();
       });
 
@@ -1165,10 +1232,11 @@
 
   function move(from, to){
     if(to < 0 || to >= files.length) return;
-    const t = files[from];
+    const tmp = files[from];
     files.splice(from,1);
-    files.splice(to,0,t);
+    files.splice(to,0,tmp);
     if(activeIndex === from) activeIndex = to;
+    else if(activeIndex === to) activeIndex = from;
     renderFileList();
     previewActive();
   }
@@ -1177,29 +1245,23 @@
     files.splice(idx,1);
     if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
     renderFileList();
-    if(files.length === 0){
-      resetAll();
-      return;
-    }
+    if(files.length === 0){ resetAll(); return; }
     previewActive();
   }
 
-  function updateCropState(){
-    if(files.length === 1 && files[0] && isImage(files[0].file)){
-      cropBtn.disabled = false;
-      return;
-    }
-    cropBtn.disabled = true;
+  function updateEditState(){
+    const f = files[activeIndex]?.file;
+    editBtn.disabled = !(f && isImage(f));
   }
 
   async function previewActive(){
-    const t = STR[LANG] || STR.en;
+    const x = t();
 
     if(files.length === 0){
       renderTexts();
       btnConvert.disabled = true;
       btnReset.disabled = true;
-      updateCropState();
+      updateEditState();
       return;
     }
 
@@ -1211,11 +1273,8 @@
 
     if(isImage(f)){
       const ext = extLower(f.name);
-      if(ext === "heic" || ext === "heif"){
-        setMessage(t.err_heic, "err");
-      }else{
-        setMessage(t.msg_loading, "");
-      }
+      if(ext === "heic" || ext === "heif") setMessage(x.err_heic, "err");
+      else setMessage(x.msg_loading, "");
 
       const url = URL.createObjectURL(f);
       const img = new Image();
@@ -1227,22 +1286,22 @@
         const w = img.naturalWidth || 0;
         const h = img.naturalHeight || 0;
 
-        meta.innerHTML = t.meta_img(
+        meta.innerHTML = x.meta_img(
           escapeHtml(f.name),
           escapeHtml((f.type || "image/*")),
           humanSize(f.size),
           w, h
         );
 
-        if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
-        updateCropState();
+        if(!(ext === "heic" || ext === "heif")) setMessage(x.msg_ready, "ok");
+        updateEditState();
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
         thumb.innerHTML = "";
-        meta.textContent = t.err_preview;
-        setMessage(t.err_preview, "err");
-        updateCropState();
+        meta.textContent = x.err_preview;
+        setMessage(x.err_preview, "err");
+        updateEditState();
       };
       img.src = url;
       img.style.width = "100%";
@@ -1253,26 +1312,26 @@
 
     if(isPDF(f)){
       thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
-      meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
-      setMessage(t.msg_ready, "ok");
-      updateCropState();
+      meta.innerHTML = x.meta_pdf(escapeHtml(f.name), humanSize(f.size));
+      setMessage(x.msg_ready, "ok");
+      updateEditState();
       return;
     }
 
-    meta.textContent = t.err_only_supported;
-    setMessage(t.err_only_supported, "err");
+    meta.textContent = x.err_only_supported;
+    setMessage(x.err_only_supported, "err");
     btnConvert.disabled = true;
-    updateCropState();
+    updateEditState();
   }
 
   async function handleFiles(selected){
-    const t = STR[LANG] || STR.en;
+    const x = t();
     if(!selected || selected.length === 0) return;
 
     const arr = Array.from(selected);
     const ok = arr.filter(f => isImage(f) || isPDF(f));
     if(ok.length === 0){
-      setMessage(t.err_only_supported, "err");
+      setMessage(x.err_only_supported, "err");
       return;
     }
 
@@ -1287,23 +1346,20 @@
     renderTexts();
     await previewActive();
     updateQualityState();
-    updateCropState();
+    updateEditState();
 
     const outMime = selFormat.value;
     const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && outMime !== "application/pdf"){
-      zipModeEl.checked = true;
-    } else {
-      zipModeEl.checked = false;
-    }
+    if(imagesCount >= 2 && outMime !== "application/pdf") zipModeEl.checked = true;
+    else zipModeEl.checked = false;
 
     if(selFormat.value === "image/png"){
-      setMessage(t.msg_png_q, "");
+      setMessage(x.msg_png_q, "");
     } else if(selFormat.value === "application/pdf"){
-      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
-      else setMessage(t.msg_pdf_one, "");
+      if(files.some(x=>isPDF(x.file))) setMessage(x.msg_pdf_merge, "");
+      else setMessage(x.msg_pdf_one, "");
     } else {
-      setMessage(t.msg_ready, "ok");
+      setMessage(x.msg_ready, "ok");
     }
   }
 
@@ -1364,23 +1420,20 @@
 
   selFormat.addEventListener("change", ()=>{
     updateQualityState();
-    const t = STR[LANG] || STR.en;
+    const x = t();
 
     const mime = selFormat.value;
     const imagesCount = files.filter(x => isImage(x.file)).length;
-    if(imagesCount >= 2 && mime !== "application/pdf"){
-      zipModeEl.checked = true;
-    } else {
-      zipModeEl.checked = false;
-    }
+    if(imagesCount >= 2 && mime !== "application/pdf") zipModeEl.checked = true;
+    else zipModeEl.checked = false;
 
     if(mime === "image/png"){
-      setMessage(t.msg_png_q, "");
+      setMessage(x.msg_png_q, "");
     } else if(mime === "application/pdf"){
-      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
-      else setMessage(t.msg_pdf_one, "");
+      if(files.some(x=>isPDF(x.file))) setMessage(x.msg_pdf_merge, "");
+      else setMessage(x.msg_pdf_one, "");
     } else if(files.length){
-      setMessage(t.msg_ready, "ok");
+      setMessage(x.msg_ready, "ok");
     } else {
       setMessage("", "");
     }
@@ -1421,11 +1474,8 @@
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const blob = await new Promise((resolve)=>{
-      if(outMime === "image/png"){
-        canvas.toBlob(resolve, outMime);
-      } else {
-        canvas.toBlob(resolve, outMime, quality);
-      }
+      if(outMime === "image/png") canvas.toBlob(resolve, outMime);
+      else canvas.toBlob(resolve, outMime, quality);
     });
 
     if(!blob) throw new Error("toBlob failed");
@@ -1433,8 +1483,8 @@
   }
 
   async function imagesToSinglePDF(imageItems){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
+    const x = t();
+    if(!window.PDFLib) throw new Error(x.err_pdf_lib);
 
     const { PDFDocument } = window.PDFLib;
     const pdfDoc = await PDFDocument.create();
@@ -1442,7 +1492,7 @@
     for(const it of imageItems){
       const { canvas, w, h } = await imageToCanvasBlob(it.file, "image/png", 1);
       const pngBlob = await new Promise((resolve)=> canvas.toBlob(resolve, "image/png"));
-      if(!pngBlob) throw new Error(t.err_convert);
+      if(!pngBlob) throw new Error(x.err_convert);
 
       const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
       const imgEmbed = await pdfDoc.embedPng(pngBytes);
@@ -1456,8 +1506,8 @@
   }
 
   async function mergePDFs(pdfItems, normalizeA4){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
+    const x = t();
+    if(!window.PDFLib) throw new Error(x.err_pdf_lib);
 
     const { PDFDocument, PageSizes } = window.PDFLib;
     const outDoc = await PDFDocument.create();
@@ -1478,18 +1528,18 @@
             const scale = Math.min(a4w / w, a4h / h);
             const drawW = w * scale;
             const drawH = h * scale;
-            const x = (a4w - drawW) / 2;
-            const y = (a4h - drawH) / 2;
+            const xx = (a4w - drawW) / 2;
+            const yy = (a4h - drawH) / 2;
 
             const page = outDoc.addPage([a4w, a4h]);
-            page.drawPage(embedded, { x, y, width: drawW, height: drawH });
+            page.drawPage(embedded, { x: xx, y: yy, width: drawW, height: drawH });
           }
         }else{
           const copied = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
           copied.forEach(p => outDoc.addPage(p));
         }
       }catch(e){
-        throw new Error(t.err_pdf_locked);
+        throw new Error(x.err_pdf_locked);
       }
     }
 
@@ -1504,7 +1554,6 @@
     for(const it of imageItems){
       const f = it.file;
       const { blob } = await imageToCanvasBlob(f, outMime, quality);
-
       const ext = mimeToExt(outMime);
       const base = (f.name || "image").replace(/\.[^.]+$/, "");
       const stamp = new Date().toISOString().replace(/[:.]/g,"-");
@@ -1515,20 +1564,20 @@
   }
 
   async function onConvert(){
-    const t = STR[LANG] || STR.en;
+    const x = t();
     if(files.length === 0){
-      setMessage(t.err_only_supported, "err");
+      setMessage(x.err_only_supported, "err");
       return;
     }
 
     btnConvert.disabled = true;
-    setMessage(t.msg_loading, "");
+    setMessage(x.msg_loading, "");
 
     const outMime = selFormat.value;
     const quality = parseFloat(selQuality.value);
 
-    const images = files.filter(x => isImage(x.file));
-    const pdfs   = files.filter(x => isPDF(x.file));
+    const images = files.filter(v => isImage(v.file));
+    const pdfs   = files.filter(v => isPDF(v.file));
 
     try{
       if(outMime === "application/pdf"){
@@ -1536,7 +1585,7 @@
           const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
           const name = buildName("merged_pdf", "pdf");
           downloadBlob(merged, name);
-          setMessage(t.dl_start(name, humanSize(merged.size)), "ok");
+          setMessage(x.dl_start(name, humanSize(merged.size)), "ok");
           btnConvert.disabled = false;
           return;
         }
@@ -1545,23 +1594,21 @@
           const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
           downloadBlob(pdfBlob, name);
-          setMessage(t.dl_start(name, humanSize(pdfBlob.size)), "ok");
+          setMessage(x.dl_start(name, humanSize(pdfBlob.size)), "ok");
           btnConvert.disabled = false;
           return;
         }
 
-        throw new Error(t.err_only_supported);
+        throw new Error(x.err_only_supported);
       }
 
-      if(images.length === 0){
-        throw new Error(t.err_only_supported);
-      }
+      if(images.length === 0) throw new Error(x.err_only_supported);
 
       if(images.length >= 2 && zipModeEl.checked){
         const zipBlob = await convertImagesToZIP(images, outMime, quality);
         const name = buildName("converted_images", "zip");
         downloadBlob(zipBlob, name);
-        setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
+        setMessage(x.dl_start(name, humanSize(zipBlob.size)), "ok");
         btnConvert.disabled = false;
         return;
       }
@@ -1570,11 +1617,11 @@
       const { blob } = await imageToCanvasBlob(first, outMime, quality);
       const name = buildName(first.name, mimeToExt(outMime));
       downloadBlob(blob, name);
-      setMessage(t.dl_start(name, humanSize(blob.size)), "ok");
+      setMessage(x.dl_start(name, humanSize(blob.size)), "ok");
       btnConvert.disabled = false;
 
     }catch(e){
-      const errText = (e && e.message) ? e.message : (STR[LANG]||STR.en).err_convert;
+      const errText = (e && e.message) ? e.message : x.err_convert;
       setMessage(errText, "err");
       btnConvert.disabled = false;
     }
@@ -1600,16 +1647,15 @@
 
     renderTexts();
     renderFileList();
-    updateCropState();
+    updateEditState();
   }
 
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
-  // ✅ Edit (existing behavior)
-  cropBtn.addEventListener("click", async ()=>{
-    if(files.length !== 1) return;
-    const f = files[0]?.file;
+  // ✅ Edit → /edit/ (pass image via sessionStorage)
+  editBtn.addEventListener("click", async ()=>{
+    const f = files[activeIndex]?.file;
     if(!f || !isImage(f)) return;
 
     try{
@@ -1620,18 +1666,28 @@
         r.readAsDataURL(f);
       });
 
+      // primary keys (editor reads these first)
+      sessionStorage.setItem("cf24_edit_img", String(dataUrl));
+      sessionStorage.setItem("cf24_edit_name", f.name || "image");
+
+      // backward keys (if editor still checks these)
       sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
     }catch(e){
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
+      // even if read fails, move editor (user can load again there)
     }
+
+    location.href = "/edit/?lang=" + encodeURIComponent(LANG);
   });
 
   // init
-  setLang(LANG);
-  resetAll();
+  function init(){
+    setLang(LANG);
+    updateQualityState();
+    resetAll(); // keeps language + resets UI
+  }
+  init();
 })();
 </script>
 </body>
