@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>PDF → JPG/PNG | ConvertFiles24</title>
-  <meta name="description" content="Convert PDF pages to JPG/PNG locally in your browser. No server upload." />
+  <meta name="description" content="Convert PDF pages to JPG/PNG in your browser. 100% local processing (no server upload)." />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
@@ -21,14 +21,13 @@
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
-      --bg:#0b0f17;
     }
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
     body{
       margin:0;
       font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
-      background:var(--bg);
+      background:#0b0f17;
       color:#e9eef7;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -62,6 +61,7 @@
       margin-bottom:14px;
       min-width:0;
     }
+
     .title{
       margin:0;
       font-weight:900;
@@ -90,11 +90,15 @@
       text-decoration:none;
       user-select:none;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      max-width:420px;
+      max-width:380px;
       transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
     }
     .homeBtn:hover{ background:rgba(47,109,246,.24); }
     .homeBtn:active{ transform: scale(.99); }
+    .homeBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
+    }
 
     .pill{
       width:100%;
@@ -167,20 +171,6 @@
       line-height:1.2;
     }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      min-width:0;
-    }
-    .row > *{
-      flex:1;
-      min-width:160px;
-      max-width:100%;
-      min-width:0;
-    }
-
     .btn{
       appearance:none; border:none; cursor:pointer;
       background:#2f6df6; color:white; font-weight:900;
@@ -206,8 +196,22 @@
       border-color: rgba(47,109,246,.36);
     }
 
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+    .row > *{
+      flex:1;
+      min-width:160px;
+      max-width:100%;
+      min-width:0;
+    }
+
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-    select, input[type="number"]{
+    select{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
@@ -219,126 +223,128 @@
       max-width:100%;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
     }
-    select:focus-visible, input[type="number"]:focus-visible{
+    select:focus-visible{
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    /* ✅ 드롭박스 통일 + 색 변화 */
-    .dropbox{
-      border-radius:16px;
-      border:1px dashed rgba(255,255,255,.22);
-      background: rgba(47,109,246,.06);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-      padding:18px 16px;
-      min-height: 170px;
+    input[type="file"]{ display:none; }
+
+    /* Drop zone */
+    .drop{
+      border:1px dashed rgba(255,255,255,0.22);
+      background: rgba(255,255,255,.03);
+      border-radius: 18px;
+      padding: 18px;
+      text-align:center;
+      min-height: 190px;
       display:flex;
       align-items:center;
       justify-content:center;
-      text-align:center;
-      transition: background .14s var(--ease), border-color .14s var(--ease), transform .08s var(--ease), box-shadow .14s var(--ease);
-      cursor:pointer;
-      user-select:none;
       position:relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      transition: transform .08s var(--ease), border-color .12s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
+    }
+    .drop.dragover{
+      border-color: rgba(47,109,246,.7);
+      background: rgba(47,109,246,.10);
+      box-shadow: 0 0 0 3px rgba(47,109,246,.18), inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .drop.active{
+      border-color: rgba(120, 200, 255, .55);
+      background: rgba(120, 200, 255, .08);
+    }
+
+    .dropInner{
+      max-width: 520px;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .dropIcon{
+      width:64px; height:64px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+    .dropIcon svg{ width:34px; height:34px; opacity:.95; }
+
+    .dropTitle{
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -0.2px;
+      color:#e9eef7;
+      line-height:1.25;
+    }
+    .dropHint{
+      color:#9fb0ca;
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .fileRow{
+      margin-top: 6px;
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      text-align:left;
       overflow:hidden;
     }
-    .dropbox:hover{
-      background: rgba(47,109,246,.08);
-    }
-    .dropbox.dragover{
-      background: rgba(47,109,246,.15);
-      border-color: rgba(47,109,246,.55);
-      box-shadow: 0 0 0 3px rgba(47,109,246,.18), inset 0 0 0 1px rgba(255,255,255,.08);
-    }
-    .dropbox.loaded{
-      background: rgba(120,200,255,.08); /* ✅ 파일 올라오면 살짝 다른 톤 */
-      border-color: rgba(120,200,255,.28);
-    }
-    .dropTitle{
-      font-weight:900;
-      font-size:18px;
-      letter-spacing:-0.2px;
-      color:#e9eef7;
-      margin-bottom:8px;
-    }
-    .dropSub{
-      color:#9fb0ca;
-      font-size:12px;
-      line-height:1.5;
-    }
-    .hint{
-      margin-top:10px;
-      color:#9fb0ca;
-      font-size:12px;
-      line-height:1.5;
-    }
-    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
-    .msg.err{ color:#ffb4b4; }
-    .msg.ok{ color:#b8ffcc; }
-    .meta{
-      color:#b7c3d9;
-      font-size:13px;
-      line-height:1.5;
-      word-break:break-word;
-      min-width:0;
-    }
-    .meta b{ color:#e9eef7; }
-
-    .list{
-      margin-top:10px;
-      display:grid;
-      gap:8px;
-    }
-    .fileItem{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      border-radius:14px;
-      padding:10px 12px;
-      min-width:0;
-    }
-    .fileLeft{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      min-width:0;
-    }
-    .fileIcon{
-      width:34px;height:34px;
+    .fileBadge{
+      width:42px; height:42px;
       border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       background: rgba(47,109,246,.14);
-      border:1px solid rgba(47,109,246,.25);
+      border: 1px solid rgba(47,109,246,.30);
       flex:0 0 auto;
+    }
+    .fileBadge svg{ width:22px; height:22px; }
+    .fileMeta{
+      min-width:0;
+      flex:1;
     }
     .fileName{
       font-weight:900;
       font-size:13px;
       color:#e9eef7;
+      white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 52vw;
     }
-    .fileInfo{
+    .fileSize{
+      margin-top:2px;
       font-size:12px;
       color:#9fb0ca;
-      margin-top:2px;
     }
-    .badge{
+    .tag{
       flex:0 0 auto;
-      font-size:12px;
       font-weight:900;
-      color:#cfe0ff;
-      border:1px solid rgba(120,200,255,.22);
-      background: rgba(120,200,255,.07);
-      border-radius:999px;
-      padding:6px 10px;
-      white-space:nowrap;
+      font-size:12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#dbe7ff;
     }
+
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .msg.err{ color:#ffb4b4; }
+    .msg.ok{ color:#b8ffcc; }
 
     .footer{
       margin-top:16px;
@@ -348,15 +354,12 @@
     }
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
-
-    input[type="file"]{ display:none; }
-
-    /* ✅ 간격(모바일/PC 둘 다 예쁘게) */
-    .sp8{ height:8px; }
-    .sp10{ height:10px; }
-    .sp12{ height:12px; }
-    .sp14{ height:14px; }
   </style>
+
+  <!-- ✅ pdf.js + worker (CDN) : 이게 없으면 "PDF engine not loaded" 뜸 -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
+  <!-- ✅ JSZip (여러 페이지면 zip) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body>
@@ -378,7 +381,7 @@
       <div class="langRow">
         <div class="langLabel">🌐 <span id="lang_label">언어</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
-          <option value="ko">한국어</option>
+          <option value="ko" selected>한국어</option>
           <option value="en">Global (English)</option>
           <option value="es">Español</option>
           <option value="ja">日本語</option>
@@ -386,31 +389,53 @@
       </div>
     </div>
 
+    <!-- Upload -->
     <div class="card">
-      <h2 id="h_file">PDF 업로드</h2>
+      <h2 id="h_upload">PDF 업로드</h2>
 
-      <!-- ✅ 파일 선택(중복 버튼/중복 input 제거) -->
-      <input id="pdfInput" type="file" accept="application/pdf" />
+      <div class="drop" id="drop">
+        <div class="dropInner" id="dropInner">
+          <div class="dropIcon" aria-hidden="true">
+            <!-- file icon -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M8 13h8M8 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
 
-      <!-- ✅ 드롭박스 통일 -->
-      <div class="dropbox" id="dropbox" role="button" tabindex="0" aria-label="PDF dropzone">
-        <div>
           <div class="dropTitle" id="drop_title">여기에 PDF를 끌어다 놓거나 탭해서 업로드</div>
-          <div class="dropSub" id="drop_sub">팁: 각 페이지를 이미지로 내려받을 수 있어요.</div>
+          <div class="dropHint" id="drop_hint">팁: 각 페이지를 이미지로 내려받을 수 있어요.</div>
+
+          <div class="fileRow" id="fileRow" style="display:none;">
+            <div class="fileBadge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="fileMeta">
+              <div class="fileName" id="fileName"></div>
+              <div class="fileSize" id="fileSize"></div>
+            </div>
+            <div class="tag">PDF</div>
+          </div>
         </div>
       </div>
 
-      <!-- ✅ 비우기(드롭박스 바로 아래) -->
-      <div class="sp10"></div>
+      <div style="height:12px;"></div>
+
       <div class="row">
         <button class="btn secondary" id="pickBtn" type="button">📄 PDF 선택</button>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 비우기</button>
       </div>
 
-      <div class="list" id="fileList" style="display:none;"></div>
+      <input id="fileInput" type="file" accept="application/pdf,.pdf" />
+
       <div class="msg" id="msg"></div>
     </div>
 
+    <!-- Convert -->
     <div class="card">
       <h2 id="h_convert">변환</h2>
 
@@ -420,7 +445,6 @@
           <select id="outFormat">
             <option value="image/jpeg" selected>JPG</option>
             <option value="image/png">PNG</option>
-            <option value="image/webp">WebP</option>
           </select>
         </div>
         <div>
@@ -434,13 +458,10 @@
         </div>
       </div>
 
-      <div class="hint" id="convert_hint">여러 페이지면 ZIP으로 묶어서 내려받습니다.</div>
+      <div class="msg" style="margin-top:10px; color:#9fb0ca;" id="zip_hint">여러 페이지면 ZIP으로 묶어서 내려받습니다.</div>
 
-      <div class="sp12"></div>
+      <div style="height:10px;"></div>
       <button class="btn" id="convertBtn" type="button" disabled>🧩 변환 후 다운로드</button>
-
-      <div class="sp10"></div>
-      <div class="meta" id="meta"><b>상태</b><br/>PDF를 먼저 선택하세요.</div>
     </div>
 
     <div class="footer">
@@ -450,433 +471,367 @@
     </div>
   </div>
 
-  <!-- ✅ PDF.js + JSZip (변환 실패 원인 대부분: pdf.js 미로딩) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id)=>document.getElementById(id);
+  $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  <script>
-  (() => {
-    "use strict";
-    const $ = (id)=>document.getElementById(id);
-
-    $("year").textContent = new Date().getFullYear();
-    requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
-    // ========== i18n (간단 유지) ==========
-    const STR = {
-      ko: {
-        page_title: "PDF → JPG/PNG",
-        page_sub: "업로드 → 변환 → 이미지 다운로드. 100% 로컬 처리.",
-        home: "🏠 홈으로",
-        local: "로컬 처리 — 서버 업로드 없음",
-        lang_label: "언어",
-
-        h_file: "PDF 업로드",
-        drop_title: "여기에 PDF를 끌어다 놓거나 탭해서 업로드",
-        drop_sub: "팁: 각 페이지를 이미지로 내려받을 수 있어요.",
-        pick: "📄 PDF 선택",
-        clear: "🧹 비우기",
-
-        h_convert: "변환",
-        format: "형식",
-        quality: "품질",
-        convert_hint: "여러 페이지면 ZIP으로 묶어서 내려받습니다.",
-        convert: "🧩 변환 후 다운로드",
-
-        msg_ready: "준비 완료! 변환 버튼을 눌러주세요.",
-        msg_cleared: "초기화 완료.",
-        msg_bad: "PDF만 업로드할 수 있어요.",
-        msg_fail: "변환 실패: ",
-        msg_busy: "변환 중… (페이지가 많으면 시간이 걸릴 수 있어요)",
-        meta_none: "<b>상태</b><br/>PDF를 먼저 선택하세요.",
-        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>파일명: ${escapeHtml(name)}<br/>크기: ${sizeMB}MB`
-      },
-      en: {
-        page_title: "PDF → JPG/PNG",
-        page_sub: "Upload → convert → download images. 100% local processing.",
-        home: "🏠 Home",
-        local: "Processed locally — no server upload",
-        lang_label: "Language",
-
-        h_file: "Upload PDF",
-        drop_title: "Drop PDF here or tap to upload",
-        drop_sub: "Tip: Download each page as an image.",
-        pick: "📄 Choose PDF",
-        clear: "🧹 Clear",
-
-        h_convert: "Convert",
-        format: "Format",
-        quality: "Quality",
-        convert_hint: "Multi-page PDFs will be downloaded as a ZIP.",
-        convert: "🧩 Convert & Download",
-
-        msg_ready: "Ready. Press convert.",
-        msg_cleared: "Cleared.",
-        msg_bad: "Only PDF files are supported.",
-        msg_fail: "Failed: ",
-        msg_busy: "Converting…",
-        meta_none: "<b>Status</b><br/>Select a PDF first.",
-        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>Name: ${escapeHtml(name)}<br/>Size: ${sizeMB}MB`
-      },
-      es: {
-        page_title: "PDF → JPG/PNG",
-        page_sub: "Sube → convierte → descarga imágenes. 100% local.",
-        home: "🏠 Inicio",
-        local: "Procesado local — sin servidor",
-        lang_label: "Idioma",
-
-        h_file: "Subir PDF",
-        drop_title: "Suelta un PDF aquí o toca para subir",
-        drop_sub: "Consejo: descarga cada página como imagen.",
-        pick: "📄 Elegir PDF",
-        clear: "🧹 Vaciar",
-
-        h_convert: "Convertir",
-        format: "Formato",
-        quality: "Calidad",
-        convert_hint: "Si hay varias páginas, se descarga como ZIP.",
-        convert: "🧩 Convertir y descargar",
-
-        msg_ready: "Listo. Pulsa convertir.",
-        msg_cleared: "Listo.",
-        msg_bad: "Solo se admite PDF.",
-        msg_fail: "Error: ",
-        msg_busy: "Convirtiendo…",
-        meta_none: "<b>Estado</b><br/>Selecciona un PDF.",
-        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>Nombre: ${escapeHtml(name)}<br/>Tamaño: ${sizeMB}MB`
-      },
-      ja: {
-        page_title: "PDF → JPG/PNG",
-        page_sub: "アップロード → 変換 → 画像ダウンロード。100% ローカル処理。",
-        home: "🏠 ホーム",
-        local: "ローカル処理 — サーバーなし",
-        lang_label: "言語",
-
-        h_file: "PDF アップロード",
-        drop_title: "ここにPDFをドロップ、またはタップして選択",
-        drop_sub: "ヒント：各ページを画像で保存できます。",
-        pick: "📄 PDFを選択",
-        clear: "🧹 クリア",
-
-        h_convert: "変換",
-        format: "形式",
-        quality: "品質",
-        convert_hint: "複数ページはZIPでダウンロードされます。",
-        convert: "🧩 変換してダウンロード",
-
-        msg_ready: "準備OK。変換ボタンを押してください。",
-        msg_cleared: "初期化しました。",
-        msg_bad: "PDFのみ対応です。",
-        msg_fail: "失敗: ",
-        msg_busy: "変換中…",
-        meta_none: "<b>状態</b><br/>PDFを選択してください。",
-        meta_file: (name, sizeMB)=> `<b>PDF</b><br/>名前: ${escapeHtml(name)}<br/>サイズ: ${sizeMB}MB`
-      }
-    };
-
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, (m)=>({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-      }[m]));
+  // ========= i18n (최소) =========
+  const STR = {
+    ko:{
+      title:"PDF → JPG/PNG",
+      sub:"업로드 → 변환 → 이미지 다운로드. 100% 로컬 처리.",
+      home:"🏠 홈으로",
+      local:"로컬 처리 — 서버 업로드 없음",
+      lang:"언어",
+      upload:"PDF 업로드",
+      dropTitle:"여기에 PDF를 끌어다 놓거나 탭해서 업로드",
+      dropHint:"팁: 각 페이지를 이미지로 내려받을 수 있어요.",
+      pick:"📄 PDF 선택",
+      clear:"🧹 비우기",
+      convert:"변환",
+      format:"형식",
+      quality:"품질",
+      zip:"여러 페이지면 ZIP으로 묶어서 내려받습니다.",
+      run:"🧩 변환 후 다운로드",
+      errNoPdf:"PDF 파일을 먼저 선택해 주세요.",
+      errEngine:"PDF 엔진 로드 실패 (pdf.js). 새로고침 후 다시 시도해 주세요.",
+      errPassword:"암호가 걸린 PDF는 변환이 어려울 수 있어요.",
+      okReady:"준비 완료. 변환 버튼을 눌러주세요.",
+      okDone:"✅ 변환 완료"
+    },
+    en:{
+      title:"PDF → JPG/PNG",
+      sub:"Upload → convert → download images. 100% local processing.",
+      home:"🏠 Home",
+      local:"Processed locally — no server upload",
+      lang:"Language",
+      upload:"PDF Upload",
+      dropTitle:"Drop a PDF here or tap to upload",
+      dropHint:"Tip: Download each page as an image.",
+      pick:"📄 Choose PDF",
+      clear:"🧹 Clear",
+      convert:"Convert",
+      format:"Format",
+      quality:"Quality",
+      zip:"Multiple pages will be downloaded as a ZIP.",
+      run:"🧩 Convert & Download",
+      errNoPdf:"Please select a PDF first.",
+      errEngine:"PDF engine not loaded (pdf.js). Refresh and try again.",
+      errPassword:"Password-protected PDFs may fail.",
+      okReady:"Ready. Press Convert.",
+      okDone:"✅ Done"
+    },
+    es:{
+      title:"PDF → JPG/PNG",
+      sub:"Sube → convierte → descarga imágenes. 100% local.",
+      home:"🏠 Inicio",
+      local:"Procesado local — sin servidor",
+      lang:"Idioma",
+      upload:"Subir PDF",
+      dropTitle:"Suelta un PDF aquí o toca para subir",
+      dropHint:"Tip: Descarga cada página como imagen.",
+      pick:"📄 Elegir PDF",
+      clear:"🧹 Limpiar",
+      convert:"Convertir",
+      format:"Formato",
+      quality:"Calidad",
+      zip:"Varias páginas se descargarán en ZIP.",
+      run:"🧩 Convertir y descargar",
+      errNoPdf:"Selecciona un PDF primero.",
+      errEngine:"Motor PDF no cargado (pdf.js). Recarga e inténtalo.",
+      errPassword:"Los PDFs con contraseña pueden fallar.",
+      okReady:"Listo. Pulsa Convertir.",
+      okDone:"✅ Listo"
+    },
+    ja:{
+      title:"PDF → JPG/PNG",
+      sub:"アップロード → 変換 → 画像ダウンロード。100% ローカル処理。",
+      home:"🏠 ホーム",
+      local:"ローカル処理 — サーバーなし",
+      lang:"言語",
+      upload:"PDF アップロード",
+      dropTitle:"ここにPDFをドロップ、またはタップして選択",
+      dropHint:"Tip: 各ページを画像で保存できます。",
+      pick:"📄 PDF を選択",
+      clear:"🧹 クリア",
+      convert:"変換",
+      format:"形式",
+      quality:"品質",
+      zip:"複数ページはZIPでダウンロードします。",
+      run:"🧩 変換してダウンロード",
+      errNoPdf:"先にPDFを選択してください。",
+      errEngine:"PDFエンジン未読込 (pdf.js)。再読み込みして再試行してください。",
+      errPassword:"パスワード付きPDFは失敗する場合があります。",
+      okReady:"準備OK。変換ボタンを押してください。",
+      okDone:"✅ 完了"
     }
+  };
 
-    function getQueryLang(){
-      try{
-        const u = new URL(location.href);
-        const q = (u.searchParams.get("lang")||"").toLowerCase();
-        if(q && STR[q]) return q;
-      }catch(e){}
-      return null;
+  function detectLang(){
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+    const nav = (navigator.language||"").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("es")) return "es";
+    return "en";
+  }
+  let LANG = detectLang();
+  function t(){ return STR[LANG] || STR.en; }
+  function setLang(lang){
+    if(!STR[lang]) lang="en";
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+    $("langSelect").value = lang;
+    document.documentElement.lang = lang;
+
+    $("page_title").textContent = t().title;
+    $("page_sub").textContent = t().sub;
+    $("home_btn").textContent = t().home;
+    $("local_processing").textContent = t().local;
+    $("lang_label").textContent = t().lang;
+
+    $("h_upload").textContent = t().upload;
+    $("drop_title").textContent = t().dropTitle;
+    $("drop_hint").textContent = t().dropHint;
+    $("pickBtn").textContent = t().pick;
+    $("clearBtn").textContent = t().clear;
+
+    $("h_convert").textContent = t().convert;
+    $("lbl_format").textContent = t().format;
+    $("lbl_quality").textContent = t().quality;
+    $("zip_hint").textContent = t().zip;
+    $("convertBtn").textContent = t().run;
+  }
+  $("langSelect").addEventListener("change",(e)=>setLang(e.target.value));
+
+  // ========= state =========
+  const drop = $("drop");
+  const fileInput = $("fileInput");
+  const pickBtn = $("pickBtn");
+  const clearBtn = $("clearBtn");
+  const convertBtn = $("convertBtn");
+  const outFormatEl = $("outFormat");
+  const qualityEl = $("quality");
+  const msgEl = $("msg");
+
+  const fileRow = $("fileRow");
+  const fileNameEl = $("fileName");
+  const fileSizeEl = $("fileSize");
+
+  let pdfFile = null;
+
+  function setMsg(text, cls){
+    msgEl.textContent = text || "";
+    msgEl.className = "msg " + (cls || "");
+  }
+  function bytesToSize(bytes){
+    if(!bytes && bytes !== 0) return "";
+    const units = ["B","KB","MB","GB"];
+    let i = 0, v = bytes;
+    while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
+    return `${v.toFixed(i===0?0:2)} ${units[i]}`;
+  }
+
+  function setActiveUI(on){
+    drop.classList.toggle("active", !!on);
+    clearBtn.disabled = !on;
+    convertBtn.disabled = !on;
+    fileRow.style.display = on ? "" : "none";
+  }
+
+  function setFile(file){
+    pdfFile = file;
+    if(!pdfFile){
+      fileNameEl.textContent = "";
+      fileSizeEl.textContent = "";
+      setActiveUI(false);
+      setMsg("", "");
+      return;
     }
+    fileNameEl.textContent = pdfFile.name || "document.pdf";
+    fileSizeEl.textContent = bytesToSize(pdfFile.size);
+    setActiveUI(true);
+    setMsg(t().okReady, "ok");
+  }
 
-    function detectLang(){
-      const q = getQueryLang();
-      if(q) return q;
-      const saved = localStorage.getItem("cf24_lang");
-      if(saved && STR[saved]) return saved;
-      const nav = (navigator.language || "").toLowerCase();
-      if(nav.startsWith("ko")) return "ko";
-      if(nav.startsWith("ja")) return "ja";
-      if(nav.startsWith("es")) return "es";
-      return "en";
-    }
+  // ========= drop events =========
+  drop.addEventListener("click", ()=> fileInput.click());
 
-    let LANG = detectLang();
-    const t = ()=> STR[LANG] || STR.en;
-
-    function setLang(lang){
-      if(!STR[lang]) lang = "en";
-      LANG = lang;
-      localStorage.setItem("cf24_lang", lang);
-      $("langSelect").value = lang;
-      document.documentElement.lang = lang;
-
-      $("page_title").textContent = t().page_title;
-      $("page_sub").textContent = t().page_sub;
-      $("home_btn").textContent = t().home;
-      $("local_processing").textContent = t().local;
-      $("lang_label").textContent = t().lang_label;
-
-      $("h_file").textContent = t().h_file;
-      $("drop_title").textContent = t().drop_title;
-      $("drop_sub").textContent = t().drop_sub;
-      $("pickBtn").textContent = t().pick;
-      $("clearBtn").textContent = t().clear;
-
-      $("h_convert").textContent = t().h_convert;
-      $("lbl_format").textContent = t().format;
-      $("lbl_quality").textContent = t().quality;
-      $("convert_hint").textContent = t().convert_hint;
-      $("convertBtn").textContent = t().convert;
-
-      if(!state.file) $("meta").innerHTML = t().meta_none;
-    }
-
-    $("langSelect").addEventListener("change", e=> setLang(e.target.value));
-
-    // ========== state ==========
-    const state = {
-      file: null,
-      fileName: "",
-      busy: false
-    };
-
-    // ========== UI refs ==========
-    const pdfInput = $("pdfInput");
-    const dropbox  = $("dropbox");
-    const pickBtn  = $("pickBtn");
-    const clearBtn = $("clearBtn");
-    const convertBtn = $("convertBtn");
-    const msgEl = $("msg");
-    const fileList = $("fileList");
-    const metaEl = $("meta");
-
-    const outFormatEl = $("outFormat");
-    const qualityEl = $("quality");
-
-    function setMsg(text, cls){
-      msgEl.textContent = text || "";
-      msgEl.className = "msg " + (cls || "");
-    }
-
-    function setBusy(b){
-      state.busy = b;
-      pickBtn.disabled = b;
-      clearBtn.disabled = b || !state.file;
-      convertBtn.disabled = b || !state.file;
-      dropbox.style.opacity = b ? ".7" : "1";
-    }
-
-    function bytesToMB(b){
-      return (b / (1024*1024)).toFixed(2);
-    }
-
-    function renderFileCard(){
-      if(!state.file){
-        fileList.style.display = "none";
-        dropbox.classList.remove("loaded");
-        metaEl.innerHTML = t().meta_none;
-        return;
-      }
-      dropbox.classList.add("loaded");
-      fileList.style.display = "grid";
-      fileList.innerHTML = `
-        <div class="fileItem">
-          <div class="fileLeft">
-            <div class="fileIcon" aria-hidden="true">📄</div>
-            <div style="min-width:0;">
-              <div class="fileName">${escapeHtml(state.fileName)}</div>
-              <div class="fileInfo">${bytesToMB(state.file.size)} MB</div>
-            </div>
-          </div>
-          <div class="badge">PDF</div>
-        </div>
-      `;
-      metaEl.innerHTML = t().meta_file(state.fileName, bytesToMB(state.file.size));
-    }
-
-    function resetAll(){
-      state.file = null;
-      state.fileName = "";
-      pdfInput.value = "";
-      setMsg(t().msg_cleared, "ok");
-      renderFileCard();
-      setBusy(false);
-    }
-
-    function acceptFile(file){
-      if(!file) return;
-      const isPdf = (file.type === "application/pdf") || (String(file.name||"").toLowerCase().endsWith(".pdf"));
-      if(!isPdf){
-        setMsg(t().msg_bad, "err");
-        return;
-      }
-      state.file = file;
-      state.fileName = file.name || "document.pdf";
-      setMsg(t().msg_ready, "ok");
-      renderFileCard();
-      setBusy(false);
-    }
-
-    // ========== drop events ==========
-    function prevent(e){ e.preventDefault(); e.stopPropagation(); }
-
-    ["dragenter","dragover"].forEach(ev=>{
-      dropbox.addEventListener(ev, (e)=>{
-        prevent(e);
-        dropbox.classList.add("dragover");
-      });
+  ["dragenter","dragover"].forEach(ev=>{
+    drop.addEventListener(ev, (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      drop.classList.add("dragover");
     });
-    ["dragleave","drop"].forEach(ev=>{
-      dropbox.addEventListener(ev, (e)=>{
-        prevent(e);
-        dropbox.classList.remove("dragover");
-      });
+  });
+  ["dragleave","drop"].forEach(ev=>{
+    drop.addEventListener(ev, (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      drop.classList.remove("dragover");
     });
-    dropbox.addEventListener("drop", (e)=>{
-      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-      acceptFile(file);
-    });
+  });
+  drop.addEventListener("drop", (e)=>{
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(!f) return;
+    if(!(f.type === "application/pdf" || (f.name||"").toLowerCase().endsWith(".pdf"))){
+      setMsg(t().errNoPdf, "err");
+      return;
+    }
+    setFile(f);
+  });
 
-    // click / key open file
-    function openPicker(){ if(!state.busy) pdfInput.click(); }
-    dropbox.addEventListener("click", openPicker);
-    dropbox.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openPicker(); }
-    });
-    pickBtn.addEventListener("click", openPicker);
-    pdfInput.addEventListener("change", ()=> acceptFile(pdfInput.files && pdfInput.files[0]));
+  pickBtn.addEventListener("click", ()=> fileInput.click());
+  fileInput.addEventListener("change", ()=>{
+    const f = fileInput.files && fileInput.files[0];
+    if(!f) return;
+    setFile(f);
+  });
 
-    clearBtn.addEventListener("click", resetAll);
+  clearBtn.addEventListener("click", ()=>{
+    fileInput.value = "";
+    setFile(null);
+  });
 
-    // quality disabled for PNG
-    outFormatEl.addEventListener("change", ()=>{
-      const mime = outFormatEl.value;
-      const disableQ = (mime === "image/png");
-      qualityEl.disabled = disableQ;
-      qualityEl.style.opacity = disableQ ? ".6" : "1";
-    });
+  // ========= pdf.js init check =========
+  async function ensurePdfJs(){
+    // pdf.js global
+    const pdfjsLib = window.pdfjsLib;
+    if(!pdfjsLib) return false;
 
-    // ========== convert engine ==========
-    // pdf.js worker
-    function ensurePdfjsWorker(){
-      // pdfjsLib is global from CDN
-      if(window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions){
-        // use same CDN version for worker
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.worker.min.js";
+    // workerSrc 필수
+    try{
+      if(!pdfjsLib.GlobalWorkerOptions.workerSrc){
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
       }
+    }catch(e){ /* ignore */ }
+
+    return true;
+  }
+
+  // ========= convert =========
+  async function pdfToImagesAndDownload(file){
+    const ok = await ensurePdfJs();
+    if(!ok) throw new Error(t().errEngine);
+
+    const pdfjsLib = window.pdfjsLib;
+    const arrayBuf = await file.arrayBuffer();
+
+    let pdf;
+    try{
+      pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+    }catch(e){
+      // 비밀번호/보안 PDF 가능성
+      throw new Error(t().errPassword);
     }
 
-    function downloadBlob(blob, filename){
-      const a = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    const total = pdf.numPages || 0;
+    if(total <= 0) throw new Error("PDF pages not found.");
+
+    const outMime = outFormatEl.value; // image/jpeg | image/png
+    const q = parseFloat(qualityEl.value || "0.9");
+    const makePng = (outMime === "image/png");
+
+    // base name
+    const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
+
+    // one page => direct download
+    if(total === 1){
+      const blob = await renderPageToBlob(pdf, 1, outMime, q);
+      const ext = makePng ? "png" : "jpg";
+      downloadBlob(blob, `${base}_page1.${ext}`);
+      return;
     }
 
-    function safeBaseName(name){
-      const base = (name || "pdf").replace(/\.[^.]+$/, "");
-      return base.replace(/[\\/:*?"<>|]+/g, "_");
+    // multi pages => zip
+    if(!window.JSZip) throw new Error("ZIP engine not loaded (JSZip).");
+    const zip = new window.JSZip();
+
+    for(let p=1; p<=total; p++){
+      setMsg(`(${p}/${total}) 변환 중...`, "");
+      const blob = await renderPageToBlob(pdf, p, outMime, q);
+      const ext = makePng ? "png" : "jpg";
+      const name = `${base}_page${String(p).padStart(3,"0")}.${ext}`;
+      zip.file(name, blob);
     }
 
-    async function fileToArrayBuffer(file){
-      return await file.arrayBuffer();
+    setMsg("ZIP 만드는 중...", "");
+    const zipBlob = await zip.generateAsync({ type:"blob" });
+    downloadBlob(zipBlob, `${base}_images.zip`);
+  }
+
+  async function renderPageToBlob(pdf, pageNum, mime, quality){
+    const page = await pdf.getPage(pageNum);
+
+    // scale: 모바일에서도 너무 작지 않게 적당히
+    const viewport = page.getViewport({ scale: 2.0 });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { alpha: (mime !== "image/jpeg") });
+
+    canvas.width = Math.round(viewport.width);
+    canvas.height = Math.round(viewport.height);
+
+    if(mime === "image/jpeg"){
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,canvas.width, canvas.height);
     }
 
-    async function renderPageToImage(pdf, pageNum, mime, quality){
-      const page = await pdf.getPage(pageNum);
+    await page.render({ canvasContext: ctx, viewport }).promise;
 
-      // scale: 모바일도 선명하게 (너무 무거워지지 않게 적당히)
-      const viewport = page.getViewport({ scale: 2.0 });
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d", { alpha: mime !== "image/jpeg" });
-      canvas.width = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-
-      // JPG는 배경 흰색
-      if(mime === "image/jpeg"){
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+    return await new Promise((resolve, reject)=>{
+      if(mime === "image/png"){
+        canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+      }else{
+        canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", quality);
       }
+    });
+  }
 
-      await page.render({ canvasContext: ctx, viewport }).promise;
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
 
-      const blob = await new Promise((resolve, reject)=>{
-        if(mime === "image/png"){
-          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
-        }else if(mime === "image/webp"){
-          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", quality);
-        }else{
-          canvas.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", quality);
-        }
-      });
-
-      return blob;
+  convertBtn.addEventListener("click", async ()=>{
+    try{
+      if(!pdfFile) return setMsg(t().errNoPdf, "err");
+      convertBtn.disabled = true;
+      clearBtn.disabled = true;
+      setMsg("엔진 확인 중...", "");
+      await pdfToImagesAndDownload(pdfFile);
+      setMsg(t().okDone, "ok");
+    }catch(e){
+      setMsg((e && e.message) ? e.message : "Convert failed", "err");
+    }finally{
+      convertBtn.disabled = !pdfFile;
+      clearBtn.disabled = !pdfFile;
     }
+  });
 
-    async function convertPdf(){
-      if(!state.file) return;
+  // init
+  setLang(LANG);
 
-      try{
-        ensurePdfjsWorker();
-        if(!window.pdfjsLib) throw new Error("PDF engine not loaded (pdf.js).");
-
-        setBusy(true);
-        setMsg(t().msg_busy, "");
-
-        const mime = outFormatEl.value;
-        const q = parseFloat(qualityEl.value || "0.9");
-        const ext = (mime === "image/png") ? "png" : (mime === "image/webp" ? "webp" : "jpg");
-
-        const buf = await fileToArrayBuffer(state.file);
-        const loadingTask = window.pdfjsLib.getDocument({ data: buf });
-        const pdf = await loadingTask.promise;
-
-        const total = pdf.numPages || 1;
-        const base = safeBaseName(state.fileName);
-        const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-
-        if(total === 1){
-          const blob = await renderPageToImage(pdf, 1, mime, q);
-          downloadBlob(blob, `${base}_${stamp}.${ext}`);
-          setMsg("✅ 완료", "ok");
-          setBusy(false);
-          return;
-        }
-
-        // multi-page => zip
-        const zip = new JSZip();
-        for(let p=1; p<=total; p++){
-          setMsg(`${t().msg_busy} (${p}/${total})`, "");
-          const blob = await renderPageToImage(pdf, p, mime, q);
-          const arr = await blob.arrayBuffer();
-          zip.file(`${base}_p${String(p).padStart(3,"0")}.${ext}`, arr);
-        }
-
-        const zipBlob = await zip.generateAsync({ type:"blob", compression:"DEFLATE", compressionOptions:{ level: 6 } });
-        downloadBlob(zipBlob, `${base}_${stamp}_${ext}.zip`);
-
-        setMsg("✅ 완료", "ok");
-        setBusy(false);
-      }catch(err){
-        setBusy(false);
-        setMsg(t().msg_fail + (err && err.message ? err.message : "unknown"), "err");
-      }
+  // 초기 엔진 체크 메시지 (조용히)
+  setTimeout(async ()=>{
+    const ok = await ensurePdfJs();
+    if(!ok){
+      setMsg(t().errEngine, "err");
     }
+  }, 0);
 
-    convertBtn.addEventListener("click", convertPdf);
-
-    // init
-    setLang(LANG);
-    renderFileCard();
-    outFormatEl.dispatchEvent(new Event("change"));
-    setBusy(false);
-  })();
-  </script>
+})();
+</script>
 </body>
 </html>
