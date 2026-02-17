@@ -21,21 +21,7 @@
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
-
-      /* ✅ Handle sizing: "겉보기 18px" + "터치 영역 48px" */
-      --handle-dot: 18px;   /* 보여지는 원 */
-      --handle-hit: 48px;   /* 실제 잡히는 영역 */
     }
-
-    /* ✅ PC(마우스)에서는 조금 줄여도 됨(겹침/오작동 감소) */
-    @media (pointer: fine){
-      :root{ --handle-hit: 36px; } /* PC용(원하면 40/48로 바꿔도 됨) */
-    }
-    /* ✅ 모바일/터치(손가락)에서는 48 유지 */
-    @media (pointer: coarse){
-      :root{ --handle-hit: 48px; }
-    }
-
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
     body{
@@ -105,10 +91,14 @@
       user-select:none;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
       max-width:380px;
-      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
     }
     .homeBtn:hover{ background:rgba(47,109,246,.24); }
-    .homeBtn:active{ transform: scale(.99); }
+    .homeBtn:active{
+      transform: scale(.99);
+      filter: brightness(1.04);
+      box-shadow: 0 6px 16px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.06);
+    }
     .homeBtn:focus-visible{
       outline:none;
       box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
@@ -211,26 +201,31 @@
       background:transparent;
       color:#dbe7ff;
       cursor:pointer;
-      width:36px; height:36px;
-      border-radius:10px;
+      width:48px; height:48px;              /* ✅ 터치 영역 48px */
+      border-radius:12px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       user-select:none;
-      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease), opacity .12s var(--ease);
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease), opacity .12s var(--ease), filter .12s var(--ease);
       opacity:.92;
       padding:0;
     }
     .iconBtn:hover{ background: rgba(47,109,246,.07); opacity:1; }
-    .iconBtn:active{ transform: scale(.98); }
+    .iconBtn:active{
+      transform: scale(.98);
+      filter: brightness(1.04);
+      background: rgba(47,109,246,.10);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    }
     .iconBtn:focus-visible{
       outline:none;
       box-shadow: 0 0 0 3px rgba(var(--blue),.25);
       background: rgba(47,109,246,.07);
       opacity:1;
     }
-    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; transform:none; background:transparent; box-shadow:none; }
-    .iconBtn svg{ width:20px; height:20px; display:block; }
+    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; transform:none; background:transparent; box-shadow:none; filter:none; }
+    .iconBtn svg{ width:20px; height:20px; display:block; } /* ✅ 겉보기 20px 유지 */
 
     .stageWrap{
       display:grid;
@@ -339,44 +334,27 @@
         linear-gradient(to bottom, rgba(255,255,255,.5) 0 0) 0 66.66%/100% 1px no-repeat;
     }
 
-    /* ✅ 핸들: 실제 히트영역은 48px(PC는 36px), 보이는 원은 18px */
+    /* ✅ 겉보기 18px 유지 + 터치 영역 48px */
     .handle{
       position:absolute;
-      width:var(--handle-hit);
-      height:var(--handle-hit);
+      width:48px; height:48px;             /* ✅ 터치 영역 */
+      border-radius:999px;
+      background: transparent;
       transform: translate(-50%,-50%);
       pointer-events:auto;
       touch-action:none;
-      background: transparent; /* 히트영역은 투명 */
-      border-radius:999px;
-      /* (선택) 아주 미세하게 히트영역을 보이고 싶으면 아래 주석 해제
-      outline:1px solid rgba(255,255,255,.06);
-      */
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-
-    /* ✅ 보여지는 원(겉보기 18px) */
-    .handle::after{
-      content:"";
-      position:absolute;
-      left:50%; top:50%;
-      width:var(--handle-dot);
-      height:var(--handle-dot);
-      transform: translate(-50%,-50%);
+    .handleDot{
+      width:18px; height:18px;             /* ✅ 겉보기 */
       border-radius:999px;
       background: rgba(235,245,255,.95);
       box-shadow: 0 6px 14px rgba(0,0,0,.35);
-      transition: transform .08s var(--ease), filter .12s var(--ease);
-      will-change: transform;
+      pointer-events:none;
     }
 
-    /* ✅ active 눌림 효과(모바일 :active 약할 수 있어서 JS로 is-active도 추가함) */
-    .handle:active::after,
-    .handle.is-active::after{
-      transform: translate(-50%,-50%) scale(.92);
-      filter: brightness(.95);
-    }
-
-    /* 커서 */
     .handle[data-h="n"]{ left:50%; top:0%; cursor: ns-resize; }
     .handle[data-h="s"]{ left:50%; top:100%; cursor: ns-resize; }
     .handle[data-h="w"]{ left:0%;  top:50%; cursor: ew-resize; }
@@ -408,6 +386,7 @@
       letter-spacing: -0.2px;
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
+      min-height:48px;                      /* ✅ 버튼 터치 영역 안정적으로 */
     }
 
     .btn.secondary{
@@ -422,7 +401,16 @@
     }
 
     .btn:hover{ filter: brightness(1.02); }
-    .btn:active{ transform: scale(.99); }
+    .btn:active{
+      transform: scale(.99);
+      filter: brightness(1.05);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), 0 10px 18px rgba(0,0,0,.18);
+    }
+    .btn.secondary:active{
+      background: rgba(47,109,246,.22);
+      border-color: rgba(47,109,246,.44);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+    }
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
     .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
 
@@ -438,6 +426,7 @@
       font-weight:900;
       max-width:100%;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+      min-height:48px;                      /* ✅ 폼도 터치 영역 */
     }
     select:focus-visible, input[type="number"]:focus-visible{
       border-color: rgba(var(--blue), .55);
@@ -464,8 +453,9 @@
       color:#cfe0ff;
       white-space:nowrap;
       width: fit-content;
+      min-height:48px;                      /* ✅ */
     }
-    .chk input{ width:16px; height:16px; }
+    .chk input{ width:18px; height:18px; }
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
@@ -533,14 +523,14 @@
             <div class="cropBox" id="cropBox" role="application" aria-label="Crop box">
               <div class="cropGrid"></div>
 
-              <div class="handle" data-h="nw"></div>
-              <div class="handle" data-h="n"></div>
-              <div class="handle" data-h="ne"></div>
-              <div class="handle" data-h="w"></div>
-              <div class="handle" data-h="e"></div>
-              <div class="handle" data-h="sw"></div>
-              <div class="handle" data-h="s"></div>
-              <div class="handle" data-h="se"></div>
+              <div class="handle" data-h="nw"><span class="handleDot"></span></div>
+              <div class="handle" data-h="n"><span class="handleDot"></span></div>
+              <div class="handle" data-h="ne"><span class="handleDot"></span></div>
+              <div class="handle" data-h="w"><span class="handleDot"></span></div>
+              <div class="handle" data-h="e"><span class="handleDot"></span></div>
+              <div class="handle" data-h="sw"><span class="handleDot"></span></div>
+              <div class="handle" data-h="s"><span class="handleDot"></span></div>
+              <div class="handle" data-h="se"><span class="handleDot"></span></div>
             </div>
           </div>
 
@@ -1353,10 +1343,9 @@
 
   // ✅ 크롭: "핸들 리사이즈만" 허용 (박스 이동 제거)
   let cropDrag = null;
-  let activeHandleEl = null; // ✅ active 눌림 효과 유지용(JS)
   function hitHandle(target){
-    const el = target && target.closest ? target.closest(".handle") : null;
-    return el ? (el.dataset && el.dataset.h) : null;
+    const h = target && target.dataset && target.dataset.h;
+    return h || null;
   }
   function startCropResize(startX, startY, handle){
     cropDrag = { handle, sx: startX, sy: startY, start: { ...crop } };
@@ -1396,13 +1385,7 @@
     syncCropBoxEl();
   }
 
-  function clearActiveHandle(){
-    if(activeHandleEl){
-      activeHandleEl.classList.remove("is-active");
-      activeHandleEl = null;
-    }
-  }
-
+  // 이벤트 타겟은 "핸들"만 잡히게(CSS), 여기서도 핸들만 처리
   cropBoxEl.addEventListener("pointerdown", (e)=>{
     if(!img || !cropOn) return;
     const handle = hitHandle(e.target);
@@ -1412,11 +1395,6 @@
     e.stopPropagation();
     cropBoxEl.setPointerCapture(e.pointerId);
 
-    // ✅ active 눌림 효과(모바일에서도 확실히)
-    clearActiveHandle();
-    activeHandleEl = e.target.closest(".handle");
-    if(activeHandleEl) activeHandleEl.classList.add("is-active");
-
     pushHistory(snap());
     startCropResize(e.clientX, e.clientY, handle);
   });
@@ -1424,32 +1402,38 @@
     if(!cropDrag) return;
     applyCropResize(e.clientX, e.clientY);
   });
-  cropBoxEl.addEventListener("pointerup", ()=>{
-    cropDrag = null;
-    clearActiveHandle();
-  });
-  cropBoxEl.addEventListener("pointercancel", ()=>{
-    cropDrag = null;
-    clearActiveHandle();
-  });
+  cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
+  cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
 
-  // render stage to offscreen canvas (hi-res)
+  // ✅ 소스 영역이 1px 넘어가며 생기는 "흰 라인" 방지용 클램프
+  function clampSrcRect(sx, sy, sw, sh, srcW, srcH){
+    sx = Math.max(0, Math.min(sx, srcW - 1));
+    sy = Math.max(0, Math.min(sy, srcH - 1));
+    sw = Math.max(1, Math.min(sw, srcW - sx));
+    sh = Math.max(1, Math.min(sh, srcH - sy));
+    return { sx, sy, sw, sh };
+  }
+
+  // render stage to offscreen canvas (hi-res)  ✅ 정수 stageW/H로 통일
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
-    const W = Math.max(1, Math.round(rect.width * mult));
-    const H = Math.max(1, Math.round(rect.height * mult));
+    const stageW = Math.round(rect.width);
+    const stageH = Math.round(rect.height);
+
+    const W = Math.max(1, Math.round(stageW * mult));
+    const H = Math.max(1, Math.round(stageH * mult));
     const out = document.createElement("canvas");
     out.width = W;
     out.height = H;
 
     const octx = out.getContext("2d", { alpha });
     octx.setTransform(mult,0,0,mult,0,0);
-    octx.clearRect(0,0,rect.width,rect.height);
+    octx.clearRect(0,0,stageW,stageH);
 
     if(!img) return out;
 
     octx.save();
-    octx.translate(rect.width/2, rect.height/2);
+    octx.translate(stageW/2, stageH/2);
     octx.translate(view.offX, view.offY);
     octx.rotate((view.rot * Math.PI) / 180);
     octx.scale(view.scale * view.flipH, view.scale * view.flipV);
@@ -1469,10 +1453,11 @@
     const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, true);
 
-    const sx = Math.max(0, Math.round(crop.x * mult));
-    const sy = Math.max(0, Math.round(crop.y * mult));
-    const sw = Math.max(1, Math.round(crop.w * mult));
-    const sh = Math.max(1, Math.round(crop.h * mult));
+    let sx = Math.max(0, Math.round(crop.x * mult));
+    let sy = Math.max(0, Math.round(crop.y * mult));
+    let sw = Math.max(1, Math.round(crop.w * mult));
+    let sh = Math.max(1, Math.round(crop.h * mult));
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height));
 
     const c = document.createElement("canvas");
     c.width = sw;
@@ -1862,8 +1847,8 @@
     if(!img) throw new Error(t().msg_need);
 
     const rect = stageRect();
-    const stageW = rect.width;
-    const stageH = rect.height;
+    const stageW = Math.round(rect.width);
+    const stageH = Math.round(rect.height);
 
     const bb = computeTransformedBBox(stageW, stageH);
     const bw = Math.max(1, bb.maxX - bb.minX);
@@ -1876,10 +1861,11 @@
     const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, alpha);
 
-    const sx = Math.max(0, Math.round(bb.minX * mult));
-    const sy = Math.max(0, Math.round(bb.minY * mult));
-    const sw = Math.max(1, Math.round(bw * mult));
-    const sh = Math.max(1, Math.round(bh * mult));
+    let sx = Math.max(0, Math.round(bb.minX * mult));
+    let sy = Math.max(0, Math.round(bb.minY * mult));
+    let sw = Math.max(1, Math.round(bw * mult));
+    let sh = Math.max(1, Math.round(bh * mult));
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height));
 
     const base = document.createElement("canvas");
     base.width = sw;
