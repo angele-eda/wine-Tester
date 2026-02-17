@@ -201,7 +201,7 @@
       background:transparent;
       color:#dbe7ff;
       cursor:pointer;
-      width:48px; height:48px;              /* ✅ 터치 영역 48px */
+      width:48px; height:48px;
       border-radius:12px;
       display:inline-flex;
       align-items:center;
@@ -225,7 +225,7 @@
       opacity:1;
     }
     .iconBtn:disabled{ opacity:.45; cursor:not-allowed; transform:none; background:transparent; box-shadow:none; filter:none; }
-    .iconBtn svg{ width:20px; height:20px; display:block; } /* ✅ 겉보기 20px 유지 */
+    .iconBtn svg{ width:20px; height:20px; display:block; }
 
     .stageWrap{
       display:grid;
@@ -236,26 +236,34 @@
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
+    /* ✅ 핵심: stage는 overflow visible (핸들 안 잘림) */
     .stage{
       border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.25);
       border-radius:16px;
-      overflow:hidden;
       position:relative;
       aspect-ratio: 4 / 3;
       min-height: 320px;
       touch-action: none;
       width:100%;
       max-width:100%;
+      overflow: visible;
+      background: transparent;
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    canvas{
+    /* ✅ 이미지/캔버스만 깔끔하게 클립 */
+    .canvasClip{
+      position:absolute;
+      inset:0;
+      border-radius:16px;
+      overflow:hidden;
+      background:rgba(0,0,0,.25);
+      pointer-events:none; /* stage가 pan/zoom을 받도록 */
+    }
+    .canvasClip canvas{
       display:block;
       width:100%;
       height:100%;
-      max-width:100%;
-      max-height:100%;
     }
 
     /* Crosshair overlay */
@@ -304,9 +312,9 @@
       inset:0;
       background: rgba(0,0,0,.32);
       pointer-events:none;
+      border-radius:16px;
     }
 
-    /* ✅ 박스 자체는 이벤트 통과(이미지 팬과 충돌 제거), 핸들만 잡힘 */
     .cropBox{
       position:absolute;
       border:2px solid rgba(106,169,255,.9);
@@ -334,10 +342,9 @@
         linear-gradient(to bottom, rgba(255,255,255,.5) 0 0) 0 66.66%/100% 1px no-repeat;
     }
 
-    /* ✅ 겉보기 18px 유지 + 터치 영역 48px */
     .handle{
       position:absolute;
-      width:48px; height:48px;             /* ✅ 터치 영역 */
+      width:48px; height:48px;
       border-radius:999px;
       background: transparent;
       transform: translate(-50%,-50%);
@@ -348,7 +355,7 @@
       justify-content:center;
     }
     .handleDot{
-      width:18px; height:18px;             /* ✅ 겉보기 */
+      width:18px; height:18px;
       border-radius:999px;
       background: rgba(235,245,255,.95);
       box-shadow: 0 6px 14px rgba(0,0,0,.35);
@@ -386,7 +393,7 @@
       letter-spacing: -0.2px;
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
-      min-height:48px;                      /* ✅ 버튼 터치 영역 안정적으로 */
+      min-height:48px;
     }
 
     .btn.secondary{
@@ -426,7 +433,7 @@
       font-weight:900;
       max-width:100%;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
-      min-height:48px;                      /* ✅ 폼도 터치 영역 */
+      min-height:48px;
     }
     select:focus-visible, input[type="number"]:focus-visible{
       border-color: rgba(var(--blue), .55);
@@ -453,7 +460,7 @@
       color:#cfe0ff;
       white-space:nowrap;
       width: fit-content;
-      min-height:48px;                      /* ✅ */
+      min-height:48px;
     }
     .chk input{ width:18px; height:18px; }
 
@@ -515,7 +522,10 @@
       <div class="card">
         <h2 id="h_stage">Preview / Edit</h2>
         <div class="stage" id="stage">
-          <canvas id="cv"></canvas>
+          <!-- ✅ 캔버스는 클립 래퍼 안 -->
+          <div class="canvasClip" aria-hidden="true">
+            <canvas id="cv"></canvas>
+          </div>
 
           <!-- Crop overlay -->
           <div class="cropOverlay" id="cropOverlay" aria-hidden="true">
@@ -572,7 +582,6 @@
 
         <div style="height:10px;"></div>
 
-        <!-- ✅ 고화질 토글 -->
         <div class="row">
           <button class="btn secondary" id="hiResBtn" type="button">✨ Hi-Res: ON</button>
         </div>
@@ -1167,9 +1176,8 @@
   function stageRect(){ return stage.getBoundingClientRect(); }
 
   function syncHiResUI(){
-    if(!hiResBtn) return;
     hiResBtn.textContent = HIRES ? t().hires_on : t().hires_off;
-    if(hiResHintEl) hiResHintEl.textContent = t().hires_hint;
+    hiResHintEl.textContent = t().hires_hint;
   }
 
   hiResBtn.addEventListener("click", ()=>{
@@ -1177,7 +1185,6 @@
     setHiRes(!HIRES);
   });
 
-  // ✅ 고화질 배수: OFF면 가벼운 상한(8), ON이면 더 큰 상한(16)
   function hiResMult(){
     const s = Math.abs(view.scale || 1);
     const m = 1 / Math.max(1e-6, s);
@@ -1244,7 +1251,6 @@
       resetAllBtn.disabled = true;
       cropToggleBtn.disabled = true;
       cropApplyBtn.disabled = true;
-      hiResBtn.disabled = false;
       loadImgBtn.disabled = false;
       clearHistory();
       return;
@@ -1254,7 +1260,6 @@
     resetAllBtn.disabled = false;
     cropToggleBtn.disabled = false;
     cropApplyBtn.disabled = false;
-    hiResBtn.disabled = false;
     loadImgBtn.disabled = false;
 
     const mime = outFormatEl.value;
@@ -1314,7 +1319,6 @@
   function syncCropBoxEl(){
     cropOverlay.classList.toggle("show", !!(img && cropOn));
     if(!img) return;
-
     clampCropToStage();
     cropBoxEl.style.left = crop.x + "px";
     cropBoxEl.style.top = crop.y + "px";
@@ -1323,7 +1327,6 @@
   }
 
   function syncCropBtnText(){
-    if(!cropToggleBtn) return;
     cropToggleBtn.textContent = cropOn ? t().crop_on : t().crop_off;
     cropApplyBtn.textContent = t().crop_apply;
   }
@@ -1341,7 +1344,7 @@
     else setMsg("", "");
   });
 
-  // ✅ 크롭: "핸들 리사이즈만" 허용 (박스 이동 제거)
+  // ✅ 크롭: "핸들 리사이즈만" 허용
   let cropDrag = null;
   function hitHandle(target){
     const h = target && target.dataset && target.dataset.h;
@@ -1385,7 +1388,6 @@
     syncCropBoxEl();
   }
 
-  // 이벤트 타겟은 "핸들"만 잡히게(CSS), 여기서도 핸들만 처리
   cropBoxEl.addEventListener("pointerdown", (e)=>{
     if(!img || !cropOn) return;
     const handle = hitHandle(e.target);
@@ -1405,16 +1407,16 @@
   cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
   cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
 
-  // ✅ 소스 영역이 1px 넘어가며 생기는 "흰 라인" 방지용 클램프
-  function clampSrcRect(sx, sy, sw, sh, srcW, srcH){
-    sx = Math.max(0, Math.min(sx, srcW - 1));
-    sy = Math.max(0, Math.min(sy, srcH - 1));
-    sw = Math.max(1, Math.min(sw, srcW - sx));
-    sh = Math.max(1, Math.min(sh, srcH - sy));
+  // ✅ 1px 라인 방지: 가장자리 1px 마진을 두고 클램프
+  function clampSrcRect(sx, sy, sw, sh, srcW, srcH, margin=0){
+    const m = Math.max(0, margin|0);
+    sx = Math.max(m, Math.min(sx, srcW - 1 - m));
+    sy = Math.max(m, Math.min(sy, srcH - 1 - m));
+    sw = Math.max(1, Math.min(sw, (srcW - m) - sx));
+    sh = Math.max(1, Math.min(sh, (srcH - m) - sy));
     return { sx, sy, sw, sh };
   }
 
-  // render stage to offscreen canvas (hi-res)  ✅ 정수 stageW/H로 통일
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const stageW = Math.round(rect.width);
@@ -1453,15 +1455,17 @@
     const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, true);
 
-    let sx = Math.max(0, Math.round(crop.x * mult));
-    let sy = Math.max(0, Math.round(crop.y * mult));
-    let sw = Math.max(1, Math.round(crop.w * mult));
-    let sh = Math.max(1, Math.round(crop.h * mult));
-    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height));
+    let sx = Math.round(crop.x * mult);
+    let sy = Math.round(crop.y * mult);
+    let sw = Math.round(crop.w * mult);
+    let sh = Math.round(crop.h * mult);
+
+    // ✅ margin=1로 가장자리 샘플링 회피 (너무 안쪽으로 안 들어가게 1px만)
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 1));
 
     const c = document.createElement("canvas");
-    c.width = sw;
-    c.height = sh;
+    c.width = Math.max(1, sw);
+    c.height = Math.max(1, sh);
     const cctx = c.getContext("2d", { alpha:true });
     cctx.imageSmoothingEnabled = true;
     cctx.imageSmoothingQuality = "high";
@@ -1483,12 +1487,7 @@
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
-    initialView.scale = s;
-    initialView.offX = 0;
-    initialView.offY = 0;
-    initialView.rot = 0;
-    initialView.flipH = 1;
-    initialView.flipV = 1;
+    Object.assign(initialView, { scale:s, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
     Object.assign(view, initialView);
 
     cropOn = true;
@@ -1562,12 +1561,7 @@
     if(history.length === 0){
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
-      initialView.scale = s;
-      initialView.offX = 0;
-      initialView.offY = 0;
-      initialView.rot = 0;
-      initialView.flipH = 1;
-      initialView.flipV = 1;
+      Object.assign(initialView, { scale:s, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
       Object.assign(view, initialView);
       ensureCropDefault(true);
       redraw();
@@ -1699,12 +1693,7 @@
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
-    initialView.scale = s;
-    initialView.offX = 0;
-    initialView.offY = 0;
-    initialView.rot = 0;
-    initialView.flipH = 1;
-    initialView.flipV = 1;
+    Object.assign(initialView, { scale:s, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
     Object.assign(view, initialView);
 
     cropOn = true;
@@ -1723,7 +1712,6 @@
     im.onload = async ()=>{
       URL.revokeObjectURL(url);
 
-      // IDB 저장(원본 유지)
       try{
         const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         await idbPut(key, file);
@@ -1744,7 +1732,6 @@
     im.src = url;
   }
 
-  // ========= load from session (IDB first) =========
   async function loadFromSession(){
     const src = sessionStorage.getItem("cf24_edit_source") || sessionStorage.getItem("cf24_idphoto_source");
     const key = sessionStorage.getItem("cf24_edit_key") || sessionStorage.getItem("cf24_idphoto_key");
@@ -1835,11 +1822,12 @@
       if(ys > maxY) maxY = ys;
     }
 
+    // ✅ 과한 패딩 금지. 최소만.
     return {
-      minX: Math.floor(minX) - 1,
-      minY: Math.floor(minY) - 1,
-      maxX: Math.ceil(maxX) + 1,
-      maxY: Math.ceil(maxY) + 1
+      minX: Math.floor(minX),
+      minY: Math.floor(minY),
+      maxX: Math.ceil(maxX),
+      maxY: Math.ceil(maxY)
     };
   }
 
@@ -1861,16 +1849,20 @@
     const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, alpha);
 
-    let sx = Math.max(0, Math.round(bb.minX * mult));
-    let sy = Math.max(0, Math.round(bb.minY * mult));
-    let sw = Math.max(1, Math.round(bw * mult));
-    let sh = Math.max(1, Math.round(bh * mult));
-    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height));
+    let sx = Math.round(bb.minX * mult);
+    let sy = Math.round(bb.minY * mult);
+    let sw = Math.round(bw * mult);
+    let sh = Math.round(bh * mult);
+
+    // ✅ export도 margin=1로 가장자리 1px 회피
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 1));
 
     const base = document.createElement("canvas");
     base.width = sw;
     base.height = sh;
     const bctx = base.getContext("2d", { alpha });
+
+    // ✅ 여기서 불필요한 리샘플 줄이기
     bctx.imageSmoothingEnabled = true;
     bctx.imageSmoothingQuality = "high";
 
@@ -1963,11 +1955,11 @@
     imgName = "image";
     imgW = imgH = 0;
 
-    view.scale = 1; view.offX = 0; view.offY = 0; view.rot = 0; view.flipH = 1; view.flipV = 1;
-    initialView.scale = 1; initialView.offX = 0; initialView.offY = 0; initialView.rot = 0; initialView.flipH = 1; initialView.flipV = 1;
+    Object.assign(view, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
+    Object.assign(initialView, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
 
     cropOn = true;
-    crop.x = crop.y = crop.w = crop.h = 0;
+    Object.assign(crop, { x:0, y:0, w:0, h:0 });
 
     wEl.value = "";
     hEl.value = "";
