@@ -296,14 +296,18 @@
       background: rgba(0,0,0,.32);
       pointer-events:none;
     }
+
+    /* ✅ 핵심: 크롭 박스 영역은 터치/마우스 이벤트를 "통과"시키고,
+       핸들만 잡히게 만들어서 이미지 드래그(팬)과 충돌을 없앰 */
     .cropBox{
       position:absolute;
       border:2px solid rgba(106,169,255,.9);
       border-radius:10px;
       box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
-      pointer-events:auto;
+      pointer-events:none;   /* ✅ 박스 자체는 이벤트 안 먹음 */
       touch-action:none;
     }
+
     .cropGrid{
       position:absolute;
       inset:0;
@@ -329,7 +333,7 @@
       background: rgba(235,245,255,.95);
       box-shadow: 0 6px 14px rgba(0,0,0,.35);
       transform: translate(-50%,-50%);
-      pointer-events:auto;
+      pointer-events:auto;  /* ✅ 핸들만 이벤트 받음 */
       touch-action:none;
     }
     .handle[data-h="n"]{ left:50%; top:0%; cursor: ns-resize; }
@@ -704,7 +708,8 @@
 
       msg_need: "No image found. Go back to main page and press ✂️ next to Preview.",
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
-      msg_crop_on: "Crop ON: Drag handles to resize, drag box to move. Press Crop to apply.",
+      /* ✅ 문구도 '박스 이동' 제거 */
+      msg_crop_on: "Crop ON: Drag handles to resize. (Box does not move.) Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
       msg_ok: "✅ Downloaded",
       msg_idb_fail: "Could not load from local storage. Try re-opening from main page.",
@@ -756,7 +761,8 @@
 
       msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
       msg_ready: "준비 완료! 드래그로 이동, 핀치/마우스휠/버튼으로 확대하세요.",
-      msg_crop_on: "자르기 ON: 핸들로 크기 조절, 박스 드래그로 이동. ‘자르기’로 적용하세요.",
+      /* ✅ 문구도 '박스 이동' 제거 */
+      msg_crop_on: "자르기 ON: 핸들로 크기만 조절합니다(박스 이동 없음). ‘자르기’로 적용하세요.",
       msg_crop_applied: "✅ 잘라냈어요",
       msg_ok: "✅ 다운로드 완료",
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 메인에서 다시 열어주세요.",
@@ -808,7 +814,7 @@
 
       msg_need: "No se encontró imagen. Vuelve a la página principal y pulsa ✂️ junto a Vista previa.",
       msg_ready: "Listo. Arrastra para mover. Pellizca / rueda del ratón / botones para zoom.",
-      msg_crop_on: "Recorte ON: Ajusta con asas, arrastra el cuadro. Pulsa Recortar para aplicar.",
+      msg_crop_on: "Recorte ON: Ajusta SOLO con asas. (El cuadro no se mueve.) Pulsa Recortar para aplicar.",
       msg_crop_applied: "✅ Recortado",
       msg_ok: "✅ Descargado",
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Vuelve a abrir desde la página principal.",
@@ -860,7 +866,7 @@
 
       msg_need: "画像がありません。メインでプレビュー横の ✂️ を押して開いてください。",
       msg_ready: "準備OK。ドラッグで移動、ピンチ/マウスホイール/ボタンでズーム。",
-      msg_crop_on: "切り抜きON: ハンドルでサイズ調整、枠をドラッグで移動。切り抜きで適用。",
+      msg_crop_on: "切り抜きON: ハンドルのみでサイズ変更。(枠は移動しません) 切り抜きで適用。",
       msg_crop_applied: "✅ 切り抜き完了",
       msg_ok: "✅ ダウンロード完了",
       msg_idb_fail: "ローカル保存から読み込めませんでした。メインから開き直してください。",
@@ -991,18 +997,6 @@
     });
   }
 
-  async function idbDel(key){
-    const db = await idbOpen();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
-      const store = tx.objectStore(CF24_IDB_STORE);
-      store.delete(key);
-      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
-      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB del fail")); };
-      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB del abort")); };
-    });
-  }
-
   // ========= editor engine =========
   const stage = $("stage");
   const cv = $("cv");
@@ -1099,7 +1093,6 @@
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
   function stageRect(){ return stage.getBoundingClientRect(); }
 
-  // high-res multiplier based on view.scale
   function hiResMult(){
     const s = Math.abs(view.scale || 1);
     const m = 1 / Math.max(1e-6, s);
@@ -1210,25 +1203,6 @@
     redraw();
   }
 
-  function resetViewAndCropDefault(){
-    if(!img) return;
-
-    view.scale = initialView.scale;
-    view.offX = initialView.offX;
-    view.offY = initialView.offY;
-    view.rot  = initialView.rot;
-    view.flipH = initialView.flipH;
-    view.flipV = initialView.flipV;
-
-    ensureCropDefault(true);
-
-    wEl.value = "";
-    hEl.value = "";
-
-    redraw();
-    setMsg(t().msg_ready, "ok");
-  }
-
   // ========= Crop helpers =========
   function ensureCropDefault(force){
     const rect = stageRect();
@@ -1279,15 +1253,16 @@
     else setMsg("", "");
   });
 
+  // ✅ 크롭: "핸들 리사이즈만" 허용 (박스 이동 제거)
   let cropDrag = null;
   function hitHandle(target){
     const h = target && target.dataset && target.dataset.h;
     return h || null;
   }
-  function startCropDrag(mode, startX, startY, handle){
-    cropDrag = { mode, handle, sx: startX, sy: startY, start: { ...crop } };
+  function startCropResize(startX, startY, handle){
+    cropDrag = { handle, sx: startX, sy: startY, start: { ...crop } };
   }
-  function applyCropDrag(px, py){
+  function applyCropResize(px, py){
     if(!cropDrag) return;
     const dx = px - cropDrag.sx;
     const dy = py - cropDrag.sy;
@@ -1295,31 +1270,26 @@
 
     let x=s.x, y=s.y, w=s.w, h=s.h;
 
-    if(cropDrag.mode === "move"){
-      x = s.x + dx;
-      y = s.y + dy;
-    } else {
-      const hd = cropDrag.handle;
-      const left   = (hd.includes("w"));
-      const right  = (hd.includes("e"));
-      const top    = (hd.includes("n"));
-      const bottom = (hd.includes("s"));
+    const hd = cropDrag.handle;
+    const left   = hd.includes("w");
+    const right  = hd.includes("e");
+    const top    = hd.includes("n");
+    const bottom = hd.includes("s");
 
-      if(left){ x = s.x + dx; w = s.w - dx; }
-      if(right){ w = s.w + dx; }
-      if(top){ y = s.y + dy; h = s.h - dy; }
-      if(bottom){ h = s.h + dy; }
+    if(left){ x = s.x + dx; w = s.w - dx; }
+    if(right){ w = s.w + dx; }
+    if(top){ y = s.y + dy; h = s.h - dy; }
+    if(bottom){ h = s.h + dy; }
 
-      if(w < CROP_MIN){
-        const diff = CROP_MIN - w;
-        w = CROP_MIN;
-        if(left) x -= diff;
-      }
-      if(h < CROP_MIN){
-        const diff = CROP_MIN - h;
-        h = CROP_MIN;
-        if(top) y -= diff;
-      }
+    if(w < CROP_MIN){
+      const diff = CROP_MIN - w;
+      w = CROP_MIN;
+      if(left) x -= diff;
+    }
+    if(h < CROP_MIN){
+      const diff = CROP_MIN - h;
+      h = CROP_MIN;
+      if(top) y -= diff;
     }
 
     crop.x = x; crop.y = y; crop.w = w; crop.h = h;
@@ -1327,21 +1297,22 @@
     syncCropBoxEl();
   }
 
+  // 이벤트 타겟은 "핸들"만 잡히게 되어있고( CSS ), 여기서도 핸들만 처리
   cropBoxEl.addEventListener("pointerdown", (e)=>{
     if(!img || !cropOn) return;
+    const handle = hitHandle(e.target);
+    if(!handle) return; // ✅ 박스 본문은 아무것도 안 함(이제 드래그=이미지 이동)
+
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // ✅ 핸들 드래그 중 이미지 팬 방지
     cropBoxEl.setPointerCapture(e.pointerId);
 
     pushHistory(snap());
-
-    const handle = hitHandle(e.target);
-    if(handle) startCropDrag("resize", e.clientX, e.clientY, handle);
-    else startCropDrag("move", e.clientX, e.clientY, null);
+    startCropResize(e.clientX, e.clientY, handle);
   });
   cropBoxEl.addEventListener("pointermove", (e)=>{
     if(!cropDrag) return;
-    applyCropDrag(e.clientX, e.clientY);
+    applyCropResize(e.clientX, e.clientY);
   });
   cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
   cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
@@ -1488,7 +1459,19 @@
   undoBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     if(history.length === 0){
-      resetViewAndCropDefault();
+      // 뷰/크롭 기본값 복구(간단)
+      const rect = stageRect();
+      const s = Math.min(rect.width / imgW, rect.height / imgH);
+      initialView.scale = s;
+      initialView.offX = 0;
+      initialView.offY = 0;
+      initialView.rot = 0;
+      initialView.flipH = 1;
+      initialView.flipV = 1;
+      Object.assign(view, initialView);
+      ensureCropDefault(true);
+      redraw();
+      setMsg(t().msg_ready, "ok");
       return;
     }
     const prev = history.pop();
@@ -1635,38 +1618,22 @@
   }
 
   async function loadFile(file){
-    // 1) load image
     const url = URL.createObjectURL(file);
     const im = new Image();
     im.onload = async ()=>{
       URL.revokeObjectURL(url);
 
-      // 2) store into IDB (for large files + cross-page safety)
+      // IDB 저장(원본은 유지)
       try{
         const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         await idbPut(key, file);
-
         sessionStorage.setItem("cf24_edit_source", "idb");
         sessionStorage.setItem("cf24_edit_key", key);
         sessionStorage.setItem("cf24_edit_name", file.name || "image");
-
-        // 겸용: id-photo에서도 쓰기 편하게
         sessionStorage.setItem("cf24_idphoto_source", "idb");
         sessionStorage.setItem("cf24_idphoto_key", key);
         sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
-      }catch(_){
-        // fallback: dataURL(작은 파일일 때만 유효)
-        try{
-          const fr = new FileReader();
-          fr.onload = ()=>{
-            try{
-              sessionStorage.setItem("cf24_edit_img", fr.result);
-              sessionStorage.setItem("cf24_edit_name", file.name || "image");
-            }catch(__){}
-          };
-          fr.readAsDataURL(file);
-        }catch(__){}
-      }
+      }catch(_){}
 
       applyLoadedImage(im, file.name || "image");
     };
@@ -1679,7 +1646,6 @@
 
   // ========= load from session (IDB first) =========
   async function loadFromSession(){
-    // 1) try IDB handoff
     const src = sessionStorage.getItem("cf24_edit_source") || sessionStorage.getItem("cf24_idphoto_source");
     const key = sessionStorage.getItem("cf24_edit_key") || sessionStorage.getItem("cf24_idphoto_key");
     const name = sessionStorage.getItem("cf24_edit_name") || sessionStorage.getItem("cf24_idphoto_name") || "image";
@@ -1693,9 +1659,6 @@
           im.onload = ()=>{
             URL.revokeObjectURL(url);
             applyLoadedImage(im, name);
-
-            // ✅ 필요하면 로드 후 자동 삭제(원하면 주석 해제)
-            // idbDel(key).catch(()=>{});
           };
           im.onerror = ()=>{
             URL.revokeObjectURL(url);
@@ -1706,37 +1669,13 @@
           im.src = url;
           return;
         }
-      }catch(_){
-        // fallthrough
-      }
+      }catch(_){}
     }
 
-    // 2) fallback: old dataURL method
-    const dataUrl =
-      sessionStorage.getItem("cf24_edit_img") ||
-      sessionStorage.getItem("cf24_idphoto_img");
-
-    if(!dataUrl){
-      setMsg(t().msg_need, "err");
-      img = null;
-      updateMeta();
-      resizeCanvas();
-      return;
-    }
-
-    imgName = name;
-    const im = new Image();
-    im.onload = ()=>{
-      applyLoadedImage(im, imgName);
-    };
-    im.onerror = ()=>{
-      img = null;
-      imgW = imgH = 0;
-      setMsg(t().msg_need, "err");
-      updateMeta();
-      resizeCanvas();
-    };
-    im.src = dataUrl;
+    setMsg(t().msg_need, "err");
+    img = null;
+    updateMeta();
+    resizeCanvas();
   }
 
   // ========= download =========
@@ -1936,10 +1875,9 @@
 
     clearHistory();
     try{
-      sessionStorage.removeItem("cf24_edit_img");
-      sessionStorage.removeItem("cf24_edit_name");
       sessionStorage.removeItem("cf24_edit_source");
       sessionStorage.removeItem("cf24_edit_key");
+      sessionStorage.removeItem("cf24_edit_name");
     }catch(_){}
 
     setMsg("", "");
