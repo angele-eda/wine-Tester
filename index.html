@@ -1456,8 +1456,6 @@
     const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
 
     if(shouldAutoZip && zipModeEl.checked === false){
-      // 자동 체크는 "추천" 성격으로 1회만 해주고 싶으면 플래그를 둘 수도 있는데,
-      // 여기선 단순히 조건 만족 시 체크가 꺼져있으면 켜준다.
       zipModeEl.checked = true;
     }
 
@@ -1483,7 +1481,6 @@
       zipChkLabel.style.cursor = "pointer";
     }
 
-    // (참고) pdfs 변수는 onConvert에서 로직에 사용됨 (pdf 2개 이상 + zip 체크 -> zip 다운로드)
     void pdfs;
   }
 
@@ -1762,27 +1759,86 @@
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
 
+  // ==========================================================
+  // ✅ High-res handoff to /edit via IndexedDB (no downscale)
+  // - Store original File/Blob into IndexedDB
+  // - Pass only key through sessionStorage
+  // - Fallback to old dataURL method if IDB fails
+  // ==========================================================
+  const CF24_IDB_NAME = "cf24_blob_store_v1";
+  const CF24_IDB_STORE = "blobs";
+
+  function idbOpen(){
+    return new Promise((resolve, reject)=>{
+      if(!("indexedDB" in window)) return reject(new Error("IndexedDB not supported"));
+      const req = indexedDB.open(CF24_IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if(!db.objectStoreNames.contains(CF24_IDB_STORE)){
+          db.createObjectStore(CF24_IDB_STORE);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error("IDB open fail"));
+    });
+  }
+
+  async function idbPut(key, blob){
+    const db = await idbOpen();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
+      const store = tx.objectStore(CF24_IDB_STORE);
+      store.put(blob, key);
+      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
+      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put fail")); };
+      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put abort")); };
+    });
+  }
+
   cropBtn.addEventListener("click", async ()=>{
     if(files.length !== 1) return;
     const f = files[0]?.file;
     if(!f || !isImage(f)) return;
 
-    try{
-      const dataUrl = await new Promise((resolve, reject)=>{
-        const r = new FileReader();
-        r.onload = ()=> resolve(r.result);
-        r.onerror = ()=> reject(new Error("read fail"));
-        r.readAsDataURL(f);
-      });
+    // ✅ editor가 읽을 "키" 생성 (sessionStorage는 키만)
+    const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 
-      sessionStorage.setItem("cf24_edit_img", String(dataUrl));
+    try{
+      // 1) 원본 File 그대로 IDB에 저장 (고해상도 유지)
+      await idbPut(key, f);
+
+      // 2) edit 페이지에 키 전달
+      sessionStorage.setItem("cf24_edit_source", "idb");
+      sessionStorage.setItem("cf24_edit_key", key);
       sessionStorage.setItem("cf24_edit_name", f.name || "image");
-      sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
+
+      // (겸용) id-photo도 같은 원본을 사용 가능하게
+      sessionStorage.setItem("cf24_idphoto_source", "idb");
+      sessionStorage.setItem("cf24_idphoto_key", key);
       sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
 
       location.href = "/edit/?lang=" + encodeURIComponent(LANG);
+      return;
+
     }catch(e){
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
+      // ✅ fallback: 예전 방식(dataURL) - 작동은 보장
+      try{
+        const dataUrl = await new Promise((resolve, reject)=>{
+          const r = new FileReader();
+          r.onload = ()=> resolve(r.result);
+          r.onerror = ()=> reject(new Error("read fail"));
+          r.readAsDataURL(f);
+        });
+
+        sessionStorage.setItem("cf24_edit_img", String(dataUrl));
+        sessionStorage.setItem("cf24_edit_name", f.name || "image");
+        sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
+        sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
+
+        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
+      }catch(err){
+        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
+      }
     }
   });
 
