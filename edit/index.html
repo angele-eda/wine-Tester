@@ -297,14 +297,13 @@
       pointer-events:none;
     }
 
-    /* ✅ 핵심: 크롭 박스 영역은 터치/마우스 이벤트를 "통과"시키고,
-       핸들만 잡히게 만들어서 이미지 드래그(팬)과 충돌을 없앰 */
+    /* ✅ 박스 자체는 이벤트 통과(이미지 팬과 충돌 제거), 핸들만 잡힘 */
     .cropBox{
       position:absolute;
       border:2px solid rgba(106,169,255,.9);
       border-radius:10px;
       box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
-      pointer-events:none;   /* ✅ 박스 자체는 이벤트 안 먹음 */
+      pointer-events:none;
       touch-action:none;
     }
 
@@ -333,7 +332,7 @@
       background: rgba(235,245,255,.95);
       box-shadow: 0 6px 14px rgba(0,0,0,.35);
       transform: translate(-50%,-50%);
-      pointer-events:auto;  /* ✅ 핸들만 이벤트 받음 */
+      pointer-events:auto;
       touch-action:none;
     }
     .handle[data-h="n"]{ left:50%; top:0%; cursor: ns-resize; }
@@ -541,6 +540,14 @@
 
         <div style="height:10px;"></div>
 
+        <!-- ✅ 고화질 토글 -->
+        <div class="row">
+          <button class="btn secondary" id="hiResBtn" type="button">✨ Hi-Res: ON</button>
+        </div>
+        <div class="hint" id="hires_hint">Hi-Res ON = sharper crop/export but may be heavier on memory.</div>
+
+        <div style="height:10px;"></div>
+
         <div class="row">
           <button class="btn secondary" id="fitBtn" type="button">↔ Fit</button>
           <button class="btn secondary" id="centerBtn" type="button">🎯 Center</button>
@@ -678,6 +685,10 @@
       crop_off: "✂️ Crop: OFF",
       crop_apply: "✂️ Crop",
 
+      hires_on: "✨ Hi-Res: ON",
+      hires_off:"✨ Hi-Res: OFF",
+      hires_hint:"Hi-Res ON = sharper crop/export but may be heavier on memory.",
+
       fit: "↔ Fit",
       center: "🎯 Center",
       zoomOut: "➖ Zoom out",
@@ -708,7 +719,6 @@
 
       msg_need: "No image found. Go back to main page and press ✂️ next to Preview.",
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
-      /* ✅ 문구도 '박스 이동' 제거 */
       msg_crop_on: "Crop ON: Drag handles to resize. (Box does not move.) Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
       msg_ok: "✅ Downloaded",
@@ -730,6 +740,10 @@
       crop_on: "✂️ 자르기: ON",
       crop_off: "✂️ 자르기: OFF",
       crop_apply: "✂️ 자르기",
+
+      hires_on: "✨ 고화질: ON",
+      hires_off:"✨ 고화질: OFF",
+      hires_hint:"고화질 ON = 더 선명한 크롭/저장(기기 메모리 부담이 늘 수 있어요).",
 
       fit: "↔ 맞추기",
       center: "🎯 중앙",
@@ -761,7 +775,6 @@
 
       msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
       msg_ready: "준비 완료! 드래그로 이동, 핀치/마우스휠/버튼으로 확대하세요.",
-      /* ✅ 문구도 '박스 이동' 제거 */
       msg_crop_on: "자르기 ON: 핸들로 크기만 조절합니다(박스 이동 없음). ‘자르기’로 적용하세요.",
       msg_crop_applied: "✅ 잘라냈어요",
       msg_ok: "✅ 다운로드 완료",
@@ -783,6 +796,10 @@
       crop_on: "✂️ Recorte: ON",
       crop_off: "✂️ Recorte: OFF",
       crop_apply: "✂️ Recortar",
+
+      hires_on: "✨ Alta: ON",
+      hires_off:"✨ Alta: OFF",
+      hires_hint:"ON = recorte/exportación más nítidos, pero puede usar más memoria.",
 
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
@@ -835,6 +852,10 @@
       crop_on: "✂️ 切り抜き: ON",
       crop_off: "✂️ 切り抜き: OFF",
       crop_apply: "✂️ 切り抜き",
+
+      hires_on: "✨ 高画質: ON",
+      hires_off:"✨ 高画質: OFF",
+      hires_hint:"ON = より鮮明な切り抜き/保存（メモリ負荷が増える可能性）",
 
       fit: "↔ フィット",
       center: "🎯 中央",
@@ -899,6 +920,20 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  // ========= Hi-Res mode (persist) =========
+  function detectHiRes(){
+    const saved = localStorage.getItem("cf24_hires");
+    if(saved === "0") return false;
+    if(saved === "1") return true;
+    return true; // ✅ 기본 ON
+  }
+  let HIRES = detectHiRes();
+  function setHiRes(on){
+    HIRES = !!on;
+    localStorage.setItem("cf24_hires", HIRES ? "1" : "0");
+    syncHiResUI();
+  }
+
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
@@ -916,6 +951,7 @@
     $("h_controls").textContent = t().controls;
 
     syncCropBtnText();
+    syncHiResUI();
 
     $("fitBtn").textContent = t().fit;
     $("centerBtn").textContent = t().center;
@@ -1007,6 +1043,9 @@
   const cropToggleBtn = $("cropToggleBtn");
   const cropApplyBtn = $("cropApplyBtn");
 
+  const hiResBtn = $("hiResBtn");
+  const hiResHintEl = $("hires_hint");
+
   const fitBtn = $("fitBtn");
   const centerBtn = $("centerBtn");
   const zoomInBtn = $("zoomInBtn");
@@ -1044,7 +1083,7 @@
 
   const history = [];
   function snap(){
-    return { view: { ...view }, crop: { ...crop }, cropOn };
+    return { view: { ...view }, crop: { ...crop }, cropOn, HIRES };
   }
   function sameSnap(a,b){
     if(!a || !b) return false;
@@ -1062,7 +1101,8 @@
       Math.abs(c1.y-c2.y)<0.5 &&
       Math.abs(c1.w-c2.w)<0.5 &&
       Math.abs(c1.h-c2.h)<0.5 &&
-      a.cropOn===b.cropOn;
+      a.cropOn===b.cropOn &&
+      (!!a.HIRES === !!b.HIRES);
     return eqV && eqC;
   }
   function pushHistory(prev){
@@ -1082,6 +1122,7 @@
     Object.assign(view, s.view);
     cropOn = !!s.cropOn;
     Object.assign(crop, s.crop);
+    if(typeof s.HIRES !== "undefined") setHiRes(!!s.HIRES);
     syncCropUI();
     redraw();
   }
@@ -1093,10 +1134,23 @@
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
   function stageRect(){ return stage.getBoundingClientRect(); }
 
+  function syncHiResUI(){
+    if(!hiResBtn) return;
+    hiResBtn.textContent = HIRES ? t().hires_on : t().hires_off;
+    if(hiResHintEl) hiResHintEl.textContent = t().hires_hint;
+  }
+
+  hiResBtn.addEventListener("click", ()=>{
+    pushHistory(snap());
+    setHiRes(!HIRES);
+  });
+
+  // ✅ 고화질 배수: OFF면 가벼운 상한(8), ON이면 더 큰 상한(16)
   function hiResMult(){
     const s = Math.abs(view.scale || 1);
     const m = 1 / Math.max(1e-6, s);
-    return clamp(m, 1, 12);
+    const maxMul = HIRES ? 16 : 8;
+    return clamp(m, 1, maxMul);
   }
 
   function resizeCanvas(){
@@ -1158,6 +1212,7 @@
       resetAllBtn.disabled = true;
       cropToggleBtn.disabled = true;
       cropApplyBtn.disabled = true;
+      hiResBtn.disabled = false;
       loadImgBtn.disabled = false;
       clearHistory();
       return;
@@ -1167,6 +1222,7 @@
     resetAllBtn.disabled = false;
     cropToggleBtn.disabled = false;
     cropApplyBtn.disabled = false;
+    hiResBtn.disabled = false;
     loadImgBtn.disabled = false;
 
     const mime = outFormatEl.value;
@@ -1297,14 +1353,14 @@
     syncCropBoxEl();
   }
 
-  // 이벤트 타겟은 "핸들"만 잡히게 되어있고( CSS ), 여기서도 핸들만 처리
+  // 이벤트 타겟은 "핸들"만 잡히게(CSS), 여기서도 핸들만 처리
   cropBoxEl.addEventListener("pointerdown", (e)=>{
     if(!img || !cropOn) return;
     const handle = hitHandle(e.target);
-    if(!handle) return; // ✅ 박스 본문은 아무것도 안 함(이제 드래그=이미지 이동)
+    if(!handle) return;
 
     e.preventDefault();
-    e.stopPropagation(); // ✅ 핸들 드래그 중 이미지 팬 방지
+    e.stopPropagation();
     cropBoxEl.setPointerCapture(e.pointerId);
 
     pushHistory(snap());
@@ -1459,7 +1515,6 @@
   undoBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     if(history.length === 0){
-      // 뷰/크롭 기본값 복구(간단)
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
       initialView.scale = s;
@@ -1623,7 +1678,7 @@
     im.onload = async ()=>{
       URL.revokeObjectURL(url);
 
-      // IDB 저장(원본은 유지)
+      // IDB 저장(원본 유지)
       try{
         const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         await idbPut(key, file);
@@ -1889,7 +1944,9 @@
   outFormatEl.addEventListener("change", updateMeta);
 
   // init
+  $("langSelect").value = LANG;
   setLang(LANG);
+  syncHiResUI();
   updateMeta();
   resizeCanvas();
   syncCropUI();
