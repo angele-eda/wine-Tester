@@ -236,7 +236,7 @@
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
-    /* ✅ 핵심: stage는 overflow visible (핸들 안 잘림) */
+    /* ✅ stage는 overflow visible (핸들 안 잘림) */
     .stage{
       border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
@@ -1785,6 +1785,7 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
+  // ✅ FIX: bbox는 stage 바깥으로 절대 나가지 않게 "클램프"
   function computeTransformedBBox(stageW, stageH){
     const cx = stageW/2 + view.offX;
     const cy = stageH/2 + view.offY;
@@ -1822,13 +1823,17 @@
       if(ys > maxY) maxY = ys;
     }
 
-    // ✅ 과한 패딩 금지. 최소만.
-    return {
-      minX: Math.floor(minX),
-      minY: Math.floor(minY),
-      maxX: Math.ceil(maxX),
-      maxY: Math.ceil(maxY)
-    };
+    // ✅ stage 안으로 딱 고정 (검은 여백 방지)
+    minX = Math.max(0, Math.floor(minX));
+    minY = Math.max(0, Math.floor(minY));
+    maxX = Math.min(stageW, Math.ceil(maxX));
+    maxY = Math.min(stageH, Math.ceil(maxY));
+
+    // ✅ 예외 방지
+    if(maxX <= minX){ minX = 0; maxX = stageW; }
+    if(maxY <= minY){ minY = 0; maxY = stageH; }
+
+    return { minX, minY, maxX, maxY };
   }
 
   function stageToOutputBlob(){
@@ -1862,7 +1867,6 @@
     base.height = sh;
     const bctx = base.getContext("2d", { alpha });
 
-    // ✅ 여기서 불필요한 리샘플 줄이기
     bctx.imageSmoothingEnabled = true;
     bctx.imageSmoothingQuality = "high";
 
