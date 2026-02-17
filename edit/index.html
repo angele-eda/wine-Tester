@@ -707,6 +707,7 @@
       msg_crop_on: "Crop ON: Drag handles to resize, drag box to move. Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
       msg_ok: "✅ Downloaded",
+      msg_idb_fail: "Could not load from local storage. Try re-opening from main page.",
 
       meta_idle: "<b>Preview</b><br/>Open from main preview ✂️ button.",
       meta_info: (name, w, h) => `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px`
@@ -758,6 +759,7 @@
       msg_crop_on: "자르기 ON: 핸들로 크기 조절, 박스 드래그로 이동. ‘자르기’로 적용하세요.",
       msg_crop_applied: "✅ 잘라냈어요",
       msg_ok: "✅ 다운로드 완료",
+      msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 메인에서 다시 열어주세요.",
 
       meta_idle: "<b>미리보기</b><br/>메인 미리보기 옆 ✂️ 버튼으로 열어주세요.",
       meta_info: (name, w, h) => `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`
@@ -809,6 +811,7 @@
       msg_crop_on: "Recorte ON: Ajusta con asas, arrastra el cuadro. Pulsa Recortar para aplicar.",
       msg_crop_applied: "✅ Recortado",
       msg_ok: "✅ Descargado",
+      msg_idb_fail: "No se pudo cargar desde almacenamiento local. Vuelve a abrir desde la página principal.",
 
       meta_idle: "<b>Vista previa</b><br/>Abrir desde el botón ✂️ junto a Vista previa en la página principal.",
       meta_info: (name, w, h) => `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px`
@@ -860,6 +863,7 @@
       msg_crop_on: "切り抜きON: ハンドルでサイズ調整、枠をドラッグで移動。切り抜きで適用。",
       msg_crop_applied: "✅ 切り抜き完了",
       msg_ok: "✅ ダウンロード完了",
+      msg_idb_fail: "ローカル保存から読み込めませんでした。メインから開き直してください。",
 
       meta_idle: "<b>プレビュー</b><br/>メインのプレビュー横 ✂️ から開いてください。",
       meta_info: (name, w, h) => `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px`
@@ -941,6 +945,63 @@
     setTimeout(()=>resizeCanvas(), 0);
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
+
+  // ========= IndexedDB bridge (same store as index) =========
+  const CF24_IDB_NAME = "cf24_blob_store_v1";
+  const CF24_IDB_STORE = "blobs";
+
+  function idbOpen(){
+    return new Promise((resolve, reject)=>{
+      if(!("indexedDB" in window)) return reject(new Error("IndexedDB not supported"));
+      const req = indexedDB.open(CF24_IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if(!db.objectStoreNames.contains(CF24_IDB_STORE)){
+          db.createObjectStore(CF24_IDB_STORE);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error("IDB open fail"));
+    });
+  }
+
+  async function idbGet(key){
+    const db = await idbOpen();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(CF24_IDB_STORE, "readonly");
+      const store = tx.objectStore(CF24_IDB_STORE);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error || new Error("IDB get fail"));
+      tx.oncomplete = () => { try{ db.close(); }catch(e){} };
+      tx.onerror = () => { try{ db.close(); }catch(e){} };
+      tx.onabort = () => { try{ db.close(); }catch(e){} };
+    });
+  }
+
+  async function idbPut(key, blob){
+    const db = await idbOpen();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
+      const store = tx.objectStore(CF24_IDB_STORE);
+      store.put(blob, key);
+      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
+      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put fail")); };
+      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put abort")); };
+    });
+  }
+
+  async function idbDel(key){
+    const db = await idbOpen();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
+      const store = tx.objectStore(CF24_IDB_STORE);
+      store.delete(key);
+      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
+      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB del fail")); };
+      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB del abort")); };
+    });
+  }
 
   // ========= editor engine =========
   const stage = $("stage");
@@ -1038,11 +1099,10 @@
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
   function stageRect(){ return stage.getBoundingClientRect(); }
 
-  // ✅ NEW: high-res multiplier based on view.scale
+  // high-res multiplier based on view.scale
   function hiResMult(){
     const s = Math.abs(view.scale || 1);
     const m = 1 / Math.max(1e-6, s);
-    // 너무 과한 메모리 폭발 방지(원하면 12~16으로 올려도 됨)
     return clamp(m, 1, 12);
   }
 
@@ -1286,7 +1346,7 @@
   cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
   cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
 
-  // ✅ NEW: render stage to offscreen canvas with multiplier (hi-res)
+  // render stage to offscreen canvas (hi-res)
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const W = Math.max(1, Math.round(rect.width * mult));
@@ -1319,7 +1379,7 @@
       return;
     }
 
-    const mult = hiResMult();          // ✅ 핵심: 원본급으로 렌더
+    const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, true);
 
     const sx = Math.max(0, Math.round(crop.x * mult));
@@ -1548,46 +1608,67 @@
     if(f) loadFile(f);
   });
 
+  function applyLoadedImage(im, name){
+    img = im;
+    imgW = im.naturalWidth || 1;
+    imgH = im.naturalHeight || 1;
+    imgName = name || "image";
+
+    const rect = stageRect();
+    const s = Math.min(rect.width / imgW, rect.height / imgH);
+    initialView.scale = s;
+    initialView.offX = 0;
+    initialView.offY = 0;
+    initialView.rot = 0;
+    initialView.flipH = 1;
+    initialView.flipV = 1;
+    Object.assign(view, initialView);
+
+    cropOn = true;
+    ensureCropDefault(true);
+
+    clearHistory();
+    redraw();
+    updateMeta();
+    setMsg(t().msg_ready, "ok");
+    resizeCanvas();
+  }
+
   async function loadFile(file){
+    // 1) load image
     const url = URL.createObjectURL(file);
     const im = new Image();
-    im.onload = ()=>{
+    im.onload = async ()=>{
       URL.revokeObjectURL(url);
 
-      img = im;
-      imgW = im.naturalWidth || 1;
-      imgH = im.naturalHeight || 1;
-      imgName = file.name || "image";
-
+      // 2) store into IDB (for large files + cross-page safety)
       try{
-        const fr = new FileReader();
-        fr.onload = ()=>{
-          try{
-            sessionStorage.setItem("cf24_edit_img", fr.result);
-            sessionStorage.setItem("cf24_edit_name", imgName);
-          }catch(_){}
-        };
-        fr.readAsDataURL(file);
-      }catch(_){}
+        const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+        await idbPut(key, file);
 
-      const rect = stageRect();
-      const s = Math.min(rect.width / imgW, rect.height / imgH);
-      initialView.scale = s;
-      initialView.offX = 0;
-      initialView.offY = 0;
-      initialView.rot = 0;
-      initialView.flipH = 1;
-      initialView.flipV = 1;
-      Object.assign(view, initialView);
+        sessionStorage.setItem("cf24_edit_source", "idb");
+        sessionStorage.setItem("cf24_edit_key", key);
+        sessionStorage.setItem("cf24_edit_name", file.name || "image");
 
-      cropOn = true;
-      ensureCropDefault(true);
+        // 겸용: id-photo에서도 쓰기 편하게
+        sessionStorage.setItem("cf24_idphoto_source", "idb");
+        sessionStorage.setItem("cf24_idphoto_key", key);
+        sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
+      }catch(_){
+        // fallback: dataURL(작은 파일일 때만 유효)
+        try{
+          const fr = new FileReader();
+          fr.onload = ()=>{
+            try{
+              sessionStorage.setItem("cf24_edit_img", fr.result);
+              sessionStorage.setItem("cf24_edit_name", file.name || "image");
+            }catch(__){}
+          };
+          fr.readAsDataURL(file);
+        }catch(__){}
+      }
 
-      clearHistory();
-      redraw();
-      updateMeta();
-      setMsg(t().msg_ready, "ok");
-      resizeCanvas();
+      applyLoadedImage(im, file.name || "image");
     };
     im.onerror = ()=>{
       URL.revokeObjectURL(url);
@@ -1596,15 +1677,44 @@
     im.src = url;
   }
 
+  // ========= load from session (IDB first) =========
   async function loadFromSession(){
+    // 1) try IDB handoff
+    const src = sessionStorage.getItem("cf24_edit_source") || sessionStorage.getItem("cf24_idphoto_source");
+    const key = sessionStorage.getItem("cf24_edit_key") || sessionStorage.getItem("cf24_idphoto_key");
+    const name = sessionStorage.getItem("cf24_edit_name") || sessionStorage.getItem("cf24_idphoto_name") || "image";
+
+    if(src === "idb" && key){
+      try{
+        const blob = await idbGet(key);
+        if(blob){
+          const url = URL.createObjectURL(blob);
+          const im = new Image();
+          im.onload = ()=>{
+            URL.revokeObjectURL(url);
+            applyLoadedImage(im, name);
+
+            // ✅ 필요하면 로드 후 자동 삭제(원하면 주석 해제)
+            // idbDel(key).catch(()=>{});
+          };
+          im.onerror = ()=>{
+            URL.revokeObjectURL(url);
+            setMsg(t().msg_idb_fail, "err");
+            updateMeta();
+            resizeCanvas();
+          };
+          im.src = url;
+          return;
+        }
+      }catch(_){
+        // fallthrough
+      }
+    }
+
+    // 2) fallback: old dataURL method
     const dataUrl =
       sessionStorage.getItem("cf24_edit_img") ||
       sessionStorage.getItem("cf24_idphoto_img");
-
-    const name =
-      sessionStorage.getItem("cf24_edit_name") ||
-      sessionStorage.getItem("cf24_idphoto_name") ||
-      "image";
 
     if(!dataUrl){
       setMsg(t().msg_need, "err");
@@ -1617,28 +1727,7 @@
     imgName = name;
     const im = new Image();
     im.onload = ()=>{
-      img = im;
-      imgW = im.naturalWidth || 1;
-      imgH = im.naturalHeight || 1;
-
-      const rect = stageRect();
-      const s = Math.min(rect.width / imgW, rect.height / imgH);
-      initialView.scale = s;
-      initialView.offX = 0;
-      initialView.offY = 0;
-      initialView.rot = 0;
-      initialView.flipH = 1;
-      initialView.flipV = 1;
-      Object.assign(view, initialView);
-
-      cropOn = true;
-      ensureCropDefault(true);
-
-      clearHistory();
-      redraw();
-      updateMeta();
-      setMsg(t().msg_ready, "ok");
-      resizeCanvas();
+      applyLoadedImage(im, imgName);
     };
     im.onerror = ()=>{
       img = null;
@@ -1722,7 +1811,6 @@
     const stageW = rect.width;
     const stageH = rect.height;
 
-    // bbox in stage coords
     const bb = computeTransformedBBox(stageW, stageH);
     const bw = Math.max(1, bb.maxX - bb.minX);
     const bh = Math.max(1, bb.maxY - bb.minY);
@@ -1731,11 +1819,9 @@
     const q = parseFloat(qualityEl.value || "0.9");
     const alpha = (outMime !== "image/jpeg");
 
-    // ✅ render hi-res stage (based on view.scale)
     const mult = hiResMult();
     const stageCanvas = renderStageToCanvas(mult, alpha);
 
-    // crop bbox from hi-res stage
     const sx = Math.max(0, Math.round(bb.minX * mult));
     const sy = Math.max(0, Math.round(bb.minY * mult));
     const sw = Math.max(1, Math.round(bw * mult));
@@ -1757,11 +1843,9 @@
 
     bctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    // ✅ optional resize (user inputs)
     const wIn = parseInt(wEl.value, 10);
     const hIn = parseInt(hEl.value, 10);
     if(!wIn && !hIn){
-      // no resize: keep hi-res
       return new Promise((resolve, reject)=>{
         if(outMime === "image/png"){
           base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
@@ -1773,7 +1857,6 @@
       });
     }
 
-    // resize logic (keep your existing aspect options)
     let targetW = sw;
     let targetH = sh;
     const keep = !!aspectLockEl.checked;
@@ -1855,6 +1938,8 @@
     try{
       sessionStorage.removeItem("cf24_edit_img");
       sessionStorage.removeItem("cf24_edit_name");
+      sessionStorage.removeItem("cf24_edit_source");
+      sessionStorage.removeItem("cf24_edit_key");
     }catch(_){}
 
     setMsg("", "");
