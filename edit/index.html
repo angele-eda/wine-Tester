@@ -511,10 +511,8 @@
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
 
-          <!-- ✅ top-right actions: Load image (left) + Undo/Reset view (right) -->
           <div class="headActions" aria-label="Quick actions">
             <button class="iconBtn" id="loadImgBtn" type="button" aria-label="Load image" title="Load image">
-              <!-- photo frame icon -->
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M4.5 6.8c0-1.1.9-2 2-2h11c1.1 0 2 .9 2 2v10.4c0 1.1-.9 2-2 2h-11c-1.1 0-2-.9-2-2V6.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                 <path d="M8 13.4l2.2-2.2a1.1 1.1 0 0 1 1.6 0l2.6 2.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -524,7 +522,6 @@
             </button>
 
             <button class="iconBtn" id="undoBtn" type="button" aria-label="Undo / Reset view" title="Undo / Reset view" disabled>
-              <!-- rounded arrow -->
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M20 12a8 8 0 1 1-2.35-5.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -533,7 +530,6 @@
           </div>
         </div>
 
-        <!-- ✅ Crop row: ON/OFF (left) + Crop (right) -->
         <div class="row">
           <button class="btn secondary" id="cropToggleBtn" type="button">✂️ Crop: ON</button>
           <button class="btn secondary" id="cropApplyBtn" type="button">✂️ Crop</button>
@@ -636,7 +632,6 @@
         <h2 id="h_download">Download</h2>
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
 
-        <!-- ✅ NEW: remove-image reset under download -->
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
 
@@ -654,7 +649,6 @@
     </div>
   </div>
 
-  <!-- hidden inputs -->
   <input id="pickInput" type="file" accept="image/*">
 
 <script>
@@ -911,7 +905,6 @@
     $("h_stage").textContent = t().h_stage;
     $("h_controls").textContent = t().controls;
 
-    // crop buttons
     syncCropBtnText();
 
     $("fitBtn").textContent = t().fit;
@@ -987,23 +980,16 @@
   let imgName = "image";
   let imgW = 0, imgH = 0;
 
-  // view state
   const initialView = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
   const view = { scale: 1, offX: 0, offY: 0, rot: 0, flipH: 1, flipV: 1 };
 
-  // crop state (in stage coords)
   let cropOn = true;
   const crop = { x: 0, y: 0, w: 0, h: 0 };
   const CROP_MIN = 60;
 
-  // history (for undo/reset view + crop box)
   const history = [];
   function snap(){
-    return {
-      view: { ...view },
-      crop: { ...crop },
-      cropOn
-    };
+    return { view: { ...view }, crop: { ...crop }, cropOn };
   }
   function sameSnap(a,b){
     if(!a || !b) return false;
@@ -1051,6 +1037,14 @@
   }
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
   function stageRect(){ return stage.getBoundingClientRect(); }
+
+  // ✅ NEW: high-res multiplier based on view.scale
+  function hiResMult(){
+    const s = Math.abs(view.scale || 1);
+    const m = 1 / Math.max(1e-6, s);
+    // 너무 과한 메모리 폭발 방지(원하면 12~16으로 올려도 됨)
+    return clamp(m, 1, 12);
+  }
 
   function resizeCanvas(){
     const rect = stageRect();
@@ -1170,8 +1164,6 @@
 
     wEl.value = "";
     hEl.value = "";
-    aspectLockEl.checked = true;
-    aspectModeEl.value = "contain";
 
     redraw();
     setMsg(t().msg_ready, "ok");
@@ -1198,7 +1190,6 @@
   }
 
   function syncCropBoxEl(){
-    // show/hide
     cropOverlay.classList.toggle("show", !!(img && cropOn));
     if(!img) return;
 
@@ -1228,22 +1219,14 @@
     else setMsg("", "");
   });
 
-  // crop dragging / resizing
   let cropDrag = null;
-
   function hitHandle(target){
     const h = target && target.dataset && target.dataset.h;
     return h || null;
   }
-
   function startCropDrag(mode, startX, startY, handle){
-    cropDrag = {
-      mode, handle,
-      sx: startX, sy: startY,
-      start: { ...crop }
-    };
+    cropDrag = { mode, handle, sx: startX, sy: startY, start: { ...crop } };
   }
-
   function applyCropDrag(px, py){
     if(!cropDrag) return;
     const dx = px - cropDrag.sx;
@@ -1257,29 +1240,16 @@
       y = s.y + dy;
     } else {
       const hd = cropDrag.handle;
-
-      // edges
       const left   = (hd.includes("w"));
       const right  = (hd.includes("e"));
       const top    = (hd.includes("n"));
       const bottom = (hd.includes("s"));
 
-      if(left){
-        x = s.x + dx;
-        w = s.w - dx;
-      }
-      if(right){
-        w = s.w + dx;
-      }
-      if(top){
-        y = s.y + dy;
-        h = s.h - dy;
-      }
-      if(bottom){
-        h = s.h + dy;
-      }
+      if(left){ x = s.x + dx; w = s.w - dx; }
+      if(right){ w = s.w + dx; }
+      if(top){ y = s.y + dy; h = s.h - dy; }
+      if(bottom){ h = s.h + dy; }
 
-      // clamp min size by adjusting x/y if needed
       if(w < CROP_MIN){
         const diff = CROP_MIN - w;
         w = CROP_MIN;
@@ -1306,37 +1276,31 @@
     pushHistory(snap());
 
     const handle = hitHandle(e.target);
-    if(handle){
-      startCropDrag("resize", e.clientX, e.clientY, handle);
-    } else {
-      startCropDrag("move", e.clientX, e.clientY, null);
-    }
+    if(handle) startCropDrag("resize", e.clientX, e.clientY, handle);
+    else startCropDrag("move", e.clientX, e.clientY, null);
   });
-
   cropBoxEl.addEventListener("pointermove", (e)=>{
     if(!cropDrag) return;
     applyCropDrag(e.clientX, e.clientY);
   });
+  cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
+  cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
 
-  cropBoxEl.addEventListener("pointerup", ()=>{
-    cropDrag = null;
-  });
-  cropBoxEl.addEventListener("pointercancel", ()=>{
-    cropDrag = null;
-  });
-
-  function renderStageToCanvas(dpr){
+  // ✅ NEW: render stage to offscreen canvas with multiplier (hi-res)
+  function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
-    const W = Math.max(1, Math.round(rect.width * dpr));
-    const H = Math.max(1, Math.round(rect.height * dpr));
+    const W = Math.max(1, Math.round(rect.width * mult));
+    const H = Math.max(1, Math.round(rect.height * mult));
     const out = document.createElement("canvas");
     out.width = W;
     out.height = H;
-    const octx = out.getContext("2d", { alpha:true });
-    octx.setTransform(dpr,0,0,dpr,0,0);
+
+    const octx = out.getContext("2d", { alpha });
+    octx.setTransform(mult,0,0,mult,0,0);
     octx.clearRect(0,0,rect.width,rect.height);
 
-    // draw same as stage
+    if(!img) return out;
+
     octx.save();
     octx.translate(rect.width/2, rect.height/2);
     octx.translate(view.offX, view.offY);
@@ -1350,20 +1314,18 @@
 
   async function applyCrop(){
     if(!img) throw new Error(t().msg_need);
-
-    // crop even if cropOn is off? -> require ON
     if(!cropOn){
       setMsg(t().msg_crop_on, "");
       return;
     }
 
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    const stageCanvas = renderStageToCanvas(dpr);
+    const mult = hiResMult();          // ✅ 핵심: 원본급으로 렌더
+    const stageCanvas = renderStageToCanvas(mult, true);
 
-    const sx = Math.max(0, Math.round(crop.x * dpr));
-    const sy = Math.max(0, Math.round(crop.y * dpr));
-    const sw = Math.max(1, Math.round(crop.w * dpr));
-    const sh = Math.max(1, Math.round(crop.h * dpr));
+    const sx = Math.max(0, Math.round(crop.x * mult));
+    const sy = Math.max(0, Math.round(crop.y * mult));
+    const sw = Math.max(1, Math.round(crop.w * mult));
+    const sh = Math.max(1, Math.round(crop.h * mult));
 
     const c = document.createElement("canvas");
     c.width = sw;
@@ -1372,8 +1334,6 @@
     cctx.imageSmoothingEnabled = true;
     cctx.imageSmoothingQuality = "high";
     cctx.clearRect(0,0,sw,sh);
-
-    // draw cropped region
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
     const dataUrl = c.toDataURL("image/png");
@@ -1384,13 +1344,11 @@
       im.src = dataUrl;
     });
 
-    // replace image with cropped result
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
     imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
 
-    // reset view to fit
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
     initialView.scale = s;
@@ -1399,10 +1357,8 @@
     initialView.rot = 0;
     initialView.flipH = 1;
     initialView.flipV = 1;
-
     Object.assign(view, initialView);
 
-    // reset crop box to default & keep crop ON
     cropOn = true;
     ensureCropDefault(true);
 
@@ -1469,7 +1425,6 @@
     redraw();
   });
 
-  // ✅ Undo button (replaces "자르기 초기화"): go back one step; if none, reset to initial
   undoBtn.addEventListener("click", ()=>{
     if(!img) return setMsg(t().msg_need, "err");
     if(history.length === 0){
@@ -1488,7 +1443,6 @@
   let gestureStart = null;
 
   stage.addEventListener("pointerdown", (e)=>{
-    // if crop is on and user taps crop box, it will stopPropagation there
     stage.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
@@ -1571,7 +1525,6 @@
     return { dist, midX:(a.x+b.x)/2, midY:(a.y+b.y)/2 };
   }
 
-  // mouse wheel zoom (PC)
   stage.addEventListener("wheel", (e)=>{
     if(!img) return;
     e.preventDefault();
@@ -1584,7 +1537,7 @@
     zoomBy(factor, cx, cy);
   }, { passive:false });
 
-  // ========= load image: sessionStorage OR file input =========
+  // ========= load image =========
   loadImgBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
@@ -1606,7 +1559,6 @@
       imgH = im.naturalHeight || 1;
       imgName = file.name || "image";
 
-      // store to session (so "main -> edit" also works if you set it there)
       try{
         const fr = new FileReader();
         fr.onload = ()=>{
@@ -1626,7 +1578,6 @@
       initialView.rot = 0;
       initialView.flipH = 1;
       initialView.flipV = 1;
-
       Object.assign(view, initialView);
 
       cropOn = true;
@@ -1678,7 +1629,6 @@
       initialView.rot = 0;
       initialView.flipH = 1;
       initialView.flipV = 1;
-
       Object.assign(view, initialView);
 
       cropOn = true;
@@ -1765,91 +1715,104 @@
     };
   }
 
-  function getOutputSizeFromBBox(bw, bh){
-    let W = Math.max(1, Math.round(bw));
-    let H = Math.max(1, Math.round(bh));
-
-    const wIn = parseInt(wEl.value, 10);
-    const hIn = parseInt(hEl.value, 10);
-
-    if(!wIn && !hIn) return { W, H };
-
-    const keep = !!aspectLockEl.checked;
-    const mode = (aspectModeEl.value || "contain");
-    const aspect = W / H;
-
-    if(wIn && !hIn){
-      W = Math.max(1, wIn);
-      H = keep ? Math.max(1, Math.round(W / aspect)) : H;
-      return { W, H };
-    }
-    if(!wIn && hIn){
-      H = Math.max(1, hIn);
-      W = keep ? Math.max(1, Math.round(H * aspect)) : W;
-      return { W, H };
-    }
-
-    W = Math.max(1, wIn);
-    H = Math.max(1, hIn);
-
-    if(keep && mode !== "stretch"){
-      const s = (mode === "cover")
-        ? Math.max(W / bw, H / bh)
-        : Math.min(W / bw, H / bh);
-      return {
-        W: Math.max(1, Math.round(bw * s)),
-        H: Math.max(1, Math.round(bh * s))
-      };
-    }
-    return { W, H };
-  }
-
-  function stageToOutput(){
+  function stageToOutputBlob(){
     if(!img) throw new Error(t().msg_need);
 
     const rect = stageRect();
     const stageW = rect.width;
     const stageH = rect.height;
 
+    // bbox in stage coords
     const bb = computeTransformedBBox(stageW, stageH);
     const bw = Math.max(1, bb.maxX - bb.minX);
     const bh = Math.max(1, bb.maxY - bb.minY);
-
-    const { W, H } = getOutputSizeFromBBox(bw, bh);
 
     const outMime = outFormatEl.value;
     const q = parseFloat(qualityEl.value || "0.9");
     const alpha = (outMime !== "image/jpeg");
 
-    const out = document.createElement("canvas");
-    out.width = W;
-    out.height = H;
+    // ✅ render hi-res stage (based on view.scale)
+    const mult = hiResMult();
+    const stageCanvas = renderStageToCanvas(mult, alpha);
 
+    // crop bbox from hi-res stage
+    const sx = Math.max(0, Math.round(bb.minX * mult));
+    const sy = Math.max(0, Math.round(bb.minY * mult));
+    const sw = Math.max(1, Math.round(bw * mult));
+    const sh = Math.max(1, Math.round(bh * mult));
+
+    const base = document.createElement("canvas");
+    base.width = sw;
+    base.height = sh;
+    const bctx = base.getContext("2d", { alpha });
+    bctx.imageSmoothingEnabled = true;
+    bctx.imageSmoothingQuality = "high";
+
+    if(!alpha){
+      bctx.fillStyle = "#ffffff";
+      bctx.fillRect(0,0,sw,sh);
+    } else {
+      bctx.clearRect(0,0,sw,sh);
+    }
+
+    bctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    // ✅ optional resize (user inputs)
+    const wIn = parseInt(wEl.value, 10);
+    const hIn = parseInt(hEl.value, 10);
+    if(!wIn && !hIn){
+      // no resize: keep hi-res
+      return new Promise((resolve, reject)=>{
+        if(outMime === "image/png"){
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+        } else if(outMime === "image/webp"){
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
+        } else {
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
+        }
+      });
+    }
+
+    // resize logic (keep your existing aspect options)
+    let targetW = sw;
+    let targetH = sh;
+    const keep = !!aspectLockEl.checked;
+    const mode = (aspectModeEl.value || "contain");
+
+    if(wIn && !hIn){
+      targetW = Math.max(1, wIn);
+      targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
+    } else if(!wIn && hIn){
+      targetH = Math.max(1, hIn);
+      targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
+    } else {
+      targetW = Math.max(1, wIn);
+      targetH = Math.max(1, hIn);
+
+      if(keep && mode !== "stretch"){
+        const s = (mode === "cover")
+          ? Math.max(targetW / sw, targetH / sh)
+          : Math.min(targetW / sw, targetH / sh);
+        targetW = Math.max(1, Math.round(sw * s));
+        targetH = Math.max(1, Math.round(sh * s));
+      }
+    }
+
+    const out = document.createElement("canvas");
+    out.width = targetW;
+    out.height = targetH;
     const octx = out.getContext("2d", { alpha });
     octx.imageSmoothingEnabled = true;
     octx.imageSmoothingQuality = "high";
 
     if(!alpha){
       octx.fillStyle = "#ffffff";
-      octx.fillRect(0,0,W,H);
+      octx.fillRect(0,0,targetW,targetH);
     } else {
-      octx.clearRect(0,0,W,H);
+      octx.clearRect(0,0,targetW,targetH);
     }
 
-    const sx = W / bw;
-    const sy = H / bh;
-
-    octx.save();
-    octx.scale(sx, sy);
-    octx.translate(-bb.minX, -bb.minY);
-
-    octx.translate(stageW/2, stageH/2);
-    octx.translate(view.offX, view.offY);
-    octx.rotate((view.rot * Math.PI) / 180);
-    octx.scale(view.scale * view.flipH, view.scale * view.flipV);
-    octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
-
-    octx.restore();
+    octx.drawImage(base, 0, 0, sw, sh, 0, 0, targetW, targetH);
 
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
@@ -1864,7 +1827,7 @@
 
   downloadBtn.addEventListener("click", async ()=>{
     try{
-      const blob = await stageToOutput();
+      const blob = await stageToOutputBlob();
       downloadBlob(blob, buildName());
       setMsg(t().msg_ok, "ok");
     }catch(e){
@@ -1872,7 +1835,6 @@
     }
   });
 
-  // ✅ NEW: remove-image reset under download
   resetAllBtn.addEventListener("click", ()=>{
     img = null;
     imgName = "image";
