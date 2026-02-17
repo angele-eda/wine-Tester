@@ -21,7 +21,21 @@
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
       --ease: cubic-bezier(.2,.8,.2,1);
+
+      /* ✅ Handle sizing: "겉보기 18px" + "터치 영역 48px" */
+      --handle-dot: 18px;   /* 보여지는 원 */
+      --handle-hit: 48px;   /* 실제 잡히는 영역 */
     }
+
+    /* ✅ PC(마우스)에서는 조금 줄여도 됨(겹침/오작동 감소) */
+    @media (pointer: fine){
+      :root{ --handle-hit: 36px; } /* PC용(원하면 40/48로 바꿔도 됨) */
+    }
+    /* ✅ 모바일/터치(손가락)에서는 48 유지 */
+    @media (pointer: coarse){
+      :root{ --handle-hit: 48px; }
+    }
+
     *{ box-sizing:border-box; }
     html, body{ width:100%; max-width:100%; overflow-x:hidden; }
     body{
@@ -325,16 +339,44 @@
         linear-gradient(to bottom, rgba(255,255,255,.5) 0 0) 0 66.66%/100% 1px no-repeat;
     }
 
+    /* ✅ 핸들: 실제 히트영역은 48px(PC는 36px), 보이는 원은 18px */
     .handle{
       position:absolute;
-      width:18px; height:18px;
-      border-radius:999px;
-      background: rgba(235,245,255,.95);
-      box-shadow: 0 6px 14px rgba(0,0,0,.35);
+      width:var(--handle-hit);
+      height:var(--handle-hit);
       transform: translate(-50%,-50%);
       pointer-events:auto;
       touch-action:none;
+      background: transparent; /* 히트영역은 투명 */
+      border-radius:999px;
+      /* (선택) 아주 미세하게 히트영역을 보이고 싶으면 아래 주석 해제
+      outline:1px solid rgba(255,255,255,.06);
+      */
     }
+
+    /* ✅ 보여지는 원(겉보기 18px) */
+    .handle::after{
+      content:"";
+      position:absolute;
+      left:50%; top:50%;
+      width:var(--handle-dot);
+      height:var(--handle-dot);
+      transform: translate(-50%,-50%);
+      border-radius:999px;
+      background: rgba(235,245,255,.95);
+      box-shadow: 0 6px 14px rgba(0,0,0,.35);
+      transition: transform .08s var(--ease), filter .12s var(--ease);
+      will-change: transform;
+    }
+
+    /* ✅ active 눌림 효과(모바일 :active 약할 수 있어서 JS로 is-active도 추가함) */
+    .handle:active::after,
+    .handle.is-active::after{
+      transform: translate(-50%,-50%) scale(.92);
+      filter: brightness(.95);
+    }
+
+    /* 커서 */
     .handle[data-h="n"]{ left:50%; top:0%; cursor: ns-resize; }
     .handle[data-h="s"]{ left:50%; top:100%; cursor: ns-resize; }
     .handle[data-h="w"]{ left:0%;  top:50%; cursor: ew-resize; }
@@ -1311,9 +1353,10 @@
 
   // ✅ 크롭: "핸들 리사이즈만" 허용 (박스 이동 제거)
   let cropDrag = null;
+  let activeHandleEl = null; // ✅ active 눌림 효과 유지용(JS)
   function hitHandle(target){
-    const h = target && target.dataset && target.dataset.h;
-    return h || null;
+    const el = target && target.closest ? target.closest(".handle") : null;
+    return el ? (el.dataset && el.dataset.h) : null;
   }
   function startCropResize(startX, startY, handle){
     cropDrag = { handle, sx: startX, sy: startY, start: { ...crop } };
@@ -1353,7 +1396,13 @@
     syncCropBoxEl();
   }
 
-  // 이벤트 타겟은 "핸들"만 잡히게(CSS), 여기서도 핸들만 처리
+  function clearActiveHandle(){
+    if(activeHandleEl){
+      activeHandleEl.classList.remove("is-active");
+      activeHandleEl = null;
+    }
+  }
+
   cropBoxEl.addEventListener("pointerdown", (e)=>{
     if(!img || !cropOn) return;
     const handle = hitHandle(e.target);
@@ -1363,6 +1412,11 @@
     e.stopPropagation();
     cropBoxEl.setPointerCapture(e.pointerId);
 
+    // ✅ active 눌림 효과(모바일에서도 확실히)
+    clearActiveHandle();
+    activeHandleEl = e.target.closest(".handle");
+    if(activeHandleEl) activeHandleEl.classList.add("is-active");
+
     pushHistory(snap());
     startCropResize(e.clientX, e.clientY, handle);
   });
@@ -1370,8 +1424,14 @@
     if(!cropDrag) return;
     applyCropResize(e.clientX, e.clientY);
   });
-  cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
-  cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
+  cropBoxEl.addEventListener("pointerup", ()=>{
+    cropDrag = null;
+    clearActiveHandle();
+  });
+  cropBoxEl.addEventListener("pointercancel", ()=>{
+    cropDrag = null;
+    clearActiveHandle();
+  });
 
   // render stage to offscreen canvas (hi-res)
   function renderStageToCanvas(mult, alpha=true){
