@@ -1,287 +1,542 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ConvertFiles24 – Fast & Secure File Tools</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ConvertFiles24 – Fast & Secure File Tools</title>
+  <meta name="description" content="Fast & secure file tools. 100% local processing in your browser. Convert images, merge/split/compress PDFs, and more." />
+  <meta name="theme-color" content="#0b1220" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --bg1:#0b1220;
-  --bg2:#0f1a2e;
-  --card:#16233d;
-  --cardHover:#1b2b4b;
-  --border:rgba(255,255,255,0.08);
-  --text:#e9eefc;
-  --sub:#9fb0d4;
-  --accent:#4c8dff;
-}
+  <style>
+    :root{
+      --bg:#0b1220;
+      --bg2:#0f1a2e;
+      --card:#16233d;
+      --card2:#1a2946;
+      --border:rgba(255,255,255,.08);
+      --text:#e9eefc;
+      --sub:#9fb0d4;
+      --muted:rgba(255,255,255,.06);
+      --accent:#4c8dff;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:radial-gradient(1200px 600px at 50% -10%, rgba(76,141,255,.18), transparent 60%),
+                 linear-gradient(160deg,var(--bg),var(--bg2));
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:38px 18px 70px;
+    }
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(160deg,var(--bg1),var(--bg2));
-  color:var(--text);
-}
+    /* HERO */
+    .hero{
+      padding:26px 18px 10px;
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .heroTop{
+      padding:10px 6px 0;
+    }
+    .title{
+      font-size:48px;
+      line-height:1.05;
+      margin:10px 0 10px;
+      font-weight:800;
+      letter-spacing:-.02em;
+    }
+    .subtitle{
+      color:var(--sub);
+      font-size:18px;
+      margin:0 0 18px;
+    }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:40px 20px 80px;
-}
+    .badges{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin:18px 0 4px;
+      max-width:520px;
+    }
+    .badge{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:14px 16px;
+      border-radius:999px;
+      background:rgba(255,255,255,.045);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-weight:700;
+    }
+    .badge span{
+      font-weight:600;
+      color:var(--sub);
+    }
 
-/* HERO */
-.hero h1{
-  font-size:48px;
-  font-weight:700;
-  margin-bottom:10px;
-}
+    /* TOOL PANEL */
+    .panel{
+      margin-top:18px;
+      padding:18px;
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+    }
+    .panelHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .panelTitle{
+      font-weight:800;
+      letter-spacing:-.01em;
+      color:rgba(255,255,255,.85);
+    }
 
-.hero p{
-  color:var(--sub);
-  font-size:18px;
-  margin-bottom:25px;
-}
+    /* language dropdown (왼쪽 스샷 스타일) */
+    .langWrap{
+      position:relative;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+    }
+    .langBtn{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.045);
+      border:1px solid var(--border);
+      color:rgba(255,255,255,.92);
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+      min-width:160px;
+      justify-content:space-between;
+    }
+    .langLeft{
+      display:flex;align-items:center;gap:10px;
+    }
+    .globe{
+      font-size:16px;
+      opacity:.95;
+    }
+    .chev{
+      opacity:.7;
+      font-size:14px;
+    }
+    .langMenu{
+      position:absolute;
+      top:48px;
+      right:0;
+      width:220px;
+      background:linear-gradient(180deg, rgba(18,29,50,.98), rgba(12,18,32,.98));
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:0 18px 50px rgba(0,0,0,.55);
+      overflow:hidden;
+      display:none;
+      z-index:30;
+    }
+    .langMenu.open{display:block}
+    .langItem{
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      cursor:pointer;
+      color:rgba(255,255,255,.9);
+      font-weight:700;
+    }
+    .langItem:hover{background:rgba(255,255,255,.06)}
+    .langItem small{
+      color:rgba(255,255,255,.55);
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+    .langActiveMark{
+      color:var(--accent);
+      font-weight:900;
+      opacity:1;
+    }
 
-/* FEATURE BADGES */
-.badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-bottom:40px;
-}
+    /* 1열 도구 리스트 (오른쪽 스샷 스타일) */
+    .toolList{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      margin-top:8px;
+    }
+    .toolCard{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:18px 18px;
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      transition:.2s;
+    }
+    .toolCard:hover{
+      transform:translateY(-2px);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+    }
 
-.badge{
-  padding:10px 16px;
-  border-radius:30px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid var(--border);
-  font-size:14px;
-  color:var(--sub);
-}
+    .iconBox{
+      width:56px;height:56px;
+      border-radius:16px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      flex:0 0 auto;
+      font-size:28px;
+    }
 
-/* LANGUAGE BAR */
-.lang-bar{
-  display:flex;
-  gap:20px;
-  margin-bottom:40px;
-  font-weight:600;
-}
+    .toolMain{
+      flex:1 1 auto;
+      min-width:0;
+    }
+    .toolTitle{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.01em;
+      margin:0 0 4px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .toolDesc{
+      margin:0;
+      color:var(--sub);
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
 
-.lang-bar span{
-  cursor:pointer;
-  opacity:.6;
-  transition:.2s;
-}
+    .toolRight{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex:0 0 auto;
+    }
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      color:rgba(255,255,255,.85);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.01em;
+    }
+    .arrow{
+      width:42px;height:42px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;
+      opacity:.9;
+    }
 
-.lang-bar span.active{
-  opacity:1;
-  color:white;
-  border-bottom:2px solid var(--accent);
-  padding-bottom:4px;
-}
+    footer{
+      margin-top:26px;
+      text-align:center;
+      color:rgba(255,255,255,.55);
+      font-size:13px;
+      padding:10px 0 0;
+    }
 
-/* TOOL GRID */
-.tools{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;
-}
-
-.tool-card{
-  background:var(--card);
-  border-radius:18px;
-  padding:28px;
-  border:1px solid var(--border);
-  transition:.25s;
-  text-decoration:none;
-  color:inherit;
-}
-
-.tool-card:hover{
-  background:var(--cardHover);
-  transform:translateY(-5px);
-}
-
-.tool-card h3{
-  font-size:20px;
-  margin-bottom:8px;
-}
-
-.tool-card p{
-  font-size:14px;
-  color:var(--sub);
-}
-
-footer{
-  margin-top:80px;
-  text-align:center;
-  font-size:14px;
-  color:var(--sub);
-}
-</style>
+    @media (max-width:520px){
+      .title{font-size:44px}
+      .langBtn{min-width:150px}
+      .chip{display:none} /* 모바일에선 칩 숨겨도 깔끔 */
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
+  <main class="wrap">
 
-  <section class="hero">
-    <h1 data-i18n="title">ConvertFiles24</h1>
-    <p data-i18n="subtitle">Fast & Secure Online File Tools · 100% Local Processing</p>
+    <section class="hero">
+      <div class="heroTop">
+        <h1 class="title" data-i18n="title">ConvertFiles24</h1>
+        <p class="subtitle" data-i18n="subtitle">빠르고 안전한 파일 도구 · 100% 로컬 처리</p>
 
-    <div class="badges">
-      <div class="badge" data-i18n="badge1">🔒 100% Local Processing</div>
-      <div class="badge" data-i18n="badge2">⚡ Runs in Your Browser</div>
-      <div class="badge" data-i18n="badge3">💰 Free · No Install</div>
-    </div>
-  </section>
+        <div class="badges">
+          <div class="badge">
+            🔒 <strong data-i18n="b1">100% 로컬 처리</strong>
+            <span data-i18n="b1s">서버 업로드 없음</span>
+          </div>
+          <div class="badge">
+            ⚡ <strong data-i18n="b2">브라우저에서 즉시 실행</strong>
+            <span data-i18n="b2s">설치 없이 사용</span>
+          </div>
+          <div class="badge">
+            🧾 <strong data-i18n="b3">무료 · 설치 없음</strong>
+            <span data-i18n="b3s">모바일/PC 모두 OK</span>
+          </div>
+        </div>
+      </div>
 
-  <div class="lang-bar">
-    <span data-lang="en">English</span>
-    <span data-lang="ko">한국어</span>
-    <span data-lang="ja">日本語</span>
-    <span data-lang="es">Español</span>
-  </div>
+      <div class="panel">
+        <div class="panelHead">
+          <div class="panelTitle" data-i18n="tools">도구</div>
 
-  <section class="tools">
+          <!-- language dropdown (도구 오른쪽 위) -->
+          <div class="langWrap">
+            <div class="langBtn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+              <div class="langLeft">
+                <span class="globe">🌐</span>
+                <span id="langLabel">한국어</span>
+              </div>
+              <span class="chev">▾</span>
+            </div>
 
-    <a href="/convert/" class="tool-card">
-      <h3 data-i18n="convert">File Converter</h3>
-      <p data-i18n="convertDesc">Convert JPG / PNG / WebP / PDF files</p>
-    </a>
+            <div class="langMenu" id="langMenu" role="menu" aria-label="Language">
+              <div class="langItem" data-lang="en"><span>English</span><small>EN</small></div>
+              <div class="langItem" data-lang="ko"><span>한국어</span><small>KO</small></div>
+              <div class="langItem" data-lang="ja"><span>日本語</span><small>JA</small></div>
+              <div class="langItem" data-lang="es"><span>Español</span><small>ES</small></div>
+            </div>
+          </div>
+        </div>
 
-    <a href="/pdf-merge/" class="tool-card">
-      <h3 data-i18n="merge">PDF Merge</h3>
-      <p data-i18n="mergeDesc">Combine multiple PDFs into one</p>
-    </a>
+        <!-- 1열 리스트 -->
+        <div class="toolList">
 
-    <a href="/split-pdf/" class="tool-card">
-      <h3 data-i18n="split">PDF Split</h3>
-      <p data-i18n="splitDesc">Extract pages quickly</p>
-    </a>
+          <a class="toolCard" href="/convert/">
+            <div class="iconBox">🔁</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_convert">파일 변환기</p>
+              <p class="toolDesc" data-i18n="d_convert">JPG / PNG / WebP / PDF 변환</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">Image · PDF</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-    <a href="/compress-pdf/" class="tool-card">
-      <h3 data-i18n="compress">PDF Compress</h3>
-      <p data-i18n="compressDesc">Reduce file size for upload</p>
-    </a>
+          <a class="toolCard" href="/pdf-merge/">
+            <div class="iconBox">🧩</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_merge">PDF 합치기</p>
+              <p class="toolDesc" data-i18n="d_merge">여러 PDF를 하나로 합칩니다</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">PDF</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-    <a href="/edit/" class="tool-card">
-      <h3 data-i18n="edit">Image Editor</h3>
-      <p data-i18n="editDesc">Crop · Rotate · Resize</p>
-    </a>
+          <a class="toolCard" href="/split-pdf/">
+            <div class="iconBox">✂️</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_split">PDF 분리</p>
+              <p class="toolDesc" data-i18n="d_split">PDF 페이지를 빠르게 분리</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">PDF</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-    <a href="/id-photo/" class="tool-card">
-      <h3 data-i18n="id">ID Photo Maker</h3>
-      <p data-i18n="idDesc">Passport & ID size auto format</p>
-    </a>
+          <a class="toolCard" href="/compress-pdf/">
+            <div class="iconBox">🗜️</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_compress">PDF 압축</p>
+              <p class="toolDesc" data-i18n="d_compress">용량을 줄여 업로드 최적화</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">PDF</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-  </section>
+          <a class="toolCard" href="/pdf-jpg/">
+            <div class="iconBox">🖼️</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_pdfjpg">PDF → JPG</p>
+              <p class="toolDesc" data-i18n="d_pdfjpg">PDF 페이지를 이미지로 변환</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">PDF</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-  <footer>
-    © 2026 ConvertFiles24 · Powered by GitHub Pages
-  </footer>
+          <a class="toolCard" href="/edit/">
+            <div class="iconBox">✏️</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_edit">이미지 편집</p>
+              <p class="toolDesc" data-i18n="d_edit">자르기 · 회전 · 크기조정</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">Image</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
 
-</div>
+          <a class="toolCard" href="/id-photo/">
+            <div class="iconBox">🪪</div>
+            <div class="toolMain">
+              <p class="toolTitle" data-i18n="t_id">증명사진 제작</p>
+              <p class="toolDesc" data-i18n="d_id">여권 · 증명 규격 자동 맞춤</p>
+            </div>
+            <div class="toolRight">
+              <span class="chip">NEW</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <footer>© 2026 ConvertFiles24 · Powered by GitHub Pages · Privacy · Terms</footer>
+    </section>
+
+  </main>
 
 <script>
-const translations={
-  en:{
-    title:"ConvertFiles24",
-    subtitle:"Fast & Secure Online File Tools · 100% Local Processing",
-    badge1:"🔒 100% Local Processing",
-    badge2:"⚡ Runs in Your Browser",
-    badge3:"💰 Free · No Install",
-    convert:"File Converter",
-    convertDesc:"Convert JPG / PNG / WebP / PDF files",
-    merge:"PDF Merge",
-    mergeDesc:"Combine multiple PDFs into one",
-    split:"PDF Split",
-    splitDesc:"Extract pages quickly",
-    compress:"PDF Compress",
-    compressDesc:"Reduce file size for upload",
-    edit:"Image Editor",
-    editDesc:"Crop · Rotate · Resize",
-    id:"ID Photo Maker",
-    idDesc:"Passport & ID size auto format"
-  },
-  ko:{
-    title:"ConvertFiles24",
-    subtitle:"빠르고 안전한 파일 도구 · 100% 로컬 처리",
-    badge1:"🔒 100% 로컬 처리",
-    badge2:"⚡ 브라우저에서 즉시 실행",
-    badge3:"💰 무료 · 설치 없음",
-    convert:"파일 변환기",
-    convertDesc:"JPG / PNG / WebP / PDF 변환",
-    merge:"PDF 합치기",
-    mergeDesc:"여러 PDF를 하나로 합칩니다",
-    split:"PDF 분리",
-    splitDesc:"페이지를 빠르게 추출",
-    compress:"PDF 압축",
-    compressDesc:"업로드 용량 최적화",
-    edit:"이미지 편집",
-    editDesc:"자르기 · 회전 · 크기조정",
-    id:"증명사진 제작",
-    idDesc:"여권 · 증명 규격 자동 맞춤"
-  },
-  ja:{
-    title:"ConvertFiles24",
-    subtitle:"高速で安全なファイルツール · 100% ローカル処理",
-    badge1:"🔒 100% ローカル処理",
-    badge2:"⚡ ブラウザで即実行",
-    badge3:"💰 無料 · インストール不要",
-    convert:"ファイル変換",
-    convertDesc:"JPG / PNG / WebP / PDF 変換",
-    merge:"PDF結合",
-    mergeDesc:"複数のPDFを一つにまとめる",
-    split:"PDF分割",
-    splitDesc:"ページを素早く抽出",
-    compress:"PDF圧縮",
-    compressDesc:"容量を削減",
-    edit:"画像編集",
-    editDesc:"切り抜き · 回転 · サイズ変更",
-    id:"証明写真作成",
-    idDesc:"パスポート規格対応"
-  },
-  es:{
-    title:"ConvertFiles24",
-    subtitle:"Herramientas rápidas y seguras · 100% Procesamiento local",
-    badge1:"🔒 100% Procesamiento local",
-    badge2:"⚡ Ejecutar en navegador",
-    badge3:"💰 Gratis · Sin instalación",
-    convert:"Convertidor",
-    convertDesc:"Convertir JPG / PNG / WebP / PDF",
-    merge:"Unir PDF",
-    mergeDesc:"Combinar varios PDFs",
-    split:"Dividir PDF",
-    splitDesc:"Extraer páginas",
-    compress:"Comprimir PDF",
-    compressDesc:"Reducir tamaño",
-    edit:"Editor de Imagen",
-    editDesc:"Recortar · Girar · Redimensionar",
-    id:"Foto de Identificación",
-    idDesc:"Formato automático"
+  const translations = {
+    en:{
+      title:"ConvertFiles24",
+      subtitle:"Fast & Secure File Tools · 100% Local Processing",
+      b1:"100% Local Processing", b1s:"No server upload",
+      b2:"Runs in your browser", b2s:"No install needed",
+      b3:"Free · No install", b3s:"Mobile & PC supported",
+      tools:"Tools",
+      t_convert:"File Converter", d_convert:"Convert JPG / PNG / WebP / PDF",
+      t_merge:"PDF Merge", d_merge:"Combine multiple PDFs into one",
+      t_split:"PDF Split", d_split:"Split PDF pages quickly",
+      t_compress:"PDF Compress", d_compress:"Reduce file size for upload",
+      t_pdfjpg:"PDF → JPG", d_pdfjpg:"Convert PDF pages to images",
+      t_edit:"Image Editor", d_edit:"Crop · Rotate · Resize",
+      t_id:"ID Photo Maker", d_id:"Auto passport/ID sizes"
+    },
+    ko:{
+      title:"ConvertFiles24",
+      subtitle:"빠르고 안전한 파일 도구 · 100% 로컬 처리",
+      b1:"100% 로컬 처리", b1s:"서버 업로드 없음",
+      b2:"브라우저에서 즉시 실행", b2s:"설치 없이 사용",
+      b3:"무료 · 설치 없음", b3s:"모바일/PC 모두 OK",
+      tools:"도구",
+      t_convert:"파일 변환기", d_convert:"JPG / PNG / WebP / PDF 변환",
+      t_merge:"PDF 합치기", d_merge:"여러 PDF를 하나로 합칩니다",
+      t_split:"PDF 분리", d_split:"PDF 페이지를 빠르게 분리",
+      t_compress:"PDF 압축", d_compress:"용량을 줄여 업로드 최적화",
+      t_pdfjpg:"PDF → JPG", d_pdfjpg:"PDF 페이지를 이미지로 변환",
+      t_edit:"이미지 편집", d_edit:"자르기 · 회전 · 크기조정",
+      t_id:"증명사진 제작", d_id:"여권 · 증명 규격 자동 맞춤"
+    },
+    ja:{
+      title:"ConvertFiles24",
+      subtitle:"高速で安全なファイルツール · 100% ローカル処理",
+      b1:"100% ローカル処理", b1s:"サーバーへアップロードなし",
+      b2:"ブラウザで即実行", b2s:"インストール不要",
+      b3:"無料 · インストール不要", b3s:"スマホ/PC対応",
+      tools:"ツール",
+      t_convert:"ファイル変換", d_convert:"JPG / PNG / WebP / PDF を変換",
+      t_merge:"PDF結合", d_merge:"複数PDFを1つにまとめる",
+      t_split:"PDF分割", d_split:"PDFページを素早く分割",
+      t_compress:"PDF圧縮", d_compress:"ファイル容量を削減",
+      t_pdfjpg:"PDF → JPG", d_pdfjpg:"PDFページを画像に変換",
+      t_edit:"画像編集", d_edit:"切り抜き · 回転 · サイズ変更",
+      t_id:"証明写真作成", d_id:"パスポート/ID規格に自動調整"
+    },
+    es:{
+      title:"ConvertFiles24",
+      subtitle:"Herramientas rápidas y seguras · 100% Procesamiento local",
+      b1:"100% Procesamiento local", b1s:"Sin subir al servidor",
+      b2:"Se ejecuta en tu navegador", b2s:"Sin instalación",
+      b3:"Gratis · Sin instalación", b3s:"Compatible móvil/PC",
+      tools:"Herramientas",
+      t_convert:"Convertidor", d_convert:"Convertir JPG / PNG / WebP / PDF",
+      t_merge:"Unir PDF", d_merge:"Combinar varios PDFs en uno",
+      t_split:"Dividir PDF", d_split:"Separar páginas rápidamente",
+      t_compress:"Comprimir PDF", d_compress:"Reducir tamaño para subir",
+      t_pdfjpg:"PDF → JPG", d_pdfjpg:"Convertir páginas PDF a imágenes",
+      t_edit:"Editor de imagen", d_edit:"Recortar · Girar · Redimensionar",
+      t_id:"Foto ID", d_id:"Ajuste automático pasaporte/ID"
+    }
+  };
+
+  const langNames = { en:"English", ko:"한국어", ja:"日本語", es:"Español" };
+
+  function applyLang(lang){
+    localStorage.setItem("siteLang", lang);
+    document.documentElement.lang = lang === "ko" ? "ko" : lang;
+    document.getElementById("langLabel").textContent = langNames[lang] || "English";
+
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const key = el.getAttribute("data-i18n");
+      const v = translations[lang]?.[key];
+      if(v) el.textContent = v;
+    });
+
+    // mark active in dropdown
+    document.querySelectorAll(".langItem").forEach(it=>{
+      it.querySelectorAll(".langActiveMark").forEach(x=>x.remove());
+      if(it.dataset.lang === lang){
+        const mark = document.createElement("span");
+        mark.className="langActiveMark";
+        mark.textContent="✓";
+        it.appendChild(mark);
+      }
+    });
   }
-};
 
-function setLanguage(lang){
-  localStorage.setItem("siteLang",lang);
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    el.innerText=translations[lang][el.dataset.i18n];
+  // auto detect by browser language (국가/언어 기반)
+  const saved = localStorage.getItem("siteLang");
+  const browser = (navigator.language || "en").slice(0,2).toLowerCase();
+  const initial = saved || (translations[browser] ? browser : "en");
+  applyLang(initial);
+
+  // dropdown open/close
+  const btn = document.getElementById("langBtn");
+  const menu = document.getElementById("langMenu");
+
+  function openMenu(){
+    menu.classList.add("open");
+    btn.setAttribute("aria-expanded","true");
+  }
+  function closeMenu(){
+    menu.classList.remove("open");
+    btn.setAttribute("aria-expanded","false");
+  }
+
+  btn.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    menu.classList.contains("open") ? closeMenu() : openMenu();
   });
-  document.querySelectorAll(".lang-bar span").forEach(s=>s.classList.remove("active"));
-  document.querySelector(`[data-lang="${lang}"]`).classList.add("active");
-}
 
-const browserLang=navigator.language.slice(0,2);
-const savedLang=localStorage.getItem("siteLang");
-const initialLang=savedLang || (translations[browserLang]?browserLang:"en");
-setLanguage(initialLang);
+  document.addEventListener("click",()=>closeMenu());
 
-document.querySelectorAll(".lang-bar span").forEach(btn=>{
-  btn.addEventListener("click",()=>setLanguage(btn.dataset.lang));
-});
+  menu.addEventListener("click",(e)=>{
+    const item = e.target.closest(".langItem");
+    if(!item) return;
+    applyLang(item.dataset.lang);
+    closeMenu();
+  });
 </script>
 
 </body>
