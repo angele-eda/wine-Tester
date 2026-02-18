@@ -197,7 +197,7 @@
     .headActions{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:6px; /* ✅ changed: 10 -> 6 */
       margin-left:auto;
     }
 
@@ -207,7 +207,7 @@
       background:transparent;
       color:#dbe7ff;
       cursor:pointer;
-      width:48px; height:48px;
+      width:42px; height:42px; /* ✅ changed: 48 -> 42 */
       border-radius:12px;
       display:inline-flex;
       align-items:center;
@@ -468,6 +468,9 @@
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
+
+    /* ✅ changed: number weight thinner */
+    input[type="number"]{ font-weight:400; }
 
     .chkRow{
       display:flex;
@@ -883,7 +886,7 @@
       reset_all: "초기화(이미지 제거)",
 
       msg_need: "이미지가 없어요. 메인에서 미리보기 옆 ✂️ 버튼을 누르고 들어오세요.",
-      msg_ready: "준비 완료! 드래그로 이동, 핀치/마우스휠/버튼으로 확대하세요.",
+      msg_ready: "준비 완료! 드래그 이동 · 핀치/휠/버튼 확대",
       msg_crop_on: "자르기 ON: 핸들로 크기만 조절합니다(박스 이동 없음). ‘자르기’로 적용하세요.",
       msg_crop_applied: "✅ 잘라냈어요",
       msg_ok: "✅ 다운로드 완료",
