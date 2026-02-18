@@ -1,266 +1,504 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en" translate="no">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ConvertFiles24 – Fast & Secure Online File Tools</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0f17" />
+  <title>ConvertFiles24 – Fast & Secure Online File Tools</title>
+  <meta name="description" content="Fast & secure online file tools. 100% local processing — no server upload." />
+  <meta name="robots" content="index,follow" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --bg:#0b1220;
-  --card:#111a2e;
-  --cardHover:#16223d;
-  --border:rgba(255,255,255,.08);
-  --text:#e8edf6;
-  --sub:#9aa6c3;
-  --accent:#3b82f6;
-}
+  <style>
+    :root{
+      --bg0:#070b12;
+      --bg1:#0b1020;
+      --card:#0f162a;
+      --card2:#0b1224;
+      --stroke:rgba(255,255,255,.10);
+      --stroke2:rgba(255,255,255,.06);
+      --text:#e8edf6;
+      --muted:rgba(232,237,246,.68);
+      --muted2:rgba(232,237,246,.52);
+      --accent:#355dff;
+      --accent2:#2847d8;
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --radius:24px;
+      --radius2:18px;
+      --gap:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(53,93,255,.18), transparent 55%),
+        radial-gradient(900px 600px at 85% 0%, rgba(255,255,255,.06), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1050px; margin:0 auto; padding:26px 16px 40px}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px;
+      position:sticky; top:0;
+      padding:14px 0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(7,11,18,.82), rgba(7,11,18,.35));
+      z-index:5;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; min-width:0;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      font-weight:800;
+      letter-spacing:.5px;
+    }
+    .brand .t{
+      display:flex; flex-direction:column; min-width:0;
+    }
+    .brand .name{
+      font-weight:800; font-size:15px; line-height:1.1;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .brand .sub{
+      font-size:12px; color:var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      margin-top:2px;
+    }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:linear-gradient(180deg,#0b1220,#0d1628);
-  color:var(--text);
-}
+    .lang{
+      display:flex; align-items:center; gap:10px;
+    }
+    .lang .pill{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 26px rgba(0,0,0,.30);
+      max-width: 230px;
+    }
+    .lang .globe{opacity:.9}
+    .lang label{font-size:12px; color:var(--muted); margin-right:4px}
+    select{
+      appearance:none;
+      background: transparent;
+      border:0;
+      color: var(--text);
+      font-weight:700;
+      font-size:13px;
+      outline:none;
+      cursor:pointer;
+      padding-right:18px;
+    }
+    .chev{
+      width:12px; height:12px; opacity:.7;
+      transform: translateY(1px);
+      flex:0 0 auto;
+    }
+    .hero{
+      margin-top:10px;
+      padding:26px 0 10px;
+    }
+    h1{
+      margin:0;
+      font-size:56px;
+      letter-spacing:-1.2px;
+      line-height:1.02;
+    }
+    .lead{
+      margin:14px 0 0;
+      font-size:20px;
+      color:var(--muted);
+      max-width: 720px;
+    }
+    .badges{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin-top:18px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:11px 14px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      font-weight:700;
+      color:rgba(232,237,246,.92);
+    }
+    .badge .ic{opacity:.9}
+    .section{
+      margin-top:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .sec-title{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .sec-title h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+      color:rgba(232,237,246,.86);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:14px;
+    }
+    .card{
+      position:relative;
+      padding:16px;
+      border-radius: 22px;
+      background: radial-gradient(140% 120% at 20% 0%, rgba(53,93,255,.10), transparent 55%),
+                  linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      border:1px solid var(--stroke);
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      overflow:hidden;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .card:active{transform: scale(.99)}
+    .row{
+      display:flex; align-items:flex-start; gap:12px;
+    }
+    .icon{
+      width:52px; height:52px;
+      border-radius:16px;
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      border:1px solid var(--stroke2);
+      display:grid; place-items:center;
+      flex:0 0 auto;
+    }
+    .title{
+      font-size:18px;
+      font-weight:800;
+      margin:2px 0 4px;
+      letter-spacing:-.2px;
+    }
+    .desc{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .meta{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-top:14px;
+      gap:10px;
+    }
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.02);
+      color:rgba(232,237,246,.82);
+      font-weight:700;
+      font-size:12px;
+    }
+    .go{
+      width:34px; height:34px;
+      border-radius:999px;
+      display:grid; place-items:center;
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.02);
+      opacity:.92;
+    }
+    .footer{
+      margin-top:18px;
+      padding:22px 4px 0;
+      color:var(--muted2);
+      font-size:12px;
+      text-align:center;
+    }
+    .footer a{color:rgba(232,237,246,.72)}
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin:14px 0 0;
+      border-radius: 999px;
+    }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:40px 20px 80px;
-}
+    @media (min-width: 900px){
+      .grid{grid-template-columns: repeat(3, minmax(0,1fr));}
+      h1{font-size:64px;}
+    }
+    @media (max-width: 420px){
+      h1{font-size:46px;}
+      .lead{font-size:18px;}
+      .lang .pill{max-width: 190px;}
+    }
 
-h1{
-  font-size:42px;
-  margin:0 0 12px;
-  letter-spacing:-0.5px;
-}
-
-.subtitle{
-  color:var(--sub);
-  font-size:18px;
-  margin-bottom:28px;
-}
-
-.badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-bottom:40px;
-}
-
-.badge{
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--border);
-  padding:10px 16px;
-  border-radius:999px;
-  font-size:14px;
-  color:#cdd6f4;
-}
-
-.tools-grid{
-  display:grid;
-  gap:22px;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-}
-
-.tool-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:22px;
-  text-decoration:none;
-  color:var(--text);
-  transition:.25s;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.tool-card:hover{
-  background:var(--cardHover);
-  transform:translateY(-4px);
-}
-
-.tool-top{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.icon{
-  width:54px;
-  height:54px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-}
-
-.tool-title{
-  font-size:18px;
-  font-weight:600;
-}
-
-.tool-desc{
-  font-size:14px;
-  color:var(--sub);
-  margin-top:6px;
-}
-
-.tool-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:22px;
-}
-
-.type-badge{
-  font-size:12px;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
-  color:#cbd5e1;
-}
-
-footer{
-  margin-top:80px;
-  padding-top:30px;
-  border-top:1px solid var(--border);
-  color:var(--sub);
-  font-size:14px;
-  text-align:center;
-}
-</style>
+    /* tiny inline SVG helper */
+    .svg{display:block}
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/" aria-label="ConvertFiles24 Home">
+        <div class="logo">C</div>
+        <div class="t">
+          <div class="name">ConvertFiles24</div>
+          <div class="sub" data-i18n="top_sub">Local tools · No upload</div>
+        </div>
+      </a>
 
-<div class="container">
-
-<h1>ConvertFiles24</h1>
-<div class="subtitle">
-Fast & Secure Online File Tools · 100% Local Processing
-</div>
-
-<div class="badges">
-<div class="badge">🔒 100% 로컬 처리</div>
-<div class="badge">⚡ 브라우저에서 즉시 실행</div>
-<div class="badge">💸 무료 · 설치 없음</div>
-</div>
-
-<div class="tools-grid">
-
-<a href="/convert/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">🔄</div>
-    <div>
-      <div class="tool-title">파일 변환기</div>
-      <div class="tool-desc">JPG / PNG / WebP / PDF 변환</div>
+      <!-- ✅ Language dropdown (English above Korean) -->
+      <div class="lang" aria-label="Language">
+        <div class="pill">
+          <span class="globe" aria-hidden="true">🌐</span>
+          <label for="langSelect" data-i18n="lang_label">Language</label>
+          <select id="langSelect">
+            <option value="en">English</option>
+            <option value="ko">한국어</option>
+          </select>
+          <svg class="chev svg" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+            <path fill="rgba(232,237,246,.75)" d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">Image · PDF</div>
-    <div>→</div>
-  </div>
-</a>
 
-<a href="/pdf-merge/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">🧩</div>
-    <div>
-      <div class="tool-title">PDF 합치기</div>
-      <div class="tool-desc">여러 PDF를 하나로 합칩니다</div>
-    </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">PDF</div>
-    <div>→</div>
-  </div>
-</a>
+    <header class="hero">
+      <h1>ConvertFiles24</h1>
+      <p class="lead" data-i18n="lead">
+        Fast & Secure Online File Tools · 100% Local Processing
+      </p>
 
-<a href="/split-pdf/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">✂️</div>
-    <div>
-      <div class="tool-title">PDF 분리</div>
-      <div class="tool-desc">PDF 페이지를 빠르게 분리</div>
-    </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">PDF</div>
-    <div>→</div>
-  </div>
-</a>
+      <div class="badges">
+        <div class="badge"><span class="ic">🔒</span><span data-i18n="b1">100% Local Processing</span></div>
+        <div class="badge"><span class="ic">⚡</span><span data-i18n="b2">Runs instantly in your browser</span></div>
+        <div class="badge"><span class="ic">🧾</span><span data-i18n="b3">Free · No install</span></div>
+      </div>
+    </header>
 
-<a href="/compress-pdf/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">🗜️</div>
-    <div>
-      <div class="tool-title">PDF 압축</div>
-      <div class="tool-desc">용량을 줄여 업로드 최적화</div>
-    </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">PDF</div>
-    <div>→</div>
-  </div>
-</a>
+    <section class="section">
+      <div class="sec-title">
+        <h2 data-i18n="tools_title">Tools</h2>
+      </div>
 
-<a href="/pdf-jpg/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">🖼️</div>
-    <div>
-      <div class="tool-title">PDF → JPG</div>
-      <div class="tool-desc">PDF 페이지를 이미지로 변환</div>
-    </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">PDF</div>
-    <div>→</div>
-  </div>
-</a>
+      <div class="grid">
+        <!-- Converter -->
+        <a class="card" href="/convert/" aria-label="File Converter">
+          <div class="row">
+            <div class="icon">↩️</div>
+            <div>
+              <div class="title" data-i18n="t_convert">File Converter</div>
+              <p class="desc" data-i18n="d_convert">Convert JPG / PNG / WebP / PDF quickly.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">Image · PDF</span>
+            <span class="go">→</span>
+          </div>
+        </a>
 
-<a href="/edit/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">✏️</div>
-    <div>
-      <div class="tool-title">이미지 편집</div>
-      <div class="tool-desc">자르기 · 회전 · 크기조정</div>
-    </div>
+        <!-- PDF Merge -->
+        <a class="card" href="/pdf-merge/" aria-label="PDF Merge">
+          <div class="row">
+            <div class="icon">🧩</div>
+            <div>
+              <div class="title" data-i18n="t_merge">PDF Merge</div>
+              <p class="desc" data-i18n="d_merge">Combine multiple PDFs into one.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">PDF</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+
+        <!-- PDF Split -->
+        <a class="card" href="/split-pdf/" aria-label="PDF Split">
+          <div class="row">
+            <div class="icon">✂️</div>
+            <div>
+              <div class="title" data-i18n="t_split">PDF Split</div>
+              <p class="desc" data-i18n="d_split">Split pages quickly.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">PDF</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+
+        <!-- PDF Compress -->
+        <a class="card" href="/compress-pdf/" aria-label="PDF Compress">
+          <div class="row">
+            <div class="icon">🗜️</div>
+            <div>
+              <div class="title" data-i18n="t_compress">PDF Compress</div>
+              <p class="desc" data-i18n="d_compress">Reduce size for sharing.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">PDF</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+
+        <!-- PDF to JPG -->
+        <a class="card" href="/pdf-jpg/" aria-label="PDF to JPG">
+          <div class="row">
+            <div class="icon">🖼️</div>
+            <div>
+              <div class="title" data-i18n="t_pdfjpg">PDF → JPG</div>
+              <p class="desc" data-i18n="d_pdfjpg">Convert PDF pages to images.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">PDF</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+
+        <!-- Image Edit -->
+        <a class="card" href="/edit/" aria-label="Image Edit">
+          <div class="row">
+            <div class="icon">✏️</div>
+            <div>
+              <div class="title" data-i18n="t_edit">Image Edit</div>
+              <p class="desc" data-i18n="d_edit">Crop · rotate · resize.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">Image</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+
+        <!-- ID Photo -->
+        <a class="card" href="/id-photo/" aria-label="ID Photo">
+          <div class="row">
+            <div class="icon">🪪</div>
+            <div>
+              <div class="title" data-i18n="t_id">ID Photo</div>
+              <p class="desc" data-i18n="d_id">Passport/ID specs auto-fit.</p>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tag">NEW</span>
+            <span class="go">→</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="footer">
+        <div style="margin-bottom:8px" data-i18n="foot_privacy">
+          Your files never leave your device.
+        </div>
+        © 2026 ConvertFiles24 · Powered by GitHub Pages ·
+        <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
+      </div>
+    </section>
   </div>
-  <div class="tool-bottom">
-    <div class="type-badge">Image</div>
-    <div>→</div>
-  </div>
-</a>
 
-<a href="/id-photo/" class="tool-card">
-  <div class="tool-top">
-    <div class="icon">🪪</div>
-    <div>
-      <div class="tool-title">증명사진 제작</div>
-      <div class="tool-desc">여권 · 증명 규격 자동 맞춤</div>
-    </div>
-  </div>
-  <div class="tool-bottom">
-    <div class="type-badge">NEW</div>
-    <div>→</div>
-  </div>
-</a>
+  <script>
+    const i18n = {
+      en: {
+        top_sub: "Local tools · No upload",
+        lang_label: "Language",
+        lead: "Fast & Secure Online File Tools · 100% Local Processing",
+        b1: "100% Local Processing",
+        b2: "Runs instantly in your browser",
+        b3: "Free · No install",
+        tools_title: "Tools",
 
-</div>
+        t_convert: "File Converter",
+        d_convert: "Convert JPG / PNG / WebP / PDF quickly.",
 
-<footer>
-© 2026 ConvertFiles24 · Powered by GitHub Pages · Privacy · Terms
-</footer>
+        t_merge: "PDF Merge",
+        d_merge: "Combine multiple PDFs into one.",
 
-</div>
+        t_split: "PDF Split",
+        d_split: "Split pages quickly.",
 
+        t_compress: "PDF Compress",
+        d_compress: "Reduce size for sharing.",
+
+        t_pdfjpg: "PDF → JPG",
+        d_pdfjpg: "Convert PDF pages to images.",
+
+        t_edit: "Image Edit",
+        d_edit: "Crop · rotate · resize.",
+
+        t_id: "ID Photo",
+        d_id: "Passport/ID specs auto-fit.",
+
+        foot_privacy: "Your files never leave your device."
+      },
+      ko: {
+        top_sub: "로컬 변환 · 서버 업로드 없음",
+        lang_label: "언어",
+        lead: "빠르고 안전한 파일 도구 · 100% 로컬 처리",
+        b1: "100% 로컬 처리",
+        b2: "브라우저에서 즉시 실행",
+        b3: "무료 · 설치 없음",
+        tools_title: "도구",
+
+        t_convert: "파일 변환기",
+        d_convert: "JPG / PNG / WebP / PDF 변환",
+
+        t_merge: "PDF 합치기",
+        d_merge: "여러 PDF를 하나로 합칩니다",
+
+        t_split: "PDF 분리",
+        d_split: "PDF 페이지를 빠르게 분리",
+
+        t_compress: "PDF 압축",
+        d_compress: "용량을 줄여 공유/업로드 최적화",
+
+        t_pdfjpg: "PDF → JPG",
+        d_pdfjpg: "PDF 페이지를 이미지로 변환",
+
+        t_edit: "이미지 편집",
+        d_edit: "자르기 · 회전 · 크기조정",
+
+        t_id: "증명사진 제작",
+        d_id: "여권/증명 규격 자동 맞춤",
+
+        foot_privacy: "파일은 기기 밖으로 나가지 않아요."
+      }
+    };
+
+    function applyLang(lang){
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key = el.getAttribute("data-i18n");
+        if(i18n[lang] && i18n[lang][key]) el.textContent = i18n[lang][key];
+      });
+      localStorage.setItem("cf24_lang", lang);
+    }
+
+    const sel = document.getElementById("langSelect");
+    const saved = localStorage.getItem("cf24_lang");
+    const initial = saved || (navigator.language && navigator.language.startsWith("ko") ? "ko" : "en");
+    sel.value = initial;
+    applyLang(initial);
+
+    sel.addEventListener("change", e => applyLang(e.target.value));
+  </script>
 </body>
 </html>
