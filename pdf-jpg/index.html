@@ -34,7 +34,6 @@
       text-rendering: geometricPrecision;
     }
 
-    /* entrance */
     body:not(.loaded) .card, body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
     body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
     body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
@@ -48,7 +47,7 @@
       max-width:980px;
       width:100%;
       margin:0 auto;
-      padding:14px 14px 44px; /* 상단 간격 줄임 */
+      padding:14px 14px 44px;
       overflow-x: clip;
     }
 
@@ -179,6 +178,8 @@
       letter-spacing: -0.2px;
       user-select:none;
       transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      text-decoration:none;
     }
     .btn:hover{ filter: brightness(1.02); }
     .btn:active{ transform: scale(.99); }
@@ -228,9 +229,8 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    input[type="file"]{ display:none; }
+    input[type="file"]{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
 
-    /* Drop zone */
     .drop{
       border:1px dashed rgba(255,255,255,0.22);
       background: rgba(255,255,255,.03);
@@ -355,11 +355,6 @@
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
   </style>
-
-  <!-- ✅ pdf.js (LEGACY build: 브라우저에서 window.pdfjsLib 제공) -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.min.js"></script>
-  <!-- ✅ JSZip -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body>
@@ -394,7 +389,7 @@
       <h2 id="h_upload">PDF 업로드</h2>
 
       <div class="drop" id="drop">
-        <div class="dropInner" id="dropInner">
+        <div class="dropInner">
           <div class="dropIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -425,7 +420,8 @@
       <div style="height:12px;"></div>
 
       <div class="row">
-        <button class="btn secondary" id="pickBtn" type="button">📄 PDF 선택</button>
+        <!-- ✅ Samsung Internet에서 100% 열리게: label-for 방식 -->
+        <label class="btn secondary" for="fileInput" id="pickLabel">📄 PDF 선택</label>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 비우기</button>
       </div>
 
@@ -476,7 +472,7 @@ window.addEventListener("DOMContentLoaded", () => {
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // ========= i18n =========
+  // ===== i18n =====
   const STR = {
     ko:{
       title:"PDF → JPG/PNG",
@@ -495,7 +491,8 @@ window.addEventListener("DOMContentLoaded", () => {
       zip:"여러 페이지면 ZIP으로 묶어서 내려받습니다.",
       run:"🧩 변환 후 다운로드",
       errNoPdf:"PDF 파일을 먼저 선택해 주세요.",
-      errEngine:"PDF 엔진 로드 실패 (pdf.js). 새로고침 후 다시 시도해 주세요.",
+      errEngine:"PDF 엔진 로드 실패 (pdf.js). (네트워크/브라우저에서 CDN 차단 가능) 새로고침 후 다시 시도해 주세요.",
+      errZip:"ZIP 엔진 로드 실패 (JSZip). 새로고침 후 다시 시도해 주세요.",
       errPassword:"암호가 걸린 PDF는 변환이 어려울 수 있어요.",
       okReady:"준비 완료. 변환 버튼을 눌러주세요.",
       okDone:"✅ 변환 완료"
@@ -517,7 +514,8 @@ window.addEventListener("DOMContentLoaded", () => {
       zip:"Multiple pages will be downloaded as a ZIP.",
       run:"🧩 Convert & Download",
       errNoPdf:"Please select a PDF first.",
-      errEngine:"PDF engine not loaded (pdf.js). Refresh and try again.",
+      errEngine:"PDF engine failed to load (pdf.js). Refresh and try again.",
+      errZip:"ZIP engine failed to load (JSZip). Refresh and try again.",
       errPassword:"Password-protected PDFs may fail.",
       okReady:"Ready. Press Convert.",
       okDone:"✅ Done"
@@ -540,6 +538,7 @@ window.addEventListener("DOMContentLoaded", () => {
       run:"🧩 Convertir y descargar",
       errNoPdf:"Selecciona un PDF primero.",
       errEngine:"Motor PDF no cargado (pdf.js). Recarga e inténtalo.",
+      errZip:"Motor ZIP no cargado (JSZip). Recarga e inténtalo.",
       errPassword:"Los PDFs con contraseña pueden fallar.",
       okReady:"Listo. Pulsa Convertir.",
       okDone:"✅ Listo"
@@ -562,22 +561,19 @@ window.addEventListener("DOMContentLoaded", () => {
       run:"🧩 変換してダウンロード",
       errNoPdf:"先にPDFを選択してください。",
       errEngine:"PDFエンジン未読込 (pdf.js)。再読み込みして再試行してください。",
+      errZip:"ZIPエンジン未読込 (JSZip)。再読み込みして再試行してください。",
       errPassword:"パスワード付きPDFは失敗する場合があります。",
       okReady:"準備OK。変換ボタンを押してください。",
       okDone:"✅ 完了"
     }
   };
 
-  // 자동 언어(브라우저 언어) + 수동 변경 시 고정
   function detectLang(){
-    const url = new URL(location.href);
-    const qp = (url.searchParams.get("lang")||"").toLowerCase();
+    const qp = (new URL(location.href).searchParams.get("lang")||"").toLowerCase();
     if(STR[qp]) return qp;
-
     const manual = localStorage.getItem("cf24_lang_manual") === "1";
     const saved = localStorage.getItem("cf24_lang");
     if(manual && saved && STR[saved]) return saved;
-
     const nav = (navigator.language||"").toLowerCase();
     if(nav.startsWith("ko")) return "ko";
     if(nav.startsWith("ja")) return "ja";
@@ -606,7 +602,8 @@ window.addEventListener("DOMContentLoaded", () => {
     $("h_upload").textContent = t().upload;
     $("drop_title").textContent = t().dropTitle;
     $("drop_hint").textContent = t().dropHint;
-    $("pickBtn").textContent = t().pick;
+
+    $("pickLabel").textContent = t().pick;
     $("clearBtn").textContent = t().clear;
 
     $("h_convert").textContent = t().convert;
@@ -617,10 +614,9 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
 
-  // ========= state =========
+  // ===== state =====
   const drop = $("drop");
   const fileInput = $("fileInput");
-  const pickBtn = $("pickBtn");
   const clearBtn = $("clearBtn");
   const convertBtn = $("convertBtn");
   const outFormatEl = $("outFormat");
@@ -644,14 +640,12 @@ window.addEventListener("DOMContentLoaded", () => {
     while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
     return `${v.toFixed(i===0?0:2)} ${units[i]}`;
   }
-
   function setActiveUI(on){
     drop.classList.toggle("active", !!on);
     clearBtn.disabled = !on;
     convertBtn.disabled = !on;
     fileRow.style.display = on ? "" : "none";
   }
-
   function setFile(file){
     pdfFile = file;
     if(!pdfFile){
@@ -667,7 +661,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setMsg(t().okReady, "ok");
   }
 
-  // ========= drop events =========
+  // ===== Drop events =====
   drop.addEventListener("click", ()=> fileInput.click());
 
   ["dragenter","dragover"].forEach(ev=>{
@@ -694,7 +688,6 @@ window.addEventListener("DOMContentLoaded", () => {
     setFile(f);
   });
 
-  pickBtn.addEventListener("click", ()=> fileInput.click());
   fileInput.addEventListener("change", ()=>{
     const f = fileInput.files && fileInput.files[0];
     if(!f) return;
@@ -706,24 +699,64 @@ window.addEventListener("DOMContentLoaded", () => {
     setFile(null);
   });
 
-  // ========= pdf.js init check =========
-  async function ensurePdfJs(){
-    const pdfjsLib = window.pdfjsLib;
-    if(!pdfjsLib) return false;
-
-    try{
-      if(!pdfjsLib.GlobalWorkerOptions.workerSrc){
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.worker.min.js";
-      }
-    }catch(e){}
-    return true;
+  // ===== Robust script loader (CDN fallback) =====
+  function loadScript(url){
+    return new Promise((resolve, reject)=>{
+      const s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = () => resolve(url);
+      s.onerror = () => reject(new Error("Failed: " + url));
+      document.head.appendChild(s);
+    });
   }
 
-  // ========= convert =========
+  async function ensurePdfJs(){
+    if(window.pdfjsLib) return true;
+
+    // ✅ 3중 예비 (cdnjs → jsdelivr → unpkg)
+    const candidates = [
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.min.js",
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/legacy/build/pdf.min.js",
+      "https://unpkg.com/pdfjs-dist@4.2.67/legacy/build/pdf.min.js"
+    ];
+
+    for(const url of candidates){
+      try{
+        await loadScript(url);
+        if(window.pdfjsLib){
+          try{
+            // worker도 같은 계열로 맞춤
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+              url.replace("pdf.min.js","pdf.worker.min.js");
+          }catch(e){}
+          return true;
+        }
+      }catch(e){}
+    }
+    return false;
+  }
+
+  async function ensureJSZip(){
+    if(window.JSZip) return true;
+    const candidates = [
+      "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+      "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js",
+      "https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"
+    ];
+    for(const url of candidates){
+      try{
+        await loadScript(url);
+        if(window.JSZip) return true;
+      }catch(e){}
+    }
+    return false;
+  }
+
+  // ===== Convert =====
   async function pdfToImagesAndDownload(file){
-    const ok = await ensurePdfJs();
-    if(!ok) throw new Error(t().errEngine);
+    const okPdf = await ensurePdfJs();
+    if(!okPdf) throw new Error(t().errEngine);
 
     const pdfjsLib = window.pdfjsLib;
     const arrayBuf = await file.arrayBuffer();
@@ -738,7 +771,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const total = pdf.numPages || 0;
     if(total <= 0) throw new Error("PDF pages not found.");
 
-    const outMime = outFormatEl.value; // image/jpeg | image/png
+    const outMime = outFormatEl.value;
     const q = parseFloat(qualityEl.value || "0.9");
     const makePng = (outMime === "image/png");
     const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
@@ -750,9 +783,10 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if(!window.JSZip) throw new Error("ZIP engine not loaded (JSZip).");
-    const zip = new window.JSZip();
+    const okZip = await ensureJSZip();
+    if(!okZip) throw new Error(t().errZip);
 
+    const zip = new window.JSZip();
     for(let p=1; p<=total; p++){
       setMsg(`(${p}/${total}) ${LANG==="ko" ? "변환 중..." : "Converting..."}`, "");
       const blob = await renderPageToBlob(pdf, p, outMime, q);
@@ -769,11 +803,9 @@ window.addEventListener("DOMContentLoaded", () => {
   async function renderPageToBlob(pdf, pageNum, mime, quality){
     const page = await pdf.getPage(pageNum);
 
-    // 기본 2.0, 매우 큰 PDF면 자동으로 조금 낮춤
-    const baseScale = 2.0;
-    const viewportTest = page.getViewport({ scale: baseScale });
-    const megaPixels = (viewportTest.width * viewportTest.height) / 1_000_000;
-    const scale = megaPixels > 16 ? 1.5 : baseScale; // 과부하 방지
+    const test = page.getViewport({ scale: 2.0 });
+    const megaPixels = (test.width * test.height) / 1_000_000;
+    const scale = megaPixels > 16 ? 1.5 : 2.0;
 
     const viewport = page.getViewport({ scale });
 
@@ -816,7 +848,7 @@ window.addEventListener("DOMContentLoaded", () => {
       convertBtn.disabled = true;
       clearBtn.disabled = true;
 
-      setMsg(LANG==="ko" ? "엔진 확인 중..." : "Checking engine...", "");
+      setMsg(LANG==="ko" ? "엔진 준비 중..." : "Preparing engine...", "");
       await pdfToImagesAndDownload(pdfFile);
 
       setMsg(t().okDone, "ok");
