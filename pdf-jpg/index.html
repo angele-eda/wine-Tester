@@ -168,11 +168,6 @@
       color:#dbe7ff;
       letter-spacing:-0.2px;
       line-height:1.2;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
     }
 
     .btn{
@@ -261,7 +256,7 @@
     }
 
     .dropInner{
-      max-width: 620px;
+      max-width: 520px;
       width:100%;
       display:flex;
       flex-direction:column;
@@ -295,61 +290,84 @@
       line-height:1.45;
     }
 
-    /* ✅ 업그레이드: 카운트 배지 */
-    .countBadge{
-      position:absolute;
-      top:12px;
-      right:12px;
-      display:none;
+    /* ✅ 업로드 요약바(드롭박스 아래) */
+    .listBar{
+      margin-top: 12px;
+      width:100%;
+      display:flex;
       align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:999px;
-      border: 1px solid rgba(120, 200, 255, .28);
-      background: rgba(120, 200, 255, .10);
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      color:#d7efff;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .listBarLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .chipOk{
+      flex:0 0 auto;
       font-weight:900;
       font-size:12px;
-      max-width: calc(100% - 24px);
-      line-height:1;
-      user-select:none;
-      pointer-events:none;
-    }
-    .countDot{
-      width:8px; height:8px;
+      padding: 8px 10px;
       border-radius:999px;
-      background: rgba(120,200,255,.9);
-      box-shadow: 0 0 0 3px rgba(120,200,255,.18);
-      flex:0 0 auto;
+      border:1px solid rgba(184,255,204,.22);
+      background: rgba(184,255,204,.08);
+      color:#b8ffcc;
+      white-space:nowrap;
     }
-    .countText{
+    .barText{
+      font-weight:900;
+      font-size:13px;
+      color:#e9eef7;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+      min-width:0;
+    }
+    .barActions{
+      display:flex;
+      gap:8px;
+      flex:0 0 auto;
+    }
+    .miniBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#dbe7ff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight:900;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .miniBtn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .miniBtn:active{ transform: scale(.99); }
+    .miniBtn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+    .caret{
+      display:inline-block;
+      transform: translateY(-1px);
+      opacity:.9;
     }
 
-    /* ✅ 업그레이드: 리스트 컨테이너 */
+    /* ✅ 파일 리스트: 많이 쌓이면 내부 스크롤 */
     .fileList{
+      margin-top: 10px;
       width:100%;
-      margin-top:10px;
-      display:none;
-      flex-direction:column;
-      gap:10px;
-      max-height: 260px;
+      display:none; /* 토글로 열림 */
+      max-height: 240px;  /* ★ 여기 조절 */
       overflow:auto;
-      padding-right:2px;
+      padding-right: 2px;
     }
-    .fileList::-webkit-scrollbar{ width:10px; }
-    .fileList::-webkit-scrollbar-thumb{
-      background: rgba(255,255,255,.10);
-      border: 2px solid rgba(0,0,0,0);
-      background-clip: padding-box;
-      border-radius: 999px;
-    }
-
-    .fileRow{
+    .fileCard{
       width:100%;
       display:flex;
       align-items:center;
@@ -359,8 +377,9 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.22);
       text-align:left;
-      overflow:hidden;
+      margin-top: 10px;
     }
+    .fileCard:first-child{ margin-top:0; }
     .fileBadge{
       width:42px; height:42px;
       border-radius:12px;
@@ -372,7 +391,10 @@
       flex:0 0 auto;
     }
     .fileBadge svg{ width:22px; height:22px; }
-    .fileMeta{ min-width:0; flex:1; }
+    .fileMeta{
+      min-width:0;
+      flex:1;
+    }
     .fileName{
       font-weight:900;
       font-size:13px;
@@ -385,10 +407,6 @@
       margin-top:2px;
       font-size:12px;
       color:#9fb0ca;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
     }
     .tag{
       flex:0 0 auto;
@@ -400,12 +418,10 @@
       background: rgba(255,255,255,.06);
       color:#dbe7ff;
     }
-
-    /* ✅ 업그레이드: 개별 삭제/정렬 버튼 */
-    .miniBtn{
+    .trashBtn{
       flex:0 0 auto;
-      width:36px; height:36px;
-      border-radius:12px;
+      width:44px; height:44px;
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color:#e9eef7;
@@ -413,34 +429,11 @@
       align-items:center;
       justify-content:center;
       cursor:pointer;
-      user-select:none;
       transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
-    .miniBtn:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
-    .miniBtn:active{ transform: scale(.98); }
-    .miniBtn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
-    .miniBtn svg{ width:18px; height:18px; }
-
-    .sortWrap{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      flex:0 0 auto;
-    }
-
-    /* ✅ 업그레이드: 중복 배지 */
-    .dupBadge{
-      display:none;
-      align-items:center;
-      gap:6px;
-      padding: 6px 10px;
-      border-radius:999px;
-      border: 1px solid rgba(255,200,120,.22);
-      background: rgba(255,200,120,.08);
-      color:#ffe3c2;
-      font-weight:900;
-      font-size:11px;
-    }
+    .trashBtn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .trashBtn:active{ transform: scale(.99); }
+    .trashBtn svg{ width:18px; height:18px; opacity:.95; }
 
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
     .msg.err{ color:#ffb4b4; }
@@ -486,17 +479,9 @@
 
     <!-- Upload -->
     <div class="card">
-      <h2 id="h_upload">
-        <span>PDF 업로드</span>
-        <span class="dupBadge" id="dupBadge">⚠️ <span id="dupText">중복 파일이 제외됨</span></span>
-      </h2>
+      <h2 id="h_upload">PDF 업로드</h2>
 
-      <div class="drop" id="drop">
-        <div class="countBadge" id="dropCount">
-          <span class="countDot" aria-hidden="true"></span>
-          <span class="countText" id="dropCountText">✅ PDF 0개</span>
-        </div>
-
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
         <div class="dropInner">
           <div class="dropIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
@@ -507,22 +492,36 @@
           </div>
 
           <div class="dropTitle" id="drop_title">여기에 PDF를 끌어다 놓거나 탭해서 업로드</div>
-          <div class="dropHint" id="drop_hint">팁: 각 페이지를 이미지로 내려받을 수 있어요.</div>
-
-          <!-- ✅ 다중 리스트 -->
-          <div class="fileList" id="fileList"></div>
+          <div class="dropHint" id="drop_hint">팁: 여러 PDF도 한 번에 변환할 수 있어요.</div>
         </div>
       </div>
+
+      <!-- ✅ 요약/토글바 (드롭박스 밖 아래) -->
+      <div class="listBar" id="listBar" style="display:none;">
+        <div class="listBarLeft">
+          <div class="chipOk" id="countChip">✅</div>
+          <div class="barText" id="barText">PDF 0개 추가됨</div>
+        </div>
+        <div class="barActions">
+          <button class="miniBtn" id="toggleListBtn" type="button">
+            <span id="toggleListText">목록 보기</span> <span class="caret" id="caret">▾</span>
+          </button>
+          <button class="miniBtn" id="addMoreBtn" type="button">➕ 추가</button>
+        </div>
+      </div>
+
+      <!-- ✅ 파일 리스트(접힘/펼침 + 내부 스크롤) -->
+      <div class="fileList" id="fileList"></div>
 
       <div style="height:12px;"></div>
 
       <div class="row">
-        <!-- ✅ Samsung Internet에서 100% 열리게: label-for 방식 -->
+        <!-- ✅ Samsung Internet 안정: label-for 방식 -->
         <label class="btn secondary" for="fileInput" id="pickLabel">📄 PDF 선택</label>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 비우기</button>
       </div>
 
-      <!-- ✅ 다중 업로드 -->
+      <!-- ✅ 다중 선택 -->
       <input id="fileInput" type="file" accept="application/pdf,.pdf" multiple />
       <div class="msg" id="msg"></div>
     </div>
@@ -550,7 +549,9 @@
         </div>
       </div>
 
-      <div class="msg" style="margin-top:10px; color:#9fb0ca;" id="zip_hint">여러 PDF/여러 페이지면 ZIP으로 묶어서 내려받습니다.</div>
+      <div class="msg" style="margin-top:10px; color:#9fb0ca;" id="zip_hint">
+        PDF가 여러 개면 각각 ZIP으로 내려받습니다.
+      </div>
 
       <div style="height:10px;"></div>
       <button class="btn" id="convertBtn" type="button" disabled>🧩 변환 후 다운로드</button>
@@ -586,20 +587,22 @@ window.addEventListener("DOMContentLoaded", () => {
       convert:"변환",
       format:"형식",
       quality:"품질",
-      zip:"여러 PDF/여러 페이지면 ZIP으로 묶어서 내려받습니다.",
+      zip:"PDF가 여러 개면 각각 ZIP으로 내려받습니다.",
       run:"🧩 변환 후 다운로드",
+      addMore:"➕ 추가",
+      listShow:"목록 보기",
+      listHide:"목록 닫기",
+      addedN:(n)=>`✅ PDF ${n}개 추가됨`,
       errNoPdf:"PDF 파일을 먼저 선택해 주세요.",
       errEngine:"PDF 엔진 로드 실패 (pdf.js). 새로고침 후 다시 시도해 주세요.",
       errZip:"ZIP 엔진 로드 실패 (JSZip). 새로고침 후 다시 시도해 주세요.",
       errPassword:"암호가 걸린 PDF는 변환이 어려울 수 있어요.",
       okReady:"준비 완료. 변환 버튼을 눌러주세요.",
       okDone:"✅ 변환 완료",
-      preparing:"엔진 준비 중...",
       converting:"변환 중...",
       buildingZip:"ZIP 만드는 중...",
-      addedCount:(n)=>`✅ PDF ${n}개 추가됨`,
-      dupSkipped:(n)=>`중복 ${n}개 제외됨`,
-      fileUnit:"개"
+      file:"파일",
+      remove:"삭제"
     },
     en:{
       title:"PDF → JPG/PNG",
@@ -610,25 +613,27 @@ window.addEventListener("DOMContentLoaded", () => {
       upload:"PDF Upload",
       dropTitle:"Drop PDFs here or tap to upload",
       dropHint:"Tip: You can convert multiple PDFs at once.",
-      pick:"📄 Choose PDFs",
+      pick:"📄 Choose PDF(s)",
       clear:"🧹 Clear",
       convert:"Convert",
       format:"Format",
       quality:"Quality",
-      zip:"Multiple PDFs/pages will be downloaded as a ZIP.",
+      zip:"If multiple PDFs, each will be downloaded as a ZIP.",
       run:"🧩 Convert & Download",
-      errNoPdf:"Please select PDFs first.",
+      addMore:"➕ Add",
+      listShow:"Show list",
+      listHide:"Hide list",
+      addedN:(n)=>`✅ ${n} PDF(s) added`,
+      errNoPdf:"Please select a PDF first.",
       errEngine:"PDF engine failed to load (pdf.js). Refresh and try again.",
       errZip:"ZIP engine failed to load (JSZip). Refresh and try again.",
       errPassword:"Password-protected PDFs may fail.",
       okReady:"Ready. Press Convert.",
       okDone:"✅ Done",
-      preparing:"Preparing engine...",
       converting:"Converting...",
       buildingZip:"Building ZIP...",
-      addedCount:(n)=>`✅ ${n} PDF added`,
-      dupSkipped:(n)=>`${n} duplicates skipped`,
-      fileUnit:"files"
+      file:"File",
+      remove:"Remove"
     },
     es:{
       title:"PDF → JPG/PNG",
@@ -639,25 +644,27 @@ window.addEventListener("DOMContentLoaded", () => {
       upload:"Subir PDF",
       dropTitle:"Suelta PDFs aquí o toca para subir",
       dropHint:"Tip: Puedes convertir varios PDFs a la vez.",
-      pick:"📄 Elegir PDFs",
+      pick:"📄 Elegir PDF(s)",
       clear:"🧹 Limpiar",
       convert:"Convertir",
       format:"Formato",
       quality:"Calidad",
-      zip:"Varios PDFs/páginas se descargarán en ZIP.",
+      zip:"Si hay varios PDFs, cada uno se descargará como ZIP.",
       run:"🧩 Convertir y descargar",
-      errNoPdf:"Selecciona PDFs primero.",
+      addMore:"➕ Añadir",
+      listShow:"Ver lista",
+      listHide:"Cerrar lista",
+      addedN:(n)=>`✅ ${n} PDF(s) añadidos`,
+      errNoPdf:"Selecciona un PDF primero.",
       errEngine:"Motor PDF no cargado (pdf.js). Recarga e inténtalo.",
       errZip:"Motor ZIP no cargado (JSZip). Recarga e inténtalo.",
       errPassword:"Los PDFs con contraseña pueden fallar.",
       okReady:"Listo. Pulsa Convertir.",
       okDone:"✅ Listo",
-      preparing:"Preparando motor...",
       converting:"Convirtiendo...",
       buildingZip:"Creando ZIP...",
-      addedCount:(n)=>`✅ ${n} PDF añadidos`,
-      dupSkipped:(n)=>`${n} duplicados omitidos`,
-      fileUnit:"archivos"
+      file:"Archivo",
+      remove:"Eliminar"
     },
     ja:{
       title:"PDF → JPG/PNG",
@@ -673,20 +680,22 @@ window.addEventListener("DOMContentLoaded", () => {
       convert:"変換",
       format:"形式",
       quality:"品質",
-      zip:"複数PDF/複数ページはZIPでダウンロードします。",
+      zip:"複数PDFの場合、それぞれZIPでダウンロードします。",
       run:"🧩 変換してダウンロード",
+      addMore:"➕ 追加",
+      listShow:"一覧を見る",
+      listHide:"一覧を閉じる",
+      addedN:(n)=>`✅ PDF ${n}件追加`,
       errNoPdf:"先にPDFを選択してください。",
       errEngine:"PDFエンジン未読込 (pdf.js)。再読み込みして再試行してください。",
       errZip:"ZIPエンジン未読込 (JSZip)。再読み込みして再試行してください。",
       errPassword:"パスワード付きPDFは失敗する場合があります。",
       okReady:"準備OK。変換ボタンを押してください。",
       okDone:"✅ 完了",
-      preparing:"エンジン準備中...",
       converting:"変換中...",
       buildingZip:"ZIP作成中...",
-      addedCount:(n)=>`✅ PDF ${n}個 追加`,
-      dupSkipped:(n)=>`重複 ${n}個 除外`,
-      fileUnit:"個"
+      file:"ファイル",
+      remove:"削除"
     }
   };
 
@@ -721,8 +730,7 @@ window.addEventListener("DOMContentLoaded", () => {
     $("local_processing").textContent = t().local;
     $("lang_label").textContent = t().lang;
 
-    $("h_upload").childNodes[0].textContent = t().upload;
-
+    $("h_upload").textContent = t().upload;
     $("drop_title").textContent = t().dropTitle;
     $("drop_hint").textContent = t().dropHint;
 
@@ -735,11 +743,12 @@ window.addEventListener("DOMContentLoaded", () => {
     $("zip_hint").textContent = t().zip;
     $("convertBtn").textContent = t().run;
 
-    renderCounters(); // 언어 바뀔 때 카운트 문구도 갱신
+    $("addMoreBtn").textContent = t().addMore;
+    updateListUI();
   }
   $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
 
-  // ===== elements =====
+  // ===== state =====
   const drop = $("drop");
   const fileInput = $("fileInput");
   const clearBtn = $("clearBtn");
@@ -748,17 +757,21 @@ window.addEventListener("DOMContentLoaded", () => {
   const qualityEl = $("quality");
   const msgEl = $("msg");
 
+  const listBar = $("listBar");
+  const countChip = $("countChip");
+  const barText = $("barText");
+  const toggleListBtn = $("toggleListBtn");
+  const toggleListText = $("toggleListText");
+  const caret = $("caret");
   const fileListEl = $("fileList");
-  const dropCount = $("dropCount");
-  const dropCountText = $("dropCountText");
-  const dupBadge = $("dupBadge");
-  const dupText = $("dupText");
+  const addMoreBtn = $("addMoreBtn");
 
-  // ===== state =====
-  let pdfFiles = [];
-  let isWorking = false;
-  let lastDupCount = 0;
+  let files = [];      // [{id, file}]
+  let listOpen = false;
 
+  function uid(){
+    return Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  }
   function setMsg(text, cls){
     msgEl.textContent = text || "";
     msgEl.className = "msg " + (cls || "");
@@ -770,164 +783,141 @@ window.addEventListener("DOMContentLoaded", () => {
     while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
     return `${v.toFixed(i===0?0:2)} ${units[i]}`;
   }
-  function isPdfFile(f){
-    return f && (f.type === "application/pdf" || (f.name||"").toLowerCase().endsWith(".pdf"));
+  function isPdf(f){
+    return !!f && (f.type === "application/pdf" || (f.name||"").toLowerCase().endsWith(".pdf"));
   }
 
-  function setActiveUI(on){
-    drop.classList.toggle("active", !!on);
-    clearBtn.disabled = !on || isWorking;
-    convertBtn.disabled = !on || isWorking;
-  }
+  function updateListUI(){
+    const n = files.length;
 
-  function showDup(count){
-    lastDupCount = count || 0;
-    if(lastDupCount <= 0){
-      dupBadge.style.display = "none";
+    if(n <= 0){
+      listBar.style.display = "none";
+      fileListEl.style.display = "none";
+      listOpen = false;
+      toggleListText.textContent = t().listShow;
+      caret.textContent = "▾";
+      clearBtn.disabled = true;
+      convertBtn.disabled = true;
+      drop.classList.remove("active");
+      setMsg("", "");
       return;
     }
-    dupText.textContent = t().dupSkipped(lastDupCount);
-    dupBadge.style.display = "inline-flex";
-    setTimeout(()=>{ dupBadge.style.display="none"; }, 2500);
-  }
 
-  function renderCounters(){
-    const n = pdfFiles.length;
-    if(n > 0){
-      dropCountText.textContent = t().addedCount(n);
-      dropCount.style.display = "inline-flex";
-      fileListEl.style.display = "flex";
-    }else{
-      dropCount.style.display = "none";
-      fileListEl.style.display = "none";
-    }
+    listBar.style.display = "";
+    drop.classList.add("active");
+    clearBtn.disabled = false;
+    convertBtn.disabled = false;
+
+    countChip.textContent = "✅";
+    barText.textContent = t().addedN(n);
+
+    toggleListText.textContent = listOpen ? t().listHide : t().listShow;
+    caret.textContent = listOpen ? "▴" : "▾";
+    fileListEl.style.display = listOpen ? "block" : "none";
+
+    renderFileList();
+    setMsg(t().okReady, "ok");
   }
 
   function renderFileList(){
     fileListEl.innerHTML = "";
-    pdfFiles.forEach((f, idx)=>{
-      const row = document.createElement("div");
-      row.className = "fileRow";
-      row.dataset.idx = String(idx);
+    if(files.length <= 0) return;
 
-      row.innerHTML = `
-        <div class="fileBadge" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-        </div>
+    files.forEach((item, idx)=>{
+      const f = item.file;
 
-        <div class="fileMeta">
-          <div class="fileName" title="${(f.name||"document.pdf").replace(/"/g,"&quot;")}">${f.name || "document.pdf"}</div>
-          <div class="fileSize">
-            <span>${bytesToSize(f.size)}</span>
-            <span style="opacity:.8;">·</span>
-            <span style="opacity:.9; font-weight:900;">#${idx+1}</span>
-          </div>
-        </div>
+      const card = document.createElement("div");
+      card.className = "fileCard";
 
-        <div class="tag">PDF</div>
-
-        <div class="sortWrap" aria-label="Sort">
-          <button class="miniBtn upBtn" type="button" title="Up" aria-label="Move up">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 5l-6 6h12l-6-6z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button class="miniBtn downBtn" type="button" title="Down" aria-label="Move down">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 19l6-6H6l6 6z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
-
-        <button class="miniBtn delBtn" type="button" title="Remove" aria-label="Remove">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M6 7h12M10 7V5h4v2M9 7l1 14h4l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+      const badge = document.createElement("div");
+      badge.className = "fileBadge";
+      badge.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
       `;
 
-      fileListEl.appendChild(row);
+      const meta = document.createElement("div");
+      meta.className = "fileMeta";
+      meta.innerHTML = `
+        <div class="fileName" title="${(f.name||"document.pdf").replace(/"/g,'&quot;')}">
+          ${(f.name||"document.pdf")}
+        </div>
+        <div class="fileSize">${bytesToSize(f.size)} · #${idx+1}</div>
+      `;
+
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = "PDF";
+
+      const trash = document.createElement("button");
+      trash.className = "trashBtn";
+      trash.type = "button";
+      trash.setAttribute("aria-label", t().remove);
+      trash.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M6 9v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M10 12v7M14 12v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `;
+      trash.addEventListener("click", ()=>{
+        files = files.filter(x=> x.id !== item.id);
+        updateListUI();
+      });
+
+      card.appendChild(badge);
+      card.appendChild(meta);
+      card.appendChild(tag);
+      card.appendChild(trash);
+
+      fileListEl.appendChild(card);
     });
-
-    // 버튼 상태(첫/끝)
-    Array.from(fileListEl.querySelectorAll(".fileRow")).forEach((row, i)=>{
-      const up = row.querySelector(".upBtn");
-      const down = row.querySelector(".downBtn");
-      const del = row.querySelector(".delBtn");
-      const disabled = isWorking;
-
-      if(up) up.disabled = disabled || (i === 0);
-      if(down) down.disabled = disabled || (i === pdfFiles.length - 1);
-      if(del) del.disabled = disabled;
-    });
-
-    renderCounters();
-    setActiveUI(pdfFiles.length > 0);
   }
 
-  function setFiles(incoming){
-    const list = (incoming || []).filter(isPdfFile);
-    if(!list.length){
+  function addFiles(fileList){
+    const incoming = Array.from(fileList || []).filter(isPdf);
+    if(incoming.length <= 0){
       setMsg(t().errNoPdf, "err");
       return;
     }
 
-    // 중복 제거(이름+사이즈)
-    const before = pdfFiles.length;
-    const map = new Map();
-    pdfFiles.forEach(f=>{
-      map.set(`${f.name}__${f.size}`, f);
+    // 파일명+사이즈+lastModified 기반 중복 제거(느슨하게)
+    const key = (f)=> `${f.name}__${f.size}__${f.lastModified}`;
+    const existingKeys = new Set(files.map(x=>key(x.file)));
+    const deduped = incoming.filter(f=> !existingKeys.has(key(f)));
+
+    deduped.forEach(f=>{
+      files.push({ id: uid(), file: f });
     });
 
-    let dup = 0;
-    list.forEach(f=>{
-      const key = `${f.name}__${f.size}`;
-      if(map.has(key)) dup++;
-      else map.set(key, f);
-    });
-
-    pdfFiles = Array.from(map.values());
-    const after = pdfFiles.length;
-
-    showDup(dup);
-    renderFileList();
-
-    if(after > before) setMsg(t().okReady, "ok");
+    // UX: 새로 추가되면 목록 자동 오픈
+    listOpen = true;
+    updateListUI();
   }
 
-  function removeAt(idx){
-    if(idx < 0 || idx >= pdfFiles.length) return;
-    pdfFiles.splice(idx, 1);
-    renderFileList();
-    if(!pdfFiles.length) setMsg("", "");
+  function clearAll(){
+    files = [];
+    fileInput.value = "";
+    updateListUI();
   }
 
-  function move(from, to){
-    if(from < 0 || from >= pdfFiles.length) return;
-    if(to < 0 || to >= pdfFiles.length) return;
-    const [item] = pdfFiles.splice(from, 1);
-    pdfFiles.splice(to, 0, item);
-    renderFileList();
+  // ===== Drop / click events =====
+  function openPicker(){
+    // label-for가 1순위지만, 일부 환경에서 보조로 click도 제공
+    try{ fileInput.click(); }catch(e){}
   }
 
-  // 이벤트 위임(삭제/정렬)
-  fileListEl.addEventListener("click", (e)=>{
-    const row = e.target.closest(".fileRow");
-    if(!row) return;
-    const idx = parseInt(row.dataset.idx || "-1", 10);
-    if(Number.isNaN(idx)) return;
-
-    if(e.target.closest(".delBtn")) return removeAt(idx);
-    if(e.target.closest(".upBtn")) return move(idx, idx-1);
-    if(e.target.closest(".downBtn")) return move(idx, idx+1);
+  drop.addEventListener("click", openPicker);
+  drop.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openPicker();
+    }
   });
 
-  // ===== Drop / Pick =====
-  // (label-for도 있고, drop 클릭도 fileInput.click으로 백업)
-  drop.addEventListener("click", ()=> fileInput.click());
+  addMoreBtn.addEventListener("click", openPicker);
 
   ["dragenter","dragover"].forEach(ev=>{
     drop.addEventListener(ev, (e)=>{
@@ -945,22 +935,25 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   drop.addEventListener("drop", (e)=>{
-    const list = e.dataTransfer && e.dataTransfer.files ? Array.from(e.dataTransfer.files) : [];
-    setFiles(list);
+    const fl = e.dataTransfer && e.dataTransfer.files;
+    if(!fl || !fl.length) return;
+    addFiles(fl);
   });
 
   fileInput.addEventListener("change", ()=>{
-    const list = fileInput.files ? Array.from(fileInput.files) : [];
-    if(!list.length) return;
-    setFiles(list);
-    // 같은 파일 다시 선택 가능하게 리셋
+    const fl = fileInput.files;
+    if(!fl || !fl.length) return;
+    addFiles(fl);
+    // 다음 추가를 위해 값 리셋(같은 파일 다시 선택 가능)
     fileInput.value = "";
   });
 
-  clearBtn.addEventListener("click", ()=>{
-    pdfFiles = [];
-    renderFileList();
-    setMsg("", "");
+  clearBtn.addEventListener("click", clearAll);
+
+  toggleListBtn.addEventListener("click", ()=>{
+    if(files.length <= 0) return;
+    listOpen = !listOpen;
+    updateListUI();
   });
 
   // ===== Robust script loader (LOCAL first, CDN fallback) =====
@@ -978,24 +971,20 @@ window.addEventListener("DOMContentLoaded", () => {
   async function ensurePdfJs(){
     if(window.pdfjsLib) return true;
 
-    // ✅ 1순위: 로컬
-    const localCandidates = [
-      "../assets/pdfjs/pdf.min.js",
-      "/assets/pdfjs/pdf.min.js"
-    ];
-    for(const url of localCandidates){
-      try{
-        await loadScript(url);
-        if(window.pdfjsLib){
-          // worker 경로도 로컬로 고정
-          const workerUrl = url.replace("pdf.min.js","pdf.worker.min.js");
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
-          return true;
-        }
-      }catch(e){}
-    }
+    // ✅ 1순위: 로컬(네가 올린 파일)
+    // convertfiles24.com/pd...? 같은 하위경로에서도 깨지지 않게 상대경로 기준
+    const localPdf = "../assets/pdfjs/pdf.min.js";
+    const localWorker = "../assets/pdfjs/pdf.worker.min.js";
 
-    // ✅ 2순위: CDN
+    try{
+      await loadScript(localPdf);
+      if(window.pdfjsLib){
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = localWorker;
+        return true;
+      }
+    }catch(e){}
+
+    // ✅ 2순위: CDN 백업
     const candidates = [
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/build/pdf.min.js",
       "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",
@@ -1017,19 +1006,12 @@ window.addEventListener("DOMContentLoaded", () => {
   async function ensureJSZip(){
     if(window.JSZip) return true;
 
-    // ✅ 1순위: 로컬
-    const localCandidates = [
-      "../assets/jszip/jszip.min.js",
-      "/assets/jszip/jszip.min.js"
-    ];
-    for(const url of localCandidates){
-      try{
-        await loadScript(url);
-        if(window.JSZip) return true;
-      }catch(e){}
-    }
+    const localZip = "../assets/jszip/jszip.min.js";
+    try{
+      await loadScript(localZip);
+      if(window.JSZip) return true;
+    }catch(e){}
 
-    // ✅ 2순위: CDN
     const candidates = [
       "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
       "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js",
@@ -1044,58 +1026,12 @@ window.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
-  // ===== Convert (multi) =====
-  async function multiConvertAndDownload(files){
+  // ===== Convert =====
+  async function convertOnePdfToZip(file){
     const okPdf = await ensurePdfJs();
     if(!okPdf) throw new Error(t().errEngine);
 
     const pdfjsLib = window.pdfjsLib;
-    const outMime = outFormatEl.value;
-    const q = parseFloat(qualityEl.value || "0.9");
-    const makePng = (outMime === "image/png");
-
-    const needZip = (files.length > 1);
-
-    if(needZip){
-      const okZip = await ensureJSZip();
-      if(!okZip) throw new Error(t().errZip);
-
-      const zip = new window.JSZip();
-
-      for(let i=0;i<files.length;i++){
-        const file = files[i];
-        const arrayBuf = await file.arrayBuffer();
-
-        let pdf;
-        try{
-          pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
-        }catch(e){
-          throw new Error(t().errPassword);
-        }
-
-        const totalPages = pdf.numPages || 0;
-        if(totalPages <= 0) continue;
-
-        const base = (file.name || `pdf_${i+1}`).replace(/\.[^.]+$/, "");
-        const folder = zip.folder(base);
-
-        for(let p=1; p<=totalPages; p++){
-          setMsg(`(${i+1}/${files.length}) ${base} · (${p}/${totalPages}) ${t().converting}`, "");
-          const blob = await renderPageToBlob(pdf, p, outMime, q);
-          const ext = makePng ? "png" : "jpg";
-          const name = `page${String(p).padStart(3,"0")}.${ext}`;
-          folder.file(name, blob);
-        }
-      }
-
-      setMsg(t().buildingZip, "");
-      const zipBlob = await zip.generateAsync({ type:"blob" });
-      downloadBlob(zipBlob, `pdf_images_${Date.now()}.zip`);
-      return;
-    }
-
-    // 단일 PDF: 1페이지면 단일 이미지, 여러 페이지면 ZIP
-    const file = files[0];
     const arrayBuf = await file.arrayBuffer();
 
     let pdf;
@@ -1108,8 +1044,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const total = pdf.numPages || 0;
     if(total <= 0) throw new Error("PDF pages not found.");
 
+    const outMime = outFormatEl.value;
+    const q = parseFloat(qualityEl.value || "0.9");
+    const makePng = (outMime === "image/png");
     const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
 
+    // 1페이지면 단일 이미지로 저장
     if(total === 1){
       const blob = await renderPageToBlob(pdf, 1, outMime, q);
       const ext = makePng ? "png" : "jpg";
@@ -1117,6 +1057,7 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // 여러 페이지면 ZIP
     const okZip = await ensureJSZip();
     if(!okZip) throw new Error(t().errZip);
 
@@ -1178,27 +1119,36 @@ window.addEventListener("DOMContentLoaded", () => {
 
   convertBtn.addEventListener("click", async ()=>{
     try{
-      if(!pdfFiles.length) return setMsg(t().errNoPdf, "err");
-      isWorking = true;
-      setActiveUI(true);
-      renderFileList();
+      if(files.length <= 0) return setMsg(t().errNoPdf, "err");
 
-      setMsg(t().preparing, "");
-      await multiConvertAndDownload(pdfFiles);
+      convertBtn.disabled = true;
+      clearBtn.disabled = true;
+      toggleListBtn.disabled = true;
+      addMoreBtn.disabled = true;
+
+      setMsg(LANG==="ko" ? "엔진 준비 중..." : "Preparing engine...", "");
+
+      // ✅ 여러 PDF면 순차 처리(모바일 메모리 안정)
+      for(let i=0; i<files.length; i++){
+        const f = files[i].file;
+        setMsg(`(${i+1}/${files.length}) ${t().converting} · ${f.name}`, "");
+        await convertOnePdfToZip(f);
+      }
 
       setMsg(t().okDone, "ok");
     }catch(e){
       setMsg((e && e.message) ? e.message : "Convert failed", "err");
     }finally{
-      isWorking = false;
-      setActiveUI(pdfFiles.length > 0);
-      renderFileList();
+      convertBtn.disabled = (files.length <= 0);
+      clearBtn.disabled = (files.length <= 0);
+      toggleListBtn.disabled = false;
+      addMoreBtn.disabled = false;
     }
   });
 
   // init
   setLang(LANG, false);
-  renderFileList();
+  updateListUI();
 });
 </script>
 </body>
