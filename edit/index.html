@@ -9,6 +9,11 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
+  <!-- ✅ If JS fails, don't hide everything -->
+  <script>
+    document.documentElement.classList.add("js");
+  </script>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,14 +39,15 @@
       text-rendering: geometricPrecision;
     }
 
-    /* entrance */
-    body:not(.loaded) .card, body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
+    /* entrance (only when JS is running) */
+    html.js body:not(.loaded) .card,
+    html.js body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
     body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
     body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
     @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
-      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
+      html.js body:not(.loaded) .card, html.js body:not(.loaded) .top{ opacity:1; transform:none; }
     }
 
     .wrap{
@@ -257,7 +263,6 @@
       inset:0;
       border-radius:16px;
       overflow:hidden;
-      /* 🔧 검은톤 더 약하게 (라인 착시 완화) */
       background: rgba(0,0,0,.12);
       pointer-events:none;
     }
@@ -372,7 +377,6 @@
     .handle[data-h="sw"]{ left:0%;  top:100%; cursor: nesw-resize; }
     .handle[data-h="se"]{ left:100%;top:100%; cursor: nwse-resize; }
 
-    /* ✅ crop size badge: thinner text */
     .cropSizeBadge{
       position:absolute;
       right:8px;
@@ -382,8 +386,8 @@
       background: rgba(11,15,23,.58);
       border: 1px solid rgba(255,255,255,.18);
       color:#e9eef7;
-      font-weight:600;      /* 🔧 thinner */
-      font-size:11px;       /* 🔧 slightly smaller */
+      font-weight:600;
+      font-size:11px;
       letter-spacing:-0.15px;
       pointer-events:none;
       user-select:none;
@@ -491,7 +495,6 @@
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
 
-    /* msg row */
     .msgRow{
       display:flex;
       align-items:flex-start;
@@ -511,11 +514,10 @@
     .msg.err{ color:#ffb4b4; }
     .msg.ok{ color:#b8ffcc; }
 
-    /* ✅ cropInfo: thinner text */
     .cropInfo{
       flex:0 0 auto;
       font-size:12px;
-      font-weight:600;   /* 🔧 thinner */
+      font-weight:600;
       color:#bcd0ff;
       opacity:.95;
       padding:8px 10px;
@@ -553,6 +555,7 @@
     input[type="file"]{ display:none; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top">
@@ -651,7 +654,6 @@
         <div class="row">
           <button class="btn secondary" id="hiResBtn" type="button">✨ Hi-Res: ON</button>
         </div>
-        <!-- ✅ hires_hint 삭제 -->
 
         <div style="height:10px;"></div>
 
@@ -794,7 +796,6 @@
 
       hires_on: "✨ Hi-Res: ON",
       hires_off:"✨ Hi-Res: OFF",
-      hires_hint:"Hi-Res ON = sharper crop/export but may be heavier on memory.",
 
       fit: "↔ Fit",
       center: "🎯 Center",
@@ -852,7 +853,6 @@
 
       hires_on: "✨ 고화질: ON",
       hires_off:"✨ 고화질: OFF",
-      hires_hint:"고화질 ON = 더 선명한 크롭/저장(기기 메모리 부담이 늘 수 있어요).",
 
       fit: "↔ 맞추기",
       center: "🎯 중앙",
@@ -910,7 +910,6 @@
 
       hires_on: "✨ Alta: ON",
       hires_off:"✨ Alta: OFF",
-      hires_hint:"ON = recorte/exportación más nítidos, pero puede usar más memoria.",
 
       fit: "↔ Ajustar",
       center: "🎯 Centrar",
@@ -968,7 +967,6 @@
 
       hires_on: "✨ 高画質: ON",
       hires_off:"✨ 高画質: OFF",
-      hires_hint:"ON = より鮮明な切り抜き/保存（メモリ負荷が増える可能性）",
 
       fit: "↔ フィット",
       center: "🎯 中央",
@@ -1165,7 +1163,6 @@
   const cropSizeBadgeEl = $("cropSizeBadge");
 
   const hiResBtn = $("hiResBtn");
-  // ✅ hires_hint 제거됨 (DOM 없음)
 
   const fitBtn = $("fitBtn");
   const centerBtn = $("centerBtn");
@@ -1502,7 +1499,6 @@
     let sw = Math.round(crop.w * mult);
     let sh = Math.round(crop.h * mult);
 
-    /* 🔧 margin 1 -> 0 (검은 라인 원인 줄이기) */
     ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
 
     const c = document.createElement("canvas");
@@ -1541,8 +1537,7 @@
     setMsg(t().msg_crop_applied, "ok");
   }
 
-  const cropOverlay = $("cropOverlay");
-  const cropBoxEl = $("cropBox");
+  // ========= Crop resize (FIXED: no redeclare const cropOverlay/cropBoxEl) =========
   let cropDrag = null;
 
   function hitHandle(target){
@@ -1940,7 +1935,7 @@
     return { minX, minY, maxX, maxY };
   }
 
-  function stageToOutputBlob(){
+  async function stageToOutputBlob(){
     if(!img) throw new Error(t().msg_need);
 
     const rect = stageRect();
@@ -1963,7 +1958,6 @@
     let sw = Math.round(bw * mult);
     let sh = Math.round(bh * mult);
 
-    /* 🔧 margin 1 -> 0 */
     ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
 
     const base = document.createElement("canvas");
