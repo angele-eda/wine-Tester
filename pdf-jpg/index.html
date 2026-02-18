@@ -491,7 +491,7 @@ window.addEventListener("DOMContentLoaded", () => {
       zip:"여러 페이지면 ZIP으로 묶어서 내려받습니다.",
       run:"🧩 변환 후 다운로드",
       errNoPdf:"PDF 파일을 먼저 선택해 주세요.",
-      errEngine:"PDF 엔진 로드 실패 (pdf.js). (네트워크/브라우저에서 CDN 차단 가능) 새로고침 후 다시 시도해 주세요.",
+      errEngine:"PDF 엔진 로드 실패 (pdf.js). 새로고침 후 다시 시도해 주세요.",
       errZip:"ZIP 엔진 로드 실패 (JSZip). 새로고침 후 다시 시도해 주세요.",
       errPassword:"암호가 걸린 PDF는 변환이 어려울 수 있어요.",
       okReady:"준비 완료. 변환 버튼을 눌러주세요.",
@@ -699,7 +699,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setFile(null);
   });
 
-  // ===== Robust script loader (CDN fallback) =====
+  // ===== Robust script loader (LOCAL first, CDN fallback) =====
   function loadScript(url){
     return new Promise((resolve, reject)=>{
       const s = document.createElement("script");
@@ -714,22 +714,28 @@ window.addEventListener("DOMContentLoaded", () => {
   async function ensurePdfJs(){
     if(window.pdfjsLib) return true;
 
-    // ✅ 3중 예비 (cdnjs → jsdelivr → unpkg)
+    // ✅ 1순위: 로컬(네가 올린 파일)
+    try{
+      await loadScript("/assets/pdfjs/pdf.min.js");
+      if(window.pdfjsLib){
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "/assets/pdfjs/pdf.worker.min.js";
+        return true;
+      }
+    }catch(e){}
+
+    // ✅ 2순위: CDN 백업(최후)
     const candidates = [
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.min.js",
-      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/legacy/build/pdf.min.js",
-      "https://unpkg.com/pdfjs-dist@4.2.67/legacy/build/pdf.min.js"
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/build/pdf.min.js",
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",
+      "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"
     ];
 
     for(const url of candidates){
       try{
         await loadScript(url);
         if(window.pdfjsLib){
-          try{
-            // worker도 같은 계열로 맞춤
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-              url.replace("pdf.min.js","pdf.worker.min.js");
-          }catch(e){}
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+            url.replace("pdf.min.js","pdf.worker.min.js");
           return true;
         }
       }catch(e){}
@@ -739,6 +745,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
   async function ensureJSZip(){
     if(window.JSZip) return true;
+
+    // ✅ 1순위: 로컬
+    try{
+      await loadScript("/assets/jszip/jszip.min.js");
+      if(window.JSZip) return true;
+    }catch(e){}
+
+    // ✅ 2순위: CDN 백업
     const candidates = [
       "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
       "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js",
