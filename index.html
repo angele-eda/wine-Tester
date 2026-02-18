@@ -8,7 +8,6 @@
   <meta name="description" content="Fast & secure online file tools. 100% local processing — no server upload." />
   <meta name="robots" content="index,follow" />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,19 +16,13 @@
     :root{
       --bg0:#070b12;
       --bg1:#0b1020;
-      --card:#0f162a;
-      --card2:#0b1224;
       --stroke:rgba(255,255,255,.10);
       --stroke2:rgba(255,255,255,.06);
       --text:#e8edf6;
       --muted:rgba(232,237,246,.68);
       --muted2:rgba(232,237,246,.52);
-      --accent:#355dff;
-      --accent2:#2847d8;
       --shadow: 0 18px 50px rgba(0,0,0,.55);
       --radius:24px;
-      --radius2:18px;
-      --gap:16px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -44,74 +37,9 @@
     }
     a{color:inherit; text-decoration:none}
     .wrap{max-width:1050px; margin:0 auto; padding:26px 16px 40px}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:14px;
-      position:sticky; top:0;
-      padding:14px 0;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(7,11,18,.82), rgba(7,11,18,.35));
-      z-index:5;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px; min-width:0;
-    }
-    .logo{
-      width:44px; height:44px; border-radius:14px;
-      display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
-      border:1px solid var(--stroke);
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      font-weight:800;
-      letter-spacing:.5px;
-    }
-    .brand .t{
-      display:flex; flex-direction:column; min-width:0;
-    }
-    .brand .name{
-      font-weight:800; font-size:15px; line-height:1.1;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .brand .sub{
-      font-size:12px; color:var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      margin-top:2px;
-    }
 
-    .lang{
-      display:flex; align-items:center; gap:10px;
-    }
-    .lang .pill{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--stroke);
-      box-shadow: 0 10px 26px rgba(0,0,0,.30);
-      max-width: 230px;
-    }
-    .lang .globe{opacity:.9}
-    .lang label{font-size:12px; color:var(--muted); margin-right:4px}
-    select{
-      appearance:none;
-      background: transparent;
-      border:0;
-      color: var(--text);
-      font-weight:700;
-      font-size:13px;
-      outline:none;
-      cursor:pointer;
-      padding-right:18px;
-    }
-    .chev{
-      width:12px; height:12px; opacity:.7;
-      transform: translateY(1px);
-      flex:0 0 auto;
-    }
-    .hero{
-      margin-top:10px;
-      padding:26px 0 10px;
-    }
+    /* Hero */
+    .hero{padding:10px 0 12px}
     h1{
       margin:0;
       font-size:56px;
@@ -124,6 +52,7 @@
       color:var(--muted);
       max-width: 720px;
     }
+
     .badges{
       display:flex; flex-wrap:wrap; gap:10px;
       margin-top:18px;
@@ -139,6 +68,8 @@
       color:rgba(232,237,246,.92);
     }
     .badge .ic{opacity:.9}
+
+    /* Section / cards */
     .section{
       margin-top:18px;
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
@@ -149,7 +80,7 @@
     }
     .sec-title{
       display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
+      gap:12px;
       margin-bottom:12px;
     }
     .sec-title h2{
@@ -158,6 +89,35 @@
       letter-spacing:.2px;
       color:rgba(232,237,246,.86);
     }
+
+    /* Language (moved here ✅) */
+    .langWrap{
+      display:flex; align-items:center; gap:10px;
+      padding:9px 12px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 26px rgba(0,0,0,.30);
+    }
+    .langWrap .globe{opacity:.9}
+    .langWrap label{font-size:12px; color:var(--muted)}
+    select{
+      appearance:none;
+      background: transparent;
+      border:0;
+      color: var(--text);
+      font-weight:800;
+      font-size:13px;
+      outline:none;
+      cursor:pointer;
+      padding-right:18px;
+    }
+    .chev{
+      width:12px; height:12px; opacity:.7;
+      transform: translateY(1px);
+      flex:0 0 auto;
+    }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -175,9 +135,7 @@
       transition: transform .15s ease, border-color .15s ease;
     }
     .card:active{transform: scale(.99)}
-    .row{
-      display:flex; align-items:flex-start; gap:12px;
-    }
+    .row{display:flex; align-items:flex-start; gap:12px}
     .icon{
       width:52px; height:52px;
       border-radius:16px;
@@ -185,10 +143,11 @@
       border:1px solid var(--stroke2);
       display:grid; place-items:center;
       flex:0 0 auto;
+      font-size:22px;
     }
     .title{
       font-size:18px;
-      font-weight:800;
+      font-weight:900;
       margin:2px 0 4px;
       letter-spacing:-.2px;
     }
@@ -210,7 +169,7 @@
       border:1px solid var(--stroke2);
       background: rgba(255,255,255,.02);
       color:rgba(232,237,246,.82);
-      font-weight:700;
+      font-weight:800;
       font-size:12px;
     }
     .go{
@@ -221,6 +180,13 @@
       background: rgba(255,255,255,.02);
       opacity:.92;
     }
+
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.08);
+      margin:14px 0 0;
+      border-radius: 999px;
+    }
     .footer{
       margin-top:18px;
       padding:22px 4px 0;
@@ -229,12 +195,6 @@
       text-align:center;
     }
     .footer a{color:rgba(232,237,246,.72)}
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.08);
-      margin:14px 0 0;
-      border-radius: 999px;
-    }
 
     @media (min-width: 900px){
       .grid{grid-template-columns: repeat(3, minmax(0,1fr));}
@@ -243,46 +203,16 @@
     @media (max-width: 420px){
       h1{font-size:46px;}
       .lead{font-size:18px;}
-      .lang .pill{max-width: 190px;}
+      .langWrap label{display:none;} /* 모바일에서 더 깔끔 */
     }
-
-    /* tiny inline SVG helper */
-    .svg{display:block}
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <a class="brand" href="/" aria-label="ConvertFiles24 Home">
-        <div class="logo">C</div>
-        <div class="t">
-          <div class="name">ConvertFiles24</div>
-          <div class="sub" data-i18n="top_sub">Local tools · No upload</div>
-        </div>
-      </a>
-
-      <!-- ✅ Language dropdown (English above Korean) -->
-      <div class="lang" aria-label="Language">
-        <div class="pill">
-          <span class="globe" aria-hidden="true">🌐</span>
-          <label for="langSelect" data-i18n="lang_label">Language</label>
-          <select id="langSelect">
-            <option value="en">English</option>
-            <option value="ko">한국어</option>
-          </select>
-          <svg class="chev svg" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
-            <path fill="rgba(232,237,246,.75)" d="M7 10l5 5 5-5z"></path>
-          </svg>
-        </div>
-      </div>
-    </div>
-
     <header class="hero">
       <h1>ConvertFiles24</h1>
-      <p class="lead" data-i18n="lead">
-        Fast & Secure Online File Tools · 100% Local Processing
-      </p>
+      <p class="lead" data-i18n="lead">Fast & Secure Online File Tools · 100% Local Processing</p>
 
       <div class="badges">
         <div class="badge"><span class="ic">🔒</span><span data-i18n="b1">100% Local Processing</span></div>
@@ -294,10 +224,22 @@
     <section class="section">
       <div class="sec-title">
         <h2 data-i18n="tools_title">Tools</h2>
+
+        <!-- ✅ Language moved to Tools top-right -->
+        <div class="langWrap" aria-label="Language">
+          <span class="globe" aria-hidden="true">🌐</span>
+          <label for="langSelect" data-i18n="lang_label">Language</label>
+          <select id="langSelect">
+            <option value="en">English</option>
+            <option value="ko">한국어</option>
+          </select>
+          <svg class="chev" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+            <path fill="rgba(232,237,246,.75)" d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </div>
       </div>
 
       <div class="grid">
-        <!-- Converter -->
         <a class="card" href="/convert/" aria-label="File Converter">
           <div class="row">
             <div class="icon">↩️</div>
@@ -312,7 +254,6 @@
           </div>
         </a>
 
-        <!-- PDF Merge -->
         <a class="card" href="/pdf-merge/" aria-label="PDF Merge">
           <div class="row">
             <div class="icon">🧩</div>
@@ -327,7 +268,6 @@
           </div>
         </a>
 
-        <!-- PDF Split -->
         <a class="card" href="/split-pdf/" aria-label="PDF Split">
           <div class="row">
             <div class="icon">✂️</div>
@@ -342,7 +282,6 @@
           </div>
         </a>
 
-        <!-- PDF Compress -->
         <a class="card" href="/compress-pdf/" aria-label="PDF Compress">
           <div class="row">
             <div class="icon">🗜️</div>
@@ -357,7 +296,6 @@
           </div>
         </a>
 
-        <!-- PDF to JPG -->
         <a class="card" href="/pdf-jpg/" aria-label="PDF to JPG">
           <div class="row">
             <div class="icon">🖼️</div>
@@ -372,7 +310,6 @@
           </div>
         </a>
 
-        <!-- Image Edit -->
         <a class="card" href="/edit/" aria-label="Image Edit">
           <div class="row">
             <div class="icon">✏️</div>
@@ -387,7 +324,6 @@
           </div>
         </a>
 
-        <!-- ID Photo -->
         <a class="card" href="/id-photo/" aria-label="ID Photo">
           <div class="row">
             <div class="icon">🪪</div>
@@ -406,9 +342,7 @@
       <div class="divider"></div>
 
       <div class="footer">
-        <div style="margin-bottom:8px" data-i18n="foot_privacy">
-          Your files never leave your device.
-        </div>
+        <div style="margin-bottom:8px" data-i18n="foot_privacy">Your files never leave your device.</div>
         © 2026 ConvertFiles24 · Powered by GitHub Pages ·
         <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
       </div>
@@ -418,7 +352,6 @@
   <script>
     const i18n = {
       en: {
-        top_sub: "Local tools · No upload",
         lang_label: "Language",
         lead: "Fast & Secure Online File Tools · 100% Local Processing",
         b1: "100% Local Processing",
@@ -450,7 +383,6 @@
         foot_privacy: "Your files never leave your device."
       },
       ko: {
-        top_sub: "로컬 변환 · 서버 업로드 없음",
         lang_label: "언어",
         lead: "빠르고 안전한 파일 도구 · 100% 로컬 처리",
         b1: "100% 로컬 처리",
