@@ -197,7 +197,7 @@
     .headActions{
       display:flex;
       align-items:center;
-      gap:6px; /* ✅ changed: 10 -> 6 */
+      gap:4px; /* ✅ tighter */
       margin-left:auto;
     }
 
@@ -207,8 +207,8 @@
       background:transparent;
       color:#dbe7ff;
       cursor:pointer;
-      width:42px; height:42px; /* ✅ changed: 48 -> 42 */
-      border-radius:12px;
+      width:40px; height:40px; /* ✅ slightly smaller */
+      border-radius:11px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -386,10 +386,7 @@
       background: rgba(11,15,23,.58);
       border: 1px solid rgba(255,255,255,.18);
       color:#e9eef7;
-
-      /* ✅ 변경: 글씨 가늘게 */
-      font-weight:400;
-
+      font-weight:600;
       font-size:11px;
       letter-spacing:-0.15px;
       pointer-events:none;
@@ -523,10 +520,7 @@
     .cropInfo{
       flex:0 0 auto;
       font-size:12px;
-
-      /* ✅ 변경: 글씨 가늘게 */
-      font-weight:400;
-
+      font-weight:600;
       color:#bcd0ff;
       opacity:.95;
       padding:8px 10px;
@@ -560,6 +554,34 @@
     }
     .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+
+    /* ✅ Advanced (details) */
+    .adv{
+      border: var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .adv summary{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      color:#dbe7ff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 6px 2px;
+    }
+    .adv summary::-webkit-details-marker{ display:none; }
+    .adv summary .chev{
+      opacity:.9;
+      transition: transform .12s var(--ease), opacity .12s var(--ease);
+    }
+    .adv[open] summary .chev{ transform: rotate(180deg); opacity:1; }
+    .advBody{ padding-top: 8px; }
 
     input[type="file"]{ display:none; }
   </style>
@@ -735,26 +757,36 @@
 
         <h2 id="h_aspect">Aspect</h2>
 
-        <div class="chkRow">
-          <label class="chk" title="Keep aspect ratio when exporting">
-            <input type="checkbox" id="aspectLock" checked>
-            <span id="aspect_lock_txt">Keep aspect ratio</span>
-          </label>
-        </div>
+        <!-- ✅ Advanced (fold) -->
+        <details class="adv" id="advBox">
+          <summary>
+            <span id="adv_title">⚙️ Advanced</span>
+            <span class="chev" aria-hidden="true">▾</span>
+          </summary>
 
-        <div style="height:8px;"></div>
+          <div class="advBody">
+            <div class="chkRow">
+              <label class="chk" title="Keep aspect ratio when exporting">
+                <input type="checkbox" id="aspectLock" checked>
+                <span id="aspect_lock_txt">Keep aspect ratio</span>
+              </label>
+            </div>
 
-        <div class="row">
-          <div>
-            <label id="lbl_aspectMode">Mode</label>
-            <select id="aspectMode">
-              <option value="contain" selected>Contain (no crop)</option>
-              <option value="cover">Cover (crop)</option>
-              <option value="stretch">Stretch (fill)</option>
-            </select>
-            <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
+            <div style="height:8px;"></div>
+
+            <div class="row">
+              <div>
+                <label id="lbl_aspectMode">Mode</label>
+                <select id="aspectMode">
+                  <option value="contain" selected>Contain (no crop)</option>
+                  <option value="cover">Cover (crop)</option>
+                  <option value="stretch">Stretch (fill)</option>
+                </select>
+                <div class="hint" id="aspect_hint">Contain = may add margins • Cover = fills and may crop • Stretch = distorts</div>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
 
         <div style="height:12px;"></div>
 
@@ -823,9 +855,11 @@
       quality: "Quality",
       w: "Width (px)",
       h: "Height (px)",
+      placeholder_stage: "blank = stage size",
       size_hint: "If you fill only one side, aspect ratio is preserved automatically.",
 
       h_aspect: "Aspect",
+      adv: "⚙️ Advanced",
       aspect_lock: "Keep aspect ratio",
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
@@ -880,9 +914,11 @@
       quality: "품질",
       w: "가로(px)",
       h: "세로(px)",
+      placeholder_stage: "비워두면 스테이지 크기",
       size_hint: "한쪽만 입력하면 비율 유지로 자동 계산됩니다.",
 
       h_aspect: "비율",
+      adv: "⚙️ 고급 설정",
       aspect_lock: "비율 유지",
       aspect_mode: "모드",
       aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
@@ -937,9 +973,11 @@
       quality: "Calidad",
       w: "Ancho (px)",
       h: "Alto (px)",
+      placeholder_stage: "vacío = tamaño del escenario",
       size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
 
       h_aspect: "Proporción",
+      adv: "⚙️ Avanzado",
       aspect_lock: "Mantener proporción",
       aspect_mode: "Modo",
       aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
@@ -994,9 +1032,11 @@
       quality: "品質",
       w: "幅(px)",
       h: "高さ(px)",
+      placeholder_stage: "空欄 = ステージサイズ",
       size_hint: "片方だけ入力すると比率を維持して自動計算します。",
 
       h_aspect: "比率",
+      adv: "⚙️ 詳細設定",
       aspect_lock: "比率を維持",
       aspect_mode: "モード",
       aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
@@ -1042,6 +1082,19 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  // ✅ message state (for re-i18n on language change)
+  const MSG_STATE = { key: null, cls: "" };
+
+  function setMsgKey(key, cls){
+    MSG_STATE.key = key || null;
+    MSG_STATE.cls = cls || "";
+    const tt = t();
+    const txt = key && tt[key] ? tt[key] : "";
+    const msgEl = $("msg");
+    msgEl.textContent = txt || "";
+    msgEl.className = "msg " + (MSG_STATE.cls || "");
+  }
+
   // ========= Hi-Res mode (persist) =========
   function detectHiRes(){
     const saved = localStorage.getItem("cf24_hires");
@@ -1073,6 +1126,8 @@
     $("h_stage").textContent = t().h_stage;
     $("h_controls").textContent = t().controls;
 
+    $("adv_title").textContent = t().adv;
+
     syncCropBtnText();
     syncHiResUI();
 
@@ -1095,6 +1150,11 @@
     $("lbl_quality").textContent = t().quality;
     $("lbl_w").textContent = t().w;
     $("lbl_h").textContent = t().h;
+
+    // ✅ placeholders translated
+    $("w").placeholder = t().placeholder_stage;
+    $("h").placeholder = t().placeholder_stage;
+
     $("size_hint").textContent = t().size_hint;
 
     $("h_aspect").textContent = t().h_aspect;
@@ -1107,6 +1167,11 @@
     $("resetAllBtn").textContent = t().reset_all;
 
     if(!img) $("meta").innerHTML = t().meta_idle;
+
+    // ✅ re-render current message in new language
+    if(MSG_STATE.key){
+      setMsgKey(MSG_STATE.key, MSG_STATE.cls);
+    }
 
     updateCropInfo();
     setTimeout(()=>resizeCanvas(), 0);
@@ -1195,7 +1260,6 @@
 
   const downloadBtn = $("downloadBtn");
   const resetAllBtn = $("resetAllBtn");
-  const msgEl = $("msg");
 
   let img = null;
   let imgName = "image";
@@ -1254,10 +1318,6 @@
     redraw();
   }
 
-  function setMsg(text, cls){
-    msgEl.textContent = text || "";
-    msgEl.className = "msg " + (cls || "");
-  }
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
   function stageRect(){ return stage.getBoundingClientRect(); }
 
@@ -1448,12 +1508,12 @@
   }
 
   cropToggleBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     cropOn = !cropOn;
     syncCropUI();
-    if(cropOn) setMsg(t().msg_crop_on, "");
-    else setMsg("", "");
+    if(cropOn) setMsgKey("msg_crop_on", "");
+    else setMsgKey(null, "");
   });
 
   function clampSrcRect(sx, sy, sw, sh, srcW, srcH, margin=0){
@@ -1496,7 +1556,7 @@
   async function applyCrop(){
     if(!img) throw new Error(t().msg_need);
     if(!cropOn){
-      setMsg(t().msg_crop_on, "");
+      setMsgKey("msg_crop_on", "");
       return;
     }
 
@@ -1543,10 +1603,10 @@
     clearHistory();
     redraw();
     updateMeta();
-    setMsg(t().msg_crop_applied, "ok");
+    setMsgKey("msg_crop_applied", "ok");
   }
 
-  // ========= Crop resize (FIXED: no redeclare const cropOverlay/cropBoxEl) =========
+  // ========= Crop resize =========
   let cropDrag = null;
 
   function hitHandle(target){
@@ -1612,63 +1672,66 @@
 
   cropApplyBtn.addEventListener("click", async ()=>{
     try{
-      if(!img) return setMsg(t().msg_need, "err");
+      if(!img) return setMsgKey("msg_need", "err");
       await applyCrop();
     }catch(e){
-      setMsg((e && e.message) ? e.message : "Crop failed", "err");
+      const m = (e && e.message) ? e.message : "Crop failed";
+      // keep current language-safe message for known keys
+      setMsgKey(null, "err");
+      $("msg").textContent = m;
     }
   });
 
   // ========= Controls wiring =========
   fitBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     fitToStage();
   });
   centerBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     centerOnly();
   });
   zoomInBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     zoomBy(1.08);
   });
   zoomOutBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     zoomBy(1/1.08);
   });
 
   rotLBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     view.rot = (view.rot - 90) % 360;
     redraw();
   });
   rotRBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     view.rot = (view.rot + 90) % 360;
     redraw();
   });
 
   flipHBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     view.flipH *= -1;
     redraw();
   });
   flipVBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     pushHistory(snap());
     view.flipV *= -1;
     redraw();
   });
 
   undoBtn.addEventListener("click", ()=>{
-    if(!img) return setMsg(t().msg_need, "err");
+    if(!img) return setMsgKey("msg_need", "err");
     if(history.length === 0){
       const rect = stageRect();
       const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -1676,7 +1739,7 @@
       Object.assign(view, initialView);
       ensureCropDefault(true);
       redraw();
-      setMsg(t().msg_ready, "ok");
+      setMsgKey("msg_ready", "ok");
       return;
     }
     const prev = history.pop();
@@ -1813,7 +1876,7 @@
     clearHistory();
     redraw();
     updateMeta();
-    setMsg(t().msg_ready, "ok");
+    setMsgKey("msg_ready", "ok");
     resizeCanvas();
   }
 
@@ -1838,7 +1901,7 @@
     };
     im.onerror = ()=>{
       URL.revokeObjectURL(url);
-      setMsg(t().msg_need, "err");
+      setMsgKey("msg_need", "err");
     };
     im.src = url;
   }
@@ -1860,7 +1923,7 @@
           };
           im.onerror = ()=>{
             URL.revokeObjectURL(url);
-            setMsg(t().msg_idb_fail, "err");
+            setMsgKey("msg_idb_fail", "err");
             updateMeta();
             resizeCanvas();
           };
@@ -1870,7 +1933,7 @@
       }catch(_){}
     }
 
-    setMsg(t().msg_need, "err");
+    setMsgKey("msg_need", "err");
     img = null;
     updateMeta();
     resizeCanvas();
@@ -2055,9 +2118,11 @@
     try{
       const blob = await stageToOutputBlob();
       downloadBlob(blob, buildName());
-      setMsg(t().msg_ok, "ok");
+      setMsgKey("msg_ok", "ok");
     }catch(e){
-      setMsg((e && e.message) ? e.message : "Download failed", "err");
+      const m = (e && e.message) ? e.message : "Download failed";
+      setMsgKey(null, "err");
+      $("msg").textContent = m;
     }
   });
 
@@ -2084,7 +2149,7 @@
       sessionStorage.removeItem("cf24_edit_name");
     }catch(_){}
 
-    setMsg("", "");
+    setMsgKey(null, "");
     redraw();
     updateMeta();
     resizeCanvas();
