@@ -48,8 +48,7 @@
       max-width:980px;
       width:100%;
       margin:0 auto;
-      /* ✅ 상단 간격 줄임 */
-      padding:14px 14px 44px;
+      padding:14px 14px 44px; /* 상단 간격 줄임 */
       overflow-x: clip;
     }
 
@@ -357,9 +356,9 @@
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
   </style>
 
-  <!-- ✅ pdf.js + worker (CDN) -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
-  <!-- ✅ JSZip (여러 페이지면 zip) -->
+  <!-- ✅ pdf.js (LEGACY build: 브라우저에서 window.pdfjsLib 제공) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.min.js"></script>
+  <!-- ✅ JSZip -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
@@ -382,7 +381,6 @@
       <div class="langRow">
         <div class="langLabel">🌐 <span id="lang_label">언어</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
-          <!-- ✅ 순서: English → 한국어 → 日本語 → Español -->
           <option value="en">Global (English)</option>
           <option value="ko" selected>한국어</option>
           <option value="ja">日本語</option>
@@ -472,7 +470,6 @@
   </div>
 
 <script>
-/* ✅ 중요: defer 스크립트(pdf.js, jszip)가 로드된 다음에 실행되게 함 */
 window.addEventListener("DOMContentLoaded", () => {
   "use strict";
   const $ = (id)=>document.getElementById(id);
@@ -571,8 +568,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // ✅ 자동 언어: 브라우저/국가(=navigator.language) 기반
-  // 단, 사용자가 한 번이라도 수동 변경하면 그 값을 고정
+  // 자동 언어(브라우저 언어) + 수동 변경 시 고정
   function detectLang(){
     const url = new URL(location.href);
     const qp = (url.searchParams.get("lang")||"").toLowerCase();
@@ -619,7 +615,6 @@ window.addEventListener("DOMContentLoaded", () => {
     $("zip_hint").textContent = t().zip;
     $("convertBtn").textContent = t().run;
   }
-
   $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
 
   // ========= state =========
@@ -719,10 +714,9 @@ window.addEventListener("DOMContentLoaded", () => {
     try{
       if(!pdfjsLib.GlobalWorkerOptions.workerSrc){
         pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/legacy/build/pdf.worker.min.js";
       }
     }catch(e){}
-
     return true;
   }
 
@@ -744,7 +738,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const total = pdf.numPages || 0;
     if(total <= 0) throw new Error("PDF pages not found.");
 
-    const outMime = outFormatEl.value;
+    const outMime = outFormatEl.value; // image/jpeg | image/png
     const q = parseFloat(qualityEl.value || "0.9");
     const makePng = (outMime === "image/png");
     const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
@@ -760,21 +754,28 @@ window.addEventListener("DOMContentLoaded", () => {
     const zip = new window.JSZip();
 
     for(let p=1; p<=total; p++){
-      setMsg(`(${p}/${total}) 변환 중...`, "");
+      setMsg(`(${p}/${total}) ${LANG==="ko" ? "변환 중..." : "Converting..."}`, "");
       const blob = await renderPageToBlob(pdf, p, outMime, q);
       const ext = makePng ? "png" : "jpg";
       const name = `${base}_page${String(p).padStart(3,"0")}.${ext}`;
       zip.file(name, blob);
     }
 
-    setMsg("ZIP 만드는 중...", "");
+    setMsg(LANG==="ko" ? "ZIP 만드는 중..." : "Building ZIP...", "");
     const zipBlob = await zip.generateAsync({ type:"blob" });
     downloadBlob(zipBlob, `${base}_images.zip`);
   }
 
   async function renderPageToBlob(pdf, pageNum, mime, quality){
     const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 2.0 });
+
+    // 기본 2.0, 매우 큰 PDF면 자동으로 조금 낮춤
+    const baseScale = 2.0;
+    const viewportTest = page.getViewport({ scale: baseScale });
+    const megaPixels = (viewportTest.width * viewportTest.height) / 1_000_000;
+    const scale = megaPixels > 16 ? 1.5 : baseScale; // 과부하 방지
+
+    const viewport = page.getViewport({ scale });
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { alpha: (mime !== "image/jpeg") });
@@ -814,8 +815,10 @@ window.addEventListener("DOMContentLoaded", () => {
       if(!pdfFile) return setMsg(t().errNoPdf, "err");
       convertBtn.disabled = true;
       clearBtn.disabled = true;
-      setMsg("엔진 확인 중...", "");
+
+      setMsg(LANG==="ko" ? "엔진 확인 중..." : "Checking engine...", "");
       await pdfToImagesAndDownload(pdfFile);
+
       setMsg(t().okDone, "ok");
     }catch(e){
       setMsg((e && e.message) ? e.message : "Convert failed", "err");
@@ -827,14 +830,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // init
   setLang(LANG, false);
-
-  // 엔진 체크(조용히)
-  setTimeout(async ()=>{
-    const ok = await ensurePdfJs();
-    if(!ok){
-      setMsg(t().errEngine, "err");
-    }
-  }, 0);
 });
 </script>
 </body>
