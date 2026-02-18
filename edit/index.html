@@ -197,7 +197,7 @@
     .headActions{
       display:flex;
       align-items:center;
-      gap:4px; /* ✅ tighter */
+      gap:2px; /* ✅ tighter (이미지불러오기/되돌리기 간격 축소) */
       margin-left:auto;
     }
 
@@ -207,7 +207,7 @@
       background:transparent;
       color:#dbe7ff;
       cursor:pointer;
-      width:40px; height:40px; /* ✅ slightly smaller */
+      width:38px; height:38px; /* ✅ slightly smaller */
       border-radius:11px;
       display:inline-flex;
       align-items:center;
@@ -1676,7 +1676,6 @@
       await applyCrop();
     }catch(e){
       const m = (e && e.message) ? e.message : "Crop failed";
-      // keep current language-safe message for known keys
       setMsgKey(null, "err");
       $("msg").textContent = m;
     }
