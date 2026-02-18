@@ -48,7 +48,8 @@
       max-width:980px;
       width:100%;
       margin:0 auto;
-      padding:22px 14px 44px;
+      /* ✅ 상단 간격 줄임 */
+      padding:14px 14px 44px;
       overflow-x: clip;
     }
 
@@ -58,7 +59,7 @@
       justify-content:space-between;
       gap:14px;
       flex-wrap:wrap;
-      margin-bottom:14px;
+      margin-bottom:12px;
       min-width:0;
     }
 
@@ -356,7 +357,7 @@
     .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
   </style>
 
-  <!-- ✅ pdf.js + worker (CDN) : 이게 없으면 "PDF engine not loaded" 뜸 -->
+  <!-- ✅ pdf.js + worker (CDN) -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
   <!-- ✅ JSZip (여러 페이지면 zip) -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -381,10 +382,11 @@
       <div class="langRow">
         <div class="langLabel">🌐 <span id="lang_label">언어</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
-          <option value="ko" selected>한국어</option>
+          <!-- ✅ 순서: English → 한국어 → 日本語 → Español -->
           <option value="en">Global (English)</option>
-          <option value="es">Español</option>
+          <option value="ko" selected>한국어</option>
           <option value="ja">日本語</option>
+          <option value="es">Español</option>
         </select>
       </div>
     </div>
@@ -396,7 +398,6 @@
       <div class="drop" id="drop">
         <div class="dropInner" id="dropInner">
           <div class="dropIcon" aria-hidden="true">
-            <!-- file icon -->
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
               <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -431,7 +432,6 @@
       </div>
 
       <input id="fileInput" type="file" accept="application/pdf,.pdf" />
-
       <div class="msg" id="msg"></div>
     </div>
 
@@ -472,13 +472,14 @@
   </div>
 
 <script>
-(() => {
+/* ✅ 중요: defer 스크립트(pdf.js, jszip)가 로드된 다음에 실행되게 함 */
+window.addEventListener("DOMContentLoaded", () => {
   "use strict";
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // ========= i18n (최소) =========
+  // ========= i18n =========
   const STR = {
     ko:{
       title:"PDF → JPG/PNG",
@@ -570,21 +571,33 @@
     }
   };
 
+  // ✅ 자동 언어: 브라우저/국가(=navigator.language) 기반
+  // 단, 사용자가 한 번이라도 수동 변경하면 그 값을 고정
   function detectLang(){
+    const url = new URL(location.href);
+    const qp = (url.searchParams.get("lang")||"").toLowerCase();
+    if(STR[qp]) return qp;
+
+    const manual = localStorage.getItem("cf24_lang_manual") === "1";
     const saved = localStorage.getItem("cf24_lang");
-    if(saved && STR[saved]) return saved;
+    if(manual && saved && STR[saved]) return saved;
+
     const nav = (navigator.language||"").toLowerCase();
     if(nav.startsWith("ko")) return "ko";
     if(nav.startsWith("ja")) return "ja";
     if(nav.startsWith("es")) return "es";
     return "en";
   }
+
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
-  function setLang(lang){
+
+  function setLang(lang, isManual=false){
     if(!STR[lang]) lang="en";
     LANG = lang;
     localStorage.setItem("cf24_lang", lang);
+    if(isManual) localStorage.setItem("cf24_lang_manual","1");
+
     $("langSelect").value = lang;
     document.documentElement.lang = lang;
 
@@ -606,7 +619,8 @@
     $("zip_hint").textContent = t().zip;
     $("convertBtn").textContent = t().run;
   }
-  $("langSelect").addEventListener("change",(e)=>setLang(e.target.value));
+
+  $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
 
   // ========= state =========
   const drop = $("drop");
@@ -699,17 +713,15 @@
 
   // ========= pdf.js init check =========
   async function ensurePdfJs(){
-    // pdf.js global
     const pdfjsLib = window.pdfjsLib;
     if(!pdfjsLib) return false;
 
-    // workerSrc 필수
     try{
       if(!pdfjsLib.GlobalWorkerOptions.workerSrc){
         pdfjsLib.GlobalWorkerOptions.workerSrc =
           "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
       }
-    }catch(e){ /* ignore */ }
+    }catch(e){}
 
     return true;
   }
@@ -726,21 +738,17 @@
     try{
       pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
     }catch(e){
-      // 비밀번호/보안 PDF 가능성
       throw new Error(t().errPassword);
     }
 
     const total = pdf.numPages || 0;
     if(total <= 0) throw new Error("PDF pages not found.");
 
-    const outMime = outFormatEl.value; // image/jpeg | image/png
+    const outMime = outFormatEl.value;
     const q = parseFloat(qualityEl.value || "0.9");
     const makePng = (outMime === "image/png");
-
-    // base name
     const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
 
-    // one page => direct download
     if(total === 1){
       const blob = await renderPageToBlob(pdf, 1, outMime, q);
       const ext = makePng ? "png" : "jpg";
@@ -748,7 +756,6 @@
       return;
     }
 
-    // multi pages => zip
     if(!window.JSZip) throw new Error("ZIP engine not loaded (JSZip).");
     const zip = new window.JSZip();
 
@@ -767,8 +774,6 @@
 
   async function renderPageToBlob(pdf, pageNum, mime, quality){
     const page = await pdf.getPage(pageNum);
-
-    // scale: 모바일에서도 너무 작지 않게 적당히
     const viewport = page.getViewport({ scale: 2.0 });
 
     const canvas = document.createElement("canvas");
@@ -821,17 +826,16 @@
   });
 
   // init
-  setLang(LANG);
+  setLang(LANG, false);
 
-  // 초기 엔진 체크 메시지 (조용히)
+  // 엔진 체크(조용히)
   setTimeout(async ()=>{
     const ok = await ensurePdfJs();
     if(!ok){
       setMsg(t().errEngine, "err");
     }
   }, 0);
-
-})();
+});
 </script>
 </body>
 </html>
