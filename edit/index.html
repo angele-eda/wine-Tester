@@ -236,7 +236,7 @@
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
-    /* ✅ stage는 overflow visible (핸들 안 잘림) */
+    /* stage: overflow visible (handles not clipped) */
     .stage{
       border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
@@ -251,14 +251,15 @@
     }
     @media (max-width: 480px){ .stage{ min-height: 280px; } }
 
-    /* ✅ 이미지/캔버스만 깔끔하게 클립 */
+    /* ✅ canvas only clipped clean */
     .canvasClip{
       position:absolute;
       inset:0;
       border-radius:16px;
       overflow:hidden;
-      background:rgba(0,0,0,.25);
-      pointer-events:none; /* stage가 pan/zoom을 받도록 */
+      /* 🔧 검은톤 더 약하게 (라인 착시 완화) */
+      background: rgba(0,0,0,.12);
+      pointer-events:none;
     }
     .canvasClip canvas{
       display:block;
@@ -371,19 +372,19 @@
     .handle[data-h="sw"]{ left:0%;  top:100%; cursor: nesw-resize; }
     .handle[data-h="se"]{ left:100%;top:100%; cursor: nwse-resize; }
 
-    /* ✅ 크롭 크기 배지 (크롭박스에 붙어서 같이 움직임) */
+    /* ✅ crop size badge: thinner text */
     .cropSizeBadge{
       position:absolute;
       right:8px;
       top:8px;
-      padding:8px 10px;
+      padding:7px 10px;
       border-radius:999px;
-      background: rgba(11,15,23,.62);
+      background: rgba(11,15,23,.58);
       border: 1px solid rgba(255,255,255,.18);
       color:#e9eef7;
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:-0.2px;
+      font-weight:600;      /* 🔧 thinner */
+      font-size:11px;       /* 🔧 slightly smaller */
+      letter-spacing:-0.15px;
       pointer-events:none;
       user-select:none;
       white-space:nowrap;
@@ -392,7 +393,7 @@
       -webkit-backdrop-filter: blur(6px);
     }
     @media (max-width: 420px){
-      .cropSizeBadge{ font-size:11px; padding:7px 9px; right:6px; top:6px; }
+      .cropSizeBadge{ font-size:10.5px; padding:7px 9px; right:6px; top:6px; }
     }
 
     .row{
@@ -490,7 +491,7 @@
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
 
-    /* ✅ msg 라인 오른쪽에 크롭 크기 표시 */
+    /* msg row */
     .msgRow{
       display:flex;
       align-items:flex-start;
@@ -510,10 +511,11 @@
     .msg.err{ color:#ffb4b4; }
     .msg.ok{ color:#b8ffcc; }
 
+    /* ✅ cropInfo: thinner text */
     .cropInfo{
       flex:0 0 auto;
       font-size:12px;
-      font-weight:900;
+      font-weight:600;   /* 🔧 thinner */
       color:#bcd0ff;
       opacity:.95;
       padding:8px 10px;
@@ -583,18 +585,14 @@
       <div class="card">
         <h2 id="h_stage">Preview / Edit</h2>
         <div class="stage" id="stage">
-          <!-- ✅ 캔버스는 클립 래퍼 안 -->
           <div class="canvasClip" aria-hidden="true">
             <canvas id="cv"></canvas>
           </div>
 
-          <!-- Crop overlay -->
           <div class="cropOverlay" id="cropOverlay" aria-hidden="true">
             <div class="cropShade"></div>
             <div class="cropBox" id="cropBox" role="application" aria-label="Crop box">
               <div class="cropGrid"></div>
-
-              <!-- ✅ 크롭 크기 배지 (크롭박스에 딱 붙어서 같이 움직임) -->
               <div class="cropSizeBadge" id="cropSizeBadge" aria-hidden="true"></div>
 
               <div class="handle" data-h="nw"><span class="handleDot"></span></div>
@@ -613,7 +611,6 @@
           </div>
         </div>
 
-        <!-- ✅ 다운로드 완료 라인 오른쪽에 크롭 크기 표시 -->
         <div class="msgRow">
           <div class="msg" id="msg"></div>
           <div class="cropInfo" id="cropInfo" aria-live="polite"></div>
@@ -654,7 +651,7 @@
         <div class="row">
           <button class="btn secondary" id="hiResBtn" type="button">✨ Hi-Res: ON</button>
         </div>
-        <div class="hint" id="hires_hint">Hi-Res ON = sharper crop/export but may be heavier on memory.</div>
+        <!-- ✅ hires_hint 삭제 -->
 
         <div style="height:10px;"></div>
 
@@ -1043,14 +1040,13 @@
     const saved = localStorage.getItem("cf24_hires");
     if(saved === "0") return false;
     if(saved === "1") return true;
-    return true; // ✅ 기본 ON
+    return true;
   }
   let HIRES = detectHiRes();
   function setHiRes(on){
     HIRES = !!on;
     localStorage.setItem("cf24_hires", HIRES ? "1" : "0");
     syncHiResUI();
-    // ✅ 배율 바뀌면 크롭 hi-res px도 같이 갱신
     updateCropInfo();
   }
 
@@ -1105,14 +1101,12 @@
 
     if(!img) $("meta").innerHTML = t().meta_idle;
 
-    // ✅ 언어 바뀌면 크롭 정보 문구도 갱신
     updateCropInfo();
-
     setTimeout(()=>resizeCanvas(), 0);
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // ========= IndexedDB bridge (same store as index) =========
+  // ========= IndexedDB bridge =========
   const CF24_IDB_NAME = "cf24_blob_store_v1";
   const CF24_IDB_STORE = "blobs";
 
@@ -1171,7 +1165,7 @@
   const cropSizeBadgeEl = $("cropSizeBadge");
 
   const hiResBtn = $("hiResBtn");
-  const hiResHintEl = $("hires_hint");
+  // ✅ hires_hint 제거됨 (DOM 없음)
 
   const fitBtn = $("fitBtn");
   const centerBtn = $("centerBtn");
@@ -1263,7 +1257,6 @@
 
   function syncHiResUI(){
     hiResBtn.textContent = HIRES ? t().hires_on : t().hires_off;
-    hiResHintEl.textContent = t().hires_hint;
   }
 
   hiResBtn.addEventListener("click", ()=>{
@@ -1278,7 +1271,6 @@
     return clamp(m, 1, maxMul);
   }
 
-  // ✅ 크롭 크기 표시(오른쪽 라인 + 크롭 배지) 갱신
   function updateCropInfo(){
     if(!cropInfoEl || !cropSizeBadgeEl) return;
     if(!(img && cropOn)){
@@ -1436,7 +1428,6 @@
     cropBoxEl.style.top = crop.y + "px";
     cropBoxEl.style.width = crop.w + "px";
     cropBoxEl.style.height = crop.h + "px";
-    // ✅ 크롭박스 위치/크기 바뀌면 즉시 갱신
     updateCropInfo();
   }
 
@@ -1459,8 +1450,101 @@
     else setMsg("", "");
   });
 
-  // ✅ 크롭: "핸들 리사이즈만" 허용
+  function clampSrcRect(sx, sy, sw, sh, srcW, srcH, margin=0){
+    const m = Math.max(0, margin|0);
+    sx = Math.max(m, Math.min(sx, srcW - 1 - m));
+    sy = Math.max(m, Math.min(sy, srcH - 1 - m));
+    sw = Math.max(1, Math.min(sw, (srcW - m) - sx));
+    sh = Math.max(1, Math.min(sh, (srcH - m) - sy));
+    return { sx, sy, sw, sh };
+  }
+
+  function renderStageToCanvas(mult, alpha=true){
+    const rect = stageRect();
+    const stageW = Math.round(rect.width);
+    const stageH = Math.round(rect.height);
+
+    const W = Math.max(1, Math.round(stageW * mult));
+    const H = Math.max(1, Math.round(stageH * mult));
+    const out = document.createElement("canvas");
+    out.width = W;
+    out.height = H;
+
+    const octx = out.getContext("2d", { alpha });
+    octx.setTransform(mult,0,0,mult,0,0);
+    octx.clearRect(0,0,stageW,stageH);
+
+    if(!img) return out;
+
+    octx.save();
+    octx.translate(stageW/2, stageH/2);
+    octx.translate(view.offX, view.offY);
+    octx.rotate((view.rot * Math.PI) / 180);
+    octx.scale(view.scale * view.flipH, view.scale * view.flipV);
+    octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
+    octx.restore();
+
+    return out;
+  }
+
+  async function applyCrop(){
+    if(!img) throw new Error(t().msg_need);
+    if(!cropOn){
+      setMsg(t().msg_crop_on, "");
+      return;
+    }
+
+    const mult = hiResMult();
+    const stageCanvas = renderStageToCanvas(mult, true);
+
+    let sx = Math.round(crop.x * mult);
+    let sy = Math.round(crop.y * mult);
+    let sw = Math.round(crop.w * mult);
+    let sh = Math.round(crop.h * mult);
+
+    /* 🔧 margin 1 -> 0 (검은 라인 원인 줄이기) */
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
+
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, sw);
+    c.height = Math.max(1, sh);
+    const cctx = c.getContext("2d", { alpha:true });
+    cctx.imageSmoothingEnabled = true;
+    cctx.imageSmoothingQuality = "high";
+    cctx.clearRect(0,0,sw,sh);
+    cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    const dataUrl = c.toDataURL("image/png");
+    const im = new Image();
+    await new Promise((res, rej)=>{
+      im.onload = res;
+      im.onerror = ()=>rej(new Error("Crop failed"));
+      im.src = dataUrl;
+    });
+
+    img = im;
+    imgW = im.naturalWidth || 1;
+    imgH = im.naturalHeight || 1;
+    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
+
+    const rect = stageRect();
+    const s = Math.min(rect.width / imgW, rect.height / imgH);
+    Object.assign(initialView, { scale:s, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
+    Object.assign(view, initialView);
+
+    cropOn = true;
+    ensureCropDefault(true);
+
+    clearHistory();
+    redraw();
+    updateMeta();
+    setMsg(t().msg_crop_applied, "ok");
+  }
+
+  const cropOverlay = $("cropOverlay");
+  const cropBoxEl = $("cropBox");
   let cropDrag = null;
+
   function hitHandle(target){
     const h = target && target.dataset && target.dataset.h;
     return h || null;
@@ -1521,98 +1605,6 @@
   });
   cropBoxEl.addEventListener("pointerup", ()=>{ cropDrag = null; });
   cropBoxEl.addEventListener("pointercancel", ()=>{ cropDrag = null; });
-
-  // ✅ 1px 라인 방지: 가장자리 1px 마진을 두고 클램프
-  function clampSrcRect(sx, sy, sw, sh, srcW, srcH, margin=0){
-    const m = Math.max(0, margin|0);
-    sx = Math.max(m, Math.min(sx, srcW - 1 - m));
-    sy = Math.max(m, Math.min(sy, srcH - 1 - m));
-    sw = Math.max(1, Math.min(sw, (srcW - m) - sx));
-    sh = Math.max(1, Math.min(sh, (srcH - m) - sy));
-    return { sx, sy, sw, sh };
-  }
-
-  function renderStageToCanvas(mult, alpha=true){
-    const rect = stageRect();
-    const stageW = Math.round(rect.width);
-    const stageH = Math.round(rect.height);
-
-    const W = Math.max(1, Math.round(stageW * mult));
-    const H = Math.max(1, Math.round(stageH * mult));
-    const out = document.createElement("canvas");
-    out.width = W;
-    out.height = H;
-
-    const octx = out.getContext("2d", { alpha });
-    octx.setTransform(mult,0,0,mult,0,0);
-    octx.clearRect(0,0,stageW,stageH);
-
-    if(!img) return out;
-
-    octx.save();
-    octx.translate(stageW/2, stageH/2);
-    octx.translate(view.offX, view.offY);
-    octx.rotate((view.rot * Math.PI) / 180);
-    octx.scale(view.scale * view.flipH, view.scale * view.flipV);
-    octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
-    octx.restore();
-
-    return out;
-  }
-
-  async function applyCrop(){
-    if(!img) throw new Error(t().msg_need);
-    if(!cropOn){
-      setMsg(t().msg_crop_on, "");
-      return;
-    }
-
-    const mult = hiResMult();
-    const stageCanvas = renderStageToCanvas(mult, true);
-
-    let sx = Math.round(crop.x * mult);
-    let sy = Math.round(crop.y * mult);
-    let sw = Math.round(crop.w * mult);
-    let sh = Math.round(crop.h * mult);
-
-    // ✅ margin=1로 가장자리 샘플링 회피 (너무 안쪽으로 안 들어가게 1px만)
-    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 1));
-
-    const c = document.createElement("canvas");
-    c.width = Math.max(1, sw);
-    c.height = Math.max(1, sh);
-    const cctx = c.getContext("2d", { alpha:true });
-    cctx.imageSmoothingEnabled = true;
-    cctx.imageSmoothingQuality = "high";
-    cctx.clearRect(0,0,sw,sh);
-    cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
-
-    const dataUrl = c.toDataURL("image/png");
-    const im = new Image();
-    await new Promise((res, rej)=>{
-      im.onload = res;
-      im.onerror = ()=>rej(new Error("Crop failed"));
-      im.src = dataUrl;
-    });
-
-    img = im;
-    imgW = im.naturalWidth || 1;
-    imgH = im.naturalHeight || 1;
-    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
-
-    const rect = stageRect();
-    const s = Math.min(rect.width / imgW, rect.height / imgH);
-    Object.assign(initialView, { scale:s, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
-    Object.assign(view, initialView);
-
-    cropOn = true;
-    ensureCropDefault(true);
-
-    clearHistory();
-    redraw();
-    updateMeta();
-    setMsg(t().msg_crop_applied, "ok");
-  }
 
   cropApplyBtn.addEventListener("click", async ()=>{
     try{
@@ -1688,7 +1680,7 @@
     undoBtn.disabled = history.length === 0;
   });
 
-  // ========= pointer events (pan + pinch zoom) =========
+  // ========= pointer events =========
   const pointers = new Map();
   let lastPan = null;
   let lastPinch = null;
@@ -1900,7 +1892,6 @@
     return `${base}_edit_${stamp}.${ext}`;
   }
 
-  // ✅ FIX: bbox는 stage 바깥으로 절대 나가지 않게 "클램프"
   function computeTransformedBBox(stageW, stageH){
     const cx = stageW/2 + view.offX;
     const cy = stageH/2 + view.offY;
@@ -1938,13 +1929,11 @@
       if(ys > maxY) maxY = ys;
     }
 
-    // ✅ stage 안으로 딱 고정 (검은 여백 방지)
     minX = Math.max(0, Math.floor(minX));
     minY = Math.max(0, Math.floor(minY));
     maxX = Math.min(stageW, Math.ceil(maxX));
     maxY = Math.min(stageH, Math.ceil(maxY));
 
-    // ✅ 예외 방지
     if(maxX <= minX){ minX = 0; maxX = stageW; }
     if(maxY <= minY){ minY = 0; maxY = stageH; }
 
@@ -1974,8 +1963,8 @@
     let sw = Math.round(bw * mult);
     let sh = Math.round(bh * mult);
 
-    // ✅ export도 margin=1로 가장자리 1px 회피
-    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 1));
+    /* 🔧 margin 1 -> 0 */
+    ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
 
     const base = document.createElement("canvas");
     base.width = sw;
