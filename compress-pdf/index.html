@@ -17,6 +17,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
   <!-- PDF-lib (rebuild PDF) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- JSZip (multiple download) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <style>
     :root{
@@ -92,28 +94,6 @@
     .card{ border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:var(--pad); margin-top:12px; min-width:0; max-width:100%; overflow-x: clip; }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
-    .drop{
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      background:rgba(255,255,255,.02);
-      text-align:center;
-      cursor:pointer;
-      user-select:none;
-      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
-      position: relative;
-      min-height: 160px;
-      display:flex; align-items:center; justify-content:center;
-      max-width:100%;
-      overflow:hidden;
-    }
-    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
-    .drop:active{ transform: scale(0.998); }
-    .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
-
-    .dropEmoji{ font-size:42px; line-height:1; margin:10px 0 8px; filter: drop-shadow(0 10px 22px rgba(0,0,0,.28)); }
-    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
-    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
-
     .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; min-width:0; }
     .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
 
@@ -148,6 +128,123 @@
       border: 1px solid rgba(120, 200, 255, .16);
       color: rgba(207, 230, 255, .70);
       box-shadow:none;
+    }
+
+    input[type="file"]{ display:none; }
+
+    /* Drop */
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      background:rgba(255,255,255,.02);
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
+      position: relative;
+      min-height: 170px;
+      display:flex; align-items:center; justify-content:center;
+      max-width:100%;
+      overflow:hidden;
+    }
+    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
+    .drop:active{ transform: scale(0.998); }
+    .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
+    /* ✅ "활성화 느낌" (파일이 있을 때) */
+    .drop.hasFiles{
+      border-color: rgba(120,200,255,.32);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.18);
+      background: rgba(255,255,255,.025);
+    }
+
+    .dropEmoji{ font-size:42px; line-height:1; margin:10px 0 8px; filter: drop-shadow(0 10px 22px rgba(0,0,0,.28)); }
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
+
+    /* ✅ Drop 우측상단 파일개수 배지 */
+    .countBadge{
+      position:absolute;
+      top:10px; right:10px;
+      display:none;
+      align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(120,200,255,.26);
+      background: rgba(120,200,255,.08);
+      color:#cfe6ff;
+      font-size:12px;
+      font-weight:900;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      user-select:none;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+    .countBadge .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: rgba(47,109,246,.9);
+      box-shadow: 0 0 0 3px rgba(47,109,246,.15);
+    }
+
+    /* ✅ 파일목록 토글 */
+    .fileBar{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .fileBarLeft{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      color:#a7b3c7; font-size:12px; font-weight:900;
+    }
+    .toggleBtn{
+      appearance:none; border:none; cursor:pointer;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      color:#e9eef7;
+      font-weight:900;
+      font-size:12px;
+      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
+      user-select:none;
+    }
+    .toggleBtn:hover{ background: rgba(255,255,255,.07); }
+    .toggleBtn:active{ transform: scale(.99); }
+    .toggleBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); border-color: rgba(var(--blue),.55); }
+
+    .fileList{
+      margin-top:10px;
+      display:none;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius:14px;
+      padding:12px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .fileList.show{ display:block; }
+    .fileItem{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .fileItem + .fileItem{ margin-top:10px; }
+    .fileName{ font-weight:900; color:#e9eef7; letter-spacing:-0.2px; }
+    .fileMeta{ margin-top:4px; color:#a7b3c7; font-size:12px; line-height:1.45; }
+    .miniPill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:#cfe0ff;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      height: fit-content;
     }
 
     /* Presets */
@@ -199,7 +296,6 @@
     }
     .presetDesc{ margin-top:6px; color:#a7b3c7; font-size:12px; line-height:1.45; }
 
-    input[type="file"]{ display:none; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     select{
       width:100%;
@@ -297,12 +393,25 @@
       <div style="height:10px;"></div>
 
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
+        <div class="countBadge" id="countBadge">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="countText">0</span>
+        </div>
         <div style="width:100%;">
           <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop PDF here<br/>or tap to upload</div>
           <div class="dropEmoji" aria-hidden="true">🗜️</div>
           <div class="hint" id="drop_hint">This compresses by rebuilding pages as images (text/search may be lost).</div>
         </div>
       </div>
+
+      <div class="fileBar">
+        <div class="fileBarLeft">
+          <span id="selectedPill">✅ <span id="selectedCount">0</span></span>
+        </div>
+        <button class="toggleBtn" id="toggleListBtn" type="button" disabled>▾ 목록 열기</button>
+      </div>
+
+      <div class="fileList" id="fileList" aria-label="File list"></div>
 
       <div class="msg" id="msg"></div>
       <div class="bar" id="bar"><div id="barFill"></div></div>
@@ -387,7 +496,7 @@
     </div>
   </div>
 
-  <input id="pickInput" type="file" accept="application/pdf">
+  <input id="pickInput" type="file" accept="application/pdf" multiple>
 
 <script>
 (() => {
@@ -396,7 +505,7 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // -------- pdf.js 안정화 로더 (getDocument undefined 방지) --------
+  // -------- pdf.js 안정화 로더 --------
   function loadScript(src){
     return new Promise((resolve, reject)=>{
       const s = document.createElement("script");
@@ -407,18 +516,12 @@
       document.head.appendChild(s);
     });
   }
-
   async function ensurePdfjs(){
-    // already loaded
     if (window.pdfjsLib && typeof window.pdfjsLib.getDocument === "function") return;
 
-    // 1) try re-load primary (v4) once (cache/network hiccup)
-    try{
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js");
-    }catch(_){}
+    try{ await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"); }catch(_){}
 
     if (window.pdfjsLib && typeof window.pdfjsLib.getDocument === "function") {
-      // v4 worker: use .js (mjs 워커는 모바일에서 종종 불안정)
       try{
         const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/";
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
@@ -426,7 +529,6 @@
       return;
     }
 
-    // 2) fallback to stable v3 (모바일에서 훨씬 안정적)
     await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
     if (!window.pdfjsLib || typeof window.pdfjsLib.getDocument !== "function"){
       throw new Error("pdf.js failed to initialize");
@@ -436,62 +538,24 @@
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
     }catch(_){}
   }
-  // -------------------------------------------------------------
+  // ----------------------------------
 
   const STR = {
-    en:{
-      page_title:"Compress PDF",
-      page_sub:"Upload → choose preset → compress → download. 100% local processing.",
-      home:"🏠 Home",
-      local:"Processed locally — no server upload",
-      lang_label:"Language",
-
-      h1:"Upload PDF",
-      pick:"📄 Choose PDF",
-      add:"➕ Add/Replace PDF",
-      clear:"🧹 Clear",
-      drop_title:"Drop PDF here<br/>or tap to upload",
-      drop_hint:"This compresses by rebuilding pages as images (text/search may be lost).",
-
-      h2:"Compression",
-      preset_title:"🎛 Presets",
-      preset_hint:"Pick one — settings apply automatically",
-      p1_name:"✨ Crisp (Recommended)",
-      p1_desc:"Best for text & documents. Sharper, may be larger.",
-      p2_name:"⚖️ Balanced",
-      p2_desc:"Good default for most PDFs.",
-      p3_name:"🗜️ Smallest",
-      p3_desc:"Smallest size. May look blurry when zoomed.",
-
-      lbl_quality:"Image quality",
-      q_hint:"Lower = smaller file.",
-      lbl_scale:"Render scale",
-      s_hint:"Higher = sharper but larger.",
-      go:"⬇️ Compress & Download PDF",
-
-      legal_title:"Notice",
-      legal_body:"This tool rebuilds each PDF page as an image to reduce file size. Text selection/search and vector sharpness may be lost. Always verify the output. For submissions, contracts, evidence, or important records, keep the original PDF.",
-
-      meta_idle:"<b>Status</b><br/>Upload a PDF to start.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Pages</b><br/>${p}`,
-      msg_need:"Please upload a PDF first.",
-      msg_work:"Working… keep this tab open.",
-      msg_done:"✅ Done",
-      msg_fail:"Failed to compress PDF."
-    },
     ko:{
       page_title:"PDF 압축",
       page_sub:"업로드 → 프리셋 선택 → 압축 → 다운로드. 100% 로컬 처리.",
       home:"🏠 홈으로",
       local:"로컬 처리 — 서버 업로드 없음",
       lang_label:"언어",
-
       h1:"PDF 업로드",
       pick:"📄 PDF 선택",
       add:"➕ PDF 추가/교체",
       clear:"🧹 비우기",
       drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
       drop_hint:"이미지로 다시 만들어 압축합니다(텍스트 선택/검색·선명도가 사라질 수 있어요).",
+      toggle_open:"▾ 목록 열기",
+      toggle_close:"▴ 목록 숨기기",
+      selected:(n)=>`✅ 선택됨: ${n}개`,
 
       h2:"압축 설정",
       preset_title:"🎛 프리셋",
@@ -507,99 +571,83 @@
       q_hint:"낮을수록 용량이 작아져요.",
       lbl_scale:"렌더 스케일",
       s_hint:"높을수록 선명하지만 커질 수 있어요.",
-      go:"⬇️ 압축 PDF 다운로드",
+      go_one:"⬇️ 압축 PDF 다운로드",
+      go_zip:"⬇️ 압축 ZIP 다운로드",
 
       legal_title:"안내",
       legal_body:"이 도구는 페이지를 이미지로 재생성해 용량을 줄입니다. 따라서 텍스트 선택/검색과 벡터 선명도가 사라질 수 있어요. 결과물은 꼭 확인해 주세요. 제출·계약·증거·중요 보관 문서는 원본 PDF를 반드시 보관하세요.",
 
       meta_idle:"<b>상태</b><br/>PDF를 업로드하면 시작할 수 있어요.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>페이지</b><br/>${p}`,
+      meta_loaded:(n)=>`<b>상태</b><br/>${n}개 PDF 준비 완료`,
       msg_need:"먼저 PDF를 업로드해 주세요.",
       msg_work:"작업 중… 이 탭을 닫지 마세요.",
       msg_done:"✅ 완료",
       msg_fail:"PDF 압축 실패"
     },
-    es:{
-      page_title:"Comprimir PDF",
-      page_sub:"Sube → elige preset → comprime → descarga. 100% local.",
-      home:"🏠 Inicio",
-      local:"Procesado local — sin servidor",
-      lang_label:"Idioma",
+    en:{
+      page_title:"Compress PDF",
+      page_sub:"Upload → choose preset → compress → download. 100% local processing.",
+      home:"🏠 Home",
+      local:"Processed locally — no server upload",
+      lang_label:"Language",
+      h1:"Upload PDF",
+      pick:"📄 Choose PDF",
+      add:"➕ Add/Replace PDF",
+      clear:"🧹 Clear",
+      drop_title:"Drop PDF here<br/>or tap to upload",
+      drop_hint:"This compresses by rebuilding pages as images (text/search may be lost).",
+      toggle_open:"▾ Show list",
+      toggle_close:"▴ Hide list",
+      selected:(n)=>`✅ Selected: ${n}`,
 
-      h1:"Subir PDF",
-      pick:"📄 Elegir PDF",
-      add:"➕ Añadir/Reemplazar PDF",
-      clear:"🧹 Limpiar",
-      drop_title:"Suelta el PDF aquí<br/>o toca para subir",
-      drop_hint:"Se comprime recreando páginas como imágenes (puede perder texto/búsqueda).",
-
-      h2:"Compresión",
+      h2:"Compression",
       preset_title:"🎛 Presets",
-      preset_hint:"Elige uno — se aplica automáticamente",
-      p1_name:"✨ Nítido (Recomendado)",
-      p1_desc:"Mejor para texto. Más nítido, puede ser mayor.",
-      p2_name:"⚖️ Equilibrado",
-      p2_desc:"Buen valor por defecto.",
-      p3_name:"🗜️ Más pequeño",
-      p3_desc:"Tamaño mínimo. Puede verse borroso al ampliar.",
+      preset_hint:"Pick one — settings apply automatically",
+      p1_name:"✨ Crisp (Recommended)",
+      p1_desc:"Best for text & documents. Sharper, may be larger.",
+      p2_name:"⚖️ Balanced",
+      p2_desc:"Good default for most PDFs.",
+      p3_name:"🗜️ Smallest",
+      p3_desc:"Smallest size. May look blurry when zoomed.",
 
-      lbl_quality:"Calidad de imagen",
-      q_hint:"Menor = más pequeño.",
-      lbl_scale:"Escala de render",
-      s_hint:"Mayor = más nítido pero más grande.",
-      go:"⬇️ Comprimir y descargar PDF",
+      lbl_quality:"Image quality",
+      q_hint:"Lower = smaller file.",
+      lbl_scale:"Render scale",
+      s_hint:"Higher = sharper but larger.",
+      go_one:"⬇️ Compress & Download PDF",
+      go_zip:"⬇️ Compress & Download ZIP",
 
-      legal_title:"Aviso",
-      legal_body:"Esta herramienta reconstruye cada página como imagen para reducir tamaño. Puede perder selección/búsqueda de texto y nitidez vectorial. Verifica el resultado. Para envíos o documentos importantes, conserva el PDF original.",
+      legal_title:"Notice",
+      legal_body:"This tool rebuilds each PDF page as an image to reduce file size. Text selection/search and vector sharpness may be lost. Always verify the output. For submissions, contracts, evidence, or important records, keep the original PDF.",
 
-      meta_idle:"<b>Estado</b><br/>Sube un PDF para empezar.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Páginas</b><br/>${p}`,
-      msg_need:"Primero sube un PDF.",
-      msg_work:"Trabajando… no cierres esta pestaña.",
-      msg_done:"✅ Hecho",
-      msg_fail:"Error al comprimir PDF."
-    },
-    ja:{
-      page_title:"PDF 圧縮",
-      page_sub:"アップロード → プリセット選択 → 圧縮 → ダウンロード。100% ローカル処理。",
-      home:"🏠 ホーム",
-      local:"ローカル処理 — サーバーなし",
-      lang_label:"言語",
-
-      h1:"PDF アップロード",
-      pick:"📄 PDF を選択",
-      add:"➕ PDF 追加/差し替え",
-      clear:"🧹 クリア",
-      drop_title:"ここにPDFをドロップ<br/>またはタップして選択",
-      drop_hint:"画像として再生成して圧縮します（テキスト検索が失われる場合あり）。",
-
-      h2:"圧縮設定",
-      preset_title:"🎛 プリセット",
-      preset_hint:"1つ選ぶと自動適用されます",
-      p1_name:"✨ 高精細(おすすめ)",
-      p1_desc:"文字向け。より鮮明ですが大きくなる場合。",
-      p2_name:"⚖️ バランス",
-      p2_desc:"多くのPDFにおすすめ。",
-      p3_name:"🗜️ 最小",
-      p3_desc:"最小サイズ。拡大するとぼやける場合。",
-
-      lbl_quality:"画像品質",
-      q_hint:"低いほど小さくなります。",
-      lbl_scale:"レンダースケール",
-      s_hint:"高いほど鮮明ですが大きくなる可能性。",
-      go:"⬇️ 圧縮PDFをダウンロード",
-
-      legal_title:"注意",
-      legal_body:"このツールは各ページを画像として再生成して容量を削減します。テキスト選択/検索やベクターの鮮明さが失われる場合があります。必ず出力を確認し、重要書類は原本PDFを保管してください。",
-
-      meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>ページ</b><br/>${p}`,
-      msg_need:"先にPDFをアップロードしてください。",
-      msg_work:"処理中… このタブを閉じないでください。",
-      msg_done:"✅ 完了",
-      msg_fail:"PDF圧縮に失敗しました。"
+      meta_idle:"<b>Status</b><br/>Upload PDFs to start.",
+      meta_loaded:(n)=>`<b>Status</b><br/>${n} PDF(s) ready`,
+      msg_need:"Please upload PDFs first.",
+      msg_work:"Working… keep this tab open.",
+      msg_done:"✅ Done",
+      msg_fail:"Failed to compress PDF."
     }
   };
+
+  function getQueryLang(){
+    try{
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toLowerCase();
+      if(q && STR[q]) return q;
+    }catch(e){}
+    return null;
+  }
+  function detectLang(){
+    const q = getQueryLang();
+    if(q) return q;
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    return "en";
+  }
+  let LANG = detectLang();
+  function t(){ return STR[LANG] || STR.en; }
 
   const pickInput = $("pickInput");
   const pickBtn = $("pickBtn");
@@ -613,6 +661,13 @@
   const compressBtn = $("compressBtn");
   const bar = $("bar");
   const barFill = $("barFill");
+
+  const countBadge = $("countBadge");
+  const countText = $("countText");
+  const selectedCount = $("selectedCount");
+  const selectedPill = $("selectedPill");
+  const fileList = $("fileList");
+  const toggleListBtn = $("toggleListBtn");
 
   const presetBtns = {
     crisp: $("preset_crisp"),
@@ -638,35 +693,13 @@
     barFill.style.width = "0%";
   }
 
-  function getQueryLang(){
-    try{
-      const u = new URL(location.href);
-      const q = (u.searchParams.get("lang")||"").toLowerCase();
-      if(q && STR[q]) return q;
-    }catch(e){}
-    return null;
-  }
-  function detectLang(){
-    const q = getQueryLang();
-    if(q) return q;
-    const saved = localStorage.getItem("cf24_lang");
-    if(saved && STR[saved]) return saved;
-    const nav = (navigator.language || "").toLowerCase();
-    if(nav.startsWith("ko")) return "ko";
-    if(nav.startsWith("ja")) return "ja";
-    if(nav.startsWith("es")) return "es";
-    return "en";
-  }
-  let LANG = detectLang();
-  function t(){ return STR[LANG] || STR.en; }
-
-  // Presets (scale / quality)
   const PRESETS = {
     crisp:   { scale: 2.0, quality: 0.85 },
     balanced:{ scale: 1.5, quality: 0.75 },
     small:   { scale: 1.0, quality: 0.60 }
   };
-  let activePreset = "balanced";
+  let activePreset = localStorage.getItem("cf24_pdf_preset") || "balanced";
+  if(!PRESETS[activePreset]) activePreset = "balanced";
 
   function applyPreset(key, { silent=false } = {}){
     if(!PRESETS[key]) key = "balanced";
@@ -681,13 +714,7 @@
     scaleEl.value = String(p.scale.toFixed(1));
     qualityEl.value = String(p.quality.toFixed(2));
 
-    if(!silent && pdfBytes) setMsg("", "");
-  }
-
-  function detectPreset(){
-    const saved = localStorage.getItem("cf24_pdf_preset");
-    if(saved && PRESETS[saved]) return saved;
-    return "balanced";
+    if(!silent) setMsg("", "");
   }
 
   function setLang(lang){
@@ -724,43 +751,30 @@
     $("q_hint").textContent = t().q_hint;
     $("lbl_scale").textContent = t().lbl_scale;
     $("s_hint").textContent = t().s_hint;
-    compressBtn.textContent = t().go;
 
     $("legal_box").innerHTML = "<b>" + esc(t().legal_title) + "</b><br/>" + esc(t().legal_body);
 
-    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
+    // 버튼 텍스트는 updateUI에서 결정
+    updateUI();
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // State
-  let pdfBytes = null;      // ArrayBuffer
-  let pdfName = "document.pdf";
-  let pageCount = 0;
-
-  function setEnabled(has){
-    qualityEl.disabled = !has;
-    scaleEl.disabled = !has;
-    compressBtn.disabled = !has;
-    clearBtn.disabled = !has;
-    addBtn.disabled = !has;
-  }
+  // ---------- 파일 상태(여러 개 지원) ----------
+  // files: { name, bytes:ArrayBuffer, pages:number }
+  let files = [];
+  let listOpen = false;
 
   function openPicker(){
     pickInput.value="";
     pickInput.click();
   }
-
   pickBtn.addEventListener("click", openPicker);
   addBtn.addEventListener("click", openPicker);
-  pickInput.addEventListener("change", (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
-  });
 
-  function openDropPicker(){ openPicker(); }
-  drop.addEventListener("click", openDropPicker);
+  // drop
+  drop.addEventListener("click", openPicker);
   drop.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openPicker(); }
   });
   ["dragenter","dragover"].forEach(evt=>{
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
@@ -769,25 +783,93 @@
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
   });
   drop.addEventListener("drop", (e)=>{
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) loadFile(f);
+    const fl = e.dataTransfer.files;
+    if(fl && fl.length) loadFiles(Array.from(fl));
+  });
+
+  pickInput.addEventListener("change", (e)=>{
+    const fl = e.target.files;
+    if(fl && fl.length) loadFiles(Array.from(fl));
   });
 
   clearBtn.addEventListener("click", ()=>{
-    pdfBytes = null; pdfName="document.pdf"; pageCount=0;
-    setEnabled(false);
-    metaEl.innerHTML = t().meta_idle;
-    setMsg("", "");
+    files = [];
+    listOpen = false;
+    fileList.classList.remove("show");
     hideProg();
+    setMsg("", "");
+    updateUI();
   });
 
-  // Presets
-  presetBtns.crisp.addEventListener("click", ()=> applyPreset("crisp"));
-  presetBtns.balanced.addEventListener("click", ()=> applyPreset("balanced"));
-  presetBtns.small.addEventListener("click", ()=> applyPreset("small"));
+  toggleListBtn.addEventListener("click", ()=>{
+    if(!files.length) return;
+    listOpen = !listOpen;
+    if(listOpen) fileList.classList.add("show");
+    else fileList.classList.remove("show");
+    updateToggleText();
+  });
+
+  function updateToggleText(){
+    toggleListBtn.textContent = listOpen ? t().toggle_close : t().toggle_open;
+  }
+
+  function updateFileList(){
+    fileList.innerHTML = "";
+    for(const f of files){
+      const item = document.createElement("div");
+      item.className = "fileItem";
+      item.innerHTML = `
+        <div style="min-width:0;">
+          <div class="fileName">${esc(f.name)}</div>
+          <div class="fileMeta">Pages: ${f.pages}</div>
+        </div>
+        <div class="miniPill">${f.pages}p</div>
+      `;
+      fileList.appendChild(item);
+    }
+  }
+
+  function updateUI(){
+    const n = files.length;
+
+    // count badge + selected pill
+    selectedCount.textContent = String(n);
+    selectedPill.textContent = t().selected(n);
+    countText.textContent = String(n);
+
+    if(n > 0){
+      countBadge.style.display = "inline-flex";
+      drop.classList.add("hasFiles");              // ✅ 활성화 느낌
+      addBtn.disabled = false;
+      clearBtn.disabled = false;
+      toggleListBtn.disabled = false;
+      compressBtn.disabled = false;
+      qualityEl.disabled = false;
+      scaleEl.disabled = false;
+      metaEl.innerHTML = t().meta_loaded(n);
+
+      // 1개/여러개 다운로드 문구
+      compressBtn.textContent = (n >= 2) ? t().go_zip : t().go_one;
+    }else{
+      countBadge.style.display = "none";
+      drop.classList.remove("hasFiles");
+      addBtn.disabled = true;
+      clearBtn.disabled = true;
+      toggleListBtn.disabled = true;
+      compressBtn.disabled = true;
+      qualityEl.disabled = true;
+      scaleEl.disabled = true;
+      metaEl.innerHTML = t().meta_idle;
+      compressBtn.textContent = t().go_one;
+    }
+
+    updateToggleText();
+    if(!listOpen) fileList.classList.remove("show");
+    if(n === 0) fileList.classList.remove("show");
+  }
 
   async function safeLoadPdfWithPdfjs(buf){
-    await ensurePdfjs(); // ✅ 핵심: pdfjsLib 보장
+    await ensurePdfjs();
     const u8 = new Uint8Array(buf);
     const copy = new Uint8Array(u8.length);
     copy.set(u8);
@@ -795,30 +877,45 @@
     return await loadingTask.promise;
   }
 
-  async function loadFile(file){
+  async function loadFiles(fileArr){
     try{
       setMsg("", "");
       hideProg();
 
-      const buf = await file.arrayBuffer();
-      const pdf = await safeLoadPdfWithPdfjs(buf);
+      // PDF만 필터
+      const onlyPdf = fileArr.filter(f => (f && (f.type === "application/pdf" || /\.pdf$/i.test(f.name))));
+      if(!onlyPdf.length) throw new Error("No PDF selected");
 
-      pageCount = pdf.numPages;
-      pdfBytes = buf;
-      pdfName = file.name || "document.pdf";
+      // 기존 목록에 추가(드롭/선택 시 여러 개)
+      // “추가/교체” 버튼 의미를 살리기 위해: addBtn(추가/교체) 사용 시에는 “선택한 것들로 교체”가 자연스러움.
+      // 하지만 지금은 pickInput이 둘 다 공유라, UX 일관성 위해: 항상 '추가'로 동작.
+      // 교체가 필요하면 "비우기" → 새로 선택 흐름이 가장 안전.
+      for(const f of onlyPdf){
+        const buf = await f.arrayBuffer();
+        const pdf = await safeLoadPdfWithPdfjs(buf);
+        files.push({ name: f.name || "document.pdf", bytes: buf, pages: pdf.numPages });
+      }
 
-      setEnabled(true);
-      metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
+      // 너무 많이 올리면 모바일 터질 수 있으니 상한(안전)
+      const MAX = 12;
+      if(files.length > MAX) files = files.slice(0, MAX);
+
+      updateFileList();
+      updateUI();
+
     }catch(e){
-      pdfBytes = null; pageCount=0;
-      setEnabled(false);
-      metaEl.innerHTML = t().meta_idle;
-
       const detail = (e && e.message) ? e.message : String(e);
       setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
       hideProg();
+      // 실패해도 기존 files는 유지
+      updateUI();
     }
   }
+
+  // presets
+  presetBtns.crisp.addEventListener("click", ()=> applyPreset("crisp"));
+  presetBtns.balanced.addEventListener("click", ()=> applyPreset("balanced"));
+  presetBtns.small.addEventListener("click", ()=> applyPreset("small"));
 
   function downloadBlob(blob, filename){
     const a = document.createElement("a");
@@ -831,10 +928,15 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function buildName(){
-    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
-    return `${base}_compressed_${stamp}.pdf`;
+  function stamp(){
+    return new Date().toISOString().replace(/[:.]/g,"-");
+  }
+  function buildPdfName(original){
+    const base = (original || "document.pdf").replace(/\.[^.]+$/, "");
+    return `${base}_compressed_${stamp()}.pdf`;
+  }
+  function buildZipName(){
+    return `compressed_pdfs_${stamp()}.zip`;
   }
 
   async function renderPageToJpegBlob(pdf, pageNum, scale, quality){
@@ -852,23 +954,42 @@
 
     await page.render({ canvasContext: ctx, viewport }).promise;
 
-    const blob = await new Promise((resolve) => {
-      canvas.toBlob(resolve, "image/jpeg", quality);
-    });
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
     if(!blob) throw new Error("canvas.toBlob failed");
 
     try { canvas.width = 1; canvas.height = 1; } catch(_){}
     return { blob, w: viewport.width, h: viewport.height };
   }
 
+  async function compressOne(fileObj, q, scale){
+    const pdf = await safeLoadPdfWithPdfjs(fileObj.bytes);
+
+    const { PDFDocument } = window.PDFLib;
+    const out = await PDFDocument.create();
+
+    const total = pdf.numPages;
+    for(let i=1;i<=total;i++){
+      const { blob, w, h } = await renderPageToJpegBlob(pdf, i, scale, q);
+      const jpgBytes = await blob.arrayBuffer();
+      const jpg = await out.embedJpg(jpgBytes);
+
+      const page = out.addPage([w, h]);
+      page.drawImage(jpg, { x:0, y:0, width:w, height:h });
+    }
+
+    const bytes = await out.save({ useObjectStreams:true });
+    return new Blob([bytes], { type:"application/pdf" });
+  }
+
   compressBtn.addEventListener("click", async ()=>{
     try{
-      if(!pdfBytes) return setMsg(t().msg_need, "err");
+      if(!files.length) return setMsg(t().msg_need, "err");
 
       compressBtn.disabled = true;
       pickBtn.disabled = true;
       addBtn.disabled = true;
       clearBtn.disabled = true;
+      toggleListBtn.disabled = true;
       qualityEl.disabled = true;
       scaleEl.disabled = true;
 
@@ -878,48 +999,55 @@
       const q = parseFloat(qualityEl.value || "0.75");
       const scale = parseFloat(scaleEl.value || "1.5");
 
-      const pdf = await safeLoadPdfWithPdfjs(pdfBytes);
+      if(files.length === 1){
+        setProg(10);
+        const outBlob = await compressOne(files[0], q, scale);
+        setProg(95);
+        downloadBlob(outBlob, buildPdfName(files[0].name));
+        setProg(100);
+        setMsg(t().msg_done, "ok");
+        return;
+      }
 
-      const { PDFDocument } = window.PDFLib;
-      const out = await PDFDocument.create();
+      // multiple -> ZIP
+      const zip = new window.JSZip();
+      const total = files.length;
 
-      const total = pdf.numPages;
-      for(let i=1;i<=total;i++){
-        setProg(Math.round((i-1)/total*90) + 5);
+      for(let i=0;i<total;i++){
+        setProg(Math.round((i)/total*85) + 10);
 
-        const { blob, w, h } = await renderPageToJpegBlob(pdf, i, scale, q);
-        const jpgBytes = await blob.arrayBuffer();
-        const jpg = await out.embedJpg(jpgBytes);
-
-        const page = out.addPage([w, h]);
-        page.drawImage(jpg, { x:0, y:0, width:w, height:h });
+        const f = files[i];
+        const outBlob = await compressOne(f, q, scale);
+        const arr = await outBlob.arrayBuffer();
+        zip.file(buildPdfName(f.name), arr);
       }
 
       setProg(96);
-      const bytes = await out.save({ useObjectStreams:true });
-      const outBlob = new Blob([bytes], { type:"application/pdf" });
-
-      downloadBlob(outBlob, buildName());
+      const zipBlob = await zip.generateAsync({ type:"blob" });
+      downloadBlob(zipBlob, buildZipName());
       setProg(100);
       setMsg(t().msg_done, "ok");
+
     }catch(e){
       const detail = (e && e.message) ? e.message : String(e);
-      setMsg((t().msg_fail || "Failed to compress PDF.") + " (" + detail + ")", "err");
+      setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
       hideProg();
     }finally{
-      const has = !!pdfBytes;
+      const has = files.length > 0;
       compressBtn.disabled = !has;
       pickBtn.disabled = false;
       addBtn.disabled = !has;
       clearBtn.disabled = !has;
+      toggleListBtn.disabled = !has;
       qualityEl.disabled = !has;
       scaleEl.disabled = !has;
     }
   });
 
   // init
+  applyPreset(activePreset, { silent:true });
   setLang(LANG);
-  applyPreset(detectPreset(), { silent:true });
+  updateUI();
 })();
 </script>
 </body>
