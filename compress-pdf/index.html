@@ -151,7 +151,6 @@
     .drop:active{ transform: scale(0.998); }
     .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
 
-    /* ✅ "활성화 느낌" (파일이 있을 때) */
     .drop.hasFiles{
       border-color: rgba(120,200,255,.32);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.18);
@@ -162,7 +161,6 @@
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
 
-    /* ✅ Drop 우측상단 파일개수 배지 */
     .countBadge{
       position:absolute;
       top:10px; right:10px;
@@ -186,7 +184,6 @@
       box-shadow: 0 0 0 3px rgba(47,109,246,.15);
     }
 
-    /* ✅ 파일목록 토글 */
     .fileBar{
       margin-top:10px;
       display:flex;
@@ -199,19 +196,23 @@
       display:flex; align-items:center; gap:10px; flex-wrap:wrap;
       color:#a7b3c7; font-size:12px; font-weight:900;
     }
+
+    /* ✅ 둔탁함 완화: 굵기/자간/배경 대비 조정 */
     .toggleBtn{
       appearance:none; border:none; cursor:pointer;
       padding:10px 12px;
       border-radius:999px;
-      background: rgba(255,255,255,.05);
+      background: rgba(255,255,255,.045);
       border: 1px solid rgba(255,255,255,.10);
       color:#e9eef7;
-      font-weight:900;
+      font-weight:800;
       font-size:12px;
+      letter-spacing: -0.15px;
+      text-rendering: geometricPrecision;
       transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
       user-select:none;
     }
-    .toggleBtn:hover{ background: rgba(255,255,255,.07); }
+    .toggleBtn:hover{ background: rgba(255,255,255,.06); }
     .toggleBtn:active{ transform: scale(.99); }
     .toggleBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); border-color: rgba(var(--blue),.55); }
 
@@ -225,16 +226,28 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
     .fileList.show{ display:block; }
+
     .fileItem{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      display:flex; align-items:stretch; justify-content:space-between; gap:10px;
       padding:10px 10px;
       border-radius:12px;
       background: rgba(255,255,255,.03);
       border: 1px solid rgba(255,255,255,.08);
     }
     .fileItem + .fileItem{ margin-top:10px; }
-    .fileName{ font-weight:900; color:#e9eef7; letter-spacing:-0.2px; }
+
+    .fileLeft{ min-width:0; flex: 1; }
+    .fileName{ font-weight:900; color:#e9eef7; letter-spacing:-0.2px; word-break: break-word; }
     .fileMeta{ margin-top:4px; color:#a7b3c7; font-size:12px; line-height:1.45; }
+
+    /* ✅ 11p 배지 + X + 이동 화살표 */
+    .fileRight{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      min-width: 64px;
+    }
     .miniPill{
       padding:6px 10px;
       border-radius:999px;
@@ -245,6 +258,45 @@
       font-weight:900;
       white-space:nowrap;
       height: fit-content;
+    }
+    .iconStack{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:stretch;
+      width: 54px;
+    }
+    .iconBtn{
+      appearance:none; border:none; cursor:pointer;
+      padding:8px 0;
+      border-radius:12px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      color:#e9eef7;
+      font-weight:900;
+      font-size:12px;
+      line-height:1;
+      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
+      user-select:none;
+    }
+    .iconBtn:hover{ background: rgba(255,255,255,.07); }
+    .iconBtn:active{ transform: scale(.99); }
+    .iconBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); border-color: rgba(var(--blue),.55); }
+    .iconBtn.danger{
+      background: rgba(255, 110, 110, .08);
+      border-color: rgba(255, 110, 110, .22);
+      color: #ffd6d6;
+    }
+    .iconBtn.danger:hover{
+      background: rgba(255, 110, 110, .12);
+      border-color: rgba(255, 110, 110, .30);
+    }
+    .iconBtn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+      filter:none;
     }
 
     /* Presets */
@@ -386,7 +438,7 @@
 
       <div class="row">
         <button class="btn secondary" id="pickBtn" type="button">📄 Choose PDF</button>
-        <button class="btn secondary" id="addBtn" type="button" disabled>➕ Add/Replace PDF</button>
+        <button class="btn secondary" id="addBtn" type="button" disabled>➕ Add PDF</button>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
       </div>
 
@@ -408,7 +460,7 @@
         <div class="fileBarLeft">
           <span id="selectedPill">✅ <span id="selectedCount">0</span></span>
         </div>
-        <button class="toggleBtn" id="toggleListBtn" type="button" disabled>▾ 목록 열기</button>
+        <button class="toggleBtn" id="toggleListBtn" type="button" disabled>▾ Show list</button>
       </div>
 
       <div class="fileList" id="fileList" aria-label="File list"></div>
@@ -505,7 +557,6 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // -------- pdf.js 안정화 로더 --------
   function loadScript(src){
     return new Promise((resolve, reject)=>{
       const s = document.createElement("script");
@@ -538,7 +589,6 @@
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
     }catch(_){}
   }
-  // ----------------------------------
 
   const STR = {
     ko:{
@@ -549,7 +599,7 @@
       lang_label:"언어",
       h1:"PDF 업로드",
       pick:"📄 PDF 선택",
-      add:"➕ PDF 추가/교체",
+      add:"➕ PDF 추가",
       clear:"🧹 비우기",
       drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
       drop_hint:"이미지로 다시 만들어 압축합니다(텍스트 선택/검색·선명도가 사라질 수 있어요).",
@@ -582,7 +632,11 @@
       msg_need:"먼저 PDF를 업로드해 주세요.",
       msg_work:"작업 중… 이 탭을 닫지 마세요.",
       msg_done:"✅ 완료",
-      msg_fail:"PDF 압축 실패"
+      msg_fail:"PDF 압축 실패",
+
+      del:"삭제",
+      up:"위로",
+      down:"아래로"
     },
     en:{
       page_title:"Compress PDF",
@@ -592,7 +646,7 @@
       lang_label:"Language",
       h1:"Upload PDF",
       pick:"📄 Choose PDF",
-      add:"➕ Add/Replace PDF",
+      add:"➕ Add PDF",
       clear:"🧹 Clear",
       drop_title:"Drop PDF here<br/>or tap to upload",
       drop_hint:"This compresses by rebuilding pages as images (text/search may be lost).",
@@ -625,7 +679,11 @@
       msg_need:"Please upload PDFs first.",
       msg_work:"Working… keep this tab open.",
       msg_done:"✅ Done",
-      msg_fail:"Failed to compress PDF."
+      msg_fail:"Failed to compress PDF.",
+
+      del:"Delete",
+      up:"Up",
+      down:"Down"
     }
   };
 
@@ -754,12 +812,11 @@
 
     $("legal_box").innerHTML = "<b>" + esc(t().legal_title) + "</b><br/>" + esc(t().legal_body);
 
-    // 버튼 텍스트는 updateUI에서 결정
     updateUI();
+    updateFileList(); // 언어 변경 시 버튼 aria-label 갱신
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // ---------- 파일 상태(여러 개 지원) ----------
   // files: { name, bytes:ArrayBuffer, pages:number }
   let files = [];
   let listOpen = false;
@@ -771,7 +828,6 @@
   pickBtn.addEventListener("click", openPicker);
   addBtn.addEventListener("click", openPicker);
 
-  // drop
   drop.addEventListener("click", openPicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openPicker(); }
@@ -799,6 +855,7 @@
     hideProg();
     setMsg("", "");
     updateUI();
+    updateFileList();
   });
 
   toggleListBtn.addEventListener("click", ()=>{
@@ -815,31 +872,114 @@
 
   function updateFileList(){
     fileList.innerHTML = "";
-    for(const f of files){
+
+    files.forEach((f, idx)=>{
       const item = document.createElement("div");
       item.className = "fileItem";
       item.innerHTML = `
-        <div style="min-width:0;">
+        <div class="fileLeft">
           <div class="fileName">${esc(f.name)}</div>
           <div class="fileMeta">Pages: ${f.pages}</div>
         </div>
-        <div class="miniPill">${f.pages}p</div>
+        <div class="fileRight">
+          <div class="miniPill">${f.pages}p</div>
+          <div class="iconStack">
+            <button class="iconBtn danger" data-act="del" data-idx="${idx}" aria-label="${esc(t().del)}">✕</button>
+            <button class="iconBtn" data-act="up" data-idx="${idx}" aria-label="${esc(t().up)}">↑</button>
+            <button class="iconBtn" data-act="down" data-idx="${idx}" aria-label="${esc(t().down)}">↓</button>
+          </div>
+        </div>
       `;
       fileList.appendChild(item);
+    });
+
+    // disable arrows at edges
+    const btns = fileList.querySelectorAll("button[data-act]");
+    btns.forEach(b=>{
+      const act = b.getAttribute("data-act");
+      const i = parseInt(b.getAttribute("data-idx"),10);
+      if(act === "up" && i === 0) b.disabled = true;
+      if(act === "down" && i === files.length - 1) b.disabled = true;
+    });
+  }
+
+  // event delegation for list controls
+  fileList.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+    const act = btn.getAttribute("data-act");
+    const idx = parseInt(btn.getAttribute("data-idx"),10);
+    if(Number.isNaN(idx)) return;
+
+    if(act === "del"){
+      files.splice(idx, 1);
+    }else if(act === "up" && idx > 0){
+      const tmp = files[idx-1];
+      files[idx-1] = files[idx];
+      files[idx] = tmp;
+    }else if(act === "down" && idx < files.length-1){
+      const tmp = files[idx+1];
+      files[idx+1] = files[idx];
+      files[idx] = tmp;
+    }
+
+    // keep list open if it was open and still has files
+    if(files.length === 0){
+      listOpen = false;
+      fileList.classList.remove("show");
+    }
+
+    updateFileList();
+    updateUI();
+  });
+
+  async function safeLoadPdfWithPdfjs(buf){
+    await ensurePdfjs();
+    const u8 = new Uint8Array(buf);
+    const copy = new Uint8Array(u8.length);
+    copy.set(u8);
+    const loadingTask = window.pdfjsLib.getDocument({ data: copy });
+    return await loadingTask.promise;
+  }
+
+  async function loadFiles(fileArr){
+    try{
+      setMsg("", "");
+      hideProg();
+
+      const onlyPdf = fileArr.filter(f => (f && (f.type === "application/pdf" || /\.pdf$/i.test(f.name))));
+      if(!onlyPdf.length) throw new Error("No PDF selected");
+
+      for(const f of onlyPdf){
+        const buf = await f.arrayBuffer();
+        const pdf = await safeLoadPdfWithPdfjs(buf);
+        files.push({ name: f.name || "document.pdf", bytes: buf, pages: pdf.numPages });
+      }
+
+      const MAX = 12;
+      if(files.length > MAX) files = files.slice(0, MAX);
+
+      updateFileList();
+      updateUI();
+
+    }catch(e){
+      const detail = (e && e.message) ? e.message : String(e);
+      setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
+      hideProg();
+      updateUI();
     }
   }
 
   function updateUI(){
     const n = files.length;
 
-    // count badge + selected pill
     selectedCount.textContent = String(n);
     selectedPill.textContent = t().selected(n);
     countText.textContent = String(n);
 
     if(n > 0){
       countBadge.style.display = "inline-flex";
-      drop.classList.add("hasFiles");              // ✅ 활성화 느낌
+      drop.classList.add("hasFiles");
       addBtn.disabled = false;
       clearBtn.disabled = false;
       toggleListBtn.disabled = false;
@@ -848,7 +988,6 @@
       scaleEl.disabled = false;
       metaEl.innerHTML = t().meta_loaded(n);
 
-      // 1개/여러개 다운로드 문구
       compressBtn.textContent = (n >= 2) ? t().go_zip : t().go_one;
     }else{
       countBadge.style.display = "none";
@@ -866,50 +1005,6 @@
     updateToggleText();
     if(!listOpen) fileList.classList.remove("show");
     if(n === 0) fileList.classList.remove("show");
-  }
-
-  async function safeLoadPdfWithPdfjs(buf){
-    await ensurePdfjs();
-    const u8 = new Uint8Array(buf);
-    const copy = new Uint8Array(u8.length);
-    copy.set(u8);
-    const loadingTask = window.pdfjsLib.getDocument({ data: copy });
-    return await loadingTask.promise;
-  }
-
-  async function loadFiles(fileArr){
-    try{
-      setMsg("", "");
-      hideProg();
-
-      // PDF만 필터
-      const onlyPdf = fileArr.filter(f => (f && (f.type === "application/pdf" || /\.pdf$/i.test(f.name))));
-      if(!onlyPdf.length) throw new Error("No PDF selected");
-
-      // 기존 목록에 추가(드롭/선택 시 여러 개)
-      // “추가/교체” 버튼 의미를 살리기 위해: addBtn(추가/교체) 사용 시에는 “선택한 것들로 교체”가 자연스러움.
-      // 하지만 지금은 pickInput이 둘 다 공유라, UX 일관성 위해: 항상 '추가'로 동작.
-      // 교체가 필요하면 "비우기" → 새로 선택 흐름이 가장 안전.
-      for(const f of onlyPdf){
-        const buf = await f.arrayBuffer();
-        const pdf = await safeLoadPdfWithPdfjs(buf);
-        files.push({ name: f.name || "document.pdf", bytes: buf, pages: pdf.numPages });
-      }
-
-      // 너무 많이 올리면 모바일 터질 수 있으니 상한(안전)
-      const MAX = 12;
-      if(files.length > MAX) files = files.slice(0, MAX);
-
-      updateFileList();
-      updateUI();
-
-    }catch(e){
-      const detail = (e && e.message) ? e.message : String(e);
-      setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
-      hideProg();
-      // 실패해도 기존 files는 유지
-      updateUI();
-    }
   }
 
   // presets
@@ -1009,7 +1104,6 @@
         return;
       }
 
-      // multiple -> ZIP
       const zip = new window.JSZip();
       const total = files.length;
 
