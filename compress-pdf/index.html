@@ -13,9 +13,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-  <!-- pdf.js (render pages) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
-  <!-- PDF-lib (rebuild PDF) -->
+  <!-- ✅ pdf.js (stable UMD for mobile) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // worker
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+  </script>
+
+  <!-- PDF-lib (rebuild/merge PDF) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
   <style>
@@ -169,7 +177,6 @@
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
 
-    input[type="range"]{ width:100%; }
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
     .msg.err{ color:#ffb4b4; }
     .msg.ok{ color:#b8ffcc; }
@@ -195,6 +202,20 @@
       width:0%;
       background: rgba(47,109,246,.9);
       transition: width .15s var(--ease);
+    }
+
+    .pickedPill{
+      margin-top:10px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:#b7c3d9;
+      font-size:12px;
+      font-weight:900;
     }
   </style>
 </head>
@@ -231,8 +252,11 @@
 
       <div class="row">
         <button class="btn secondary" id="pickBtn" type="button">📄 Choose PDF</button>
+        <button class="btn secondary" id="addBtn" type="button" disabled>➕ Add PDF</button>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
       </div>
+
+      <div class="pickedPill" id="pickedPill" style="display:none;">✅ <span id="pickedText">Selected: 0</span></div>
 
       <div style="height:10px;"></div>
 
@@ -289,7 +313,10 @@
     </div>
   </div>
 
+  <!-- first pick (replace list) -->
   <input id="pickInput" type="file" accept="application/pdf">
+  <!-- add pick (append) -->
+  <input id="addInput" type="file" accept="application/pdf" multiple>
 
 <script>
 (() => {
@@ -297,14 +324,6 @@
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
-  // pdf.js worker (PDF.js v4: worker is often .mjs)
-  if (window.pdfjsLib) {
-    const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/";
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.mjs";
-    // fallback option (if needed):
-    // window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
-  }
 
   const STR = {
     en:{
@@ -315,7 +334,9 @@
       lang_label:"Language",
       h1:"Upload PDF",
       pick:"📄 Choose PDF",
+      add:"➕ Add PDF",
       clear:"🧹 Clear",
+      picked:(n)=>`Selected: ${n}`,
       drop_title:"Drop PDF here<br/>or tap to upload",
       drop_hint:"This compresses by rebuilding pages as images (may remove selectable text).",
       h2:"Compression",
@@ -325,7 +346,7 @@
       s_hint:"Higher = sharper but larger.",
       go:"⬇️ Compress & Download PDF",
       meta_idle:"<b>Status</b><br/>Upload a PDF to start.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Pages</b><br/>${p}`,
+      meta_loaded:(names,p)=>`<b>PDF</b><br/>${esc(names)}<br/><b>Pages</b><br/>${p}`,
       msg_need:"Please upload a PDF first.",
       msg_work:"Working… keep this tab open.",
       msg_done:"✅ Done",
@@ -339,7 +360,9 @@
       lang_label:"언어",
       h1:"PDF 업로드",
       pick:"📄 PDF 선택",
+      add:"➕ PDF 추가",
       clear:"🧹 비우기",
+      picked:(n)=>`선택됨: ${n}개`,
       drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
       drop_hint:"이미지로 다시 만들어 압축합니다(텍스트 선택/검색이 사라질 수 있어요).",
       h2:"압축 설정",
@@ -349,7 +372,7 @@
       s_hint:"높을수록 선명하지만 커질 수 있어요.",
       go:"⬇️ 압축 PDF 다운로드",
       meta_idle:"<b>상태</b><br/>PDF를 업로드하면 시작할 수 있어요.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>페이지</b><br/>${p}`,
+      meta_loaded:(names,p)=>`<b>PDF</b><br/>${esc(names)}<br/><b>페이지</b><br/>${p}`,
       msg_need:"먼저 PDF를 업로드해 주세요.",
       msg_work:"작업 중… 이 탭을 닫지 마세요.",
       msg_done:"✅ 완료",
@@ -363,7 +386,9 @@
       lang_label:"Idioma",
       h1:"Subir PDF",
       pick:"📄 Elegir PDF",
+      add:"➕ Agregar PDF",
       clear:"🧹 Limpiar",
+      picked:(n)=>`Seleccionados: ${n}`,
       drop_title:"Suelta el PDF aquí<br/>o toca para subir",
       drop_hint:"Comprime recreando páginas como imágenes (puede perder texto seleccionable).",
       h2:"Compresión",
@@ -373,7 +398,7 @@
       s_hint:"Mayor = más nítido pero más grande.",
       go:"⬇️ Comprimir y descargar PDF",
       meta_idle:"<b>Estado</b><br/>Sube un PDF para empezar.",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>Páginas</b><br/>${p}`,
+      meta_loaded:(names,p)=>`<b>PDF</b><br/>${esc(names)}<br/><b>Páginas</b><br/>${p}`,
       msg_need:"Primero sube un PDF.",
       msg_work:"Trabajando… no cierres esta pestaña.",
       msg_done:"✅ Hecho",
@@ -387,7 +412,9 @@
       lang_label:"言語",
       h1:"PDF アップロード",
       pick:"📄 PDF を選択",
+      add:"➕ PDF 追加",
       clear:"🧹 クリア",
+      picked:(n)=>`選択: ${n}`,
       drop_title:"ここにPDFをドロップ<br/>またはタップして選択",
       drop_hint:"画像として再生成して圧縮します（テキスト選択が失われる場合あり）。",
       h2:"圧縮設定",
@@ -397,7 +424,7 @@
       s_hint:"高いほど鮮明ですが大きくなる可能性。",
       go:"⬇️ 圧縮PDFをダウンロード",
       meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
-      meta_loaded:(name,p)=>`<b>PDF</b><br/>${esc(name)}<br/><b>ページ</b><br/>${p}`,
+      meta_loaded:(names,p)=>`<b>PDF</b><br/>${esc(names)}<br/><b>ページ</b><br/>${p}`,
       msg_need:"先にPDFをアップロードしてください。",
       msg_work:"処理中… このタブを閉じないでください。",
       msg_done:"✅ 完了",
@@ -406,16 +433,20 @@
   };
 
   const pickInput = $("pickInput");
-  const pickBtn = $("pickBtn");
-  const clearBtn = $("clearBtn");
-  const drop = $("drop");
-  const msgEl = $("msg");
-  const metaEl = $("meta");
+  const addInput  = $("addInput");
+  const pickBtn   = $("pickBtn");
+  const addBtn    = $("addBtn");
+  const clearBtn  = $("clearBtn");
+  const drop      = $("drop");
+  const msgEl     = $("msg");
+  const metaEl    = $("meta");
   const qualityEl = $("quality");
-  const scaleEl = $("scale");
+  const scaleEl   = $("scale");
   const compressBtn = $("compressBtn");
-  const bar = $("bar");
-  const barFill = $("barFill");
+  const bar       = $("bar");
+  const barFill   = $("barFill");
+  const pickedPill = $("pickedPill");
+  const pickedText = $("pickedText");
 
   function esc(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
@@ -472,6 +503,7 @@
 
     $("h_step1").textContent = t().h1;
     pickBtn.textContent = t().pick;
+    addBtn.textContent = t().add;
     clearBtn.textContent = t().clear;
     $("drop_title").innerHTML = t().drop_title;
     $("drop_hint").textContent = t().drop_hint;
@@ -483,21 +515,54 @@
     $("s_hint").textContent = t().s_hint;
     compressBtn.textContent = t().go;
 
-    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
+    updatePickedUI();
+    if(!pdfItems.length) metaEl.innerHTML = t().meta_idle;
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  let pdfBytes = null;
-  let pdfName = "document.pdf";
-  let pageCount = 0;
+  // ---- files state (multiple) ----
+  /** @type {{name:string, bytes:ArrayBuffer}[]} */
+  let pdfItems = [];
+  let totalPages = 0;
+
+  function updatePickedUI(){
+    const n = pdfItems.length;
+    if(n > 0){
+      pickedPill.style.display = "inline-flex";
+      pickedText.textContent = t().picked(n);
+    }else{
+      pickedPill.style.display = "none";
+    }
+  }
+
+  function enableControls(has){
+    qualityEl.disabled = !has;
+    scaleEl.disabled = !has;
+    compressBtn.disabled = !has;
+    clearBtn.disabled = !has;
+    addBtn.disabled = !has;
+  }
 
   pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
-  pickInput.addEventListener("change", (e)=>{
+  addBtn.addEventListener("click", ()=>{ addInput.value=""; addInput.click(); });
+
+  pickInput.addEventListener("change", async (e)=>{
     const f = e.target.files && e.target.files[0];
-    if(f) loadFile(f);
+    if(!f) return;
+    await loadFilesReplace([f]);
   });
 
-  function openDropPicker(){ pickInput.value=""; pickInput.click(); }
+  addInput.addEventListener("change", async (e)=>{
+    const files = Array.from(e.target.files || []).filter(Boolean);
+    if(!files.length) return;
+    await loadFilesAppend(files);
+  });
+
+  function openDropPicker(){
+    // drop tap = replace
+    pickInput.value="";
+    pickInput.click();
+  }
   drop.addEventListener("click", openDropPicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
@@ -508,52 +573,83 @@
   ["dragleave","drop"].forEach(evt=>{
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
   });
-  drop.addEventListener("drop", (e)=>{
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) loadFile(f);
+  drop.addEventListener("drop", async (e)=>{
+    const files = Array.from(e.dataTransfer.files || []).filter(f=>f && /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name));
+    if(!files.length) return;
+    await loadFilesReplace(files.slice(0, 10)); // safety cap
   });
 
   clearBtn.addEventListener("click", ()=>{
-    pdfBytes = null; pdfName="document.pdf"; pageCount=0;
-    qualityEl.disabled = true;
-    scaleEl.disabled = true;
-    compressBtn.disabled = true;
-    clearBtn.disabled = true;
+    pdfItems = [];
+    totalPages = 0;
+    enableControls(false);
     metaEl.innerHTML = t().meta_idle;
     setMsg("", "");
     hideProg();
+    updatePickedUI();
   });
 
-  async function loadFile(file){
+  async function countPagesWithPdfjs(buf){
+    const loadingTask = window.pdfjsLib.getDocument({ data: buf });
+    const pdf = await loadingTask.promise;
+    return pdf.numPages;
+  }
+
+  async function loadFilesReplace(files){
     try{
+      if(!window.pdfjsLib) throw new Error("pdfjsLib not loaded");
       setMsg("", "");
       hideProg();
-      const buf = await file.arrayBuffer();
 
-      const loadingTask = window.pdfjsLib.getDocument({ data: buf });
-      const pdf = await loadingTask.promise;
+      pdfItems = [];
+      totalPages = 0;
 
-      pageCount = pdf.numPages;
-      pdfBytes = buf;
-      pdfName = file.name || "document.pdf";
+      for(const file of files){
+        const buf = await file.arrayBuffer();
+        const pages = await countPagesWithPdfjs(buf);
+        pdfItems.push({ name: file.name || "document.pdf", bytes: buf });
+        totalPages += pages;
+      }
 
-      qualityEl.disabled = false;
-      scaleEl.disabled = false;
-      compressBtn.disabled = false;
-      clearBtn.disabled = false;
+      enableControls(pdfItems.length > 0);
+      updatePickedUI();
 
-      metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
+      const names = pdfItems.length === 1 ? pdfItems[0].name : (pdfItems[0].name + ` + ${pdfItems.length-1} more`);
+      metaEl.innerHTML = t().meta_loaded(names, totalPages);
     }catch(e){
-      pdfBytes = null; pageCount=0;
-      qualityEl.disabled = true;
-      scaleEl.disabled = true;
-      compressBtn.disabled = true;
-      clearBtn.disabled = true;
+      pdfItems = [];
+      totalPages = 0;
+      enableControls(false);
+      updatePickedUI();
       metaEl.innerHTML = t().meta_idle;
 
       const detail = (e && e.message) ? e.message : String(e);
       setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
+      hideProg();
+    }
+  }
 
+  async function loadFilesAppend(files){
+    try{
+      if(!window.pdfjsLib) throw new Error("pdfjsLib not loaded");
+      setMsg("", "");
+      hideProg();
+
+      for(const file of files){
+        const buf = await file.arrayBuffer();
+        const pages = await countPagesWithPdfjs(buf);
+        pdfItems.push({ name: file.name || "document.pdf", bytes: buf });
+        totalPages += pages;
+      }
+
+      enableControls(pdfItems.length > 0);
+      updatePickedUI();
+
+      const names = pdfItems.length === 1 ? pdfItems[0].name : (pdfItems[0].name + ` + ${pdfItems.length-1} more`);
+      metaEl.innerHTML = t().meta_loaded(names, totalPages);
+    }catch(e){
+      const detail = (e && e.message) ? e.message : String(e);
+      setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
       hideProg();
     }
   }
@@ -571,11 +667,11 @@
 
   function buildName(){
     const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+    const base = (pdfItems[0]?.name || "document.pdf").replace(/\.[^.]+$/, "");
     return `${base}_compressed_${stamp}.pdf`;
   }
 
-  // ✅ Render a page to JPEG Blob (avoid dataURL + fetch issues on mobile)
+  // render a pdf.js page to jpeg blob
   async function renderPageToJpegBlob(pdf, pageNum, scale, quality){
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale });
@@ -594,48 +690,66 @@
     const blob = await new Promise((resolve) => {
       canvas.toBlob(resolve, "image/jpeg", quality);
     });
-
     if(!blob) throw new Error("canvas.toBlob failed");
 
     return { blob, w: canvas.width, h: canvas.height };
   }
 
+  // ✅ merge selected PDFs into one using PDF-lib
+  async function mergeSelectedPdfs(){
+    const { PDFDocument } = window.PDFLib;
+    const merged = await PDFDocument.create();
+
+    for(const item of pdfItems){
+      const src = await PDFDocument.load(item.bytes);
+      const copied = await merged.copyPages(src, src.getPageIndices());
+      copied.forEach(p => merged.addPage(p));
+    }
+    const bytes = await merged.save({ useObjectStreams:true });
+    return bytes; // Uint8Array
+  }
+
   compressBtn.addEventListener("click", async ()=>{
     try{
-      if(!pdfBytes) return setMsg(t().msg_need, "err");
+      if(!pdfItems.length) return setMsg(t().msg_need, "err");
+      if(!window.pdfjsLib) throw new Error("pdfjsLib not loaded");
 
       compressBtn.disabled = true;
       pickBtn.disabled = true;
+      addBtn.disabled = true;
       clearBtn.disabled = true;
       qualityEl.disabled = true;
       scaleEl.disabled = true;
 
       setMsg(t().msg_work, "");
-      setProg(1);
+      setProg(2);
 
       const q = parseFloat(qualityEl.value || "0.75");
       const scale = parseFloat(scaleEl.value || "1.0");
 
-      const loadingTask = window.pdfjsLib.getDocument({ data: pdfBytes });
+      // 1) merge first (if multiple)
+      setProg(6);
+      const mergedBytes = await mergeSelectedPdfs();
+
+      // 2) render + rebuild as images
+      const loadingTask = window.pdfjsLib.getDocument({ data: mergedBytes });
       const pdf = await loadingTask.promise;
 
       const { PDFDocument } = window.PDFLib;
       const out = await PDFDocument.create();
 
       for(let i=1;i<=pdf.numPages;i++){
-        setProg(Math.round((i-1)/pdf.numPages*90) + 5);
+        setProg(Math.round((i-1)/pdf.numPages*88) + 8);
 
         const { blob, w, h } = await renderPageToJpegBlob(pdf, i, scale, q);
-
         const jpgBytes = await blob.arrayBuffer();
         const jpg = await out.embedJpg(jpgBytes);
 
-        // Use pixel as PDF points 1:1 to keep sharpness (simple)
         const page = out.addPage([w, h]);
         page.drawImage(jpg, { x:0, y:0, width:w, height:h });
       }
 
-      setProg(96);
+      setProg(97);
       const bytes = await out.save({ useObjectStreams:true });
       const blob = new Blob([bytes], { type:"application/pdf" });
 
@@ -647,9 +761,10 @@
       setMsg((t().msg_fail || "Failed to compress PDF.") + " (" + detail + ")", "err");
       hideProg();
     }finally{
-      const has = !!pdfBytes;
+      const has = !!pdfItems.length;
       compressBtn.disabled = !has;
       pickBtn.disabled = false;
+      addBtn.disabled = !has;
       clearBtn.disabled = !has;
       qualityEl.disabled = !has;
       scaleEl.disabled = !has;
@@ -657,6 +772,7 @@
   });
 
   // init
+  enableControls(false);
   setLang(LANG);
 })();
 </script>
