@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-  <!-- pdf.js (render pages) -->
+  <!-- pdf.js (primary) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
   <!-- PDF-lib (rebuild PDF) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -133,7 +133,6 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
     .btn.secondary:hover{ background: var(--softBlueHi); }
-
     .btn:hover{ filter: brightness(1.03); }
     .btn:active{ transform: scale(.99); }
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
@@ -167,9 +166,7 @@
       margin-bottom:10px;
     }
     .presetHint{ color:#9fb0ca; font-weight:800; font-size:12px; }
-    .presetRow{
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
+    .presetRow{ display:flex; gap:10px; flex-wrap:wrap; }
     .presetBtn{
       flex:1; min-width: 180px;
       appearance:none; border:none; cursor:pointer;
@@ -204,7 +201,7 @@
 
     input[type="file"]{ display:none; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-    select, input[type="number"]{
+    select{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
@@ -215,7 +212,7 @@
       font-weight:900;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
     }
-    select:focus-visible, input[type="number"]:focus-visible{
+    select:focus-visible{
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
@@ -314,7 +311,6 @@
     <div class="card">
       <h2 id="h_step2">Compression</h2>
 
-      <!-- ✅ Presets -->
       <div class="presetWrap" aria-label="Presets">
         <div class="presetTitle">
           <div id="preset_title">🎛 Presets</div>
@@ -400,11 +396,47 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // pdf.js worker (PDF.js v4: worker is often .mjs)
-  if (window.pdfjsLib) {
-    const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/";
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.mjs";
+  // -------- pdf.js 안정화 로더 (getDocument undefined 방지) --------
+  function loadScript(src){
+    return new Promise((resolve, reject)=>{
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.onload = ()=>resolve(true);
+      s.onerror = ()=>reject(new Error("Failed to load: " + src));
+      document.head.appendChild(s);
+    });
   }
+
+  async function ensurePdfjs(){
+    // already loaded
+    if (window.pdfjsLib && typeof window.pdfjsLib.getDocument === "function") return;
+
+    // 1) try re-load primary (v4) once (cache/network hiccup)
+    try{
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js");
+    }catch(_){}
+
+    if (window.pdfjsLib && typeof window.pdfjsLib.getDocument === "function") {
+      // v4 worker: use .js (mjs 워커는 모바일에서 종종 불안정)
+      try{
+        const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/";
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
+      }catch(_){}
+      return;
+    }
+
+    // 2) fallback to stable v3 (모바일에서 훨씬 안정적)
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    if (!window.pdfjsLib || typeof window.pdfjsLib.getDocument !== "function"){
+      throw new Error("pdf.js failed to initialize");
+    }
+    try{
+      const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
+    }catch(_){}
+  }
+  // -------------------------------------------------------------
 
   const STR = {
     en:{
@@ -625,7 +657,6 @@
     if(nav.startsWith("es")) return "es";
     return "en";
   }
-
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
@@ -642,20 +673,15 @@
     activePreset = key;
     localStorage.setItem("cf24_pdf_preset", key);
 
-    // UI pressed state
     Object.keys(presetBtns).forEach(k=>{
       presetBtns[k].setAttribute("aria-pressed", k === key ? "true" : "false");
     });
 
-    // Apply values if enabled or not (we can set regardless)
     const p = PRESETS[key];
     scaleEl.value = String(p.scale.toFixed(1));
     qualityEl.value = String(p.quality.toFixed(2));
 
-    if(!silent){
-      // gentle message only when a PDF is loaded
-      if (pdfBytes) setMsg("", "");
-    }
+    if(!silent && pdfBytes) setMsg("", "");
   }
 
   function detectPreset(){
@@ -685,7 +711,6 @@
     $("drop_hint").textContent = t().drop_hint;
 
     $("h_step2").textContent = t().h2;
-
     $("preset_title").textContent = t().preset_title;
     $("preset_hint").textContent = t().preset_hint;
     $("p1_name").textContent = t().p1_name;
@@ -701,7 +726,6 @@
     $("s_hint").textContent = t().s_hint;
     compressBtn.textContent = t().go;
 
-    // Legal notice
     $("legal_box").innerHTML = "<b>" + esc(t().legal_title) + "</b><br/>" + esc(t().legal_body);
 
     if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
@@ -757,13 +781,13 @@
     hideProg();
   });
 
-  // Preset handlers
+  // Presets
   presetBtns.crisp.addEventListener("click", ()=> applyPreset("crisp"));
   presetBtns.balanced.addEventListener("click", ()=> applyPreset("balanced"));
   presetBtns.small.addEventListener("click", ()=> applyPreset("small"));
 
   async function safeLoadPdfWithPdfjs(buf){
-    // Avoid "detached ArrayBuffer": always pass a fresh copy (Uint8Array) to PDF.js
+    await ensurePdfjs(); // ✅ 핵심: pdfjsLib 보장
     const u8 = new Uint8Array(buf);
     const copy = new Uint8Array(u8.length);
     copy.set(u8);
@@ -813,7 +837,6 @@
     return `${base}_compressed_${stamp}.pdf`;
   }
 
-  // Render a page to JPEG Blob (avoid dataURL + fetch issues on mobile)
   async function renderPageToJpegBlob(pdf, pageNum, scale, quality){
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale });
@@ -834,9 +857,7 @@
     });
     if(!blob) throw new Error("canvas.toBlob failed");
 
-    // free a bit
     try { canvas.width = 1; canvas.height = 1; } catch(_){}
-
     return { blob, w: viewport.width, h: viewport.height };
   }
 
@@ -857,7 +878,6 @@
       const q = parseFloat(qualityEl.value || "0.75");
       const scale = parseFloat(scaleEl.value || "1.5");
 
-      // Again: give PDF.js a fresh copy to avoid detached ArrayBuffer
       const pdf = await safeLoadPdfWithPdfjs(pdfBytes);
 
       const { PDFDocument } = window.PDFLib;
@@ -871,7 +891,6 @@
         const jpgBytes = await blob.arrayBuffer();
         const jpg = await out.embedJpg(jpgBytes);
 
-        // Use pixel-like points; keeps appearance consistent
         const page = out.addPage([w, h]);
         page.drawImage(jpg, { x:0, y:0, width:w, height:h });
       }
@@ -900,10 +919,7 @@
 
   // init
   setLang(LANG);
-
-  // init preset from storage (default balanced)
-  const initPreset = detectPreset();
-  applyPreset(initPreset, { silent:true });
+  applyPreset(detectPreset(), { silent:true });
 })();
 </script>
 </body>
