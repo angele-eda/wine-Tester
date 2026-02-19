@@ -131,7 +131,7 @@
       text-decoration:none;
       cursor:pointer;
       user-select:none;
-      font-weight:900;
+      font-weight:800;
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color:#e9eef7;
@@ -140,7 +140,7 @@
     .toolPrimary:hover{ background: rgba(255,255,255,.10); }
     .toolPrimary .badge{
       font-size:10px;
-      font-weight:900;
+      font-weight:800;
       padding:5px 8px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
@@ -162,7 +162,7 @@
     }
     .langLabel{
       font-size:12px;
-      font-weight:900;
+      font-weight:800;
       color:#9fb0ca;
       letter-spacing:-0.2px;
       display:flex;
@@ -180,7 +180,7 @@
       border: 1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
       color:#e9eef7;
-      font-weight: 900;
+      font-weight: 800;
       font-size: 12px;
       outline: none;
     }
@@ -210,8 +210,50 @@
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
       position: relative;
       min-height: 240px;
+      overflow:hidden;
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
+
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 */
+    .dropBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(46, 204, 113, .35);
+      background: rgba(46, 204, 113, .14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .dropBadge .tick{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(46, 204, 113, .92);
+      color:#0b0f17;
+      font-weight:900;
+      line-height:1;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+    }
+    .dropBadge .txt{
+      font-size:12px;
+      font-weight:900;
+      opacity:.95;
+    }
 
     #drop_title{ white-space: pre-line; }
     .drop:active{ transform: scale(0.998); }
@@ -291,7 +333,7 @@
       background:rgba(255,255,255,.06);
       color:#e9eef7; border:var(--border);
       outline:none;
-      font-weight:900;
+      font-weight:800;
     }
 
     .previewHead{
@@ -322,6 +364,10 @@
     .miniBtn:hover{ background:rgba(255,255,255,.10); }
     .miniBtn:active{ transform: scale(.99); }
     .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
+
+    .miniBtn.secondary{
+      background: rgba(255,255,255,.04);
+    }
 
     .preview{
       display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
@@ -368,7 +414,7 @@
     .listTitle{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       flex-wrap:wrap;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
     .pill{
       font-size:12px; color:#b8c6dc; border:var(--border);
@@ -376,6 +422,7 @@
       background:rgba(255,255,255,.04);
       display:inline-flex; gap:8px; align-items:center;
       white-space:nowrap;
+      font-weight:700;
     }
     .toggle{
       display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -389,8 +436,20 @@
       font-size:12px; color:#cfe0ff;
       white-space:nowrap;
       transition: opacity .12s ease;
+      font-weight:700;
     }
     .chk input{ width:16px; height:16px; }
+
+    /* ✅ 목록이 길어져도 페이지가 과하게 늘어나지 않게: 토글 + 스크롤 */
+    .fileListWrap{
+      display:none;
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .fileListWrap::-webkit-scrollbar{ width:10px; }
+    .fileListWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius:999px; }
+    .fileListWrap::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius:999px; }
 
     .fileRow{
       display:flex; gap:8px; align-items:center;
@@ -405,6 +464,8 @@
       flex:1; min-width:0;
       font-size:13px; color:#dbe7ff;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-weight:600; /* ✅ 둔탁함 완화 */
+      letter-spacing:-0.1px;
     }
     .mini{ display:flex; gap:6px; align-items:center; }
     .iconBtn{
@@ -508,6 +569,12 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
+          <!-- ✅ Badge -->
+          <div class="dropBadge" id="dropBadge" style="display:none;">
+            <span class="tick">✓</span>
+            <span class="txt" id="dropBadgeText">0</span>
+          </div>
+
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
             <div class="dropEmoji" aria-hidden="true">📁</div>
@@ -520,10 +587,16 @@
           🔒 <span id="localBadgeText">100% Local processing · No server upload</span>
         </div>
 
+        <!-- ✅ Multi list (collapsible, prevents page from getting too long) -->
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
+
             <div class="toggle">
+              <button class="miniBtn secondary" id="listToggleBtn" type="button">
+                ▾ <span id="listToggleLabel">Open list</span>
+              </button>
+
               <label class="chk" id="zipChkLabel" title="Download multiple outputs as ZIP">
                 <input type="checkbox" id="zipMode" />
                 <span id="zip_label"></span>
@@ -535,7 +608,10 @@
             </div>
           </div>
 
-          <div id="fileList"></div>
+          <div class="fileListWrap" id="fileListWrap">
+            <div id="fileList"></div>
+          </div>
+
           <div class="note" id="multi_note"></div>
         </div>
 
@@ -546,10 +622,6 @@
           <div class="previewActions">
             <button class="miniBtn" id="addMoreBtn" type="button" disabled>
               ➕ <span id="addMoreLabel">Add more</span>
-            </button>
-
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open edit page">
-              ✏️ <span id="cropLabel">Edit</span>
             </button>
           </div>
         </div>
@@ -661,16 +733,21 @@
   const multiPanel  = $("multiPanel");
   const multiCount  = $("multiCount");
   const fileListEl  = $("fileList");
+  const fileListWrap= $("fileListWrap");
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
   const zipChkLabel = $("zipChkLabel");
   const a4ChkLabel  = $("a4ChkLabel");
 
-  const cropBtn      = $("cropBtn");
-  const cropLabel    = $("cropLabel");
   const addMoreBtn   = $("addMoreBtn");
   const addMoreLabel = $("addMoreLabel");
+
+  const listToggleBtn = $("listToggleBtn");
+  const listToggleLabel = $("listToggleLabel");
+
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
 
   const toolIdPhoto = $("tool_idphoto");
 
@@ -697,7 +774,6 @@
 
       h_preview: "Preview",
       add_more: "Add more",
-      crop: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
 
@@ -726,6 +802,11 @@
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
       multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+
+      list_open: "Open list",
+      list_close:"Close list",
+      badge_files: (n)=> `${n} file(s)`,
+
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
@@ -761,7 +842,6 @@
 
       h_preview: "미리보기",
       add_more: "추가하기",
-      crop: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
 
@@ -790,6 +870,11 @@
       zip_label: "ZIP 받기",
       a4_label: "A4 통일(PDF 병합)",
       multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+
+      list_open: "목록 열기",
+      list_close:"목록 닫기",
+      badge_files: (n)=> `${n}개`,
+
       msg_loading: "로딩 중…",
       msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
@@ -825,7 +910,6 @@
 
       h_preview: "プレビュー",
       add_more: "追加",
-      crop: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
 
@@ -854,6 +938,11 @@
       zip_label: "ZIPで受け取る",
       a4_label: "A4統一(PDF結合)",
       multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
+
+      list_open: "リストを開く",
+      list_close:"リストを閉じる",
+      badge_files: (n)=> `${n}件`,
+
       msg_loading: "読み込み中…",
       msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
@@ -889,7 +978,6 @@
 
       h_preview: "Vista previa",
       add_more: "Añadir",
-      crop: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
 
@@ -918,6 +1006,11 @@
       zip_label: "Descargar en ZIP",
       a4_label: "Normalizar a A4 (unir PDF)",
       multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
+
+      list_open: "Abrir lista",
+      list_close:"Cerrar lista",
+      badge_files: (n)=> `${n}`,
+
       msg_loading: "Cargando…",
       msg_ready: "¡Listo! Pulsa Convertir / Unir.",
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
@@ -1045,6 +1138,35 @@
   // =========================
   let files = [];
   let activeIndex = 0;
+  let isListOpen = false;
+
+  function updateDropBadge(){
+    const t = STR[LANG] || STR.en;
+    const n = files.length;
+
+    if(!dropBadge || !dropBadgeText) return;
+
+    if(n <= 0){
+      dropBadge.style.display = "none";
+      dropBadgeText.textContent = "0";
+      return;
+    }
+
+    dropBadge.style.display = "inline-flex";
+    dropBadgeText.textContent = t.badge_files(n);
+  }
+
+  function setListOpen(open){
+    isListOpen = !!open;
+    const t = STR[LANG] || STR.en;
+
+    if(fileListWrap) fileListWrap.style.display = isListOpen ? "block" : "none";
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
+    if(listToggleBtn){
+      listToggleBtn.firstChild && (listToggleBtn.firstChild.textContent = isListOpen ? "▴ " : "▾ ");
+    }
+  }
 
   function renderTexts(){
     const t = STR[LANG] || STR.en;
@@ -1081,7 +1203,6 @@
 
     $("h_preview").textContent = t.h_preview;
     addMoreLabel.textContent = t.add_more;
-    cropLabel.textContent = t.crop;
 
     $("h_settings").textContent = t.h_settings;
     $("lbl_format").textContent = t.lbl_format;
@@ -1115,6 +1236,8 @@
     $("a4_label").textContent = t.a4_label;
     $("multi_note").textContent = t.multi_note;
 
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
     if(files.length === 0){
       meta.textContent = t.meta_idle;
       thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
@@ -1124,6 +1247,7 @@
 
     syncToolLinks();
     syncLangSelect();
+    updateDropBadge();
   }
 
   function setLang(lang){
@@ -1140,8 +1264,9 @@
     renderTexts();
     updateQualityState();
     renderFileList();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    setListOpen(isListOpen);
   }
 
   if(langSelectEl){
@@ -1151,8 +1276,11 @@
   function renderFileList(){
     if(files.length <= 1){
       multiPanel.style.display = "none";
+      setListOpen(false);
     } else {
       multiPanel.style.display = "block";
+      // 기본은 닫힌 상태 유지 (길어지는 문제 방지)
+      if(!isListOpen) setListOpen(false);
     }
 
     const t = STR[LANG] || STR.en;
@@ -1205,6 +1333,8 @@
 
       fileListEl.appendChild(row);
     });
+
+    updateDropBadge();
   }
 
   function move(from, to){
@@ -1222,21 +1352,19 @@
     files.splice(idx,1);
     if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
     renderFileList();
+
     if(files.length === 0){
       resetAll();
       return;
     }
+
     previewActive();
     updateZipAvailability();
+    updateDropBadge();
   }
 
-  function updateCropState(){
+  function updateAddMoreState(){
     addMoreBtn.disabled = (files.length === 0);
-    if(files.length === 1 && files[0] && isImage(files[0].file)){
-      cropBtn.disabled = false;
-      return;
-    }
-    cropBtn.disabled = true;
   }
 
   async function previewActive(){
@@ -1246,8 +1374,9 @@
       renderTexts();
       btnConvert.disabled = true;
       btnReset.disabled = true;
-      updateCropState();
+      updateAddMoreState();
       updateZipAvailability();
+      updateDropBadge();
       return;
     }
 
@@ -1283,16 +1412,18 @@
         );
 
         if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
-        updateCropState();
+        updateAddMoreState();
         updateZipAvailability();
+        updateDropBadge();
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
         thumb.innerHTML = "";
         meta.textContent = t.err_preview;
         setMessage(t.err_preview, "err");
-        updateCropState();
+        updateAddMoreState();
         updateZipAvailability();
+        updateDropBadge();
       };
       img.src = url;
       img.style.width = "100%";
@@ -1305,16 +1436,18 @@
       thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
       meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
       setMessage(t.msg_ready, "ok");
-      updateCropState();
+      updateAddMoreState();
       updateZipAvailability();
+      updateDropBadge();
       return;
     }
 
     meta.textContent = t.err_only_supported;
     setMessage(t.err_only_supported, "err");
     btnConvert.disabled = true;
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
   }
 
   function appendFiles(selected){
@@ -1342,8 +1475,9 @@
     renderTexts();
     previewActive();
     updateQualityState();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
   }
 
   async function handleFiles(selected){
@@ -1367,6 +1501,7 @@
     }
 
     updateZipAvailability();
+    updateDropBadge();
   }
 
   function openFilePicker(){
@@ -1406,6 +1541,12 @@
   }
 
   addMoreBtn.addEventListener("click", openFilePickerAppend);
+
+  if(listToggleBtn){
+    listToggleBtn.addEventListener("click", ()=>{
+      setListOpen(!isListOpen);
+    });
+  }
 
   drop.addEventListener("click", openFilePicker);
   drop.addEventListener("keydown", (e)=>{
@@ -1449,17 +1590,13 @@
     const images = files.filter(x => isImage(x.file));
     const pdfs   = files.filter(x => isPDF(x.file));
 
-    // ✅ 절대 막지 않음
     zipModeEl.disabled = false;
 
-    // ✅ 자동 체크: 이미지 출력 + 이미지 2개 이상 (사용자가 이미 체크/해제했다면 건드리지 않음)
     const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
-
     if(shouldAutoZip && zipModeEl.checked === false){
       zipModeEl.checked = true;
     }
 
-    // ✅ PDF 출력에서 ZIP 체크면 A4는 의미 없으니 잠시 비활성
     if(outMime === "application/pdf" && zipModeEl.checked){
       a4ModeEl.checked = false;
       a4ModeEl.disabled = true;
@@ -1475,7 +1612,6 @@
       }
     }
 
-    // 라벨은 항상 활성처럼 보이게
     if(zipChkLabel){
       zipChkLabel.style.opacity = "1";
       zipChkLabel.style.cursor = "pointer";
@@ -1633,7 +1769,6 @@
     return await zip.generateAsync({ type:"blob" });
   }
 
-  // ✅ PDF들을 "그대로" ZIP로 (병합 X)
   async function zipOriginalPDFs(pdfItems){
     if(!window.JSZip) throw new Error("ZIP library is not ready.");
     const zip = new window.JSZip();
@@ -1664,13 +1799,8 @@
     const pdfs   = files.filter(x => isPDF(x.file));
 
     try{
-      // =====================
-      // PDF output
-      // =====================
       if(outMime === "application/pdf"){
         if(pdfs.length >= 1){
-
-          // ✅ PDF 2개 이상 + ZIP 체크 => 병합 대신 "원본 PDF 그대로 ZIP"
           if(pdfs.length >= 2 && zipModeEl.checked){
             const zipBlob = await zipOriginalPDFs(pdfs);
             const name = buildName("pdf_files", "zip");
@@ -1680,7 +1810,6 @@
             return;
           }
 
-          // ✅ 기본: 병합 PDF 1개 만들기
           const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
           const name = buildName("merged_pdf", "pdf");
           downloadBlob(merged, name);
@@ -1689,7 +1818,6 @@
           return;
         }
 
-        // 이미지 -> PDF (기본: 여러 이미지는 1개 PDF로 합침)
         if(images.length >= 1){
           const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
@@ -1702,9 +1830,6 @@
         throw new Error(t.err_only_supported);
       }
 
-      // =====================
-      // Image output
-      // =====================
       if(images.length === 0){
         throw new Error(t.err_only_supported);
       }
@@ -1750,97 +1875,18 @@
 
     setMessage("", "");
 
+    isListOpen = false;
+
     renderTexts();
     renderFileList();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
+    setListOpen(false);
   }
 
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
-
-  // ==========================================================
-  // ✅ High-res handoff to /edit via IndexedDB (no downscale)
-  // - Store original File/Blob into IndexedDB
-  // - Pass only key through sessionStorage
-  // - Fallback to old dataURL method if IDB fails
-  // ==========================================================
-  const CF24_IDB_NAME = "cf24_blob_store_v1";
-  const CF24_IDB_STORE = "blobs";
-
-  function idbOpen(){
-    return new Promise((resolve, reject)=>{
-      if(!("indexedDB" in window)) return reject(new Error("IndexedDB not supported"));
-      const req = indexedDB.open(CF24_IDB_NAME, 1);
-      req.onupgradeneeded = () => {
-        const db = req.result;
-        if(!db.objectStoreNames.contains(CF24_IDB_STORE)){
-          db.createObjectStore(CF24_IDB_STORE);
-        }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error || new Error("IDB open fail"));
-    });
-  }
-
-  async function idbPut(key, blob){
-    const db = await idbOpen();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
-      const store = tx.objectStore(CF24_IDB_STORE);
-      store.put(blob, key);
-      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
-      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put fail")); };
-      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put abort")); };
-    });
-  }
-
-  cropBtn.addEventListener("click", async ()=>{
-    if(files.length !== 1) return;
-    const f = files[0]?.file;
-    if(!f || !isImage(f)) return;
-
-    // ✅ editor가 읽을 "키" 생성 (sessionStorage는 키만)
-    const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-    try{
-      // 1) 원본 File 그대로 IDB에 저장 (고해상도 유지)
-      await idbPut(key, f);
-
-      // 2) edit 페이지에 키 전달
-      sessionStorage.setItem("cf24_edit_source", "idb");
-      sessionStorage.setItem("cf24_edit_key", key);
-      sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
-      // (겸용) id-photo도 같은 원본을 사용 가능하게
-      sessionStorage.setItem("cf24_idphoto_source", "idb");
-      sessionStorage.setItem("cf24_idphoto_key", key);
-      sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
-
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      return;
-
-    }catch(e){
-      // ✅ fallback: 예전 방식(dataURL) - 작동은 보장
-      try{
-        const dataUrl = await new Promise((resolve, reject)=>{
-          const r = new FileReader();
-          r.onload = ()=> resolve(r.result);
-          r.onerror = ()=> reject(new Error("read fail"));
-          r.readAsDataURL(f);
-        });
-
-        sessionStorage.setItem("cf24_edit_img", String(dataUrl));
-        sessionStorage.setItem("cf24_edit_name", f.name || "image");
-        sessionStorage.setItem("cf24_idphoto_img", String(dataUrl));
-        sessionStorage.setItem("cf24_idphoto_name", f.name || "image");
-
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }catch(err){
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }
-    }
-  });
 
   // init
   setLang(LANG);
