@@ -91,6 +91,7 @@
       text-rendering: geometricPrecision;
     }
 
+    /* ✅ 상단 공백 줄임 */
     .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 44px; }
 
     .top{
@@ -98,64 +99,59 @@
       flex-wrap:wrap; margin-bottom:10px;
     }
 
-    /* ✅ title: "Converter" only */
     .site-title{
       margin:0;
-      font-weight:900;
+      font-weight:800;
       letter-spacing:-0.35px;
       line-height:1.15;
       color:#ffffff;
-      font-size:26px;
+      font-size:24px;
     }
-    @media (min-width: 1024px){ .site-title{ font-size:34px; } }
-    @media (max-width: 768px){ .site-title{ font-size:22px; letter-spacing:-0.25px; } }
+    @media (min-width: 1024px){ .site-title{ font-size:32px; } }
+    @media (max-width: 768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
 
-    /* ✅ small description under title */
-    .sub{
-      margin:6px 0 0;
-      color:#a7b3c7;
-      font-size:13px;
-      line-height:1.45;
-    }
+    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ pill buttons row (Home / Lock / Text) */
-    .topPills{
-      margin-top:12px;
+    /* ✅ tools */
+    .tools{
+      margin-top:10px;
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
-    .pillBtn{
-      display:flex;
+
+    /* === TOOL BUTTON (ID Photo) toned down (main is converter) === */
+    .toolPrimary{
+      display:inline-flex;
       align-items:center;
-      justify-content:center;
       gap:10px;
-      width:100%;
-      max-width: 520px;
-      padding:12px 14px;
+      padding:10px 12px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color:#e9eef7;
       text-decoration:none;
-      font-weight:900;
-      letter-spacing:-0.2px;
       cursor:pointer;
       user-select:none;
-      transition: background .12s ease, transform .08s ease;
+      font-weight:800;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#e9eef7;
+      box-shadow: none;
     }
-    .pillBtn:hover{ background: rgba(255,255,255,.07); }
-    .pillBtn:active{ transform: scale(.995); }
-
-    .pillBtn.primary{
-      border:1px solid rgba(47,109,246,.35);
-      background: rgba(47,109,246,.22);
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    .toolPrimary:hover{ background: rgba(255,255,255,.10); }
+    .toolPrimary .badge{
+      font-size:10px;
+      font-weight:800;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
-    .pillBtn.primary:hover{ background: rgba(47,109,246,.28); }
 
-    /* ✅ LANGUAGE AREA (항상 오른쪽) */
+    /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
     .langArea{
       margin-left:auto;
       display:flex;
@@ -166,7 +162,7 @@
     }
     .langLabel{
       font-size:12px;
-      font-weight:900;
+      font-weight:800;
       color:#9fb0ca;
       letter-spacing:-0.2px;
       display:flex;
@@ -184,7 +180,7 @@
       border: 1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
       color:#e9eef7;
-      font-weight: 900;
+      font-weight: 800;
       font-size: 12px;
       outline: none;
     }
@@ -214,8 +210,50 @@
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
       position: relative;
       min-height: 240px;
+      overflow:hidden;
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
+
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 */
+    .dropBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(46, 204, 113, .35);
+      background: rgba(46, 204, 113, .14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .dropBadge .tick{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(46, 204, 113, .92);
+      color:#0b0f17;
+      font-weight:900;
+      line-height:1;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+    }
+    .dropBadge .txt{
+      font-size:12px;
+      font-weight:900;
+      opacity:.95;
+    }
 
     #drop_title{ white-space: pre-line; }
     .drop:active{ transform: scale(0.998); }
@@ -233,7 +271,7 @@
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
 
-    /* ✅ Local secure badge under upload box */
+    /* ✅ Local secure badge under upload box (🔒 icon only once) */
     .localBadge{
       margin-top:12px;
       display:flex;
@@ -251,6 +289,7 @@
       user-select:none;
     }
 
+    /* ✅ Buttons */
     .btn{
       appearance:none; border:none; cursor:pointer;
       background: rgba(47,109,246,.78);
@@ -294,7 +333,7 @@
       background:rgba(255,255,255,.06);
       color:#e9eef7; border:var(--border);
       outline:none;
-      font-weight:900;
+      font-weight:800;
     }
 
     .previewHead{
@@ -325,6 +364,10 @@
     .miniBtn:hover{ background:rgba(255,255,255,.10); }
     .miniBtn:active{ transform: scale(.99); }
     .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
+
+    .miniBtn.secondary{
+      background: rgba(255,255,255,.04);
+    }
 
     .preview{
       display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
@@ -371,7 +414,7 @@
     .listTitle{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       flex-wrap:wrap;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
     .pill{
       font-size:12px; color:#b8c6dc; border:var(--border);
@@ -379,6 +422,7 @@
       background:rgba(255,255,255,.04);
       display:inline-flex; gap:8px; align-items:center;
       white-space:nowrap;
+      font-weight:700;
     }
     .toggle{
       display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -392,8 +436,20 @@
       font-size:12px; color:#cfe0ff;
       white-space:nowrap;
       transition: opacity .12s ease;
+      font-weight:700;
     }
     .chk input{ width:16px; height:16px; }
+
+    /* ✅ 목록이 길어져도 페이지가 과하게 늘어나지 않게: 토글 + 스크롤 */
+    .fileListWrap{
+      display:none;
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .fileListWrap::-webkit-scrollbar{ width:10px; }
+    .fileListWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius:999px; }
+    .fileListWrap::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius:999px; }
 
     .fileRow{
       display:flex; gap:8px; align-items:center;
@@ -408,6 +464,8 @@
       flex:1; min-width:0;
       font-size:13px; color:#dbe7ff;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-weight:600; /* ✅ 둔탁함 완화 */
+      letter-spacing:-0.1px;
     }
     .mini{ display:flex; gap:6px; align-items:center; }
     .iconBtn{
@@ -475,21 +533,13 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 class="site-title" id="topTitle">Converter</h1>
+        <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Home / Lock / Text pills -->
-        <div class="topPills" aria-label="Top actions">
-          <a class="pillBtn primary" id="homeBtn" href="/">
-            🏠 <span id="homeLabel">Home</span>
-          </a>
-
-          <div class="pillBtn" id="lockPill" role="note" aria-label="Local processing">
-            🔒 <span id="lockLabel">100% Local processing · No server upload</span>
-          </div>
-
-          <a class="pillBtn" id="textBtn" href="/text/">
-            ✍️ <span id="textLabel">Text</span>
+        <div class="tools">
+          <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
+            🪪 <span id="tool_idphoto_text">ID Photo</span>
+            <span class="badge">✨ <span id="tool_badge">NEW</span></span>
           </a>
         </div>
       </div>
@@ -519,6 +569,12 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
+          <!-- ✅ Badge -->
+          <div class="dropBadge" id="dropBadge" style="display:none;">
+            <span class="tick">✓</span>
+            <span class="txt" id="dropBadgeText">0</span>
+          </div>
+
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
             <div class="dropEmoji" aria-hidden="true">📁</div>
@@ -531,10 +587,16 @@
           🔒 <span id="localBadgeText">100% Local processing · No server upload</span>
         </div>
 
+        <!-- ✅ Multi list (collapsible, prevents page from getting too long) -->
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
+
             <div class="toggle">
+              <button class="miniBtn secondary" id="listToggleBtn" type="button">
+                ▾ <span id="listToggleLabel">Open list</span>
+              </button>
+
               <label class="chk" id="zipChkLabel" title="Download multiple outputs as ZIP">
                 <input type="checkbox" id="zipMode" />
                 <span id="zip_label"></span>
@@ -546,7 +608,10 @@
             </div>
           </div>
 
-          <div id="fileList"></div>
+          <div class="fileListWrap" id="fileListWrap">
+            <div id="fileList"></div>
+          </div>
+
           <div class="note" id="multi_note"></div>
         </div>
 
@@ -557,10 +622,6 @@
           <div class="previewActions">
             <button class="miniBtn" id="addMoreBtn" type="button" disabled>
               ➕ <span id="addMoreLabel">Add more</span>
-            </button>
-
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open edit page">
-              ✏️ <span id="cropLabel">Edit</span>
             </button>
           </div>
         </div>
@@ -672,24 +733,26 @@
   const multiPanel  = $("multiPanel");
   const multiCount  = $("multiCount");
   const fileListEl  = $("fileList");
+  const fileListWrap= $("fileListWrap");
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
   const zipChkLabel = $("zipChkLabel");
   const a4ChkLabel  = $("a4ChkLabel");
 
-  const cropBtn      = $("cropBtn");
-  const cropLabel    = $("cropLabel");
   const addMoreBtn   = $("addMoreBtn");
   const addMoreLabel = $("addMoreLabel");
 
+  const listToggleBtn = $("listToggleBtn");
+  const listToggleLabel = $("listToggleLabel");
+
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
+
+  const toolIdPhoto = $("tool_idphoto");
+
   const langSelectEl = $("langSelect");
   const localBadgeTextEl = $("localBadgeText");
-
-  const homeLabelEl = $("homeLabel");
-  const lockLabelEl = $("lockLabel");
-  const textLabelEl = $("textLabel");
-  const textBtnEl   = $("textBtn");
 
   $("year").textContent = new Date().getFullYear();
 
@@ -699,11 +762,10 @@
       seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser.",
       ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
-      subtitle: "Convert images to JPG/PNG/WebP/PDF and merge PDF+PDF. No server upload.",
+      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       lang_label: "Language",
-      home: "Home",
-      lock: "100% Local processing · No server upload",
-      text: "Text",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "Upload",
       drop_title: "Drop files here\nor tap to select files",
@@ -712,7 +774,6 @@
 
       h_preview: "Preview",
       add_more: "Add more",
-      crop: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
 
@@ -741,6 +802,11 @@
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
       multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+
+      list_open: "Open list",
+      list_close:"Close list",
+      badge_files: (n)=> `${n} file(s)`,
+
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
@@ -764,11 +830,10 @@
       seoDesc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF+PDF 병합까지 — 모두 브라우저 로컬 처리.",
       ogTitle: "ConvertFiles24 - 이미지 & PDF 변환",
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
-      subtitle: "이미지 변환 + PDF 병합을 빠르게. 서버 업로드 없이 로컬 처리.",
+      subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       lang_label: "언어",
-      home: "홈으로",
-      lock: "100% 로컬 처리 · 서버 업로드 없음",
-      text: "글씨",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
@@ -777,7 +842,6 @@
 
       h_preview: "미리보기",
       add_more: "추가하기",
-      crop: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
 
@@ -806,6 +870,11 @@
       zip_label: "ZIP 받기",
       a4_label: "A4 통일(PDF 병합)",
       multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+
+      list_open: "목록 열기",
+      list_close:"목록 닫기",
+      badge_files: (n)=> `${n}개`,
+
       msg_loading: "로딩 중…",
       msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
@@ -829,11 +898,10 @@
       seoDesc: "画像をJPG/PNG/WebP/PDFに変換し、PDF+PDF結合も可能 — すべてブラウザ内でローカル処理。",
       ogTitle: "ConvertFiles24 - 画像 & PDF 変換",
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
-      subtitle: "画像変換とPDF結合を高速に。サーバー送信なし。",
+      subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       lang_label: "言語",
-      home: "ホーム",
-      lock: "ローカル処理 · サーバー送信なし",
-      text: "テキスト",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
@@ -842,7 +910,6 @@
 
       h_preview: "プレビュー",
       add_more: "追加",
-      crop: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
 
@@ -871,6 +938,11 @@
       zip_label: "ZIPで受け取る",
       a4_label: "A4統一(PDF結合)",
       multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
+
+      list_open: "リストを開く",
+      list_close:"リストを閉じる",
+      badge_files: (n)=> `${n}件`,
+
       msg_loading: "読み込み中…",
       msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
@@ -894,11 +966,10 @@
       seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs al instante — todo se procesa localmente en tu navegador.",
       ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
-      subtitle: "Convierte imágenes y une PDFs. Procesado local, sin subir archivos.",
+      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       lang_label: "Idioma",
-      home: "Inicio",
-      lock: "Procesamiento local · Sin subir al servidor",
-      text: "Texto",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
@@ -907,7 +978,6 @@
 
       h_preview: "Vista previa",
       add_more: "Añadir",
-      crop: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
 
@@ -936,6 +1006,11 @@
       zip_label: "Descargar en ZIP",
       a4_label: "Normalizar a A4 (unir PDF)",
       multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
+
+      list_open: "Abrir lista",
+      list_close:"Cerrar lista",
+      badge_files: (n)=> `${n}`,
+
       msg_loading: "Cargando…",
       msg_ready: "¡Listo! Pulsa Convertir / Unir.",
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
@@ -1048,6 +1123,11 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
+  function syncToolLinks(){
+    const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
+    toolIdPhoto.href = url;
+  }
+
   function syncLangSelect(){
     if(!langSelectEl) return;
     langSelectEl.value = LANG;
@@ -1058,6 +1138,35 @@
   // =========================
   let files = [];
   let activeIndex = 0;
+  let isListOpen = false;
+
+  function updateDropBadge(){
+    const t = STR[LANG] || STR.en;
+    const n = files.length;
+
+    if(!dropBadge || !dropBadgeText) return;
+
+    if(n <= 0){
+      dropBadge.style.display = "none";
+      dropBadgeText.textContent = "0";
+      return;
+    }
+
+    dropBadge.style.display = "inline-flex";
+    dropBadgeText.textContent = t.badge_files(n);
+  }
+
+  function setListOpen(open){
+    isListOpen = !!open;
+    const t = STR[LANG] || STR.en;
+
+    if(fileListWrap) fileListWrap.style.display = isListOpen ? "block" : "none";
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
+    if(listToggleBtn){
+      listToggleBtn.firstChild && (listToggleBtn.firstChild.textContent = isListOpen ? "▴ " : "▾ ");
+    }
+  }
 
   function renderTexts(){
     const t = STR[LANG] || STR.en;
@@ -1080,22 +1189,11 @@
       }catch(e){}
     }
 
-    $("subtitle").textContent = t.subtitle;
+    $("subtitle").innerHTML = t.subtitle;
 
     $("lang_label").textContent = t.lang_label;
-    if(homeLabelEl) homeLabelEl.textContent = t.home;
-    if(lockLabelEl) lockLabelEl.textContent = t.lock;
-    if(textLabelEl) textLabelEl.textContent = t.text;
-
-    // (선택) 글씨 버튼은 추후 페이지 연결
-    if(textBtnEl){
-      // 언어 유지
-      try{
-        const u = new URL(textBtnEl.href, location.origin);
-        u.searchParams.set("lang", LANG);
-        textBtnEl.href = u.pathname + u.search;
-      }catch(e){}
-    }
+    $("tool_idphoto_text").textContent = t.tool_idphoto;
+    $("tool_badge").textContent = t.tool_badge;
 
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
@@ -1105,7 +1203,6 @@
 
     $("h_preview").textContent = t.h_preview;
     addMoreLabel.textContent = t.add_more;
-    cropLabel.textContent = t.crop;
 
     $("h_settings").textContent = t.h_settings;
     $("lbl_format").textContent = t.lbl_format;
@@ -1139,6 +1236,8 @@
     $("a4_label").textContent = t.a4_label;
     $("multi_note").textContent = t.multi_note;
 
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
     if(files.length === 0){
       meta.textContent = t.meta_idle;
       thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
@@ -1146,7 +1245,9 @@
 
     if(multiCount) multiCount.textContent = t.multi_count(files.length);
 
+    syncToolLinks();
     syncLangSelect();
+    updateDropBadge();
   }
 
   function setLang(lang){
@@ -1163,8 +1264,9 @@
     renderTexts();
     updateQualityState();
     renderFileList();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    setListOpen(isListOpen);
   }
 
   if(langSelectEl){
@@ -1174,8 +1276,11 @@
   function renderFileList(){
     if(files.length <= 1){
       multiPanel.style.display = "none";
+      setListOpen(false);
     } else {
       multiPanel.style.display = "block";
+      // 기본은 닫힌 상태 유지 (길어지는 문제 방지)
+      if(!isListOpen) setListOpen(false);
     }
 
     const t = STR[LANG] || STR.en;
@@ -1228,6 +1333,8 @@
 
       fileListEl.appendChild(row);
     });
+
+    updateDropBadge();
   }
 
   function move(from, to){
@@ -1245,21 +1352,19 @@
     files.splice(idx,1);
     if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
     renderFileList();
+
     if(files.length === 0){
       resetAll();
       return;
     }
+
     previewActive();
     updateZipAvailability();
+    updateDropBadge();
   }
 
-  function updateCropState(){
+  function updateAddMoreState(){
     addMoreBtn.disabled = (files.length === 0);
-    if(files.length === 1 && files[0] && isImage(files[0].file)){
-      cropBtn.disabled = false;
-      return;
-    }
-    cropBtn.disabled = true;
   }
 
   async function previewActive(){
@@ -1269,8 +1374,9 @@
       renderTexts();
       btnConvert.disabled = true;
       btnReset.disabled = true;
-      updateCropState();
+      updateAddMoreState();
       updateZipAvailability();
+      updateDropBadge();
       return;
     }
 
@@ -1306,16 +1412,18 @@
         );
 
         if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
-        updateCropState();
+        updateAddMoreState();
         updateZipAvailability();
+        updateDropBadge();
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
         thumb.innerHTML = "";
         meta.textContent = t.err_preview;
         setMessage(t.err_preview, "err");
-        updateCropState();
+        updateAddMoreState();
         updateZipAvailability();
+        updateDropBadge();
       };
       img.src = url;
       img.style.width = "100%";
@@ -1328,16 +1436,18 @@
       thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
       meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
       setMessage(t.msg_ready, "ok");
-      updateCropState();
+      updateAddMoreState();
       updateZipAvailability();
+      updateDropBadge();
       return;
     }
 
     meta.textContent = t.err_only_supported;
     setMessage(t.err_only_supported, "err");
     btnConvert.disabled = true;
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
   }
 
   function appendFiles(selected){
@@ -1365,8 +1475,9 @@
     renderTexts();
     previewActive();
     updateQualityState();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
   }
 
   async function handleFiles(selected){
@@ -1390,6 +1501,7 @@
     }
 
     updateZipAvailability();
+    updateDropBadge();
   }
 
   function openFilePicker(){
@@ -1430,6 +1542,12 @@
 
   addMoreBtn.addEventListener("click", openFilePickerAppend);
 
+  if(listToggleBtn){
+    listToggleBtn.addEventListener("click", ()=>{
+      setListOpen(!isListOpen);
+    });
+  }
+
   drop.addEventListener("click", openFilePicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
@@ -1464,6 +1582,9 @@
     selQuality.style.opacity = disableQuality ? ".6" : "1";
   }
 
+  // ✅ ZIP은 "항상 체크 가능" (disabled 금지)
+  // - 다만 자동체크는 "이미지 2개 이상 + 출력이 이미지"일 때만
+  // - PDF 출력 + ZIP 체크면 A4(병합용)은 비활성
   function updateZipAvailability(){
     const outMime = selFormat.value;
     const images = files.filter(x => isImage(x.file));
@@ -1754,83 +1875,18 @@
 
     setMessage("", "");
 
+    isListOpen = false;
+
     renderTexts();
     renderFileList();
-    updateCropState();
+    updateAddMoreState();
     updateZipAvailability();
+    updateDropBadge();
+    setListOpen(false);
   }
 
   btnConvert.addEventListener("click", onConvert);
   btnReset.addEventListener("click", resetAll);
-
-  // ==========================================================
-  // ✅ High-res handoff to /edit via IndexedDB (no downscale)
-  // ==========================================================
-  const CF24_IDB_NAME = "cf24_blob_store_v1";
-  const CF24_IDB_STORE = "blobs";
-
-  function idbOpen(){
-    return new Promise((resolve, reject)=>{
-      if(!("indexedDB" in window)) return reject(new Error("IndexedDB not supported"));
-      const req = indexedDB.open(CF24_IDB_NAME, 1);
-      req.onupgradeneeded = () => {
-        const db = req.result;
-        if(!db.objectStoreNames.contains(CF24_IDB_STORE)){
-          db.createObjectStore(CF24_IDB_STORE);
-        }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error || new Error("IDB open fail"));
-    });
-  }
-
-  async function idbPut(key, blob){
-    const db = await idbOpen();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
-      const store = tx.objectStore(CF24_IDB_STORE);
-      store.put(blob, key);
-      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
-      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put fail")); };
-      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put abort")); };
-    });
-  }
-
-  cropBtn.addEventListener("click", async ()=>{
-    if(files.length !== 1) return;
-    const f = files[0]?.file;
-    if(!f || !isImage(f)) return;
-
-    const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-    try{
-      await idbPut(key, f);
-
-      sessionStorage.setItem("cf24_edit_source", "idb");
-      sessionStorage.setItem("cf24_edit_key", key);
-      sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      return;
-
-    }catch(e){
-      try{
-        const dataUrl = await new Promise((resolve, reject)=>{
-          const r = new FileReader();
-          r.onload = ()=> resolve(r.result);
-          r.onerror = ()=> reject(new Error("read fail"));
-          r.readAsDataURL(f);
-        });
-
-        sessionStorage.setItem("cf24_edit_img", String(dataUrl));
-        sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }catch(err){
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }
-    }
-  });
 
   // init
   setLang(LANG);
