@@ -50,96 +50,48 @@
       body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
     }
 
-    .wrap{
-      max-width:980px; width:100%;
-      margin:0 auto;
-      padding:22px 14px 44px;
-      overflow-x: clip;
-    }
-
-    /* ✅ TOP UX (match screenshot: stacked, full-width) */
-    .top{
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      gap:10px;
-      margin-bottom:14px;
-      min-width:0;
-    }
+    .wrap{ max-width:980px; width:100%; margin:0 auto; padding:22px 14px 44px; overflow-x: clip; }
+    .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; min-width:0; }
     .title{ margin:0; font-weight:900; letter-spacing:-0.35px; line-height:1.15; color:#fff; font-size:22px; }
-    .sub{ margin:0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+    .sub{ margin:8px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
     .homeBtn{
-      width:100%;
-      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
       padding:12px 14px; border-radius:999px;
       border:1px solid rgba(47,109,246,.55);
       background:rgba(47,109,246,.18);
       color:#e9eef7; font-weight:900; cursor:pointer; text-decoration:none; user-select:none;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      max-width:none; /* ✅ full width */
+      max-width:380px;
       transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
     }
     .homeBtn:hover{ background:rgba(47,109,246,.24); }
     .homeBtn:active{ transform: scale(.99); }
     .homeBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25); }
 
-    .pill{
-      width:100%;
-      border:1px solid rgba(120, 200, 255, .22);
-      background:rgba(120, 200, 255, .06);
-      border-radius:999px; padding:10px 14px;
-      color:#cfe6ff; font-size:13px; font-weight:900;
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      min-width:0;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
-    }
-
-    /* keep existing IDs + JS, just change layout */
-    .langRow{
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      gap:8px;
-      min-width:0;
-      max-width:100%;
-      margin-left:0;
-      width:100%;
-    }
+    .langRow{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:220px; max-width:100%; margin-left:auto; }
     .langLabel{ font-size:12px; font-weight:900; color:#9fb0ca; letter-spacing:-0.2px; display:flex; align-items:center; gap:8px; opacity:.95; }
     .langSelect{
-      width:100%;
-      max-width:100%;
-      padding:12px 12px; border-radius:999px;
+      width:220px; max-width:100%; padding:12px 12px; border-radius:999px;
       border:var(--border); background:rgba(255,255,255,.06); color:#e9eef7; outline:none; font-weight:900;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease), transform .08s var(--ease);
     }
     .langSelect:focus-visible{ outline:none; border-color: rgba(var(--blue), .55); box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
     option{ background:#0b0f17; color:#e9eef7; }
 
-    .card{
-      border:var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:var(--radius);
-      padding:var(--pad);
-      margin-top:12px;
-      min-width:0;
-      max-width:100%;
-      overflow-x: clip;
+    .pill{
+      width:100%; border:1px solid rgba(120, 200, 255, .22);
+      background:rgba(120, 200, 255, .06);
+      border-radius:999px; padding:10px 14px; color:#cfe6ff; font-size:13px; font-weight:900;
+      display:flex; align-items:center; justify-content:center; gap:10px; min-width:0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
+
+    .card{ border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:var(--pad); margin-top:12px; min-width:0; max-width:100%; overflow-x: clip; }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap;
-      align-items:center;
-      min-width:0;
-    }
-    /* ✅ FIX: remove conflicting min-width + allow shrink (prevents right-cut on mobile) */
-    .row > *{
-      flex:1 1 220px;
-      min-width:0;
-      max-width:100%;
-    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; min-width:0; }
+    .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
 
     .btn{
       appearance:none; border:none; cursor:pointer;
@@ -176,6 +128,7 @@
 
     input[type="file"]{ display:none; }
 
+    /* Drop */
     .drop{
       border:1px dashed rgba(255,255,255,.18);
       border-radius:14px; padding:18px;
@@ -274,7 +227,6 @@
       border-radius:12px;
       background: rgba(255,255,255,.03);
       border: 1px solid rgba(255,255,255,.08);
-      min-width:0;
     }
     .fileItem + .fileItem{ margin-top:10px; }
     .fileLeft{ min-width:0; flex: 1; }
@@ -350,7 +302,6 @@
       outline:none;
       font-weight:900;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
-      min-width:0;
     }
     select:focus-visible, input:focus-visible{
       border-color: rgba(var(--blue), .55);
@@ -364,7 +315,6 @@
       border-radius: 14px;
       overflow: hidden;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-      min-width:0;
     }
     .detailsSummary{
       list-style:none;
@@ -375,7 +325,6 @@
       justify-content:space-between;
       gap:12px;
       user-select:none;
-      min-width:0;
     }
     .detailsSummary::-webkit-details-marker{ display:none; }
     .sumLeft{
@@ -405,7 +354,6 @@
       color:#9fb0ca;
       font-weight:900;
       white-space:nowrap;
-      flex:0 0 auto;
     }
     .detailsBody{
       padding:12px;
@@ -414,8 +362,7 @@
 
     .pillRow{ display:flex; gap:10px; flex-wrap:wrap; }
     .miniBtn{
-      flex:1 1 180px;
-      min-width: 0;
+      flex:1; min-width: 180px;
       appearance:none; border:none; cursor:pointer;
       padding:12px 12px;
       border-radius:14px;
@@ -450,13 +397,11 @@
     .inlineRow{
       display:flex;
       gap:10px;
-      align-items:stretch;
+      align-items:center;
       flex-wrap:wrap;
-      min-width:0;
     }
-    .inlineRow > .grow{ flex:1 1 260px; min-width:0; }
+    .inlineRow > .grow{ flex:1; min-width:180px; }
     .tsToggle{
-      flex: 0 1 210px;
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
       padding:12px 12px;
@@ -464,7 +409,7 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-      min-width:0;
+      min-width: 190px;
       user-select:none;
     }
     .tsToggle .label{
@@ -472,7 +417,6 @@
       letter-spacing:-0.2px;
       display:flex; align-items:center; gap:8px;
       white-space:nowrap;
-      min-width:0;
     }
     .switch{
       position:relative; width:48px; height:28px; flex:0 0 auto;
@@ -549,27 +493,24 @@
         align-items:start;
       }
     }
-
-    /* ✅ Extra mobile safety: ensure filename + timestamp never cut */
-    @media (max-width: 520px){
-      .inlineRow > .grow{ flex-basis: 100%; }
-      .tsToggle{ flex-basis: 100%; }
-      .wrap{ padding-left:12px; padding-right:12px; }
-    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-
-    <!-- ✅ TOP HTML (stacked like your screenshot) -->
     <div class="top">
-      <h1 class="title" id="page_title">JPG → PDF</h1>
-      <p class="sub" id="page_sub">Upload → reorder → convert → download. 100% local processing.</p>
+      <div style="flex:1; min-width:240px;">
+        <h1 class="title" id="page_title">JPG → PDF</h1>
+        <p class="sub" id="page_sub">Upload → reorder → convert → download. 100% local processing.</p>
 
-      <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+        <div style="margin-top:10px;">
+          <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+        </div>
 
-      <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+        <div style="margin-top:10px;">
+          <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+        </div>
+      </div>
 
       <div class="langRow">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
@@ -669,7 +610,7 @@
         <div>
           <label id="lbl_margin">Margin (mm)</label>
 
-          <!-- 기본은 접힌 상태 -->
+          <!-- 기본은 접힌 상태(요구사항) -->
           <details class="detailsBox" id="marginDetails">
             <summary class="detailsSummary" id="marginSummary">
               <span class="sumLeft">
@@ -1327,6 +1268,7 @@
     convertBtn.textContent = t().go;
     $("legal_box").innerHTML = "<b>" + esc(t().legal_title) + "</b><br/>" + esc(t().legal_body);
 
+    // options text (keep values)
     orientEl.options[0].textContent = t().opt_auto;
     orientEl.options[1].textContent = t().opt_portrait;
     orientEl.options[2].textContent = t().opt_landscape;
@@ -1393,6 +1335,7 @@
     if(n === 0) fileList.classList.remove("show");
   }
 
+  // Margin presets + direct input
   function setMarginPreset(mm){
     mm = Math.max(0, Math.min(30, Math.round(mm)));
     marginMmEl.value = String(mm);
@@ -1431,7 +1374,10 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
+  // Page sizes in points (PDF points)
   function pageSizePoints(kind){
+    // 1 inch = 72pt
+    // A4: 210×297mm -> 595.28×841.89pt (approx)
     if(kind === "LETTER") return { w: 612, h: 792 };
     return { w: 595.28, h: 841.89 };
   }
@@ -1469,10 +1415,13 @@
       return { x, y, w: drawW, h: drawH, crop: null };
     }
 
+    // FILL (crop)
     if(imgRatio > boxRatio){
+      // image wider -> fill height, crop width
       drawH = availH;
       drawW = availH * imgRatio;
     }else{
+      // image taller -> fill width, crop height
       drawW = availW;
       drawH = availW / imgRatio;
     }
@@ -1506,17 +1455,22 @@
       const isPng = (f.type || "").includes("png");
       const isWebp = (f.type || "").includes("webp");
 
+      // Decide orientation per image
       const o = decideOrientation(f.w, f.h, orientMode);
       const pageW = (o === "LANDSCAPE") ? ps.h : ps.w;
       const pageH = (o === "LANDSCAPE") ? ps.w : ps.h;
 
       const page = pdf.addPage([pageW, pageH]);
+
+      // Background
       page.drawRectangle({ x:0, y:0, width:pageW, height:pageH, color:bg });
 
+      // Embed image
       let img;
       if(isPng){
         img = await pdf.embedPng(new Uint8Array(f.bytes));
       }else if(isWebp){
+        // PDF-lib doesn't embed WebP directly -> convert via canvas
         const blob = new Blob([f.bytes], { type: "image/webp" });
         const url = URL.createObjectURL(blob);
         try{
@@ -1540,6 +1494,7 @@
 
       const iw = img.width, ih = img.height;
       const d = drawFit(pageW, pageH, marginPt, iw, ih, fitMode);
+
       page.drawImage(img, { x:d.x, y:d.y, width:d.w, height:d.h });
     }
 
@@ -1596,15 +1551,19 @@
     }
   });
 
+  // init
   function init(){
+    // load persisted margin
     const savedMargin = parseInt(localStorage.getItem("cf24_jpgpdf_margin") || "6", 10);
     setMarginPreset(Number.isFinite(savedMargin) ? savedMargin : 6);
 
+    // default: A4 + FIT + AUTO + WHITE
     pageSizeEl.value = "A4";
     orientEl.value = "AUTO";
     fitEl.value = "FIT";
     bgEl.value = "#FFFFFF";
 
+    // lang + ui
     setLang(LANG);
     syncTsUI();
     updateUI();
