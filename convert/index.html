@@ -1,3 +1,8 @@
+
+
+
+
+
 <!doctype html>
 <html lang="en" translate="no">
 <head>
@@ -91,6 +96,7 @@
       text-rendering: geometricPrecision;
     }
 
+    /* ✅ 상단 공백 줄임 */
     .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 44px; }
 
     .top{
@@ -98,64 +104,59 @@
       flex-wrap:wrap; margin-bottom:10px;
     }
 
-    /* ✅ title: "Converter" only */
     .site-title{
       margin:0;
-      font-weight:900;
+      font-weight:800;
       letter-spacing:-0.35px;
       line-height:1.15;
       color:#ffffff;
-      font-size:26px;
+      font-size:24px;
     }
-    @media (min-width: 1024px){ .site-title{ font-size:34px; } }
-    @media (max-width: 768px){ .site-title{ font-size:22px; letter-spacing:-0.25px; } }
+    @media (min-width: 1024px){ .site-title{ font-size:32px; } }
+    @media (max-width: 768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
 
-    /* ✅ small description under title */
-    .sub{
-      margin:6px 0 0;
-      color:#a7b3c7;
-      font-size:13px;
-      line-height:1.45;
-    }
+    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ pill buttons row (Home / Lock / Text) */
-    .topPills{
-      margin-top:12px;
+    /* ✅ tools */
+    .tools{
+      margin-top:10px;
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
-    .pillBtn{
-      display:flex;
+
+    /* === TOOL BUTTON (ID Photo) toned down (main is converter) === */
+    .toolPrimary{
+      display:inline-flex;
       align-items:center;
-      justify-content:center;
       gap:10px;
-      width:100%;
-      max-width: 520px;
-      padding:12px 14px;
+      padding:10px 12px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color:#e9eef7;
       text-decoration:none;
-      font-weight:900;
-      letter-spacing:-0.2px;
       cursor:pointer;
       user-select:none;
-      transition: background .12s ease, transform .08s ease;
+      font-weight:800;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#e9eef7;
+      box-shadow: none;
     }
-    .pillBtn:hover{ background: rgba(255,255,255,.07); }
-    .pillBtn:active{ transform: scale(.995); }
-
-    .pillBtn.primary{
-      border:1px solid rgba(47,109,246,.35);
-      background: rgba(47,109,246,.22);
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    .toolPrimary:hover{ background: rgba(255,255,255,.10); }
+    .toolPrimary .badge{
+      font-size:10px;
+      font-weight:800;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
-    .pillBtn.primary:hover{ background: rgba(47,109,246,.28); }
 
-    /* ✅ LANGUAGE AREA (항상 오른쪽) */
+    /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
     .langArea{
       margin-left:auto;
       display:flex;
@@ -166,7 +167,7 @@
     }
     .langLabel{
       font-size:12px;
-      font-weight:900;
+      font-weight:800;
       color:#9fb0ca;
       letter-spacing:-0.2px;
       display:flex;
@@ -184,7 +185,7 @@
       border: 1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
       color:#e9eef7;
-      font-weight: 900;
+      font-weight: 800;
       font-size: 12px;
       outline: none;
     }
@@ -214,8 +215,50 @@
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
       position: relative;
       min-height: 240px;
+      overflow:hidden;
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
+
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 */
+    .dropBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(46, 204, 113, .35);
+      background: rgba(46, 204, 113, .14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .dropBadge .tick{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(46, 204, 113, .92);
+      color:#0b0f17;
+      font-weight:900;
+      line-height:1;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+    }
+    .dropBadge .txt{
+      font-size:12px;
+      font-weight:900;
+      opacity:.95;
+    }
 
     #drop_title{ white-space: pre-line; }
     .drop:active{ transform: scale(0.998); }
@@ -233,7 +276,7 @@
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
 
-    /* ✅ Local secure badge under upload box */
+    /* ✅ Local secure badge under upload box (🔒 icon only once) */
     .localBadge{
       margin-top:12px;
       display:flex;
@@ -251,6 +294,7 @@
       user-select:none;
     }
 
+    /* ✅ Buttons */
     .btn{
       appearance:none; border:none; cursor:pointer;
       background: rgba(47,109,246,.78);
@@ -294,7 +338,7 @@
       background:rgba(255,255,255,.06);
       color:#e9eef7; border:var(--border);
       outline:none;
-      font-weight:900;
+      font-weight:800;
     }
 
     .previewHead{
@@ -325,6 +369,10 @@
     .miniBtn:hover{ background:rgba(255,255,255,.10); }
     .miniBtn:active{ transform: scale(.99); }
     .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
+
+    .miniBtn.secondary{
+      background: rgba(255,255,255,.04);
+    }
 
     .preview{
       display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
@@ -371,7 +419,7 @@
     .listTitle{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       flex-wrap:wrap;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
     .pill{
       font-size:12px; color:#b8c6dc; border:var(--border);
@@ -379,6 +427,7 @@
       background:rgba(255,255,255,.04);
       display:inline-flex; gap:8px; align-items:center;
       white-space:nowrap;
+      font-weight:700;
     }
     .toggle{
       display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -392,8 +441,20 @@
       font-size:12px; color:#cfe0ff;
       white-space:nowrap;
       transition: opacity .12s ease;
+      font-weight:700;
     }
     .chk input{ width:16px; height:16px; }
+
+    /* ✅ 목록이 길어져도 페이지가 과하게 늘어나지 않게: 토글 + 스크롤 */
+    .fileListWrap{
+      display:none;
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .fileListWrap::-webkit-scrollbar{ width:10px; }
+    .fileListWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius:999px; }
+    .fileListWrap::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius:999px; }
 
     .fileRow{
       display:flex; gap:8px; align-items:center;
@@ -408,6 +469,8 @@
       flex:1; min-width:0;
       font-size:13px; color:#dbe7ff;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-weight:600; /* ✅ 둔탁함 완화 */
+      letter-spacing:-0.1px;
     }
     .mini{ display:flex; gap:6px; align-items:center; }
     .iconBtn{
@@ -475,21 +538,13 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 class="site-title" id="topTitle">Converter</h1>
+        <h1 class="site-title">ConvertFiles24</h1>
         <p class="sub" id="subtitle"></p>
 
-        <!-- ✅ Home / Lock / Text pills -->
-        <div class="topPills" aria-label="Top actions">
-          <a class="pillBtn primary" id="homeBtn" href="/">
-            🏠 <span id="homeLabel">Home</span>
-          </a>
-
-          <div class="pillBtn" id="lockPill" role="note" aria-label="Local processing">
-            🔒 <span id="lockLabel">100% Local processing · No server upload</span>
-          </div>
-
-          <a class="pillBtn" id="textBtn" href="/text/">
-            ✍️ <span id="textLabel">Text</span>
+        <div class="tools">
+          <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
+            🪪 <span id="tool_idphoto_text">ID Photo</span>
+            <span class="badge">✨ <span id="tool_badge">NEW</span></span>
           </a>
         </div>
       </div>
@@ -519,6 +574,12 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
+          <!-- ✅ Badge -->
+          <div class="dropBadge" id="dropBadge" style="display:none;">
+            <span class="tick">✓</span>
+            <span class="txt" id="dropBadgeText">0</span>
+          </div>
+
           <div style="width:100%;">
             <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
             <div class="dropEmoji" aria-hidden="true">📁</div>
@@ -531,10 +592,16 @@
           🔒 <span id="localBadgeText">100% Local processing · No server upload</span>
         </div>
 
+        <!-- ✅ Multi list (collapsible, prevents page from getting too long) -->
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
+
             <div class="toggle">
+              <button class="miniBtn secondary" id="listToggleBtn" type="button">
+                ▾ <span id="listToggleLabel">Open list</span>
+              </button>
+
               <label class="chk" id="zipChkLabel" title="Download multiple outputs as ZIP">
                 <input type="checkbox" id="zipMode" />
                 <span id="zip_label"></span>
@@ -546,7 +613,10 @@
             </div>
           </div>
 
-          <div id="fileList"></div>
+          <div class="fileListWrap" id="fileListWrap">
+            <div id="fileList"></div>
+          </div>
+
           <div class="note" id="multi_note"></div>
         </div>
 
@@ -557,10 +627,6 @@
           <div class="previewActions">
             <button class="miniBtn" id="addMoreBtn" type="button" disabled>
               ➕ <span id="addMoreLabel">Add more</span>
-            </button>
-
-            <button class="miniBtn" id="cropBtn" type="button" disabled title="Open edit page">
-              ✏️ <span id="cropLabel">Edit</span>
             </button>
           </div>
         </div>
@@ -672,24 +738,26 @@
   const multiPanel  = $("multiPanel");
   const multiCount  = $("multiCount");
   const fileListEl  = $("fileList");
+  const fileListWrap= $("fileListWrap");
   const zipModeEl   = $("zipMode");
   const a4ModeEl    = $("a4Mode");
 
   const zipChkLabel = $("zipChkLabel");
   const a4ChkLabel  = $("a4ChkLabel");
 
-  const cropBtn      = $("cropBtn");
-  const cropLabel    = $("cropLabel");
   const addMoreBtn   = $("addMoreBtn");
   const addMoreLabel = $("addMoreLabel");
 
+  const listToggleBtn = $("listToggleBtn");
+  const listToggleLabel = $("listToggleLabel");
+
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
+
+  const toolIdPhoto = $("tool_idphoto");
+
   const langSelectEl = $("langSelect");
   const localBadgeTextEl = $("localBadgeText");
-
-  const homeLabelEl = $("homeLabel");
-  const lockLabelEl = $("lockLabel");
-  const textLabelEl = $("textLabel");
-  const textBtnEl   = $("textBtn");
 
   $("year").textContent = new Date().getFullYear();
 
@@ -699,11 +767,10 @@
       seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser.",
       ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
-      subtitle: "Convert images to JPG/PNG/WebP/PDF and merge PDF+PDF. No server upload.",
+      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       lang_label: "Language",
-      home: "Home",
-      lock: "100% Local processing · No server upload",
-      text: "Text",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "Upload",
       drop_title: "Drop files here\nor tap to select files",
@@ -712,7 +779,6 @@
 
       h_preview: "Preview",
       add_more: "Add more",
-      crop: "Edit",
       thumb_label: "Preview",
       meta_idle: "Select files to see details.",
 
@@ -741,6 +807,11 @@
       zip_label: "ZIP download",
       a4_label: "A4 normalize (PDF merge)",
       multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+
+      list_open: "Open list",
+      list_close:"Close list",
+      badge_files: (n)=> `${n} file(s)`,
+
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
@@ -764,11 +835,10 @@
       seoDesc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF+PDF 병합까지 — 모두 브라우저 로컬 처리.",
       ogTitle: "ConvertFiles24 - 이미지 & PDF 변환",
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
-      subtitle: "이미지 변환 + PDF 병합을 빠르게. 서버 업로드 없이 로컬 처리.",
+      subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       lang_label: "언어",
-      home: "홈으로",
-      lock: "100% 로컬 처리 · 서버 업로드 없음",
-      text: "글씨",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
@@ -777,7 +847,6 @@
 
       h_preview: "미리보기",
       add_more: "추가하기",
-      crop: "편집",
       thumb_label: "미리보기",
       meta_idle: "파일을 선택하면 정보가 표시됩니다.",
 
@@ -806,6 +875,11 @@
       zip_label: "ZIP 받기",
       a4_label: "A4 통일(PDF 병합)",
       multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+
+      list_open: "목록 열기",
+      list_close:"목록 닫기",
+      badge_files: (n)=> `${n}개`,
+
       msg_loading: "로딩 중…",
       msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
@@ -829,11 +903,10 @@
       seoDesc: "画像をJPG/PNG/WebP/PDFに変換し、PDF+PDF結合も可能 — すべてブラウザ内でローカル処理。",
       ogTitle: "ConvertFiles24 - 画像 & PDF 変換",
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
-      subtitle: "画像変換とPDF結合を高速に。サーバー送信なし。",
+      subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       lang_label: "言語",
-      home: "ホーム",
-      lock: "ローカル処理 · サーバー送信なし",
-      text: "テキスト",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
@@ -842,7 +915,6 @@
 
       h_preview: "プレビュー",
       add_more: "追加",
-      crop: "編集",
       thumb_label: "プレビュー",
       meta_idle: "ファイルを選択すると情報が表示されます。",
 
@@ -871,6 +943,11 @@
       zip_label: "ZIPで受け取る",
       a4_label: "A4統一(PDF結合)",
       multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
+
+      list_open: "リストを開く",
+      list_close:"リストを閉じる",
+      badge_files: (n)=> `${n}件`,
+
       msg_loading: "読み込み中…",
       msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
@@ -894,11 +971,10 @@
       seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs al instante — todo se procesa localmente en tu navegador.",
       ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
-      subtitle: "Convierte imágenes y une PDFs. Procesado local, sin subir archivos.",
+      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       lang_label: "Idioma",
-      home: "Inicio",
-      lock: "Procesamiento local · Sin subir al servidor",
-      text: "Texto",
+      tool_idphoto: "ID Photo",
+      tool_badge: "NEW",
 
       h_upload: "Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
@@ -907,7 +983,6 @@
 
       h_preview: "Vista previa",
       add_more: "Añadir",
-      crop: "Editar",
       thumb_label: "Vista previa",
       meta_idle: "Elige archivos para ver detalles.",
 
@@ -936,6 +1011,11 @@
       zip_label: "Descargar en ZIP",
       a4_label: "Normalizar a A4 (unir PDF)",
       multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
+
+      list_open: "Abrir lista",
+      list_close:"Cerrar lista",
+      badge_files: (n)=> `${n}`,
+
       msg_loading: "Cargando…",
       msg_ready: "¡Listo! Pulsa Convertir / Unir.",
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
@@ -1037,805 +1117,4 @@
     return `${base}_${stamp}.${ext}`;
   }
 
-  function downloadBlob(blob, filename){
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 1500);
-  }
-
-  function syncLangSelect(){
-    if(!langSelectEl) return;
-    langSelectEl.value = LANG;
-  }
-
-  // =========================
-  // State
-  // =========================
-  let files = [];
-  let activeIndex = 0;
-
-  function renderTexts(){
-    const t = STR[LANG] || STR.en;
-
-    document.documentElement.lang = LANG;
-
-    document.title = t.seoTitle;
-    if(META_DESC) META_DESC.setAttribute("content", t.seoDesc);
-    if(OG_TITLE)  OG_TITLE.setAttribute("content", t.ogTitle);
-    if(OG_DESC)   OG_DESC.setAttribute("content", t.ogDesc);
-    if(TW_TITLE)  TW_TITLE.setAttribute("content", t.ogTitle);
-    if(TW_DESC)   TW_DESC.setAttribute("content", t.ogDesc);
-
-    if(JSONLD){
-      try{
-        const obj = JSON.parse(JSONLD.textContent);
-        obj.name = "ConvertFiles24";
-        obj.url = (document.querySelector('link[rel="canonical"]')?.href) || obj.url;
-        JSONLD.textContent = JSON.stringify(obj);
-      }catch(e){}
-    }
-
-    $("subtitle").textContent = t.subtitle;
-
-    $("lang_label").textContent = t.lang_label;
-    if(homeLabelEl) homeLabelEl.textContent = t.home;
-    if(lockLabelEl) lockLabelEl.textContent = t.lock;
-    if(textLabelEl) textLabelEl.textContent = t.text;
-
-    // (선택) 글씨 버튼은 추후 페이지 연결
-    if(textBtnEl){
-      // 언어 유지
-      try{
-        const u = new URL(textBtnEl.href, location.origin);
-        u.searchParams.set("lang", LANG);
-        textBtnEl.href = u.pathname + u.search;
-      }catch(e){}
-    }
-
-    $("h_upload").textContent = t.h_upload;
-    $("drop_title").textContent = t.drop_title;
-    $("drop_hint").textContent = t.drop_hint;
-
-    if(localBadgeTextEl) localBadgeTextEl.textContent = t.local_badge;
-
-    $("h_preview").textContent = t.h_preview;
-    addMoreLabel.textContent = t.add_more;
-    cropLabel.textContent = t.crop;
-
-    $("h_settings").textContent = t.h_settings;
-    $("lbl_format").textContent = t.lbl_format;
-    $("lbl_quality").textContent = t.lbl_quality;
-
-    $("q_095").textContent = t.q_095;
-    $("q_090").textContent = t.q_090;
-    $("q_080").textContent = t.q_080;
-    $("q_070").textContent = t.q_070;
-
-    $("lbl_w").textContent = t.lbl_w;
-    $("lbl_h").textContent = t.lbl_h;
-    inW.placeholder = t.ph_w;
-    inH.placeholder = t.ph_h;
-    $("size_hint").textContent = t.size_hint;
-
-    $("h_download").textContent = t.h_download;
-    btnConvert.textContent = t.convert;
-    btnReset.textContent = t.reset;
-
-    const ps = $("privacy_summary");
-    const pb = $("privacy_body");
-    const zs = $("pdfzip_summary");
-    const zb = $("pdfzip_body");
-    if(ps) ps.textContent = t.privacy_summary;
-    if(pb) pb.innerHTML = t.privacy_body;
-    if(zs) zs.textContent = t.pdfzip_summary;
-    if(zb) zb.innerHTML = t.pdfzip_body;
-
-    $("zip_label").textContent = t.zip_label;
-    $("a4_label").textContent = t.a4_label;
-    $("multi_note").textContent = t.multi_note;
-
-    if(files.length === 0){
-      meta.textContent = t.meta_idle;
-      thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
-    }
-
-    if(multiCount) multiCount.textContent = t.multi_count(files.length);
-
-    syncLangSelect();
-  }
-
-  function setLang(lang){
-    if(!STR[lang]) lang = "en";
-    LANG = lang;
-    localStorage.setItem("cf24_lang", lang);
-
-    try{
-      const u = new URL(location.href);
-      u.searchParams.set("lang", LANG);
-      history.replaceState({}, "", u.toString());
-    }catch(e){}
-
-    renderTexts();
-    updateQualityState();
-    renderFileList();
-    updateCropState();
-    updateZipAvailability();
-  }
-
-  if(langSelectEl){
-    langSelectEl.addEventListener("change", ()=> setLang(langSelectEl.value));
-  }
-
-  function renderFileList(){
-    if(files.length <= 1){
-      multiPanel.style.display = "none";
-    } else {
-      multiPanel.style.display = "block";
-    }
-
-    const t = STR[LANG] || STR.en;
-    multiCount.textContent = t.multi_count(files.length);
-
-    fileListEl.innerHTML = "";
-    files.forEach((item, idx) => {
-      const row = document.createElement("div");
-      row.className = "fileRow";
-
-      const name = document.createElement("div");
-      name.className = "fileName";
-      name.title = item.file.name;
-      name.textContent = item.file.name;
-
-      const mini = document.createElement("div");
-      mini.className = "mini";
-
-      const up = document.createElement("button");
-      up.className = "iconBtn";
-      up.type = "button";
-      up.textContent = "▲";
-      up.disabled = idx === 0;
-      up.addEventListener("click", (e)=>{ e.stopPropagation(); move(idx, idx-1); });
-
-      const down = document.createElement("button");
-      down.className = "iconBtn";
-      down.type = "button";
-      down.textContent = "▼";
-      down.disabled = idx === files.length-1;
-      down.addEventListener("click", (e)=>{ e.stopPropagation(); move(idx, idx+1); });
-
-      const del = document.createElement("button");
-      del.className = "iconBtn";
-      del.type = "button";
-      del.textContent = "🗑️";
-      del.addEventListener("click", (e)=>{ e.stopPropagation(); removeAt(idx); });
-
-      mini.appendChild(up);
-      mini.appendChild(down);
-      mini.appendChild(del);
-
-      row.appendChild(name);
-      row.appendChild(mini);
-
-      row.addEventListener("click", ()=>{
-        activeIndex = idx;
-        previewActive();
-      });
-
-      fileListEl.appendChild(row);
-    });
-  }
-
-  function move(from, to){
-    if(to < 0 || to >= files.length) return;
-    const t = files[from];
-    files.splice(from,1);
-    files.splice(to,0,t);
-    if(activeIndex === from) activeIndex = to;
-    renderFileList();
-    previewActive();
-    updateZipAvailability();
-  }
-
-  function removeAt(idx){
-    files.splice(idx,1);
-    if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
-    renderFileList();
-    if(files.length === 0){
-      resetAll();
-      return;
-    }
-    previewActive();
-    updateZipAvailability();
-  }
-
-  function updateCropState(){
-    addMoreBtn.disabled = (files.length === 0);
-    if(files.length === 1 && files[0] && isImage(files[0].file)){
-      cropBtn.disabled = false;
-      return;
-    }
-    cropBtn.disabled = true;
-  }
-
-  async function previewActive(){
-    const t = STR[LANG] || STR.en;
-
-    if(files.length === 0){
-      renderTexts();
-      btnConvert.disabled = true;
-      btnReset.disabled = true;
-      updateCropState();
-      updateZipAvailability();
-      return;
-    }
-
-    const f = files[activeIndex]?.file;
-    if(!f) return;
-
-    btnConvert.disabled = false;
-    btnReset.disabled = false;
-
-    if(isImage(f)){
-      const ext = extLower(f.name);
-      if(ext === "heic" || ext === "heif"){
-        setMessage(t.err_heic, "err");
-      }else{
-        setMessage(t.msg_loading, "");
-      }
-
-      const url = URL.createObjectURL(f);
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        thumb.innerHTML = "";
-        thumb.appendChild(img);
-
-        const w = img.naturalWidth || 0;
-        const h = img.naturalHeight || 0;
-
-        meta.innerHTML = t.meta_img(
-          escapeHtml(f.name),
-          escapeHtml((f.type || "image/*")),
-          humanSize(f.size),
-          w, h
-        );
-
-        if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
-        updateCropState();
-        updateZipAvailability();
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        thumb.innerHTML = "";
-        meta.textContent = t.err_preview;
-        setMessage(t.err_preview, "err");
-        updateCropState();
-        updateZipAvailability();
-      };
-      img.src = url;
-      img.style.width = "100%";
-      img.style.height = "100%";
-      img.style.objectFit = "cover";
-      return;
-    }
-
-    if(isPDF(f)){
-      thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
-      meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
-      setMessage(t.msg_ready, "ok");
-      updateCropState();
-      updateZipAvailability();
-      return;
-    }
-
-    meta.textContent = t.err_only_supported;
-    setMessage(t.err_only_supported, "err");
-    btnConvert.disabled = true;
-    updateCropState();
-    updateZipAvailability();
-  }
-
-  function appendFiles(selected){
-    const t = STR[LANG] || STR.en;
-    if(!selected || selected.length === 0) return;
-
-    const arr = Array.from(selected);
-    const ok = arr.filter(f => isImage(f) || isPDF(f));
-    if(ok.length === 0){
-      setMessage(t.err_only_supported, "err");
-      return;
-    }
-
-    const base = files.slice();
-    ok.forEach((file, i)=>{
-      base.push({ file, id: `${Date.now()}_${Math.random().toString(16).slice(2)}_${i}` });
-    });
-    files = base;
-
-    drop.classList.add("active");
-    btnReset.disabled = false;
-    btnConvert.disabled = (files.length === 0);
-
-    renderFileList();
-    renderTexts();
-    previewActive();
-    updateQualityState();
-    updateCropState();
-    updateZipAvailability();
-  }
-
-  async function handleFiles(selected){
-    const t = STR[LANG] || STR.en;
-    if(!selected || selected.length === 0) return;
-
-    files = [];
-    activeIndex = 0;
-
-    appendFiles(selected);
-
-    const mime = selFormat.value;
-
-    if(mime === "image/png"){
-      setMessage(t.msg_png_q, "");
-    } else if(mime === "application/pdf"){
-      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
-      else setMessage(t.msg_pdf_one, "");
-    } else {
-      setMessage(t.msg_ready, "ok");
-    }
-
-    updateZipAvailability();
-  }
-
-  function openFilePicker(){
-    try{
-      fileInput.value = "";
-      fileInput.focus();
-      fileInput.click();
-    }catch(e){
-      const tmp = document.createElement("input");
-      tmp.type = "file";
-      tmp.accept = "image/*,application/pdf";
-      tmp.multiple = true;
-      tmp.style.position = "fixed";
-      tmp.style.left = "-9999px";
-      document.body.appendChild(tmp);
-      tmp.addEventListener("change", (ev)=>{
-        handleFiles(ev.target.files);
-        document.body.removeChild(tmp);
-      }, { once:true });
-      tmp.click();
-    }
-  }
-
-  function openFilePickerAppend(){
-    const tmp = document.createElement("input");
-    tmp.type = "file";
-    tmp.accept = "image/*,application/pdf";
-    tmp.multiple = true;
-    tmp.style.position = "fixed";
-    tmp.style.left = "-9999px";
-    document.body.appendChild(tmp);
-    tmp.addEventListener("change", (ev)=>{
-      appendFiles(ev.target.files);
-      document.body.removeChild(tmp);
-    }, { once:true });
-    tmp.click();
-  }
-
-  addMoreBtn.addEventListener("click", openFilePickerAppend);
-
-  drop.addEventListener("click", openFilePicker);
-  drop.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      openFilePicker();
-    }
-  });
-
-  fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
-
-  ["dragenter","dragover"].forEach(evt => {
-    drop.addEventListener(evt, (e) => {
-      e.preventDefault(); e.stopPropagation();
-      drop.classList.add("drag");
-    });
-  });
-  ["dragleave","drop"].forEach(evt => {
-    drop.addEventListener(evt, (e) => {
-      e.preventDefault(); e.stopPropagation();
-      drop.classList.remove("drag");
-    });
-  });
-  drop.addEventListener("drop", (e) => {
-    const fs = e.dataTransfer.files;
-    handleFiles(fs);
-  });
-
-  function updateQualityState(){
-    const mime = selFormat.value;
-    const disableQuality = (mime === "image/png" || mime === "application/pdf");
-    selQuality.disabled = disableQuality;
-    selQuality.style.opacity = disableQuality ? ".6" : "1";
-  }
-
-  function updateZipAvailability(){
-    const outMime = selFormat.value;
-    const images = files.filter(x => isImage(x.file));
-    const pdfs   = files.filter(x => isPDF(x.file));
-
-    zipModeEl.disabled = false;
-
-    const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
-    if(shouldAutoZip && zipModeEl.checked === false){
-      zipModeEl.checked = true;
-    }
-
-    if(outMime === "application/pdf" && zipModeEl.checked){
-      a4ModeEl.checked = false;
-      a4ModeEl.disabled = true;
-      if(a4ChkLabel){
-        a4ChkLabel.style.opacity = ".55";
-        a4ChkLabel.style.cursor = "not-allowed";
-      }
-    } else {
-      a4ModeEl.disabled = false;
-      if(a4ChkLabel){
-        a4ChkLabel.style.opacity = "1";
-        a4ChkLabel.style.cursor = "pointer";
-      }
-    }
-
-    if(zipChkLabel){
-      zipChkLabel.style.opacity = "1";
-      zipChkLabel.style.cursor = "pointer";
-    }
-
-    void pdfs;
-  }
-
-  selFormat.addEventListener("change", ()=>{
-    updateQualityState();
-    updateZipAvailability();
-
-    const t = STR[LANG] || STR.en;
-    const mime = selFormat.value;
-
-    if(mime === "image/png"){
-      setMessage(t.msg_png_q, "");
-    } else if(mime === "application/pdf"){
-      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
-      else setMessage(t.msg_pdf_one, "");
-    } else if(files.length){
-      setMessage(t.msg_ready, "ok");
-    } else {
-      setMessage("", "");
-    }
-  });
-
-  zipModeEl.addEventListener("change", updateZipAvailability);
-
-  function getTargetSize(origW, origH){
-    const w = parseInt(inW.value, 10);
-    const h = parseInt(inH.value, 10);
-    if(!w && !h) return { w: origW, h: origH };
-    if(w && !h) return { w, h: Math.round(w * (origH / origW)) };
-    if(!w && h) return { w: Math.round(h * (origW / origH)), h };
-    return { w, h };
-  }
-
-  async function imageToCanvasBlob(file, outMime, quality){
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-
-    await new Promise((resolve, reject)=>{
-      img.onload = () => resolve(true);
-      img.onerror = () => reject(new Error("image load fail"));
-      img.src = url;
-    });
-
-    URL.revokeObjectURL(url);
-
-    const origW = img.naturalWidth || 0;
-    const origH = img.naturalHeight || 0;
-    const { w, h } = getTargetSize(origW, origH);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, w);
-    canvas.height = Math.max(1, h);
-
-    const ctx = canvas.getContext("2d", { alpha:true });
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    const blob = await new Promise((resolve)=>{
-      if(outMime === "image/png"){
-        canvas.toBlob(resolve, outMime);
-      } else {
-        canvas.toBlob(resolve, outMime, quality);
-      }
-    });
-
-    if(!blob) throw new Error("toBlob failed");
-    return { blob, canvas, w: canvas.width, h: canvas.height };
-  }
-
-  async function imagesToSinglePDF(imageItems){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
-
-    const { PDFDocument } = window.PDFLib;
-    const pdfDoc = await PDFDocument.create();
-
-    for(const it of imageItems){
-      const { canvas, w, h } = await imageToCanvasBlob(it.file, "image/png", 1);
-      const pngBlob = await new Promise((resolve)=> canvas.toBlob(resolve, "image/png"));
-      if(!pngBlob) throw new Error(t.err_convert);
-
-      const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
-      const imgEmbed = await pdfDoc.embedPng(pngBytes);
-
-      const page = pdfDoc.addPage([w, h]);
-      page.drawImage(imgEmbed, { x:0, y:0, width:w, height:h });
-    }
-
-    const bytes = await pdfDoc.save();
-    return new Blob([bytes], { type:"application/pdf" });
-  }
-
-  async function mergePDFs(pdfItems, normalizeA4){
-    const t = STR[LANG] || STR.en;
-    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
-
-    const { PDFDocument, PageSizes } = window.PDFLib;
-    const outDoc = await PDFDocument.create();
-    const [a4w, a4h] = PageSizes.A4;
-
-    for(const it of pdfItems){
-      const f = it.file;
-      try{
-        const buf = await f.arrayBuffer();
-        const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: false });
-
-        if(normalizeA4){
-          const srcPages = srcDoc.getPages();
-          for(let i=0;i<srcPages.length;i++){
-            const embedded = await outDoc.embedPage(srcPages[i]);
-            const w = embedded.width;
-            const h = embedded.height;
-            const scale = Math.min(a4w / w, a4h / h);
-            const drawW = w * scale;
-            const drawH = h * scale;
-            const x = (a4w - drawW) / 2;
-            const y = (a4h - drawH) / 2;
-
-            const page = outDoc.addPage([a4w, a4h]);
-            page.drawPage(embedded, { x, y, width: drawW, height: drawH });
-          }
-        }else{
-          const copied = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-          copied.forEach(p => outDoc.addPage(p));
-        }
-      }catch(e){
-        throw new Error(t.err_pdf_locked);
-      }
-    }
-
-    const bytes = await outDoc.save();
-    return new Blob([bytes], { type:"application/pdf" });
-  }
-
-  async function convertImagesToZIP(imageItems, outMime, quality){
-    if(!window.JSZip) throw new Error("ZIP library is not ready.");
-    const zip = new window.JSZip();
-
-    for(const it of imageItems){
-      const f = it.file;
-      const { blob } = await imageToCanvasBlob(f, outMime, quality);
-
-      const ext = mimeToExt(outMime);
-      const base = (f.name || "image").replace(/\.[^.]+$/, "");
-      const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-      zip.file(`${base}_${stamp}.${ext}`, blob);
-    }
-
-    return await zip.generateAsync({ type:"blob" });
-  }
-
-  async function zipOriginalPDFs(pdfItems){
-    if(!window.JSZip) throw new Error("ZIP library is not ready.");
-    const zip = new window.JSZip();
-
-    for(const it of pdfItems){
-      const f = it.file;
-      const buf = await f.arrayBuffer();
-      zip.file(f.name || buildName("file","pdf"), buf);
-    }
-
-    return await zip.generateAsync({ type:"blob" });
-  }
-
-  async function onConvert(){
-    const t = STR[LANG] || STR.en;
-    if(files.length === 0){
-      setMessage(t.err_only_supported, "err");
-      return;
-    }
-
-    btnConvert.disabled = true;
-    setMessage(t.msg_loading, "");
-
-    const outMime = selFormat.value;
-    const quality = parseFloat(selQuality.value);
-
-    const images = files.filter(x => isImage(x.file));
-    const pdfs   = files.filter(x => isPDF(x.file));
-
-    try{
-      if(outMime === "application/pdf"){
-        if(pdfs.length >= 1){
-          if(pdfs.length >= 2 && zipModeEl.checked){
-            const zipBlob = await zipOriginalPDFs(pdfs);
-            const name = buildName("pdf_files", "zip");
-            downloadBlob(zipBlob, name);
-            setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
-            btnConvert.disabled = false;
-            return;
-          }
-
-          const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
-          const name = buildName("merged_pdf", "pdf");
-          downloadBlob(merged, name);
-          setMessage(t.dl_start(name, humanSize(merged.size)), "ok");
-          btnConvert.disabled = false;
-          return;
-        }
-
-        if(images.length >= 1){
-          const pdfBlob = await imagesToSinglePDF(images);
-          const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
-          downloadBlob(pdfBlob, name);
-          setMessage(t.dl_start(name, humanSize(pdfBlob.size)), "ok");
-          btnConvert.disabled = false;
-          return;
-        }
-
-        throw new Error(t.err_only_supported);
-      }
-
-      if(images.length === 0){
-        throw new Error(t.err_only_supported);
-      }
-
-      if(images.length >= 2 && zipModeEl.checked){
-        const zipBlob = await convertImagesToZIP(images, outMime, quality);
-        const name = buildName("converted_images", "zip");
-        downloadBlob(zipBlob, name);
-        setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
-        btnConvert.disabled = false;
-        return;
-      }
-
-      const first = images[0].file;
-      const { blob } = await imageToCanvasBlob(first, outMime, quality);
-      const name = buildName(first.name, mimeToExt(outMime));
-      downloadBlob(blob, name);
-      setMessage(t.dl_start(name, humanSize(blob.size)), "ok");
-      btnConvert.disabled = false;
-
-    }catch(e){
-      const errText = (e && e.message) ? e.message : (STR[LANG]||STR.en).err_convert;
-      setMessage(errText, "err");
-      btnConvert.disabled = false;
-    }
-  }
-
-  function resetAll(){
-    files = [];
-    activeIndex = 0;
-
-    fileInput.value = "";
-    drop.classList.remove("active");
-
-    btnConvert.disabled = true;
-    btnReset.disabled = true;
-
-    inW.value = "";
-    inH.value = "";
-
-    zipModeEl.checked = false;
-    a4ModeEl.checked = false;
-
-    setMessage("", "");
-
-    renderTexts();
-    renderFileList();
-    updateCropState();
-    updateZipAvailability();
-  }
-
-  btnConvert.addEventListener("click", onConvert);
-  btnReset.addEventListener("click", resetAll);
-
-  // ==========================================================
-  // ✅ High-res handoff to /edit via IndexedDB (no downscale)
-  // ==========================================================
-  const CF24_IDB_NAME = "cf24_blob_store_v1";
-  const CF24_IDB_STORE = "blobs";
-
-  function idbOpen(){
-    return new Promise((resolve, reject)=>{
-      if(!("indexedDB" in window)) return reject(new Error("IndexedDB not supported"));
-      const req = indexedDB.open(CF24_IDB_NAME, 1);
-      req.onupgradeneeded = () => {
-        const db = req.result;
-        if(!db.objectStoreNames.contains(CF24_IDB_STORE)){
-          db.createObjectStore(CF24_IDB_STORE);
-        }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error || new Error("IDB open fail"));
-    });
-  }
-
-  async function idbPut(key, blob){
-    const db = await idbOpen();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(CF24_IDB_STORE, "readwrite");
-      const store = tx.objectStore(CF24_IDB_STORE);
-      store.put(blob, key);
-      tx.oncomplete = () => { try{ db.close(); }catch(e){} resolve(true); };
-      tx.onerror = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put fail")); };
-      tx.onabort = () => { try{ db.close(); }catch(e){} reject(tx.error || new Error("IDB put abort")); };
-    });
-  }
-
-  cropBtn.addEventListener("click", async ()=>{
-    if(files.length !== 1) return;
-    const f = files[0]?.file;
-    if(!f || !isImage(f)) return;
-
-    const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-    try{
-      await idbPut(key, f);
-
-      sessionStorage.setItem("cf24_edit_source", "idb");
-      sessionStorage.setItem("cf24_edit_key", key);
-      sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
-      location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      return;
-
-    }catch(e){
-      try{
-        const dataUrl = await new Promise((resolve, reject)=>{
-          const r = new FileReader();
-          r.onload = ()=> resolve(r.result);
-          r.onerror = ()=> reject(new Error("read fail"));
-          r.readAsDataURL(f);
-        });
-
-        sessionStorage.setItem("cf24_edit_img", String(dataUrl));
-        sessionStorage.setItem("cf24_edit_name", f.name || "image");
-
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }catch(err){
-        location.href = "/edit/?lang=" + encodeURIComponent(LANG);
-      }
-    }
-  });
-
-  // init
-  setLang(LANG);
-  resetAll();
-})();
-</script>
-</body>
-</html>
+  function downloa
