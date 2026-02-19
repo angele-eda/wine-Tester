@@ -16,14 +16,13 @@
   <!-- ✅ pdf.js (stable UMD for mobile) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    // worker
     if (window.pdfjsLib) {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     }
   </script>
 
-  <!-- PDF-lib (rebuild/merge PDF) -->
+  <!-- PDF-lib -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
   <style>
@@ -161,7 +160,7 @@
 
     input[type="file"]{ display:none; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-    select, input[type="number"]{
+    select{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
@@ -172,7 +171,7 @@
       font-weight:900;
       transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
     }
-    select:focus-visible, input[type="number"]:focus-visible{
+    select:focus-visible{
       border-color: rgba(var(--blue), .55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.22);
     }
@@ -313,9 +312,7 @@
     </div>
   </div>
 
-  <!-- first pick (replace list) -->
   <input id="pickInput" type="file" accept="application/pdf">
-  <!-- add pick (append) -->
   <input id="addInput" type="file" accept="application/pdf" multiple>
 
 <script>
@@ -488,6 +485,16 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  function updatePickedUI(){
+    const n = pdfItems.length;
+    if(n > 0){
+      pickedPill.style.display = "inline-flex";
+      pickedText.textContent = t().picked(n);
+    }else{
+      pickedPill.style.display = "none";
+    }
+  }
+
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
@@ -521,19 +528,10 @@
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
   // ---- files state (multiple) ----
+  // ✅ ArrayBuffer는 pdf.js에 넘기면 detach될 수 있어서, "저장용"과 "pdf.js용"을 반드시 분리
   /** @type {{name:string, bytes:ArrayBuffer}[]} */
   let pdfItems = [];
   let totalPages = 0;
-
-  function updatePickedUI(){
-    const n = pdfItems.length;
-    if(n > 0){
-      pickedPill.style.display = "inline-flex";
-      pickedText.textContent = t().picked(n);
-    }else{
-      pickedPill.style.display = "none";
-    }
-  }
 
   function enableControls(has){
     qualityEl.disabled = !has;
@@ -541,6 +539,13 @@
     compressBtn.disabled = !has;
     clearBtn.disabled = !has;
     addBtn.disabled = !has;
+  }
+
+  async function countPagesWithPdfjs(bufForPdfjs){
+    // bufForPdfjs는 "복사본"이어야 안전
+    const loadingTask = window.pdfjsLib.getDocument({ data: bufForPdfjs });
+    const pdf = await loadingTask.promise;
+    return pdf.numPages;
   }
 
   pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
@@ -559,7 +564,6 @@
   });
 
   function openDropPicker(){
-    // drop tap = replace
     pickInput.value="";
     pickInput.click();
   }
@@ -574,9 +578,9 @@
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
   });
   drop.addEventListener("drop", async (e)=>{
-    const files = Array.from(e.dataTransfer.files || []).filter(f=>f && /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name));
+    const files = Array.from(e.dataTransfer.files || []).filter(f=>f && (/\.pdf$/i.test(f.name) || f.type === "application/pdf"));
     if(!files.length) return;
-    await loadFilesReplace(files.slice(0, 10)); // safety cap
+    await loadFilesReplace(files.slice(0, 10));
   });
 
   clearBtn.addEventListener("click", ()=>{
@@ -589,12 +593,6 @@
     updatePickedUI();
   });
 
-  async function countPagesWithPdfjs(buf){
-    const loadingTask = window.pdfjsLib.getDocument({ data: buf });
-    const pdf = await loadingTask.promise;
-    return pdf.numPages;
-  }
-
   async function loadFilesReplace(files){
     try{
       if(!window.pdfjsLib) throw new Error("pdfjsLib not loaded");
@@ -606,8 +604,13 @@
 
       for(const file of files){
         const buf = await file.arrayBuffer();
-        const pages = await countPagesWithPdfjs(buf);
-        pdfItems.push({ name: file.name || "document.pdf", bytes: buf });
+
+        // ✅ 중요: pdf.js용 복사본 / 저장용 복사본을 분리
+        const forPdfjs = buf.slice(0);
+        const keep     = buf.slice(0);
+
+        const pages = await countPagesWithPdfjs(forPdfjs);
+        pdfItems.push({ name: file.name || "document.pdf", bytes: keep });
         totalPages += pages;
       }
 
@@ -637,8 +640,13 @@
 
       for(const file of files){
         const buf = await file.arrayBuffer();
-        const pages = await countPagesWithPdfjs(buf);
-        pdfItems.push({ name: file.name || "document.pdf", bytes: buf });
+
+        // ✅ 중요: pdf.js용 복사본 / 저장용 복사본을 분리
+        const forPdfjs = buf.slice(0);
+        const keep     = buf.slice(0);
+
+        const pages = await countPagesWithPdfjs(forPdfjs);
+        pdfItems.push({ name: file.name || "document.pdf", bytes: keep });
         totalPages += pages;
       }
 
@@ -671,7 +679,6 @@
     return `${base}_compressed_${stamp}.pdf`;
   }
 
-  // render a pdf.js page to jpeg blob
   async function renderPageToJpegBlob(pdf, pageNum, scale, quality){
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale });
@@ -695,13 +702,15 @@
     return { blob, w: canvas.width, h: canvas.height };
   }
 
-  // ✅ merge selected PDFs into one using PDF-lib
   async function mergeSelectedPdfs(){
     const { PDFDocument } = window.PDFLib;
     const merged = await PDFDocument.create();
 
     for(const item of pdfItems){
-      const src = await PDFDocument.load(item.bytes);
+      // ✅ 혹시 모를 상황 대비: PDF-lib에도 복사본으로 전달(안전)
+      const srcBytes = item.bytes.slice(0);
+      const src = await PDFDocument.load(srcBytes);
+
       const copied = await merged.copyPages(src, src.getPageIndices());
       copied.forEach(p => merged.addPage(p));
     }
@@ -727,12 +736,15 @@
       const q = parseFloat(qualityEl.value || "0.75");
       const scale = parseFloat(scaleEl.value || "1.0");
 
-      // 1) merge first (if multiple)
+      // 1) merge first
       setProg(6);
       const mergedBytes = await mergeSelectedPdfs();
 
+      // ✅ 중요: pdf.js에 넘기는 data도 복사본으로 (워커 transfer 대비)
+      const mergedForPdfjs = mergedBytes.slice ? mergedBytes.slice(0) : new Uint8Array(mergedBytes);
+
       // 2) render + rebuild as images
-      const loadingTask = window.pdfjsLib.getDocument({ data: mergedBytes });
+      const loadingTask = window.pdfjsLib.getDocument({ data: mergedForPdfjs });
       const pdf = await loadingTask.promise;
 
       const { PDFDocument } = window.PDFLib;
