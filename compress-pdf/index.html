@@ -298,10 +298,12 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // pdf.js worker
+  // pdf.js worker (PDF.js v4: worker is often .mjs)
   if (window.pdfjsLib) {
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
+    const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/";
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.mjs";
+    // fallback option (if needed):
+    // window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
   }
 
   const STR = {
@@ -527,8 +529,10 @@
       setMsg("", "");
       hideProg();
       const buf = await file.arrayBuffer();
+
       const loadingTask = window.pdfjsLib.getDocument({ data: buf });
       const pdf = await loadingTask.promise;
+
       pageCount = pdf.numPages;
       pdfBytes = buf;
       pdfName = file.name || "document.pdf";
@@ -546,7 +550,10 @@
       compressBtn.disabled = true;
       clearBtn.disabled = true;
       metaEl.innerHTML = t().meta_idle;
-      setMsg(t().msg_fail, "err");
+
+      const detail = (e && e.message) ? e.message : String(e);
+      setMsg((t().msg_fail || "Failed") + " (" + detail + ")", "err");
+
       hideProg();
     }
   }
@@ -568,7 +575,8 @@
     return `${base}_compressed_${stamp}.pdf`;
   }
 
-  async function renderPageToJpegDataUrl(pdf, pageNum, scale, quality){
+  // ✅ Render a page to JPEG Blob (avoid dataURL + fetch issues on mobile)
+  async function renderPageToJpegBlob(pdf, pageNum, scale, quality){
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale });
 
@@ -582,8 +590,14 @@
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     await page.render({ canvasContext: ctx, viewport }).promise;
-    const dataUrl = canvas.toDataURL("image/jpeg", quality);
-    return { dataUrl, w: canvas.width, h: canvas.height };
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", quality);
+    });
+
+    if(!blob) throw new Error("canvas.toBlob failed");
+
+    return { blob, w: canvas.width, h: canvas.height };
   }
 
   compressBtn.addEventListener("click", async ()=>{
@@ -611,9 +625,9 @@
       for(let i=1;i<=pdf.numPages;i++){
         setProg(Math.round((i-1)/pdf.numPages*90) + 5);
 
-        const { dataUrl, w, h } = await renderPageToJpegDataUrl(pdf, i, scale, q);
+        const { blob, w, h } = await renderPageToJpegBlob(pdf, i, scale, q);
 
-        const jpgBytes = await fetch(dataUrl).then(r=>r.arrayBuffer());
+        const jpgBytes = await blob.arrayBuffer();
         const jpg = await out.embedJpg(jpgBytes);
 
         // Use pixel as PDF points 1:1 to keep sharpness (simple)
@@ -629,10 +643,10 @@
       setProg(100);
       setMsg(t().msg_done, "ok");
     }catch(e){
-      setMsg(t().msg_fail, "err");
+      const detail = (e && e.message) ? e.message : String(e);
+      setMsg((t().msg_fail || "Failed to compress PDF.") + " (" + detail + ")", "err");
       hideProg();
     }finally{
-      // re-enable if pdf exists
       const has = !!pdfBytes;
       compressBtn.disabled = !has;
       pickBtn.disabled = false;
