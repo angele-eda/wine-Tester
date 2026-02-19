@@ -237,27 +237,31 @@
     .fileItem + .fileItem{ margin-top:10px; }
 
     .fileLeft{ min-width:0; flex: 1; }
-    .fileName{ font-weight:900; color:#e9eef7; letter-spacing:-0.2px; word-break: break-word; }
-    .fileMeta{ margin-top:4px; color:#a7b3c7; font-size:12px; line-height:1.45; }
 
-    /* ✅ 11p 배지 + X + 이동 화살표 */
+    /* ✅ 목록 글자: 작고 가늘게 (둔탁함 제거) */
+    .fileName{
+      font-weight:600;
+      font-size:13px;
+      color:#e9eef7;
+      letter-spacing:-0.1px;
+      line-height:1.35;
+      word-break: break-word;
+    }
+    .fileMeta{
+      margin-top:6px;
+      color:#a7b3c7;
+      font-size:11px;
+      line-height:1.45;
+      font-weight:500;
+    }
+
+    /* ✅ X + 이동 화살표만 유지 (2p/11p 배지 제거) */
     .fileRight{
       display:flex;
       flex-direction:column;
       align-items:flex-end;
       gap:8px;
       min-width: 64px;
-    }
-    .miniPill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color:#cfe0ff;
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
-      height: fit-content;
     }
     .iconStack{
       display:flex;
@@ -882,7 +886,6 @@
           <div class="fileMeta">Pages: ${f.pages}</div>
         </div>
         <div class="fileRight">
-          <div class="miniPill">${f.pages}p</div>
           <div class="iconStack">
             <button class="iconBtn danger" data-act="del" data-idx="${idx}" aria-label="${esc(t().del)}">✕</button>
             <button class="iconBtn" data-act="up" data-idx="${idx}" aria-label="${esc(t().up)}">↑</button>
