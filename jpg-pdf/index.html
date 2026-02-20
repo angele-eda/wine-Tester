@@ -494,8 +494,18 @@
         align-items:start;
       }
     }
-.tsToggle{ max-width:100%; }
 .row > div:last-child{ min-width:0; }
+
+.row{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+}
+.tsToggle{
+  width:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+}
   </style>
 </head>
 
