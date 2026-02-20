@@ -860,7 +860,23 @@ window.addEventListener("DOMContentLoaded", () => {
       scale:"출력 크기",
       bg:"배경",
       name:"파일명",
-      optHint:"출력 크기는 선명도/용량에 영향을 줍니다."
+      optHint:"출력 크기는 선명도/용량에 영향을 줍니다.",
+
+      // ✅ select 옵션 번역
+      fmt_jpg:"JPG",
+      fmt_png:"PNG",
+      q_max:"최고 (0.95)",
+      q_high:"높음 (0.90)",
+      q_normal:"보통 (0.80)",
+      q_small:"작게 (0.70)",
+      scale_2x:"선명 (2x)",
+      scale_reco:"추천 (1.5x)",
+      scale_1x:"가벼움 (1x)",
+      bg_auto:"자동",
+      bg_white:"흰색",
+      bg_black:"검정",
+      name_original:"원본명 + 페이지",
+      name_simple:"간단한 날짜형"
     },
     en:{
       title:"PDF → JPG/PNG",
@@ -893,7 +909,23 @@ window.addEventListener("DOMContentLoaded", () => {
       scale:"Output size",
       bg:"Background",
       name:"Filename",
-      optHint:"Output size affects clarity and file size."
+      optHint:"Output size affects clarity and file size.",
+
+      // ✅ select 옵션 번역
+      fmt_jpg:"JPG",
+      fmt_png:"PNG",
+      q_max:"Max (0.95)",
+      q_high:"High (0.90)",
+      q_normal:"Normal (0.80)",
+      q_small:"Small (0.70)",
+      scale_2x:"Sharp (2x)",
+      scale_reco:"Recommended (1.5x)",
+      scale_1x:"Light (1x)",
+      bg_auto:"Auto",
+      bg_white:"White",
+      bg_black:"Black",
+      name_original:"Original name + page",
+      name_simple:"Simple date style"
     },
     es:{
       title:"PDF → JPG/PNG",
@@ -926,7 +958,23 @@ window.addEventListener("DOMContentLoaded", () => {
       scale:"Tamaño",
       bg:"Fondo",
       name:"Nombre",
-      optHint:"El tamaño afecta claridad y peso."
+      optHint:"El tamaño afecta claridad y peso.",
+
+      // ✅ select 옵션 번역
+      fmt_jpg:"JPG",
+      fmt_png:"PNG",
+      q_max:"Máxima (0.95)",
+      q_high:"Alta (0.90)",
+      q_normal:"Normal (0.80)",
+      q_small:"Pequeña (0.70)",
+      scale_2x:"Nítido (2x)",
+      scale_reco:"Recomendado (1.5x)",
+      scale_1x:"Ligero (1x)",
+      bg_auto:"Automático",
+      bg_white:"Blanco",
+      bg_black:"Negro",
+      name_original:"Nombre original + página",
+      name_simple:"Estilo fecha simple"
     },
     ja:{
       title:"PDF → JPG/PNG",
@@ -959,7 +1007,23 @@ window.addEventListener("DOMContentLoaded", () => {
       scale:"出力サイズ",
       bg:"背景",
       name:"ファイル名",
-      optHint:"出力サイズは鮮明さ/容量に影響します。"
+      optHint:"出力サイズは鮮明さ/容量に影響します。",
+
+      // ✅ select 옵션 번역
+      fmt_jpg:"JPG",
+      fmt_png:"PNG",
+      q_max:"最高 (0.95)",
+      q_high:"高 (0.90)",
+      q_normal:"標準 (0.80)",
+      q_small:"軽量 (0.70)",
+      scale_2x:"鮮明 (2x)",
+      scale_reco:"おすすめ (1.5x)",
+      scale_1x:"軽い (1x)",
+      bg_auto:"自動",
+      bg_white:"白",
+      bg_black:"黒",
+      name_original:"元の名前 + ページ",
+      name_simple:"簡単な日付形式"
     }
   };
 
@@ -967,7 +1031,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const qp = (new URL(location.href).searchParams.get("lang")||"").toLowerCase();
     if(STR[qp]) return qp;
 
-    // ✅ URL에 lang가 있으면 "수동"으로 취급해서 고정 (공유/재방문 안정)
     if(qp){
       localStorage.setItem("cf24_lang", qp);
       localStorage.setItem("cf24_lang_manual","1");
@@ -986,6 +1049,49 @@ window.addEventListener("DOMContentLoaded", () => {
 
   let LANG = detectLang();
   const t = ()=> STR[LANG] || STR.en;
+
+  // ✅ select 옵션을 언어별로 "재렌더" (추천/자동/원본명... 완전 해결)
+  function renderSelectOptions(){
+    const fmt = outFormatEl.value;
+    const q = qualityEl.value;
+    const sc = scaleEl.value;
+    const bg = bgEl.value;
+    const nr = nameRuleEl.value;
+
+    outFormatEl.innerHTML = `
+      <option value="image/jpeg">${t().fmt_jpg}</option>
+      <option value="image/png">${t().fmt_png}</option>
+    `;
+    outFormatEl.value = fmt || "image/jpeg";
+
+    qualityEl.innerHTML = `
+      <option value="0.95">${t().q_max}</option>
+      <option value="0.90">${t().q_high}</option>
+      <option value="0.80">${t().q_normal}</option>
+      <option value="0.70">${t().q_small}</option>
+    `;
+    qualityEl.value = q || "0.90";
+
+    scaleEl.innerHTML = `
+      <option value="2.0">${t().scale_2x}</option>
+      <option value="1.5">${t().scale_reco}</option>
+      <option value="1.0">${t().scale_1x}</option>
+    `;
+    scaleEl.value = sc || "1.5";
+
+    bgEl.innerHTML = `
+      <option value="auto">${t().bg_auto}</option>
+      <option value="white">${t().bg_white}</option>
+      <option value="black">${t().bg_black}</option>
+    `;
+    bgEl.value = bg || "auto";
+
+    nameRuleEl.innerHTML = `
+      <option value="original">${t().name_original}</option>
+      <option value="simple">${t().name_simple}</option>
+    `;
+    nameRuleEl.value = nr || "original";
+  }
 
   function setLang(lang, isManual=false){
     if(!STR[lang]) lang="en";
@@ -1019,6 +1125,9 @@ window.addEventListener("DOMContentLoaded", () => {
     $("lbl_bg").textContent = t().bg;
     $("lbl_name").textContent = t().name;
     $("opt_hint").textContent = t().optHint;
+
+    // ✅ 옵션 텍스트까지 언어 변경
+    renderSelectOptions();
 
     // ✅ 번역 누락 방지: 리스트/뱃지/미니텍스트까지 강제 재렌더
     renderList();
@@ -1533,6 +1642,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ✅ 초기 언어 세팅 시 옵션도 함께 번역
   setLang(LANG, false);
   renderList();
 });
