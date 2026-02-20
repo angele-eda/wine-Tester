@@ -112,43 +112,53 @@
 
     .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
 
-    /* ✅ tools */
+    /* ✅ tools (Home + Secure) */
     .tools{
       margin-top:10px;
       display:flex;
+      flex-direction:column;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+      align-items:flex-start;
+      max-width: 520px;
     }
 
-    /* === TOOL BUTTON (ID Photo) toned down (main is converter) === */
-    .toolPrimary{
+    .homeBtn{
+      width:100%;
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:10px;
-      padding:10px 12px;
+      padding:12px 14px;
       border-radius:999px;
       text-decoration:none;
       cursor:pointer;
       user-select:none;
-      font-weight:800;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+      font-weight:900;
+      letter-spacing:-0.2px;
+      border: 1px solid rgba(80,120,255,.35);
+      background: rgba(47,109,246,.22);
       color:#e9eef7;
-      box-shadow: none;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      transition: transform .08s ease, filter .12s ease, background .12s ease;
     }
-    .toolPrimary:hover{ background: rgba(255,255,255,.10); }
-    .toolPrimary .badge{
-      font-size:10px;
-      font-weight:800;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:#e9eef7;
-      display:inline-flex;
+    .homeBtn:hover{ filter: brightness(1.03); background: rgba(47,109,246,.26); }
+    .homeBtn:active{ transform: scale(.99); }
+
+    .securePill{
+      width:100%;
+      display:flex;
       align-items:center;
-      gap:6px;
+      justify-content:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#cfe0ff;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
     }
 
     /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
@@ -533,14 +543,14 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 class="site-title">ConvertFiles24</h1>
+        <!-- ✅ 제목: Convert -->
+        <h1 class="site-title" id="pageTitle">Convert</h1>
         <p class="sub" id="subtitle"></p>
 
+        <!-- ✅ ID Photo 제거 + 홈/보안 pill 추가 -->
         <div class="tools">
-          <a class="toolPrimary" id="tool_idphoto" href="/id-photo/">
-            🪪 <span id="tool_idphoto_text">ID Photo</span>
-            <span class="badge">✨ <span id="tool_badge">NEW</span></span>
-          </a>
+          <a class="homeBtn" id="homeBtn" href="/?lang=ko">🏠 <span id="homeBtnText">홈으로</span></a>
+          <div class="securePill" id="securePill">🔒 <span id="securePillText">로컬 처리 — 서버 업로드 없음</span></div>
         </div>
       </div>
 
@@ -749,28 +759,34 @@
   const dropBadge = $("dropBadge");
   const dropBadgeText = $("dropBadgeText");
 
-  const toolIdPhoto = $("tool_idphoto");
-
   const langSelectEl = $("langSelect");
   const localBadgeTextEl = $("localBadgeText");
+
+  // ✅ NEW: Home + Secure pill
+  const homeBtn = $("homeBtn");
+  const homeBtnText = $("homeBtnText");
+  const securePillText = $("securePillText");
+  const pageTitleEl = $("pageTitle");
 
   $("year").textContent = new Date().getFullYear();
 
   const STR = {
     en: {
+      pageTitle: "Convert",
+      home: "Home",
+      secure: "Local processing — No server upload",
+
       seoTitle: "ConvertFiles24 – Free Converter (Images & PDF)",
       seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser.",
       ogTitle: "ConvertFiles24 - Converter (Images & PDF)",
       ogDesc: "Convert images, create PDFs, merge PDFs — processed locally in your browser.",
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       lang_label: "Language",
-      tool_idphoto: "ID Photo",
-      tool_badge: "NEW",
 
       h_upload: "Upload",
       drop_title: "Drop files here\nor tap to select files",
       drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
-      local_badge: "100% Local processing · No server upload",
+      local_badge: "Local processing — No server upload",
 
       h_preview: "Preview",
       add_more: "Add more",
@@ -826,19 +842,21 @@
       multi_count: (n) => `Selected: ${n} file(s)`
     },
     ko: {
+      pageTitle: "Convert",
+      home: "홈으로",
+      secure: "로컬 처리 — 서버 업로드 없음",
+
       seoTitle: "ConvertFiles24 – 무료 변환기 (이미지 & PDF)",
       seoDesc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF+PDF 병합까지 — 모두 브라우저 로컬 처리.",
       ogTitle: "ConvertFiles24 - 이미지 & PDF 변환",
       ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없이 브라우저에서 처리",
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       lang_label: "언어",
-      tool_idphoto: "ID Photo",
-      tool_badge: "NEW",
 
       h_upload: "업로드",
       drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
       drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
-      local_badge: "100% 로컬 처리 · 서버 업로드 없음",
+      local_badge: "로컬 처리 — 서버 업로드 없음",
 
       h_preview: "미리보기",
       add_more: "추가하기",
@@ -894,19 +912,21 @@
       multi_count: (n) => `선택됨: ${n}개`
     },
     ja: {
+      pageTitle: "Convert",
+      home: "ホームへ",
+      secure: "ローカル処理 — サーバー送信なし",
+
       seoTitle: "ConvertFiles24 – 無料変換 (画像 & PDF)",
       seoDesc: "画像をJPG/PNG/WebP/PDFに変換し、PDF+PDF結合も可能 — すべてブラウザ内でローカル処理。",
       ogTitle: "ConvertFiles24 - 画像 & PDF 変換",
       ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       lang_label: "言語",
-      tool_idphoto: "ID Photo",
-      tool_badge: "NEW",
 
       h_upload: "アップロード",
       drop_title: "ここにファイルをドロップ\nまたはタップして選択",
       drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
-      local_badge: "ローカル処理 · サーバー送信なし",
+      local_badge: "ローカル処理 — サーバー送信なし",
 
       h_preview: "プレビュー",
       add_more: "追加",
@@ -962,19 +982,21 @@
       multi_count: (n) => `選択: ${n}件`
     },
     es: {
+      pageTitle: "Convert",
+      home: "Inicio",
+      secure: "Procesamiento local — Sin subir al servidor",
+
       seoTitle: "ConvertFiles24 – Convertidor Gratis (Imágenes y PDF)",
       seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs al instante — todo se procesa localmente en tu navegador.",
       ogTitle: "ConvertFiles24 - Convertidor (Imágenes y PDF)",
       ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       lang_label: "Idioma",
-      tool_idphoto: "ID Photo",
-      tool_badge: "NEW",
 
       h_upload: "Subir",
       drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
       drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
-      local_badge: "Procesamiento local · Sin subir al servidor",
+      local_badge: "Procesamiento local — Sin subir al servidor",
 
       h_preview: "Vista previa",
       add_more: "Añadir",
@@ -1123,9 +1145,9 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  function syncToolLinks(){
-    const url = "/id-photo/?lang=" + encodeURIComponent(LANG);
-    toolIdPhoto.href = url;
+  function syncHomeLink(){
+    if(!homeBtn) return;
+    homeBtn.href = "/?lang=" + encodeURIComponent(LANG);
   }
 
   function syncLangSelect(){
@@ -1173,6 +1195,13 @@
 
     document.documentElement.lang = LANG;
 
+    // ✅ Title line
+    if(pageTitleEl) pageTitleEl.textContent = t.pageTitle;
+
+    // ✅ Home + secure text
+    if(homeBtnText) homeBtnText.textContent = t.home;
+    if(securePillText) securePillText.textContent = t.secure;
+
     document.title = t.seoTitle;
     if(META_DESC) META_DESC.setAttribute("content", t.seoDesc);
     if(OG_TITLE)  OG_TITLE.setAttribute("content", t.ogTitle);
@@ -1192,8 +1221,6 @@
     $("subtitle").innerHTML = t.subtitle;
 
     $("lang_label").textContent = t.lang_label;
-    $("tool_idphoto_text").textContent = t.tool_idphoto;
-    $("tool_badge").textContent = t.tool_badge;
 
     $("h_upload").textContent = t.h_upload;
     $("drop_title").textContent = t.drop_title;
@@ -1245,7 +1272,7 @@
 
     if(multiCount) multiCount.textContent = t.multi_count(files.length);
 
-    syncToolLinks();
+    syncHomeLink();
     syncLangSelect();
     updateDropBadge();
   }
@@ -1279,7 +1306,6 @@
       setListOpen(false);
     } else {
       multiPanel.style.display = "block";
-      // 기본은 닫힌 상태 유지 (길어지는 문제 방지)
       if(!isListOpen) setListOpen(false);
     }
 
@@ -1582,9 +1608,6 @@
     selQuality.style.opacity = disableQuality ? ".6" : "1";
   }
 
-  // ✅ ZIP은 "항상 체크 가능" (disabled 금지)
-  // - 다만 자동체크는 "이미지 2개 이상 + 출력이 이미지"일 때만
-  // - PDF 출력 + ZIP 체크면 A4(병합용)은 비활성
   function updateZipAvailability(){
     const outMime = selFormat.value;
     const images = files.filter(x => isImage(x.file));
