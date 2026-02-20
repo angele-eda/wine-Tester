@@ -434,15 +434,26 @@
       text-overflow:ellipsis;
     }
 
+    /* ✅ B버전: 스르륵 접힘/펼침 (display 제거) */
     .fileListWrap{
       margin-top: 10px;
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.12);
       overflow:hidden;
-      display:none; /* ✅ 기본은 항상 접힘 */
+
+      max-height:0;
+      opacity:0;
+      transform: translateY(-4px);
+      transition: max-height .28s var(--ease),
+                  opacity .2s var(--ease),
+                  transform .2s var(--ease);
     }
-    .fileListWrap.show{ display:block; }
+    .fileListWrap.show{
+      max-height: 420px;
+      opacity:1;
+      transform: translateY(0);
+    }
 
     .fileList{
       max-height: 200px; /* ✅ 덩치 줄이기 */
@@ -1033,7 +1044,6 @@ window.addEventListener("DOMContentLoaded", () => {
   let pdfFiles = []; // { id, file }
 
   // ✅ msg + progress
-  let prog = { active:false, pct:0 };
   function renderMsg(text, cls, pct){
     msgEl.className = "msg " + (cls || "");
     const hasText = !!(text && String(text).trim());
@@ -1067,10 +1077,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   function setProgress(text, pct){
     renderMsg(text, "", pct);
-  }
-  function clearProgress(){
-    prog.active = false;
-    renderMsg("", "", null);
   }
 
   function bytesToSize(bytes){
@@ -1454,16 +1460,12 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
-  // ✅ 1번: 변환 완료 후 1~2초 뒤 목록 자동 접기
-  let autoCloseTimer = null;
+  // ✅ B버전: 다운로드 트리거 직후 즉시 닫기(스르륵)
   function autoCloseListAfterDone(){
-    if(autoCloseTimer) clearTimeout(autoCloseTimer);
-    autoCloseTimer = setTimeout(()=>{
-      if(fileListWrap.classList.contains("show")){
-        fileListWrap.classList.remove("show");
-        refreshBadgeAndTexts();
-      }
-    }, 1600); // ✅ 1.6초로 여유
+    if(fileListWrap.classList.contains("show")){
+      fileListWrap.classList.remove("show");
+      refreshBadgeAndTexts();
+    }
   }
 
   convertBtn.addEventListener("click", async ()=>{
@@ -1500,7 +1502,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const totalFiles = pdfFiles.length;
       for(let fi=0; fi<totalFiles; fi++){
         const it = pdfFiles[fi];
-        const items = await pdfToImagesAndDownload(it.file, (pageNow, pageTotal)=>{
+        const items = await pdfToImagesAndDownload(it.file, ()=>{
           donePages++;
           const pct = 20 + (donePages / totalPages) * 70; // 20~90%
           setProgress(`(${fi+1}/${totalFiles}) ${t().converting}`, pct);
@@ -1515,11 +1517,11 @@ window.addEventListener("DOMContentLoaded", () => {
         setProgress(t().buildingZip, p);
       });
 
+      // ✅ 다운로드 트리거 직후 즉시 닫기
       downloadBlob(zipBlob, `pdf_images_${Date.now()}.zip`);
-      renderMsg(t().okDone, "ok", 100);
-
-      // ✅ 완료 후 자동 접기 (1번)
       autoCloseListAfterDone();
+
+      renderMsg(t().okDone, "ok", 100);
 
     }catch(e){
       const msg = (e && e.message) ? e.message : "Convert failed";
