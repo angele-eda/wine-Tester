@@ -411,6 +411,7 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
       min-width: 190px;
       user-select:none;
+      width:100%; /* ✅ 추가: 2열 균형 맞게 꽉 차도록 */
     }
     .tsToggle .label{
       font-size:12px; font-weight:900; color:#dbe7ff;
@@ -605,61 +606,64 @@
 
       <div style="height:10px;"></div>
 
-      <!-- ✅ 여백(접기) + 파일명(우측) + 타임스탬프 토글 -->
+      <!-- ✅ 변경: 위 2열(파일명 / 타임스탬프) + 아래 1열(여백 전체폭) -->
       <div class="row" style="align-items:flex-start;">
-        <div>
-          <label id="lbl_margin">Margin (mm)</label>
-
-          <!-- 기본은 접힌 상태(요구사항) -->
-          <details class="detailsBox" id="marginDetails">
-            <summary class="detailsSummary" id="marginSummary">
-              <span class="sumLeft">
-                <span class="sumTitle" id="marginTitle">Margin</span>
-                <span class="sumValue"><span id="marginValueText">6</span>mm</span>
-              </span>
-              <span class="sumHint" id="marginHintInline">▾</span>
-            </summary>
-
-            <div class="detailsBody">
-              <div class="pillRow" style="margin-bottom:10px;">
-                <button class="miniBtn" id="m0" type="button" aria-pressed="false">
-                  <div class="miniBtnTop"><div class="miniBtnName" id="m0_name">0 (None)</div><div class="badge">0</div></div>
-                  <div class="miniDesc" id="m0_desc">No margin</div>
-                </button>
-                <button class="miniBtn" id="m6" type="button" aria-pressed="true">
-                  <div class="miniBtnTop"><div class="miniBtnName" id="m6_name">6 (Default)</div><div class="badge">6</div></div>
-                  <div class="miniDesc" id="m6_desc">Nice for documents</div>
-                </button>
-                <button class="miniBtn" id="m12" type="button" aria-pressed="false">
-                  <div class="miniBtnTop"><div class="miniBtnName" id="m12_name">12 (Wide)</div><div class="badge">12</div></div>
-                  <div class="miniDesc" id="m12_desc">More whitespace</div>
-                </button>
-              </div>
-
-              <input id="marginMm" type="number" min="0" max="30" step="1" value="6" />
-              <div class="small" id="margin_hint">You can also type a value (0–30).</div>
-            </div>
-          </details>
-        </div>
-
+        <!-- 왼쪽: 파일명 -->
         <div>
           <label id="lbl_name">Filename</label>
+          <input id="outName" type="text" placeholder="images_to_pdf" value="images_to_pdf" />
+          <div class="small" id="name_hint">Timestamp can be appended automatically.</div>
+        </div>
 
-          <div class="inlineRow">
-            <div class="grow">
-              <input id="outName" type="text" placeholder="images_to_pdf" value="images_to_pdf" />
-              <div class="small" id="name_hint">Timestamp can be appended automatically.</div>
-            </div>
-
-            <div class="tsToggle" role="group" aria-label="Timestamp toggle">
-              <div class="label">🕒 <span id="ts_label">Timestamp</span></div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <div class="tsState" id="ts_state">ON</div>
-                <div class="switch on" id="tsSwitch" role="switch" aria-checked="true" tabindex="0"></div>
-              </div>
+        <!-- 오른쪽: 타임스탬프 ON -->
+        <div>
+          <label>&nbsp;</label>
+          <div class="tsToggle" role="group" aria-label="Timestamp toggle">
+            <div class="label">🕒 <span id="ts_label">Timestamp</span></div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="tsState" id="ts_state">ON</div>
+              <div class="switch on" id="tsSwitch" role="switch" aria-checked="true" tabindex="0"></div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <!-- 아래 1열: 여백(mm) 전체 가로폭 (내용/드롭 방식 그대로) -->
+      <div>
+        <label id="lbl_margin">Margin (mm)</label>
+
+        <!-- 기본은 접힌 상태(요구사항) -->
+        <details class="detailsBox" id="marginDetails">
+          <summary class="detailsSummary" id="marginSummary">
+            <span class="sumLeft">
+              <span class="sumTitle" id="marginTitle">Margin</span>
+              <span class="sumValue"><span id="marginValueText">6</span>mm</span>
+            </span>
+            <span class="sumHint" id="marginHintInline">▾</span>
+          </summary>
+
+          <div class="detailsBody">
+            <div class="pillRow" style="margin-bottom:10px;">
+              <button class="miniBtn" id="m0" type="button" aria-pressed="false">
+                <div class="miniBtnTop"><div class="miniBtnName" id="m0_name">0 (None)</div><div class="badge">0</div></div>
+                <div class="miniDesc" id="m0_desc">No margin</div>
+              </button>
+              <button class="miniBtn" id="m6" type="button" aria-pressed="true">
+                <div class="miniBtnTop"><div class="miniBtnName" id="m6_name">6 (Default)</div><div class="badge">6</div></div>
+                <div class="miniDesc" id="m6_desc">Nice for documents</div>
+              </button>
+              <button class="miniBtn" id="m12" type="button" aria-pressed="false">
+                <div class="miniBtnTop"><div class="miniBtnName" id="m12_name">12 (Wide)</div><div class="badge">12</div></div>
+                <div class="miniDesc" id="m12_desc">More whitespace</div>
+              </button>
+            </div>
+
+            <input id="marginMm" type="number" min="0" max="30" step="1" value="6" />
+            <div class="small" id="margin_hint">You can also type a value (0–30).</div>
+          </div>
+        </details>
       </div>
 
       <div style="height:12px;"></div>
