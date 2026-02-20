@@ -231,8 +231,9 @@
     }
     .fileList.show{ display:block; }
 
+    /* ✅ 높이 줄이기: stretch → center */
     .fileItem{
-      display:flex; align-items:stretch; justify-content:space-between; gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:10px 10px;
       border-radius:12px;
       background: rgba(255,255,255,.03);
@@ -241,36 +242,32 @@
     .fileItem + .fileItem{ margin-top:10px; }
     .fileLeft{ min-width:0; flex: 1; }
     .fileName{ font-weight:800; color:#e9eef7; letter-spacing:-0.2px; word-break: break-word; }
-    .fileMeta{ margin-top:4px; color:#a7b3c7; font-size:12px; line-height:1.45; }
 
+    /* ✅ 메타 줄에서 Page pill 붙일 거라 inline-flex로 자연스럽게 */
+    .fileMeta{
+      margin-top:4px;
+      color:#a7b3c7;
+      font-size:12px;
+      line-height:1.45;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* ✅ 오른쪽: 가로 1줄 버튼 */
     .fileRight{
       display:flex;
-      flex-direction:column;
-      align-items:flex-end;
+      align-items:center;
+      justify-content:flex-end;
       gap:8px;
-      min-width: 64px;
+      min-width: 0;
+      flex: 0 0 auto;
     }
-    .miniPill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color:#cfe0ff;
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
-      height: fit-content;
-    }
-    .iconStack{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:stretch;
-      width: 54px;
-    }
+
     .iconBtn{
       appearance:none; border:none; cursor:pointer;
-      padding:8px 0;
+      padding:8px 10px;             /* ✅ 가로배치용: 세로폭 줄이기 */
       border-radius:12px;
       background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.10);
@@ -280,6 +277,10 @@
       line-height:1;
       transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
       user-select:none;
+      min-width: 38px;              /* ✅ 버튼 폭 균일하게 */
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
     }
     .iconBtn:hover{ background: rgba(255,255,255,.07); }
     .iconBtn:active{ transform: scale(.99); }
@@ -300,6 +301,24 @@
       box-shadow:none;
       filter:none;
     }
+
+    /* ✅ Page pill (왼쪽 하단: Page 고정 + 숫자만 변경) */
+    .pagePill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:#cfe0ff;
+      font-size:11px;
+      font-weight:900;
+      white-space:nowrap;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .pagePill .pageLabel{ opacity:.85; }
+    .pagePill .pageNum{ opacity:1; }
 
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     select, input[type="text"], input[type="number"]{
@@ -1001,6 +1020,8 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  const $ = (id)=>document.getElementById(id);
+
   const pickInput = $("pickInput");
   const pickBtn = $("pickBtn");
   const addBtn = $("addBtn");
@@ -1035,6 +1056,9 @@
 
   // ✅ timestamp text button
   const tsBtn = $("tsBtn");
+
+  $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   function esc(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
@@ -1133,6 +1157,7 @@
     toggleListBtn.textContent = listOpen ? t().toggle_close : t().toggle_open;
   }
 
+  /* ✅ 핵심 수정: 왼쪽 메타에 Page, 오른쪽은 X ↑ ↓ 가로 1줄 */
   function updateFileList(){
     fileList.innerHTML = "";
     files.forEach((f, idx)=>{
@@ -1142,15 +1167,15 @@
       item.innerHTML = `
         <div class="fileLeft">
           <div class="fileName">${esc(f.name)}</div>
-          <div class="fileMeta">${kind} · ${Math.round(f.w)}×${Math.round(f.h)}</div>
+          <div class="fileMeta">
+            <span>${kind} · ${Math.round(f.w)}×${Math.round(f.h)}</span>
+            <span class="pagePill"><span class="pageLabel">Page</span><span class="pageNum">${idx+1}</span></span>
+          </div>
         </div>
         <div class="fileRight">
-          <div class="miniPill">${idx+1}</div>
-          <div class="iconStack">
-            <button class="iconBtn danger" data-act="del" data-idx="${idx}" aria-label="${esc(t().del)}">✕</button>
-            <button class="iconBtn" data-act="up" data-idx="${idx}" aria-label="${esc(t().up)}">↑</button>
-            <button class="iconBtn" data-act="down" data-idx="${idx}" aria-label="${esc(t().down)}">↓</button>
-          </div>
+          <button class="iconBtn danger" data-act="del" data-idx="${idx}" aria-label="${esc(t().del)}">✕</button>
+          <button class="iconBtn" data-act="up" data-idx="${idx}" aria-label="${esc(t().up)}">↑</button>
+          <button class="iconBtn" data-act="down" data-idx="${idx}" aria-label="${esc(t().down)}">↓</button>
         </div>
       `;
       fileList.appendChild(item);
