@@ -1454,6 +1454,18 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
+  // ✅ 1번: 변환 완료 후 1~2초 뒤 목록 자동 접기
+  let autoCloseTimer = null;
+  function autoCloseListAfterDone(){
+    if(autoCloseTimer) clearTimeout(autoCloseTimer);
+    autoCloseTimer = setTimeout(()=>{
+      if(fileListWrap.classList.contains("show")){
+        fileListWrap.classList.remove("show");
+        refreshBadgeAndTexts();
+      }
+    }, 1300); // 1~2초 사이
+  }
+
   convertBtn.addEventListener("click", async ()=>{
     try{
       if(pdfFiles.length === 0) return setMsg(t().errNoPdf, "err");
@@ -1506,11 +1518,10 @@ window.addEventListener("DOMContentLoaded", () => {
       downloadBlob(zipBlob, `pdf_images_${Date.now()}.zip`);
       renderMsg(t().okDone, "ok", 100);
 
-      // 잠깐 보여주고 싶으면 유지, 아니면 아래 줄 활성화
-      // setTimeout(()=> clearProgress(), 1200);
+      // ✅ 완료 후 자동 접기 (1번)
+      autoCloseListAfterDone();
 
     }catch(e){
-      // 에러 시 진행바 제거 + 에러 표시
       const msg = (e && e.message) ? e.message : "Convert failed";
       renderMsg(msg, "err", null);
     }finally{
