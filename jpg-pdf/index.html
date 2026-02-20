@@ -267,7 +267,7 @@
 
     .iconBtn{
       appearance:none; border:none; cursor:pointer;
-      padding:8px 10px;             /* ✅ 가로배치용: 세로폭 줄이기 */
+      padding:8px 10px;
       border-radius:12px;
       background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.10);
@@ -277,7 +277,7 @@
       line-height:1;
       transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
       user-select:none;
-      min-width: 38px;              /* ✅ 버튼 폭 균일하게 */
+      min-width: 38px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -723,7 +723,10 @@
 <script>
 (() => {
   "use strict";
+
+  // ✅ 단일 $만 사용 (중복 선언 제거)
   const $ = (id)=>document.getElementById(id);
+
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
@@ -1020,8 +1023,6 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
-  const $ = (id)=>document.getElementById(id);
-
   const pickInput = $("pickInput");
   const pickBtn = $("pickBtn");
   const addBtn = $("addBtn");
@@ -1056,9 +1057,6 @@
 
   // ✅ timestamp text button
   const tsBtn = $("tsBtn");
-
-  $("year").textContent = new Date().getFullYear();
-  requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
   function esc(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
@@ -1157,7 +1155,7 @@
     toggleListBtn.textContent = listOpen ? t().toggle_close : t().toggle_open;
   }
 
-  /* ✅ 핵심 수정: 왼쪽 메타에 Page, 오른쪽은 X ↑ ↓ 가로 1줄 */
+  /* ✅ 핵심: 왼쪽 메타에 Page, 오른쪽은 X ↑ ↓ 가로 1줄 */
   function updateFileList(){
     fileList.innerHTML = "";
     files.forEach((f, idx)=>{
