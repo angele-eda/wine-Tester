@@ -93,6 +93,18 @@
     .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; min-width:0; }
     .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
 
+    /* ✅ Image Upload 버튼: 세로 3열 */
+    .uploadRow{
+      flex-direction:column;
+      align-items:stretch;
+      flex-wrap:nowrap;
+    }
+    .uploadRow > *{
+      flex:0 0 auto;
+      width:100%;
+      min-width:0;
+    }
+
     .btn{
       appearance:none; border:none; cursor:pointer;
       background:#2f6df6; color:white; font-weight:900;
@@ -393,14 +405,7 @@
     }
     .miniDesc{ margin-top:6px; color:#a7b3c7; font-size:12px; line-height:1.45; }
 
-    /* Timestamp toggle (right of filename) */
-    .inlineRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .inlineRow > .grow{ flex:1; min-width:180px; }
+    /* ✅ Timestamp (text-only) */
     .tsToggle{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
@@ -409,57 +414,36 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-      min-width: 190px;
       user-select:none;
-      width:100%; /* ✅ 추가: 2열 균형 맞게 꽉 차도록 */
     }
-
-    /* ✅ Timestamp label clickable + color states (ON/OFF) */
     .tsToggle .label{
-      font-size:12px;
-      font-weight:900;
+      font-size:12px; font-weight:900; color:#dbe7ff;
       letter-spacing:-0.2px;
       display:flex; align-items:center; gap:8px;
       white-space:nowrap;
-      cursor:pointer;
-      color:#cfe6ff; /* ON default */
-      transition: color .14s var(--ease), opacity .14s var(--ease);
     }
-    .tsToggle.off .label{
-      color:#7f8ea3; /* OFF */
-      opacity:.75;
-    }
-
-    .switch{
-      position:relative; width:48px; height:28px; flex:0 0 auto;
-      border-radius:999px;
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.12);
-      cursor:pointer;
-      transition: background .12s var(--ease), border-color .12s var(--ease);
-    }
-    .switch::after{
-      content:"";
-      position:absolute; top:50%; left:4px;
-      width:20px; height:20px; border-radius:999px;
-      background: rgba(255,255,255,.85);
-      transform: translateY(-50%);
-      transition: transform .14s var(--ease);
-      box-shadow: 0 8px 16px rgba(0,0,0,.25);
-    }
-    .switch.on{
-      background: rgba(47,109,246,.35);
-      border-color: rgba(47,109,246,.55);
-    }
-    .switch.on::after{ transform: translate(20px, -50%); }
     .tsState{
       font-size:12px; font-weight:900; color:#cfe6ff;
       white-space:nowrap;
-      transition: color .14s var(--ease), opacity .14s var(--ease);
     }
-    .tsToggle.off .tsState{
-      color:#7f8ea3;
-      opacity:.75;
+
+    /* ✅ PC에서 Timestamp와 ON/OFF 과도하게 벌어지는 것 방지 */
+    #tsToggleBox{
+      cursor:pointer;
+      width:100%;
+      max-width:320px;
+      margin-left:auto;
+      white-space:nowrap;
+    }
+    #tsToggleBox.on{
+      border-color: rgba(47,109,246,.45);
+      background: rgba(47,109,246,.12);
+    }
+    #tsToggleBox.off{
+      opacity:.70;
+    }
+    #tsToggleBox.off .tsState{
+      color: rgba(167,179,199,.85);
     }
 
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
@@ -510,18 +494,6 @@
         align-items:start;
       }
     }
-.row > div:last-child{ min-width:0; }
-
-.row{
-  display:grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-  gap:10px;
-}
-.tsToggle{
-  width:100%;
-  box-sizing:border-box;
-  overflow:hidden;
-}
   </style>
 </head>
 
@@ -555,7 +527,8 @@
     <div class="card">
       <h2 id="h_step1">Image Upload</h2>
 
-      <div class="row">
+      <!-- ✅ 세로 3열 -->
+      <div class="row uploadRow">
         <button class="btn secondary" id="pickBtn" type="button">🖼️ Choose images</button>
         <button class="btn secondary" id="addBtn" type="button" disabled>➕ Add</button>
         <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
@@ -643,17 +616,12 @@
           <div class="small" id="name_hint">Timestamp can be appended automatically.</div>
         </div>
 
-        <!-- 오른쪽: 타임스탬프 ON -->
+        <!-- 오른쪽: 타임스탬프 텍스트형 ON/OFF -->
         <div>
           <label>&nbsp;</label>
-          <div class="tsToggle" id="tsToggleBox" role="group" aria-label="Timestamp toggle">
-            <div class="label" id="tsLabel" role="button" tabindex="0" aria-pressed="true">
-              🕒 <span id="ts_label">Timestamp</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div class="tsState" id="ts_state">ON</div>
-              <div class="switch on" id="tsSwitch" role="switch" aria-checked="true" tabindex="0"></div>
-            </div>
+          <div class="tsToggle" id="tsToggleBox" role="button" tabindex="0" aria-label="Timestamp toggle">
+            <div class="label">🕒 <span id="ts_label">Timestamp</span></div>
+            <div class="tsState" id="ts_state">ON</div>
           </div>
         </div>
       </div>
@@ -698,6 +666,7 @@
 
       <div style="height:12px;"></div>
 
+      <!-- ✅ 하단 다운로드 1열 그대로 -->
       <div class="row">
         <button class="btn" id="convertBtn" type="button" disabled>⬇️ Convert & Download PDF</button>
       </div>
@@ -1052,11 +1021,9 @@
   const marginDetails = $("marginDetails");
   const marginHintInline = $("marginHintInline");
 
-  // timestamp toggle
-  const tsSwitch = $("tsSwitch");
-  const tsState = $("ts_state");
-  const tsLabel = $("tsLabel");
+  // timestamp toggle (text-only box)
   const tsToggleBox = $("tsToggleBox");
+  const tsState = $("ts_state");
 
   function esc(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
@@ -1082,31 +1049,24 @@
 
   // timestamp ON/OFF (persist)
   let tsOn = (localStorage.getItem("cf24_jpgpdf_ts") ?? "1") === "1";
-  function syncTsUI(){
-    tsSwitch.classList.toggle("on", tsOn);
-    tsSwitch.setAttribute("aria-checked", tsOn ? "true" : "false");
-    tsState.textContent = tsOn ? t().ts_on : t().ts_off;
 
-    if(tsToggleBox) tsToggleBox.classList.toggle("off", !tsOn);
-    if(tsLabel) tsLabel.setAttribute("aria-pressed", tsOn ? "true" : "false");
+  function syncTsUI(){
+    tsState.textContent = tsOn ? t().ts_on : t().ts_off;
+    tsToggleBox.classList.toggle("on", tsOn);
+    tsToggleBox.classList.toggle("off", !tsOn);
   }
   function toggleTimestamp(){
     tsOn = !tsOn;
     localStorage.setItem("cf24_jpgpdf_ts", tsOn ? "1" : "0");
     syncTsUI();
   }
-  tsSwitch.addEventListener("click", toggleTimestamp);
-  tsSwitch.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
+  tsToggleBox.addEventListener("click", toggleTimestamp);
+  tsToggleBox.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      toggleTimestamp();
+    }
   });
-
-  // ✅ label click / keyboard toggle (timestamp text clickable)
-  if(tsLabel){
-    tsLabel.addEventListener("click", toggleTimestamp);
-    tsLabel.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
-    });
-  }
 
   // Margin details arrow sync
   if(marginDetails && marginHintInline){
@@ -1464,11 +1424,9 @@
 
     // FILL (crop)
     if(imgRatio > boxRatio){
-      // image wider -> fill height, crop width
       drawH = availH;
       drawW = availH * imgRatio;
     }else{
-      // image taller -> fill width, crop height
       drawW = availW;
       drawH = availW / imgRatio;
     }
@@ -1502,22 +1460,18 @@
       const isPng = (f.type || "").includes("png");
       const isWebp = (f.type || "").includes("webp");
 
-      // Decide orientation per image
       const o = decideOrientation(f.w, f.h, orientMode);
       const pageW = (o === "LANDSCAPE") ? ps.h : ps.w;
       const pageH = (o === "LANDSCAPE") ? ps.w : ps.h;
 
       const page = pdf.addPage([pageW, pageH]);
 
-      // Background
       page.drawRectangle({ x:0, y:0, width:pageW, height:pageH, color:bg });
 
-      // Embed image
       let img;
       if(isPng){
         img = await pdf.embedPng(new Uint8Array(f.bytes));
       }else if(isWebp){
-        // PDF-lib doesn't embed WebP directly -> convert via canvas
         const blob = new Blob([f.bytes], { type: "image/webp" });
         const url = URL.createObjectURL(blob);
         try{
@@ -1598,19 +1552,15 @@
     }
   });
 
-  // init
   function init(){
-    // load persisted margin
     const savedMargin = parseInt(localStorage.getItem("cf24_jpgpdf_margin") || "6", 10);
     setMarginPreset(Number.isFinite(savedMargin) ? savedMargin : 6);
 
-    // default: A4 + FIT + AUTO + WHITE
     pageSizeEl.value = "A4";
     orientEl.value = "AUTO";
     fitEl.value = "FIT";
     bgEl.value = "#FFFFFF";
 
-    // lang + ui
     setLang(LANG);
     syncTsUI();
     updateUI();
