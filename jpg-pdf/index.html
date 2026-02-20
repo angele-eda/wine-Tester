@@ -90,7 +90,7 @@
     .card{ border:var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:var(--pad); margin-top:12px; min-width:0; max-width:100%; overflow-x: clip; }
     .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
 
-    /* ✅ 기본 row는 원래대로(다른 버튼들 깨지지 않게) */
+    /* ✅ 기본 row는 그대로 */
     .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; min-width:0; }
     .row > *{ flex:1; min-width:160px; max-width:100%; }
 
@@ -129,7 +129,7 @@
 
     input[type="file"]{ display:none; }
 
-    /* ✅ 업로드 버튼만 가로 1줄 3개 고정 (다른 row 영향 X) */
+    /* ✅ 업로드 버튼만: 가로 1줄 3개 고정 */
     .uploadRow{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -403,7 +403,7 @@
     }
     .miniDesc{ margin-top:6px; color:#a7b3c7; font-size:12px; line-height:1.45; }
 
-    /* Timestamp toggle (right of filename) - ✅ TEXT BUTTON */
+    /* ✅ Timestamp: 텍스트 ON/OFF 버튼 */
     .tsToggle{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
@@ -412,10 +412,10 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-      min-width: 190px;
+      min-width:190px;
       user-select:none;
       max-width:100%;
-      overflow:hidden; /* ✅ 잘림 방지 */
+      overflow:hidden;
     }
     .tsToggle .label{
       font-size:12px; font-weight:900; color:#dbe7ff;
@@ -429,8 +429,8 @@
       align-items:center;
       justify-content:flex-end;
       gap:10px;
-      min-width:0;
       flex:0 0 auto;
+      min-width:0;
     }
     .tsBtn{
       appearance:none;
@@ -449,8 +449,6 @@
     .tsBtn:hover{ background: rgba(255,255,255,.06); }
     .tsBtn:active{ transform: scale(.99); }
     .tsBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); border-color: rgba(var(--blue),.55); }
-
-    /* ✅ ON / OFF 색상 (흰색 말고 은은한 톤) */
     .tsBtn[aria-pressed="true"]{
       background: rgba(47,109,246,.20);
       border-color: rgba(47,109,246,.55);
@@ -544,7 +542,7 @@
     <div class="card">
       <h2 id="h_step1">Image Upload</h2>
 
-      <!-- ✅ 여기만 변경: 가로 1줄 3개 고정 -->
+      <!-- ✅ 업로드 버튼: 가로 1줄 3개 -->
       <div class="uploadRow">
         <button class="btn secondary" id="pickBtn" type="button">🖼️ Choose images</button>
         <button class="btn secondary" id="addBtn" type="button" disabled>➕ Add</button>
@@ -624,7 +622,7 @@
 
       <div style="height:10px;"></div>
 
-      <!-- ✅ 파일명 + 타임스탬프(텍스트형) -->
+      <!-- ✅ 파일명 + 타임스탬프(텍스트 버튼) -->
       <div class="row" style="align-items:flex-start;">
         <div>
           <label id="lbl_name">Filename</label>
@@ -637,7 +635,6 @@
           <div class="tsToggle" role="group" aria-label="Timestamp toggle">
             <div class="label">🕒 <span id="ts_label">Timestamp</span></div>
             <div class="tsToggleRight">
-              <!-- ✅ 텍스트 버튼만 (슬라이더 제거) -->
               <button class="tsBtn" id="tsBtn" type="button" aria-pressed="true">ON</button>
             </div>
           </div>
@@ -711,35 +708,275 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  const STR = { /* ... (원본 그대로) ... */ };
-  /* ✅ STR은 너가 준 원본 그대로라서 여기서는 생략하지 않고 아래에 그대로 유지할게 */
-})();
-</script>
-
-<script>
-(() => {
-  "use strict";
-  const $ = (id)=>document.getElementById(id);
-
-  const STR = window.STR || null; // (안 쓰면 무시)
-})();
-</script>
-
-<script>
-/* ✅ 아래는 “너가 준 원본 JS” 그대로인데,
-   타임스탬프 부분만 tsSwitch → tsBtn으로 바꾼 버전이야.
-   (나머지 로직/문구는 동일) */
-(() => {
-  "use strict";
-  const $ = (id)=>document.getElementById(id);
-  $("year").textContent = new Date().getFullYear();
-  requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
   const STR = {
-    ko:{ /* (원본 그대로) */ },
-    en:{ /* (원본 그대로) */ },
-    es:{ /* (원본 그대로) */ },
-    ja:{ /* (원본 그대로) */ }
+    ko:{
+      page_title:"JPG → PDF",
+      page_sub:"업로드 → 순서정리 → 변환 → 다운로드. 100% 로컬 처리.",
+      home:"🏠 홈으로",
+      local:"로컬 처리 — 서버 업로드 없음",
+      lang_label:"언어",
+
+      h1:"이미지 업로드",
+      pick:"🖼️ 이미지 선택",
+      add:"➕ 추가",
+      clear:"🧹 비우기",
+      drop_title:"여기에 이미지를 끌어다 놓거나<br/>탭해서 업로드",
+      drop_hint:"JPG/PNG/WebP → PDF. 서버 업로드 없음.",
+      toggle_open:"▾ 목록 열기",
+      toggle_close:"▴ 목록 숨기기",
+      selected:(n)=>`✅ 선택됨: ${n}개`,
+
+      h2:"PDF 설정",
+      lbl_page:"페이지 크기",
+      page_hint:"문서용은 A4가 좋아요.",
+      lbl_orient:"방향",
+      orient_hint:"자동은 이미지에 맞춰 선택해요.",
+      lbl_fit:"맞춤 방식",
+      fit_hint:"Fit은 이미지가 잘리지 않아요.",
+      lbl_bg:"배경색",
+      bg_hint:"여백/빈 공간에 사용돼요.",
+
+      lbl_margin:"여백(mm)",
+      marginTitle:"여백",
+      margin_hint:"직접 입력도 가능(0–30).",
+      m0_name:"0 (없음)",
+      m0_desc:"여백 없음",
+      m6_name:"6 (기본)",
+      m6_desc:"문서에 보기 좋아요",
+      m12_name:"12 (넉넉)",
+      m12_desc:"여백이 더 넓어요",
+
+      lbl_name:"파일명",
+      name_hint:"타임스탬프를 자동으로 붙일 수 있어요.",
+      ts_label:"타임스탬프",
+      ts_on:"ON",
+      ts_off:"OFF",
+
+      go:"⬇️ PDF 변환 & 다운로드",
+      legal_title:"안내",
+      legal_body:"이미지는 브라우저에서 로컬로 처리됩니다. 중요한 문서는 결과물을 꼭 확인하세요.",
+      meta_idle:"<b>상태</b><br/>이미지를 업로드하면 시작할 수 있어요.",
+      meta_loaded:(n)=>`<b>상태</b><br/>${n}개 이미지 준비 완료`,
+      msg_need:"먼저 이미지를 업로드해 주세요.",
+      msg_work:"작업 중… 이 탭을 닫지 마세요.",
+      msg_done:"✅ 완료",
+      msg_fail:"변환 실패",
+
+      del:"삭제",
+      up:"위로",
+      down:"아래로",
+
+      opt_auto:"Auto",
+      opt_portrait:"Portrait",
+      opt_landscape:"Landscape",
+      opt_fit:"Fit (keep all)",
+      opt_fill:"Fill (crop)",
+      opt_stretch:"Stretch",
+      opt_white:"White",
+      opt_black:"Black",
+      opt_gray:"Light gray"
+    },
+    en:{
+      page_title:"JPG → PDF",
+      page_sub:"Upload → reorder → convert → download. 100% local processing.",
+      home:"🏠 Home",
+      local:"Processed locally — no server upload",
+      lang_label:"Language",
+
+      h1:"Image Upload",
+      pick:"🖼️ Choose images",
+      add:"➕ Add",
+      clear:"🧹 Clear",
+      drop_title:"Drop images here<br/>or tap to upload",
+      drop_hint:"JPG/PNG/WebP → PDF. No server upload.",
+      toggle_open:"▾ Show list",
+      toggle_close:"▴ Hide list",
+      selected:(n)=>`✅ Selected: ${n}`,
+
+      h2:"PDF Settings",
+      lbl_page:"Page size",
+      page_hint:"A4 is best for documents.",
+      lbl_orient:"Orientation",
+      orient_hint:"Auto matches each image.",
+      lbl_fit:"Fit mode",
+      fit_hint:"Fit keeps the whole image.",
+      lbl_bg:"Background",
+      bg_hint:"Used for margins/empty space.",
+
+      lbl_margin:"Margin (mm)",
+      marginTitle:"Margin",
+      margin_hint:"You can also type a value (0–30).",
+      m0_name:"0 (None)",
+      m0_desc:"No margin",
+      m6_name:"6 (Default)",
+      m6_desc:"Nice for documents",
+      m12_name:"12 (Wide)",
+      m12_desc:"More whitespace",
+
+      lbl_name:"Filename",
+      name_hint:"Timestamp can be appended automatically.",
+      ts_label:"Timestamp",
+      ts_on:"ON",
+      ts_off:"OFF",
+
+      go:"⬇️ Convert & Download PDF",
+      legal_title:"Notice",
+      legal_body:"Images are processed locally in your browser. Always verify the output for important documents.",
+      meta_idle:"<b>Status</b><br/>Upload images to start.",
+      meta_loaded:(n)=>`<b>Status</b><br/>${n} image(s) ready`,
+      msg_need:"Please upload images first.",
+      msg_work:"Working… keep this tab open.",
+      msg_done:"✅ Done",
+      msg_fail:"Conversion failed.",
+
+      del:"Delete",
+      up:"Up",
+      down:"Down",
+
+      opt_auto:"Auto",
+      opt_portrait:"Portrait",
+      opt_landscape:"Landscape",
+      opt_fit:"Fit (keep all)",
+      opt_fill:"Fill (crop)",
+      opt_stretch:"Stretch",
+      opt_white:"White",
+      opt_black:"Black",
+      opt_gray:"Light gray"
+    },
+    es:{
+      page_title:"JPG → PDF",
+      page_sub:"Sube → ordena → convierte → descarga. 100% procesamiento local.",
+      home:"🏠 Inicio",
+      local:"Procesado localmente — sin subir al servidor",
+      lang_label:"Idioma",
+
+      h1:"Subir imágenes",
+      pick:"🖼️ Elegir imágenes",
+      add:"➕ Añadir",
+      clear:"🧹 Limpiar",
+      drop_title:"Suelta imágenes aquí<br/>o toca para subir",
+      drop_hint:"JPG/PNG/WebP → PDF. Sin subir al servidor.",
+      toggle_open:"▾ Ver lista",
+      toggle_close:"▴ Ocultar lista",
+      selected:(n)=>`✅ Seleccionadas: ${n}`,
+
+      h2:"Ajustes de PDF",
+      lbl_page:"Tamaño de página",
+      page_hint:"A4 es mejor para documentos.",
+      lbl_orient:"Orientación",
+      orient_hint:"Auto se ajusta a cada imagen.",
+      lbl_fit:"Ajuste",
+      fit_hint:"Fit mantiene toda la imagen.",
+      lbl_bg:"Fondo",
+      bg_hint:"Para márgenes/espacio vacío.",
+
+      lbl_margin:"Margen (mm)",
+      marginTitle:"Margen",
+      margin_hint:"También puedes escribir un valor (0–30).",
+      m0_name:"0 (Sin)",
+      m0_desc:"Sin margen",
+      m6_name:"6 (Por defecto)",
+      m6_desc:"Ideal para documentos",
+      m12_name:"12 (Amplio)",
+      m12_desc:"Más espacio",
+
+      lbl_name:"Nombre de archivo",
+      name_hint:"Se puede añadir marca de tiempo automáticamente.",
+      ts_label:"Timestamp",
+      ts_on:"ON",
+      ts_off:"OFF",
+
+      go:"⬇️ Convertir y descargar PDF",
+      legal_title:"Aviso",
+      legal_body:"Las imágenes se procesan localmente en tu navegador. Verifica el resultado si es importante.",
+      meta_idle:"<b>Estado</b><br/>Sube imágenes para empezar.",
+      meta_loaded:(n)=>`<b>Estado</b><br/>${n} imagen(es) listas`,
+      msg_need:"Primero sube imágenes.",
+      msg_work:"Trabajando… no cierres esta pestaña.",
+      msg_done:"✅ Hecho",
+      msg_fail:"Falló la conversión.",
+
+      del:"Eliminar",
+      up:"Arriba",
+      down:"Abajo",
+
+      opt_auto:"Auto",
+      opt_portrait:"Retrato",
+      opt_landscape:"Paisaje",
+      opt_fit:"Fit (mantener todo)",
+      opt_fill:"Fill (recortar)",
+      opt_stretch:"Estirar",
+      opt_white:"Blanco",
+      opt_black:"Negro",
+      opt_gray:"Gris claro"
+    },
+    ja:{
+      page_title:"JPG → PDF",
+      page_sub:"アップロード → 並べ替え → 変換 → ダウンロード。100% ローカル処理。",
+      home:"🏠 ホーム",
+      local:"ローカル処理 — サーバーアップロードなし",
+      lang_label:"言語",
+
+      h1:"画像アップロード",
+      pick:"🖼️ 画像を選択",
+      add:"➕ 追加",
+      clear:"🧹 クリア",
+      drop_title:"ここに画像をドロップするか<br/>タップしてアップロード",
+      drop_hint:"JPG/PNG/WebP → PDF。サーバーアップロードなし。",
+      toggle_open:"▾ リストを表示",
+      toggle_close:"▴ リストを隠す",
+      selected:(n)=>`✅ 選択: ${n}`,
+
+      h2:"PDF設定",
+      lbl_page:"ページサイズ",
+      page_hint:"文書にはA4がおすすめ。",
+      lbl_orient:"向き",
+      orient_hint:"自動は画像に合わせます。",
+      lbl_fit:"フィット方式",
+      fit_hint:"Fitは画像を切りません。",
+      lbl_bg:"背景色",
+      bg_hint:"余白/空白に使用。",
+
+      lbl_margin:"余白(mm)",
+      marginTitle:"余白",
+      margin_hint:"数値入力も可能 (0–30)。",
+      m0_name:"0 (なし)",
+      m0_desc:"余白なし",
+      m6_name:"6 (標準)",
+      m6_desc:"文書向け",
+      m12_name:"12 (広め)",
+      m12_desc:"余白が広い",
+
+      lbl_name:"ファイル名",
+      name_hint:"タイムスタンプを自動付与できます。",
+      ts_label:"Timestamp",
+      ts_on:"ON",
+      ts_off:"OFF",
+
+      go:"⬇️ PDF 変換 & ダウンロード",
+      legal_title:"案内",
+      legal_body:"画像はブラウザ内でローカル処理されます。重要な文書は必ず結果を確認してください。",
+      meta_idle:"<b>状態</b><br/>画像をアップロードすると開始できます。",
+      meta_loaded:(n)=>`<b>状態</b><br/>${n}枚の画像が準備できました`,
+      msg_need:"先に画像をアップロードしてください。",
+      msg_work:"処理中… このタブを閉じないでください。",
+      msg_done:"✅ 完了",
+      msg_fail:"変換に失敗しました。",
+
+      del:"削除",
+      up:"上へ",
+      down:"下へ",
+
+      opt_auto:"Auto",
+      opt_portrait:"縦",
+      opt_landscape:"横",
+      opt_fit:"Fit (全体)",
+      opt_fill:"Fill (トリミング)",
+      opt_stretch:"伸縮",
+      opt_white:"白",
+      opt_black:"黒",
+      opt_gray:"薄いグレー"
+    }
   };
 
   function getQueryLang(){
@@ -824,6 +1061,7 @@
   let tsOn = (localStorage.getItem("cf24_jpgpdf_ts") ?? "1") === "1";
 
   function syncTsUI(){
+    if(!tsBtn) return;
     tsBtn.setAttribute("aria-pressed", tsOn ? "true" : "false");
     tsBtn.textContent = tsOn ? (t().ts_on || "ON") : (t().ts_off || "OFF");
   }
@@ -832,10 +1070,12 @@
     localStorage.setItem("cf24_jpgpdf_ts", tsOn ? "1" : "0");
     syncTsUI();
   }
-  tsBtn.addEventListener("click", toggleTimestamp);
-  tsBtn.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
-  });
+  if(tsBtn){
+    tsBtn.addEventListener("click", toggleTimestamp);
+    tsBtn.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
+    });
+  }
 
   // Margin details arrow sync
   if(marginDetails && marginHintInline){
@@ -1044,6 +1284,7 @@
     convertBtn.textContent = t().go;
     $("legal_box").innerHTML = "<b>" + esc(t().legal_title) + "</b><br/>" + esc(t().legal_body);
 
+    // options text (keep values)
     orientEl.options[0].textContent = t().opt_auto;
     orientEl.options[1].textContent = t().opt_portrait;
     orientEl.options[2].textContent = t().opt_landscape;
@@ -1110,6 +1351,7 @@
     if(n === 0) fileList.classList.remove("show");
   }
 
+  // Margin presets + direct input
   function setMarginPreset(mm){
     mm = Math.max(0, Math.min(30, Math.round(mm)));
     marginMmEl.value = String(mm);
@@ -1148,6 +1390,7 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
   }
 
+  // Page sizes in points (PDF points)
   function pageSizePoints(kind){
     if(kind === "LETTER") return { w: 612, h: 792 };
     return { w: 595.28, h: 841.89 };
@@ -1186,6 +1429,7 @@
       return { x, y, w: drawW, h: drawH, crop: null };
     }
 
+    // FILL (crop)
     if(imgRatio > boxRatio){
       drawH = availH;
       drawW = availH * imgRatio;
@@ -1313,6 +1557,7 @@
     }
   });
 
+  // init
   function init(){
     const savedMargin = parseInt(localStorage.getItem("cf24_jpgpdf_margin") || "6", 10);
     setMarginPreset(Number.isFinite(savedMargin) ? savedMargin : 6);
