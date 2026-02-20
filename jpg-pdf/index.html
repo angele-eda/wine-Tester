@@ -413,12 +413,23 @@
       user-select:none;
       width:100%; /* ✅ 추가: 2열 균형 맞게 꽉 차도록 */
     }
+
+    /* ✅ Timestamp label clickable + color states (ON/OFF) */
     .tsToggle .label{
-      font-size:12px; font-weight:900; color:#dbe7ff;
+      font-size:12px;
+      font-weight:900;
       letter-spacing:-0.2px;
       display:flex; align-items:center; gap:8px;
       white-space:nowrap;
+      cursor:pointer;
+      color:#cfe6ff; /* ON default */
+      transition: color .14s var(--ease), opacity .14s var(--ease);
     }
+    .tsToggle.off .label{
+      color:#7f8ea3; /* OFF */
+      opacity:.75;
+    }
+
     .switch{
       position:relative; width:48px; height:28px; flex:0 0 auto;
       border-radius:999px;
@@ -444,6 +455,11 @@
     .tsState{
       font-size:12px; font-weight:900; color:#cfe6ff;
       white-space:nowrap;
+      transition: color .14s var(--ease), opacity .14s var(--ease);
+    }
+    .tsToggle.off .tsState{
+      color:#7f8ea3;
+      opacity:.75;
     }
 
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
@@ -630,8 +646,10 @@
         <!-- 오른쪽: 타임스탬프 ON -->
         <div>
           <label>&nbsp;</label>
-          <div class="tsToggle" role="group" aria-label="Timestamp toggle">
-            <div class="label">🕒 <span id="ts_label">Timestamp</span></div>
+          <div class="tsToggle" id="tsToggleBox" role="group" aria-label="Timestamp toggle">
+            <div class="label" id="tsLabel" role="button" tabindex="0" aria-pressed="true">
+              🕒 <span id="ts_label">Timestamp</span>
+            </div>
             <div style="display:flex; align-items:center; gap:10px;">
               <div class="tsState" id="ts_state">ON</div>
               <div class="switch on" id="tsSwitch" role="switch" aria-checked="true" tabindex="0"></div>
@@ -1037,6 +1055,8 @@
   // timestamp toggle
   const tsSwitch = $("tsSwitch");
   const tsState = $("ts_state");
+  const tsLabel = $("tsLabel");
+  const tsToggleBox = $("tsToggleBox");
 
   function esc(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
@@ -1066,6 +1086,9 @@
     tsSwitch.classList.toggle("on", tsOn);
     tsSwitch.setAttribute("aria-checked", tsOn ? "true" : "false");
     tsState.textContent = tsOn ? t().ts_on : t().ts_off;
+
+    if(tsToggleBox) tsToggleBox.classList.toggle("off", !tsOn);
+    if(tsLabel) tsLabel.setAttribute("aria-pressed", tsOn ? "true" : "false");
   }
   function toggleTimestamp(){
     tsOn = !tsOn;
@@ -1076,6 +1099,14 @@
   tsSwitch.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
   });
+
+  // ✅ label click / keyboard toggle (timestamp text clickable)
+  if(tsLabel){
+    tsLabel.addEventListener("click", toggleTimestamp);
+    tsLabel.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleTimestamp(); }
+    });
+  }
 
   // Margin details arrow sync
   if(marginDetails && marginHintInline){
