@@ -328,17 +328,23 @@
       padding-top: 2px;
     }
 
+    /* ✅ 아이콘/색감 살리기: 살짝 밝은 톤 + 아주 약한 글로우 */
     .dropIcon{
       width:64px; height:64px;
       border-radius:18px;
       display:flex;
       align-items:center;
       justify-content:center;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.03) inset;
     }
-    .dropIcon svg{ width:34px; height:34px; opacity:.95; }
+    .dropIcon svg{
+      width:34px; height:34px;
+      opacity: 1;
+      color: #eaf1ff;
+      filter: drop-shadow(0 2px 10px rgba(47,109,246,.18));
+    }
 
     .dropTitle{
       font-weight: 800;
@@ -470,8 +476,9 @@
       background: rgba(47,109,246,.12);
       border: 1px solid rgba(47,109,246,.26);
       flex:0 0 auto;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset;
     }
-    .fileBadge svg{ width:22px; height:22px; opacity:.95; }
+    .fileBadge svg{ width:22px; height:22px; opacity:1; filter: drop-shadow(0 2px 10px rgba(47,109,246,.14)); }
 
     .fileMeta{
       min-width:0;
@@ -531,7 +538,7 @@
     }
     .iconBtn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); }
     .iconBtn:active{ transform: scale(.99); }
-    .iconBtn svg{ width:20px; height:20px; opacity:.92; }
+    .iconBtn svg{ width:20px; height:20px; opacity:1; filter: drop-shadow(0 2px 10px rgba(255,255,255,.06)); }
 
     .moveCol{
       display:flex;
@@ -555,11 +562,22 @@
     .miniIconBtn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); }
     .miniIconBtn:active{ transform: scale(.99); }
     .miniIconBtn:disabled{ opacity:.35; cursor:not-allowed; transform:none; }
-    .miniIconBtn svg{ width:18px; height:18px; opacity:.9; }
+    .miniIconBtn svg{ width:18px; height:18px; opacity:1; filter: drop-shadow(0 2px 10px rgba(255,255,255,.05)); }
 
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; font-weight:600; }
     .msg.err{ color:#ffb4b4; }
     .msg.ok{ color:#b8ffcc; }
+
+    /* ✅ 하단 허전함 해결: 작은 옵션 블록(샘플 톤 유지) */
+    .optionBlock{
+      margin-top:12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .optionBlock .row{ margin-top:0; }
 
     .footer{
       margin-top:16px;
@@ -686,6 +704,39 @@
         </div>
       </div>
 
+      <!-- ✅ 추천 조합 옵션(하단 허전함 해결) : 출력 크기 + 배경 + 파일명 -->
+      <div class="optionBlock" aria-label="more options">
+        <div class="row">
+          <div>
+            <label id="lbl_scale">출력 크기</label>
+            <select id="scale">
+              <option value="2.0">선명 (2x)</option>
+              <option value="1.5" selected>추천 (1.5x)</option>
+              <option value="1.0">가벼움 (1x)</option>
+            </select>
+          </div>
+          <div>
+            <label id="lbl_bg">배경</label>
+            <select id="bg">
+              <option value="auto" selected>자동</option>
+              <option value="white">흰색</option>
+              <option value="black">검정</option>
+            </select>
+          </div>
+          <div>
+            <label id="lbl_name">파일명</label>
+            <select id="nameRule">
+              <option value="original" selected>원본명 + 페이지</option>
+              <option value="simple">간단한 날짜형</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="msg" style="margin-top:10px; color:#9fb0ca;" id="opt_hint">
+          출력 크기는 선명도/용량에 영향을 줍니다.
+        </div>
+      </div>
+
       <div class="msg" style="margin-top:10px; color:#9fb0ca;" id="zip_hint">여러 페이지면 ZIP으로 묶어서 내려받습니다.</div>
 
       <div style="height:10px;"></div>
@@ -735,7 +786,12 @@ window.addEventListener("DOMContentLoaded", () => {
       addedN:(n)=>`PDF ${n}개 추가됨`,
       converting:"변환 중...",
       preparing:"엔진 준비 중...",
-      buildingZip:"ZIP 만드는 중..."
+      buildingZip:"ZIP 만드는 중...",
+      // new
+      scale:"출력 크기",
+      bg:"배경",
+      name:"파일명",
+      optHint:"출력 크기는 선명도/용량에 영향을 줍니다."
     },
     en:{
       title:"PDF → JPG/PNG",
@@ -764,7 +820,12 @@ window.addEventListener("DOMContentLoaded", () => {
       addedN:(n)=>`${n} PDF(s) added`,
       converting:"Converting...",
       preparing:"Preparing engine...",
-      buildingZip:"Building ZIP..."
+      buildingZip:"Building ZIP...",
+      // new
+      scale:"Output size",
+      bg:"Background",
+      name:"Filename",
+      optHint:"Output size affects clarity and file size."
     },
     es:{
       title:"PDF → JPG/PNG",
@@ -793,7 +854,12 @@ window.addEventListener("DOMContentLoaded", () => {
       addedN:(n)=>`${n} PDF(s) agregado(s)`,
       converting:"Convirtiendo...",
       preparing:"Preparando motor...",
-      buildingZip:"Creando ZIP..."
+      buildingZip:"Creando ZIP...",
+      // new
+      scale:"Tamaño",
+      bg:"Fondo",
+      name:"Nombre",
+      optHint:"El tamaño afecta claridad y peso."
     },
     ja:{
       title:"PDF → JPG/PNG",
@@ -822,7 +888,12 @@ window.addEventListener("DOMContentLoaded", () => {
       addedN:(n)=>`PDF ${n}件 追加済み`,
       converting:"変換中...",
       preparing:"エンジン準備中...",
-      buildingZip:"ZIP作成中..."
+      buildingZip:"ZIP作成中...",
+      // new
+      scale:"出力サイズ",
+      bg:"背景",
+      name:"ファイル名",
+      optHint:"出力サイズは鮮明さ/容量に影響します。"
     }
   };
 
@@ -871,6 +942,12 @@ window.addEventListener("DOMContentLoaded", () => {
     $("zip_hint").textContent = t().zip;
     $("convertBtn").textContent = t().run;
 
+    // new labels
+    $("lbl_scale").textContent = t().scale;
+    $("lbl_bg").textContent = t().bg;
+    $("lbl_name").textContent = t().name;
+    $("opt_hint").textContent = t().optHint;
+
     refreshBadgeAndTexts();
   }
   $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
@@ -882,6 +959,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const convertBtn = $("convertBtn");
   const outFormatEl = $("outFormat");
   const qualityEl = $("quality");
+  const scaleEl = $("scale");
+  const bgEl = $("bg");
+  const nameRuleEl = $("nameRule");
   const msgEl = $("msg");
 
   const countBadge = $("countBadge");
@@ -1161,6 +1241,18 @@ window.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
+  function pad(n, len=2){ return String(n).padStart(len,"0"); }
+  function stamp(){
+    const d = new Date();
+    return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  }
+  function makeBaseName(fileName){
+    const base = (fileName || "pdf").replace(/\.[^.]+$/, "");
+    const rule = nameRuleEl.value || "original";
+    if(rule === "simple") return `cf24_${stamp()}`;
+    return base;
+  }
+
   // ===== Convert (multi pdf) =====
   async function pdfToImagesAndDownload(file){
     const okPdf = await ensurePdfJs();
@@ -1181,40 +1273,59 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const outMime = outFormatEl.value;
     const q = parseFloat(qualityEl.value || "0.9");
+    const scaleUser = parseFloat(scaleEl.value || "1.5");
+    const bgMode = bgEl.value || "auto";
+
     const makePng = (outMime === "image/png");
-    const base = (file.name || "pdf").replace(/\.[^.]+$/, "");
+    const base = makeBaseName(file.name || "pdf");
     const ext = makePng ? "png" : "jpg";
 
     if(total === 1){
-      const blob = await renderPageToBlob(pdf, 1, outMime, q);
+      const blob = await renderPageToBlob(pdf, 1, outMime, q, scaleUser, bgMode);
       return [{ blob, name: `${base}_page1.${ext}` }];
     }
 
     const out = [];
     for(let p=1; p<=total; p++){
-      const blob = await renderPageToBlob(pdf, p, outMime, q);
+      const blob = await renderPageToBlob(pdf, p, outMime, q, scaleUser, bgMode);
       const name = `${base}_page${String(p).padStart(3,"0")}.${ext}`;
       out.push({ blob, name });
     }
     return out;
   }
 
-  async function renderPageToBlob(pdf, pageNum, mime, quality){
+  function resolveBgColor(mime, mode){
+    if(mode === "white") return "#ffffff";
+    if(mode === "black") return "#000000";
+    // auto
+    if(mime === "image/jpeg") return "#ffffff"; // JPG는 투명 없음 → 흰 배경
+    return null; // PNG는 투명 유지
+  }
+
+  async function renderPageToBlob(pdf, pageNum, mime, quality, userScale, bgMode){
     const page = await pdf.getPage(pageNum);
 
-    const test = page.getViewport({ scale: 2.0 });
-    const megaPixels = (test.width * test.height) / 1_000_000;
-    const scale = megaPixels > 16 ? 1.5 : 2.0;
+    // 안전장치: 너무 큰 페이지는 scale 살짝 낮춰 메모리 폭주 방지
+    const baseTest = page.getViewport({ scale: 2.0 });
+    const megaPixels = (baseTest.width * baseTest.height) / 1_000_000;
+    const safety = megaPixels > 18 ? 0.85 : 1.0;
 
+    const scale = Math.max(1.0, Math.min(2.5, userScale)) * safety;
     const viewport = page.getViewport({ scale });
 
+    const bgColor = resolveBgColor(mime, bgMode);
+    const forceOpaque = (bgColor !== null); // bg 지정되면 PNG도 배경 깔기
+
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { alpha: (mime !== "image/jpeg") });
+    const ctx = canvas.getContext("2d", { alpha: !forceOpaque && (mime !== "image/jpeg") });
 
     canvas.width = Math.round(viewport.width);
     canvas.height = Math.round(viewport.height);
 
-    if(mime === "image/jpeg"){
+    if(bgColor){
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+    }else if(mime === "image/jpeg"){
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0,0,canvas.width, canvas.height);
     }
