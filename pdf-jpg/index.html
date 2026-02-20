@@ -827,6 +827,32 @@ window.addEventListener("DOMContentLoaded", () => {
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
+  // ===== state (먼저 잡아둠: 옵션 재렌더 때문에) =====
+  const drop = $("drop");
+  const fileInput = $("fileInput");
+  const clearBtn = $("clearBtn");
+  const convertBtn = $("convertBtn");
+  const outFormatEl = $("outFormat");
+  const qualityEl = $("quality");
+  const scaleEl = $("scale");
+  const bgEl = $("bg");
+  const nameRuleEl = $("nameRule");
+  const msgEl = $("msg");
+
+  const countBadge = $("countBadge");
+  const countNum = $("countNum");
+  const countText = $("countText");
+  const miniOk = $("miniOk");
+  const miniOkText = $("miniOkText");
+  const toggleListBtn = $("toggleListBtn");
+  const fileListWrap = $("fileListWrap");
+  const fileList = $("fileList");
+
+  let pdfFiles = []; // { id, file }
+
+  // ✅ 언어 변경 시 msg도 함께 바꾸기 위해 마지막 메시지 상태 저장
+  let lastMsgState = { mode:"none", key:null, text:null, cls:"", pct:null };
+
   // ===== i18n =====
   const STR = {
     ko:{
@@ -1132,33 +1158,19 @@ window.addEventListener("DOMContentLoaded", () => {
     // ✅ 번역 누락 방지: 리스트/뱃지/미니텍스트까지 강제 재렌더
     renderList();
     refreshBadgeAndTexts();
+
+    // ✅ 여기 핵심: 기존 msg(준비 완료 등)도 언어 바꿀 때 같이 갱신
+    rerenderMsgForLang();
   }
   $("langSelect").addEventListener("change",(e)=>setLang(e.target.value, true));
 
-  // ===== state =====
-  const drop = $("drop");
-  const fileInput = $("fileInput");
-  const clearBtn = $("clearBtn");
-  const convertBtn = $("convertBtn");
-  const outFormatEl = $("outFormat");
-  const qualityEl = $("quality");
-  const scaleEl = $("scale");
-  const bgEl = $("bg");
-  const nameRuleEl = $("nameRule");
-  const msgEl = $("msg");
+  // ===== msg + progress =====
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
 
-  const countBadge = $("countBadge");
-  const countNum = $("countNum");
-  const countText = $("countText");
-  const miniOk = $("miniOk");
-  const miniOkText = $("miniOkText");
-  const toggleListBtn = $("toggleListBtn");
-  const fileListWrap = $("fileListWrap");
-  const fileList = $("fileList");
-
-  let pdfFiles = []; // { id, file }
-
-  // ✅ msg + progress
   function renderMsg(text, cls, pct){
     msgEl.className = "msg " + (cls || "");
     const hasText = !!(text && String(text).trim());
@@ -1187,11 +1199,38 @@ window.addEventListener("DOMContentLoaded", () => {
       msgEl.textContent = text || "";
     }
   }
-  function setMsg(text, cls){
-    renderMsg(text, cls, null);
+
+  // ✅ msg 상태 저장 + 렌더 (언어 변경 시 재번역 가능)
+  function showKey(key, cls){
+    lastMsgState = { mode:"key", key, text:null, cls: cls||"", pct:null };
+    renderMsg(t()[key] || "", cls, null);
   }
-  function setProgress(text, pct){
-    renderMsg(text, "", pct);
+  function showKeyPct(key, cls, pct){
+    lastMsgState = { mode:"keypct", key, text:null, cls: cls||"", pct: pct };
+    renderMsg(t()[key] || "", cls, pct);
+  }
+  function showText(text, cls, pct=null){
+    lastMsgState = { mode:"text", key:null, text: String(text||""), cls: cls||"", pct: pct };
+    renderMsg(text, cls, pct);
+  }
+  function clearMsg(){
+    lastMsgState = { mode:"none", key:null, text:null, cls:"", pct:null };
+    renderMsg("", "", null);
+  }
+  function rerenderMsgForLang(){
+    if(!lastMsgState || lastMsgState.mode === "none") return;
+    if(lastMsgState.mode === "key"){
+      renderMsg(t()[lastMsgState.key] || "", lastMsgState.cls, null);
+      return;
+    }
+    if(lastMsgState.mode === "keypct"){
+      renderMsg(t()[lastMsgState.key] || "", lastMsgState.cls, lastMsgState.pct);
+      return;
+    }
+    // text 모드는 그대로 둠(에러 메시지 등)
+    if(lastMsgState.mode === "text"){
+      renderMsg(lastMsgState.text || "", lastMsgState.cls, lastMsgState.pct);
+    }
   }
 
   function bytesToSize(bytes){
@@ -1291,9 +1330,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if(pdfFiles.length === 0){
           fileListWrap.classList.remove("show");
-          setMsg("", "");
+          clearMsg();
         }else{
-          setMsg(t().okReady, "ok");
+          showKey("okReady", "ok"); // ✅ 언어 변경 시 같이 바뀜
         }
       });
 
@@ -1329,13 +1368,7 @@ window.addEventListener("DOMContentLoaded", () => {
     onlyPdf.forEach(f=> pdfFiles.push({ id: uid(), file: f }));
 
     renderList();
-    setMsg(t().okReady, "ok");
-  }
-
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
+    showKey("okReady", "ok"); // ✅ 준비 완료 문구도 언어 변경 시 즉시 전환
   }
 
   // ===== Drop events =====
@@ -1372,7 +1405,7 @@ window.addEventListener("DOMContentLoaded", () => {
     pdfFiles = [];
     renderList();
     fileListWrap.classList.remove("show");
-    setMsg("", "");
+    clearMsg();
   });
 
   toggleListBtn.addEventListener("click", ()=>{
@@ -1581,12 +1614,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
   convertBtn.addEventListener("click", async ()=>{
     try{
-      if(pdfFiles.length === 0) return setMsg(t().errNoPdf, "err");
+      if(pdfFiles.length === 0) return showKey("errNoPdf", "err");
+
       convertBtn.disabled = true;
       clearBtn.disabled = true;
       toggleListBtn.disabled = true;
 
-      setProgress(t().preparing, 2);
+      showKeyPct("preparing", "", 2);
 
       const okPdf = await ensurePdfJs();
       if(!okPdf) throw new Error(t().errEngine);
@@ -1594,13 +1628,14 @@ window.addEventListener("DOMContentLoaded", () => {
       const okZip = await ensureJSZip();
       if(!okZip) throw new Error(t().errZip);
 
-      setProgress(t().preparing, 6);
+      showKeyPct("preparing", "", 6);
+
       let totalPages = 0;
       for(let i=0; i<pdfFiles.length; i++){
         const n = await getPdfPageCount(pdfFiles[i].file);
         totalPages += Math.max(1, n||0);
         const pct = 6 + Math.round(((i+1)/pdfFiles.length) * 14);
-        setProgress(t().preparing, pct);
+        showKeyPct("preparing", "", pct);
       }
       totalPages = Math.max(1, totalPages);
 
@@ -1613,15 +1648,16 @@ window.addEventListener("DOMContentLoaded", () => {
         const items = await pdfToImagesAndDownload(it.file, ()=>{
           donePages++;
           const pct = 20 + (donePages / totalPages) * 70;
-          setProgress(`(${fi+1}/${totalFiles}) ${t().converting}`, pct);
+          // ✅ 동적 문구는 텍스트 모드로 저장(언어 바꿔도 진행 중에는 자연스럽게 유지)
+          showText(`(${fi+1}/${totalFiles}) ${t().converting}`, "", pct);
         });
         items.forEach(({blob, name})=> zip.file(name, blob));
       }
 
-      setProgress(t().buildingZip, 92);
+      showKeyPct("buildingZip", "", 92);
       const zipBlob = await zip.generateAsync({ type:"blob" }, (meta)=>{
         const p = 92 + (Math.max(0, Math.min(1, (meta.percent||0)/100)) * 8);
-        setProgress(t().buildingZip, p);
+        showKeyPct("buildingZip", "", p);
       });
 
       // ✅ 1) 먼저 닫고
@@ -1630,11 +1666,13 @@ window.addEventListener("DOMContentLoaded", () => {
       // ✅ 2) 그 다음 다운로드 트리거
       downloadBlob(zipBlob, `pdf_images_${Date.now()}.zip`);
 
-      renderMsg(t().okDone, "ok", 100);
+      // ✅ 완료 메시지도 "키"로 저장 → 언어 바꾸면 같이 바뀜
+      showKeyPct("okDone", "ok", 100);
 
     }catch(e){
       const msg = (e && e.message) ? e.message : "Convert failed";
-      renderMsg(msg, "err", null);
+      // 에러는 그대로 유지(언어 바꾸면 에러 문구까지 바꾸고 싶으면 key화하면 됨)
+      showText(msg, "err", null);
     }finally{
       convertBtn.disabled = (pdfFiles.length === 0);
       clearBtn.disabled = (pdfFiles.length === 0);
