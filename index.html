@@ -9,8 +9,22 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- ✅ Canonical -->
+  <!-- Canonical -->
   <link rel="canonical" href="https://convertfiles24.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ConvertFiles24 — Fast & Secure File Tools (100% Local)" />
+  <meta property="og:description" content="Convert images, merge/split/compress PDFs, PDF to JPG and more — processed locally in your browser." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://convertfiles24.com/" />
+  <!-- ✅ 이미지 파일을 준비하면 이 경로 그대로 쓰면 됨 (권장 1200x630) -->
+  <meta property="og:image" content="https://convertfiles24.com/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ConvertFiles24 — Fast & Secure File Tools (100% Local)" />
+  <meta name="twitter:description" content="Convert images, merge/split/compress PDFs, PDF to JPG and more — processed locally in your browser." />
+  <meta name="twitter:image" content="https://convertfiles24.com/og-image.png" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +33,18 @@
 
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ConvertFiles24",
+    "url": "https://convertfiles24.com/",
+    "description": "Fast & secure file tools that run locally in your browser.",
+    "inLanguage": ["en", "ko", "ja", "es"]
+  }
+  </script>
 
   <style>
     :root{
@@ -142,7 +168,7 @@
       color: rgba(255,255,255,.88);
     }
 
-    /* Language bar (RIGHT TOP like your screenshot) */
+    /* Language bar (RIGHT TOP) */
     .langWrap{
       display:flex;
       align-items:center;
@@ -194,7 +220,7 @@
       user-select:none;
     }
 
-    /* TOOL LIST (ONE COLUMN, roomy like your RIGHT screenshot) */
+    /* TOOL LIST */
     .toolList{
       display:flex;
       flex-direction:column;
@@ -269,6 +295,7 @@
       align-items:center;
       gap: 10px;
       margin-top: 6px;
+      flex-wrap: wrap;
     }
     .pill{
       display:inline-flex;
@@ -309,28 +336,24 @@
       margin: 18px 0 16px;
     }
 
-    /* ✅ Popular tools block */
-    .popular{
-      margin-top: 6px;
-      text-align:center;
-      color: rgba(255,255,255,.55);
-      font-size: 14px;
-      line-height: 1.7;
+    /* SEO Text block */
+    .seoBlock{
+      margin-top: 26px;
+      padding: 18px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.68);
+      line-height: 1.65;
+      box-shadow: 0 14px 36px rgba(0,0,0,.25);
     }
-    .popular .label{
-      color: rgba(255,255,255,.55);
-      font-weight: 800;
-      margin-right: 8px;
+    .seoBlock h2{
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: rgba(255,255,255,.88);
+      letter-spacing: -0.02em;
     }
-    .popular a{
-      color: rgba(255,255,255,.62);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-    .popular .sep{
-      opacity: .35;
-      margin: 0 8px;
-    }
+    .seoBlock p{margin:0}
 
     footer{
       text-align:center;
@@ -344,14 +367,12 @@
       text-underline-offset: 3px;
     }
 
-    /* Mobile tweaks */
     @media (max-width: 520px){
       .wrap{width: calc(100% - 26px)}
       .chips{max-width:none}
       .langPill{min-width: 178px}
       .toolCard{padding: 20px 18px}
       .iconBox{width: 64px; height: 64px; border-radius: 20px; font-size: 32px}
-      .popular .sep{margin:0 6px}
     }
   </style>
 </head>
@@ -385,12 +406,10 @@
       <div class="panelHead">
         <div class="panelTitle" id="t_toolsTitle">Tools</div>
 
-        <!-- Language bar (RIGHT TOP) -->
         <div class="langWrap" aria-label="language">
           <div class="langPill">
             <div class="globe">🌐</div>
             <select id="langSelect" aria-label="Select language">
-              <!-- order: English, 한국어, 日本語, Español -->
               <option value="en">English</option>
               <option value="ko">한국어</option>
               <option value="ja">日本語</option>
@@ -406,25 +425,26 @@
       </div>
     </section>
 
+    <!-- ✅ SEO-friendly text content -->
+    <section class="seoBlock" aria-label="about">
+      <h2 id="t_seoTitle">Free Online File Tools</h2>
+      <p id="t_seoText">
+        ConvertFiles24 provides fast and secure browser-based tools to convert images, merge PDF files, split PDF pages,
+        compress PDFs, and export PDF pages to JPG. All processing happens locally in your browser for better privacy.
+      </p>
+    </section>
+
     <div class="divider"></div>
 
-    <!-- ✅ Popular Tools (text links) -->
-    <div class="popular" aria-label="popular tools">
-      <span class="label">Popular:</span>
-      <a href="/pdf-merge/">PDF Merge</a><span class="sep">|</span>
-      <a href="/split-pdf/">PDF Split</a><span class="sep">|</span>
-      <a href="/compress-pdf/">PDF Compress</a><span class="sep">|</span>
-      <a href="/pdf-jpg/">PDF → JPG</a><span class="sep">|</span>
-      <a href="/jpg-pdf/">JPG → PDF</a>
-    </div>
-
     <footer>
-      <div>© <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></div>
+      <div>
+        © <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages ·
+        <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>
+      </div>
     </footer>
   </div>
 
   <script>
-    // ====== Language + i18n ======
     const I18N = {
       en: {
         sub: "Fast & Secure File Tools · 100% Local Processing",
@@ -435,16 +455,16 @@
         chip3: "Free · No install",
         chip3r: "Mobile/PC",
         toolsTitle: "Tools",
+        seoTitle: "Free Online File Tools",
+        seoText:
+          "ConvertFiles24 provides fast and secure browser-based tools to convert images, merge PDF files, split PDF pages, compress PDFs, and export PDF pages to JPG. All processing happens locally in your browser for better privacy.",
         tools: [
           { key:"convert",  icon:"🔁", title:"File Converter", desc:"Convert JPG / PNG / WebP / PDF", tag:"Image · PDF", href:"/convert/" },
           { key:"merge",    icon:"🧩", title:"PDF Merge", desc:"Combine multiple PDFs into one", tag:"PDF", href:"/pdf-merge/" },
           { key:"split",    icon:"✂️", title:"PDF Split", desc:"Split pages quickly", tag:"PDF", href:"/split-pdf/" },
           { key:"compress", icon:"🗜️", title:"PDF Compress", desc:"Reduce file size for sharing", tag:"PDF", href:"/compress-pdf/" },
           { key:"pdfjpg",   icon:"🖼️", title:"PDF → JPG", desc:"Convert PDF pages to images", tag:"PDF", href:"/pdf-jpg/" },
-
-          /* ✅ NEW #7: JPG → PDF (after PDF→JPG, before Edit) */
           { key:"jpgpdf",   icon:"🧾", title:"JPG → PDF", desc:"Convert images to a single PDF", tag:"Image · PDF", href:"/jpg-pdf/" },
-
           { key:"edit",     icon:"✏️", title:"Image Edit", desc:"Crop · rotate · resize", tag:"Image", href:"/edit/" },
           { key:"idphoto",  icon:"🪪", title:"ID Photo Maker", desc:"Passport · ID sizes auto-fit", tag:"NEW", href:"/id-photo/" }
         ]
@@ -458,39 +478,39 @@
         chip3: "무료 · 설치 없음",
         chip3r: "모바일/PC",
         toolsTitle: "도구",
+        seoTitle: "무료 온라인 파일 도구",
+        seoText:
+          "ConvertFiles24는 이미지 변환, PDF 합치기/분리/압축, PDF를 JPG로 변환 등 다양한 기능을 브라우저에서 빠르고 안전하게 제공합니다. 모든 처리는 로컬(내 기기)에서 진행되어 개인정보 보호에 유리합니다.",
         tools: [
           { key:"convert",  icon:"🔁", title:"파일 변환기", desc:"JPG / PNG / WebP / PDF 변환", tag:"Image · PDF", href:"/convert/" },
           { key:"merge",    icon:"🧩", title:"PDF 합치기", desc:"여러 PDF를 하나로 합칩니다", tag:"PDF", href:"/pdf-merge/" },
           { key:"split",    icon:"✂️", title:"PDF 분리", desc:"PDF 페이지를 빠르게 분리", tag:"PDF", href:"/split-pdf/" },
           { key:"compress", icon:"🗜️", title:"PDF 압축", desc:"용량을 줄여 공유 최적화", tag:"PDF", href:"/compress-pdf/" },
           { key:"pdfjpg",   icon:"🖼️", title:"PDF → JPG", desc:"PDF 페이지를 이미지로 변환", tag:"PDF", href:"/pdf-jpg/" },
-
-          /* ✅ NEW #7: JPG → PDF (after PDF→JPG, before Edit) */
           { key:"jpgpdf",   icon:"🧾", title:"JPG → PDF", desc:"JPG/PNG를 PDF로 변환", tag:"Image · PDF", href:"/jpg-pdf/" },
-
           { key:"edit",     icon:"✏️", title:"이미지 편집", desc:"자르기 · 회전 · 크기조정", tag:"Image", href:"/edit/" },
           { key:"idphoto",  icon:"🪪", title:"증명사진 제작", desc:"여권 · 증명 규격 자동 맞춤", tag:"NEW", href:"/id-photo/" }
         ]
       },
       ja: {
         sub: "高速で安全なファイルツール · 100% ローカル処理",
-        chip1: "100% ローカル処리",
+        chip1: "100% ローカル処理",
         chip1r: "アップロードなし",
         chip2: "ブラウザですぐ実行",
         chip2r: "高速",
         chip3: "無料 · インストール不要",
         chip3r: "スマホ/PC",
         toolsTitle: "ツール",
+        seoTitle: "無料オンラインファイルツール",
+        seoText:
+          "ConvertFiles24は画像変換、PDF結合/分割/圧縮、PDFをJPGへ変換などをブラウザで高速・安全に提供します。処理はすべてローカルで行われ、プライバシー保護に有利です。",
         tools: [
           { key:"convert",  icon:"🔁", title:"ファイル変換", desc:"JPG / PNG / WebP / PDF 変換", tag:"Image · PDF", href:"/convert/" },
           { key:"merge",    icon:"🧩", title:"PDF 結合", desc:"複数PDFを1つに結合", tag:"PDF", href:"/pdf-merge/" },
           { key:"split",    icon:"✂️", title:"PDF 分割", desc:"ページをすばやく分割", tag:"PDF", href:"/split-pdf/" },
           { key:"compress", icon:"🗜️", title:"PDF 圧縮", desc:"サイズを減らして共有", tag:"PDF", href:"/compress-pdf/" },
           { key:"pdfjpg",   icon:"🖼️", title:"PDF → JPG", desc:"PDFページを画像へ変換", tag:"PDF", href:"/pdf-jpg/" },
-
-          /* ✅ NEW #7: JPG → PDF (after PDF→JPG, before Edit) */
           { key:"jpgpdf",   icon:"🧾", title:"JPG → PDF", desc:"画像をPDFに変換", tag:"Image · PDF", href:"/jpg-pdf/" },
-
           { key:"edit",     icon:"✏️", title:"画像編集", desc:"切り抜き · 回転 · リサイズ", tag:"Image", href:"/edit/" },
           { key:"idphoto",  icon:"🪪", title:"証明写真作成", desc:"パスポート/証明規格に自動調整", tag:"NEW", href:"/id-photo/" }
         ]
@@ -504,16 +524,16 @@
         chip3: "Gratis · Sin instalación",
         chip3r: "Móvil/PC",
         toolsTitle: "Herramientas",
+        seoTitle: "Herramientas gratuitas en línea",
+        seoText:
+          "ConvertFiles24 ofrece herramientas rápidas y seguras en el navegador para convertir imágenes, unir/dividir/comprimir PDFs y exportar páginas PDF a JPG. Todo el procesamiento se realiza localmente para mayor privacidad.",
         tools: [
           { key:"convert",  icon:"🔁", title:"Convertidor de archivos", desc:"Convierte JPG / PNG / WebP / PDF", tag:"Image · PDF", href:"/convert/" },
           { key:"merge",    icon:"🧩", title:"Unir PDF", desc:"Combina varios PDFs en uno", tag:"PDF", href:"/pdf-merge/" },
           { key:"split",    icon:"✂️", title:"Separar PDF", desc:"Divide páginas rápidamente", tag:"PDF", href:"/split-pdf/" },
           { key:"compress", icon:"🗜️", title:"Comprimir PDF", desc:"Reduce tamaño para compartir", tag:"PDF", href:"/compress-pdf/" },
           { key:"pdfjpg",   icon:"🖼️", title:"PDF → JPG", desc:"Convierte páginas PDF a imágenes", tag:"PDF", href:"/pdf-jpg/" },
-
-          /* ✅ NEW #7: JPG → PDF (after PDF→JPG, before Edit) */
           { key:"jpgpdf",   icon:"🧾", title:"JPG → PDF", desc:"Convierte imágenes a PDF", tag:"Image · PDF", href:"/jpg-pdf/" },
-
           { key:"edit",     icon:"✏️", title:"Editar imagen", desc:"Recortar · girar · redimensionar", tag:"Image", href:"/edit/" },
           { key:"idphoto",  icon:"🪪", title:"Foto de identificación", desc:"Ajuste automático (pasaporte/ID)", tag:"NEW", href:"/id-photo/" }
         ]
@@ -521,21 +541,13 @@
     };
 
     function detectLang() {
-      // 1) Query string ?lang=
       const qs = new URLSearchParams(location.search);
       const qLang = (qs.get("lang") || "").toLowerCase();
       if (I18N[qLang]) return qLang;
 
-      // 2) Path prefix: /en/ /ko/ /ja/ /es/ (if you create those later)
-      const p = location.pathname.toLowerCase();
-      const m = p.match(/^\/(en|ko|ja|es)(\/|$)/);
-      if (m && I18N[m[1]]) return m[1];
-
-      // 3) LocalStorage
       const saved = (localStorage.getItem("cf24_lang") || "").toLowerCase();
       if (I18N[saved]) return saved;
 
-      // 4) Browser language
       const nav = (navigator.language || "en").toLowerCase();
       if (nav.startsWith("ko")) return "ko";
       if (nav.startsWith("ja")) return "ja";
@@ -546,11 +558,8 @@
     function setLang(lang, {pushUrl=true} = {}) {
       if (!I18N[lang]) lang = "en";
       localStorage.setItem("cf24_lang", lang);
-
-      // update <html lang="">
       document.documentElement.lang = lang;
 
-      // update top texts
       const t = I18N[lang];
       document.getElementById("t_sub").textContent = t.sub;
       document.getElementById("t_chip1").textContent = t.chip1;
@@ -560,15 +569,15 @@
       document.getElementById("t_chip3").textContent = t.chip3;
       document.getElementById("t_chip3r").textContent = t.chip3r;
       document.getElementById("t_toolsTitle").textContent = t.toolsTitle;
+      document.getElementById("t_seoTitle").textContent = t.seoTitle;
+      document.getElementById("t_seoText").textContent = t.seoText;
 
-      // tool list render
       const list = document.getElementById("toolList");
       list.innerHTML = "";
       t.tools.forEach(tool => {
         const a = document.createElement("a");
         a.className = "toolCard";
         a.href = tool.href;
-
         a.innerHTML = `
           <div class="iconBox" aria-hidden="true">${tool.icon}</div>
           <div class="toolMain">
@@ -583,11 +592,8 @@
         list.appendChild(a);
       });
 
-      // sync select
-      const sel = document.getElementById("langSelect");
-      sel.value = lang;
+      document.getElementById("langSelect").value = lang;
 
-      // optional: keep URL consistent (?lang=)
       if (pushUrl) {
         const url = new URL(location.href);
         url.searchParams.set("lang", lang);
@@ -604,11 +610,8 @@
         .replaceAll("'","&#039;");
     }
 
-    // Init
     document.getElementById("year").textContent = new Date().getFullYear();
-
-    const initialLang = detectLang();
-    setLang(initialLang, {pushUrl:true});
+    setLang(detectLang(), {pushUrl:true});
 
     document.getElementById("langSelect").addEventListener("change", (e) => {
       setLang(e.target.value, {pushUrl:true});
