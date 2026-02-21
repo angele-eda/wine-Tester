@@ -9,6 +9,9 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
+  <!-- ✅ Canonical -->
+  <link rel="canonical" href="https://convertfiles24.com/" />
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -306,6 +309,29 @@
       margin: 18px 0 16px;
     }
 
+    /* ✅ Popular tools block */
+    .popular{
+      margin-top: 6px;
+      text-align:center;
+      color: rgba(255,255,255,.55);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .popular .label{
+      color: rgba(255,255,255,.55);
+      font-weight: 800;
+      margin-right: 8px;
+    }
+    .popular a{
+      color: rgba(255,255,255,.62);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .popular .sep{
+      opacity: .35;
+      margin: 0 8px;
+    }
+
     footer{
       text-align:center;
       color: rgba(255,255,255,.45);
@@ -325,6 +351,7 @@
       .langPill{min-width: 178px}
       .toolCard{padding: 20px 18px}
       .iconBox{width: 64px; height: 64px; border-radius: 20px; font-size: 32px}
+      .popular .sep{margin:0 6px}
     }
   </style>
 </head>
@@ -381,8 +408,18 @@
 
     <div class="divider"></div>
 
+    <!-- ✅ Popular Tools (text links) -->
+    <div class="popular" aria-label="popular tools">
+      <span class="label">Popular:</span>
+      <a href="/pdf-merge/">PDF Merge</a><span class="sep">|</span>
+      <a href="/split-pdf/">PDF Split</a><span class="sep">|</span>
+      <a href="/compress-pdf/">PDF Compress</a><span class="sep">|</span>
+      <a href="/pdf-jpg/">PDF → JPG</a><span class="sep">|</span>
+      <a href="/jpg-pdf/">JPG → PDF</a>
+    </div>
+
     <footer>
-      <div>© <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></div>
+      <div>© <span id="year"></span> ConvertFiles24 · Powered by GitHub Pages · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></div>
     </footer>
   </div>
 
@@ -437,7 +474,7 @@
       },
       ja: {
         sub: "高速で安全なファイルツール · 100% ローカル処理",
-        chip1: "100% ローカル処理",
+        chip1: "100% ローカル処리",
         chip1r: "アップロードなし",
         chip2: "ブラウザですぐ実行",
         chip2r: "高速",
