@@ -276,13 +276,13 @@
       max-width:100%;
     }
     .listWrap.scroll{
-      max-height: 320px;
-      overflow:auto;
-      padding-right: 2px;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      border-radius: 14px;
-    }
+  max-height: min(320px, 42vh);
+  overflow:auto;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+}
     .listWrap.scroll::-webkit-scrollbar{ width:10px; }
     .listWrap.scroll::-webkit-scrollbar-thumb{
       background: rgba(255,255,255,.12);
