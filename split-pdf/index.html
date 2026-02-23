@@ -15,6 +15,8 @@
 
   <!-- PDF-lib (local in browser) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- JSZip (for split all -> zip) -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
   <style>
     :root{
@@ -185,9 +187,77 @@
       max-width:100%;
       overflow:hidden;
     }
-    .drop.drag{ background:rgba(106,169,255,.12); border-color:rgba(106,169,255,.45); box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset; }
+    .drop.drag{
+      background:rgba(106,169,255,.12);
+      border-color:rgba(106,169,255,.45);
+      box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset;
+    }
     .drop:active{ transform: scale(0.998); }
     .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
+    /* ✅ active 느낌 */
+    .drop.active{
+      border-color: rgba(47,109,246,.55);
+      background: rgba(47,109,246,.07);
+      box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
+    }
+
+    /* ✅ 배지 뜰 때만 여백 조금 */
+    .drop.hasBadge{ padding-top:22px; }
+
+    /* ✅ 드롭박스 내용 래퍼 */
+    .dropInner{ width:100%; }
+
+    /* ✅ 제목이 배지 영역 피하게(겹침 방지) */
+    #drop_title{
+      display:inline-block;
+      max-width: calc(100% - 90px);
+      margin: 0 auto;
+      text-wrap: balance;
+    }
+
+    /* ✅ 우측 상단 배지(페이지 수) — 더 작게 */
+    .dropBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:none;
+      align-items:center;
+      gap:5px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(46, 204, 113, .35);
+      background: rgba(46, 204, 113, .14);
+      box-shadow: 0 6px 14px rgba(0,0,0,.22);
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .dropBadge .tick{
+      width:13px;
+      height:13px;
+      border-radius:4px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(46, 204, 113, .92);
+      color:#0b0f17;
+      font-weight:900;
+      font-size:9px;
+      line-height:1;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+    }
+    .dropBadge .txt{
+      font-size:11px;
+      line-height:1;
+      font-weight:900;
+      opacity:.95;
+    }
 
     .dropEmoji{
       font-size:42px;
@@ -195,6 +265,7 @@
       margin:10px 0 8px;
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
     }
+
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
 
@@ -247,6 +318,7 @@
 
     input[type="file"]{ display:none; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+
     input[type="text"]{
       width:100%;
       padding:12px 12px;
@@ -275,6 +347,49 @@
       min-width:0;
     }
     .meta b{ color:#e9eef7; }
+
+    /* ✅ ZIP 토글(체크) */
+    .chk{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(47,109,246,.22);
+      background: rgba(47,109,246,.08);
+      color:#d7e4ff;
+      font-weight:900;
+      user-select:none;
+      cursor:pointer;
+      transition: background .12s var(--ease), border-color .12s var(--ease);
+    }
+    .chk:hover{ background: rgba(47,109,246,.12); border-color: rgba(47,109,246,.30); }
+    .chk input{ width:18px; height:18px; }
+
+    /* ✅ Progress bar */
+    .progressWrap{
+      width:100%;
+      height:8px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      display:none;
+    }
+    .progressBar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(46,204,113,.70));
+      transition: width .18s ease;
+    }
+    .progressText{
+      margin-top:8px;
+      font-size:12px;
+      color:#bcd1ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      display:none;
+    }
 
     .footer{
       margin-top:16px;
@@ -325,7 +440,12 @@
       <div style="height:10px;"></div>
 
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
-        <div style="width:100%;">
+        <div class="dropBadge" id="dropBadge" aria-hidden="true">
+          <span class="tick">✓</span>
+          <span class="txt" id="dropBadgeText">0</span>
+        </div>
+
+        <div class="dropInner">
           <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop PDF here<br/>or tap to upload</div>
           <div class="dropEmoji" aria-hidden="true">📄</div>
           <div class="hint" id="drop_hint">Tip: Large PDFs may take a moment on mobile.</div>
@@ -346,7 +466,25 @@
         </div>
       </div>
 
+      <div style="height:10px;"></div>
+
+      <!-- ✅ 전체 분리 ZIP 토글 -->
+      <div class="row">
+        <label class="chk" id="zipLabel" title="Split all pages to individual PDFs and download as ZIP">
+          <input type="checkbox" id="zipMode" disabled>
+          <span id="zip_text">Split ALL pages → ZIP</span>
+        </label>
+      </div>
+
       <div style="height:12px;"></div>
+
+      <!-- ✅ Progress bar (버튼 바로 위) -->
+      <div class="progressWrap" id="progressWrap" aria-hidden="true">
+        <div class="progressBar" id="progressBar"></div>
+      </div>
+      <div class="progressText" id="progressText"></div>
+
+      <div style="height:10px;"></div>
 
       <div class="row">
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download extracted PDF</button>
@@ -389,13 +527,20 @@
       lbl_range:"Pages to extract",
       range_ph:"e.g. 1-3, 5, 8-10",
       range_hint:"Use 1-based pages. Supports commas and ranges.",
+      zip:"Split ALL pages → ZIP",
+      zip_hint_on:"ZIP mode is ON. All pages will be split into separate PDFs.",
+      zip_hint_off:"Tip: Turn on ZIP to split all pages (one PDF per page).",
       dl:"⬇️ Download extracted PDF",
+      dl_zip:"⬇️ Download ZIP (all pages)",
       meta_idle:"<b>Status</b><br/>Upload a PDF to see page count.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Pages</b><br/>${p}`,
       msg_need:"Please upload a PDF first.",
       msg_bad:"Invalid page range. Example: 1-3,5,8-10",
       msg_ok:"✅ Download ready",
-      msg_fail:"Failed to process PDF."
+      msg_fail:"Failed to process PDF.",
+      err_zip_lib:"ZIP library is not ready.",
+      progress:(pct)=>`Processing… ${pct}%`,
+      done:"Done."
     },
     ko:{
       page_title:"PDF 분리",
@@ -412,13 +557,20 @@
       lbl_range:"추출할 페이지",
       range_ph:"예: 1-3, 5, 8-10",
       range_hint:"페이지는 1부터 시작. 콤마/구간 지원.",
+      zip:"전체 분리 → ZIP(페이지별 PDF)",
+      zip_hint_on:"ZIP 모드 ON: 전체 페이지를 1페이지씩 나눠 ZIP으로 저장합니다.",
+      zip_hint_off:"팁: ZIP을 켜면 전체 페이지를 자동 분리(페이지별 PDF)합니다.",
       dl:"⬇️ 선택 페이지 PDF 다운로드",
+      dl_zip:"⬇️ 전체 분리 ZIP 다운로드",
       meta_idle:"<b>상태</b><br/>PDF를 업로드하면 페이지 수가 표시돼요.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>페이지</b><br/>${p}`,
       msg_need:"먼저 PDF를 업로드해 주세요.",
       msg_bad:"페이지 범위가 올바르지 않아요. 예: 1-3,5,8-10",
       msg_ok:"✅ 다운로드 준비 완료",
-      msg_fail:"PDF 처리 실패"
+      msg_fail:"PDF 처리 실패",
+      err_zip_lib:"ZIP 라이브러리가 준비되지 않았어요.",
+      progress:(pct)=>`처리 중… ${pct}%`,
+      done:"완료"
     },
     es:{
       page_title:"Dividir PDF",
@@ -435,13 +587,20 @@
       lbl_range:"Páginas a extraer",
       range_ph:"ej. 1-3, 5, 8-10",
       range_hint:"Páginas desde 1. Comas y rangos.",
+      zip:"Dividir TODO → ZIP",
+      zip_hint_on:"ZIP activado. Se creará 1 PDF por página.",
+      zip_hint_off:"Consejo: Activa ZIP para dividir todas las páginas.",
       dl:"⬇️ Descargar PDF extraído",
+      dl_zip:"⬇️ Descargar ZIP (todas)",
       meta_idle:"<b>Estado</b><br/>Sube un PDF para ver páginas.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Páginas</b><br/>${p}`,
       msg_need:"Primero sube un PDF.",
       msg_bad:"Rango inválido. Ej: 1-3,5,8-10",
       msg_ok:"✅ Listo",
-      msg_fail:"Error al procesar PDF."
+      msg_fail:"Error al procesar PDF.",
+      err_zip_lib:"La librería ZIP no está lista.",
+      progress:(pct)=>`Procesando… ${pct}%`,
+      done:"Hecho."
     },
     ja:{
       page_title:"PDF 分割",
@@ -458,13 +617,20 @@
       lbl_range:"抽出するページ",
       range_ph:"例: 1-3, 5, 8-10",
       range_hint:"ページは1から。カンマ/範囲対応。",
+      zip:"全ページ → ZIP",
+      zip_hint_on:"ZIP ON: 1ページずつPDFに分割します。",
+      zip_hint_off:"ヒント: ZIPをONにすると全ページを分割します。",
       dl:"⬇️ 抽出PDFをダウンロード",
+      dl_zip:"⬇️ ZIPをダウンロード(全ページ)",
       meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>ページ</b><br/>${p}`,
       msg_need:"先にPDFをアップロードしてください。",
       msg_bad:"範囲が無効です。例: 1-3,5,8-10",
       msg_ok:"✅ 準備OK",
-      msg_fail:"PDFの処理に失敗しました。"
+      msg_fail:"PDFの処理に失敗しました。",
+      err_zip_lib:"ZIPライブラリの準備ができていません。",
+      progress:(pct)=>`処理中… ${pct}%`,
+      done:"完了"
     }
   };
 
@@ -496,6 +662,53 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  // ===== UI =====
+  const pickInput = $("pickInput");
+  const pickBtn = $("pickBtn");
+  const clearBtn = $("clearBtn");
+  const drop = $("drop");
+  const rangeEl = $("range");
+  const downloadBtn = $("downloadBtn");
+  const msgEl = $("msg");
+  const metaEl = $("meta");
+  const zipModeEl = $("zipMode");
+  const zipTextEl = $("zip_text");
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
+
+  // progress
+  const progressWrap = $("progressWrap");
+  const progressBar = $("progressBar");
+  const progressText = $("progressText");
+
+  function setMsg(text, cls){
+    msgEl.textContent = text || "";
+    msgEl.className = "msg " + (cls || "");
+  }
+
+  function showProgress(){
+    progressWrap.style.display = "block";
+    progressText.style.display = "block";
+    setProgress(0);
+  }
+  function hideProgress(){
+    progressWrap.style.display = "none";
+    progressText.style.display = "none";
+    progressBar.style.width = "0%";
+    progressText.textContent = "";
+  }
+  function setProgress(pct){
+    const p = Math.max(0, Math.min(100, Math.round(pct)));
+    progressBar.style.width = p + "%";
+    progressText.textContent = (p >= 100) ? t().done : t().progress(p);
+  }
+
+  // ===== state =====
+  let pdfBytes = null;
+  let pdfName = "document.pdf";
+  let pageCount = 0;
+  let busy = false;
+
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
@@ -510,41 +723,53 @@
     $("lang_label").textContent = t().lang_label;
 
     $("h_step1").textContent = t().h1;
-    $("pickBtn").textContent = t().pick;
-    $("clearBtn").textContent = t().clear;
+    pickBtn.textContent = t().pick;
+    clearBtn.textContent = t().clear;
     $("drop_title").innerHTML = t().drop_title;
     $("drop_hint").textContent = t().drop_hint;
 
     $("h_step2").textContent = t().h2;
     $("lbl_range").textContent = t().lbl_range;
-    $("range").placeholder = t().range_ph;
+    rangeEl.placeholder = t().range_ph;
     $("range_hint").textContent = t().range_hint;
 
-    $("downloadBtn").textContent = t().dl;
+    zipTextEl.textContent = t().zip;
+    downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
 
-    if(!pdfBytes) $("meta").innerHTML = t().meta_idle;
+    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
+    refreshZipHint();
+    refreshBadge();
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // ===== UI =====
-  const pickInput = $("pickInput");
-  const pickBtn = $("pickBtn");
-  const clearBtn = $("clearBtn");
-  const drop = $("drop");
-  const rangeEl = $("range");
-  const downloadBtn = $("downloadBtn");
-  const msgEl = $("msg");
-  const metaEl = $("meta");
-
-  function setMsg(text, cls){
-    msgEl.textContent = text || "";
-    msgEl.className = "msg " + (cls || "");
+  function refreshBadge(){
+    if(!dropBadge || !dropBadgeText) return;
+    if(pdfBytes && pageCount > 0){
+      dropBadge.style.display = "inline-flex";
+      dropBadgeText.textContent = `${pageCount}p`;
+      drop.classList.add("hasBadge");
+    }else{
+      dropBadge.style.display = "none";
+      dropBadgeText.textContent = "0";
+      drop.classList.remove("hasBadge");
+    }
   }
 
-  // ===== state =====
-  let pdfBytes = null;
-  let pdfName = "document.pdf";
-  let pageCount = 0;
+  function refreshZipHint(){
+    const hintEl = $("range_hint");
+    if(!hintEl) return;
+    hintEl.textContent = zipModeEl.checked ? t().zip_hint_on : t().range_hint;
+  }
+
+  function setBusy(on){
+    busy = !!on;
+    pickBtn.disabled = busy;
+    clearBtn.disabled = busy || !pdfBytes;
+    drop.style.pointerEvents = busy ? "none" : "auto";
+    rangeEl.disabled = busy || !pdfBytes || zipModeEl.checked;
+    zipModeEl.disabled = busy || !pdfBytes;
+    downloadBtn.disabled = busy || !pdfBytes;
+  }
 
   pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
   pickInput.addEventListener("change", (e)=>{
@@ -570,43 +795,70 @@
   });
 
   clearBtn.addEventListener("click", ()=>{
+    if(busy) return;
     pdfBytes = null; pdfName="document.pdf"; pageCount=0;
     rangeEl.value = "";
     rangeEl.disabled = true;
+    zipModeEl.checked = false;
+    zipModeEl.disabled = true;
     downloadBtn.disabled = true;
     clearBtn.disabled = true;
+    drop.classList.remove("active");
     metaEl.innerHTML = t().meta_idle;
     setMsg("", "");
+    hideProgress();
+    refreshZipHint();
+    refreshBadge();
+    downloadBtn.textContent = t().dl;
+  });
+
+  zipModeEl.addEventListener("change", ()=>{
+    if(!pdfBytes || busy) return;
+    rangeEl.disabled = zipModeEl.checked;
+    downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
+    refreshZipHint();
+    downloadBtn.disabled = false;
   });
 
   async function loadFile(file){
     try{
       setMsg("", "");
+      hideProgress();
+      setBusy(true);
+
       const buf = await file.arrayBuffer();
       const { PDFDocument } = window.PDFLib;
       const doc = await PDFDocument.load(buf, { ignoreEncryption:false });
+
       pdfBytes = buf;
       pdfName = file.name || "document.pdf";
       pageCount = doc.getPageCount();
 
+      drop.classList.add("active");
       rangeEl.disabled = false;
-      downloadBtn.disabled = false;
+      zipModeEl.disabled = false;
       clearBtn.disabled = false;
+      downloadBtn.disabled = false;
 
       metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
-      setMsg("", "");
+      refreshZipHint();
+      refreshBadge();
+      setBusy(false);
     }catch(err){
       pdfBytes = null; pageCount=0;
+      drop.classList.remove("active");
       rangeEl.disabled = true;
+      zipModeEl.disabled = true;
       downloadBtn.disabled = true;
       clearBtn.disabled = true;
       metaEl.innerHTML = t().meta_idle;
       setMsg(t().msg_fail, "err");
+      refreshBadge();
+      setBusy(false);
     }
   }
 
   function parseRanges(input, maxPage){
-    // returns 0-based page indices unique and sorted
     const s = String(input || "").replace(/\s+/g,"");
     if(!s) return null;
     const parts = s.split(",").filter(Boolean);
@@ -649,30 +901,93 @@
     return `${base}_split_${stamp}.${ext}`;
   }
 
+  function buildZipName(){
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+    return `${base}_pages_${stamp}.zip`;
+  }
+
+  async function splitAllToZip(){
+    if(!window.JSZip) throw new Error(t().err_zip_lib);
+
+    const { PDFDocument } = window.PDFLib;
+    const src = await PDFDocument.load(pdfBytes);
+
+    const zip = new window.JSZip();
+    const total = pageCount;
+
+    for(let i=0;i<total;i++){
+      setProgress((i / Math.max(1,total)) * 100);
+
+      const out = await PDFDocument.create();
+      const [p] = await out.copyPages(src, [i]);
+      out.addPage(p);
+      const bytes = await out.save({ useObjectStreams:true });
+
+      const num = String(i+1).padStart(3,"0");
+      zip.file(`page_${num}.pdf`, bytes);
+    }
+    setProgress(100);
+
+    const blob = await zip.generateAsync({ type:"blob" }, (meta)=> setProgress(meta.percent));
+    setProgress(100);
+    return blob;
+  }
+
   downloadBtn.addEventListener("click", async ()=>{
     try{
+      if(busy) return;
       if(!pdfBytes) return setMsg(t().msg_need, "err");
+
+      setMsg("", "");
+      showProgress();
+      setBusy(true);
+
+      if(zipModeEl.checked){
+        const zipBlob = await splitAllToZip();
+        downloadBlob(zipBlob, buildZipName());
+        setMsg(t().msg_ok, "ok");
+        setTimeout(hideProgress, 500);
+        setBusy(false);
+        return;
+      }
+
       const idx = parseRanges(rangeEl.value, pageCount);
-      if(!idx || idx.length === 0) return setMsg(t().msg_bad, "err");
+      if(!idx || idx.length === 0){
+        setBusy(false);
+        hideProgress();
+        return setMsg(t().msg_bad, "err");
+      }
 
       const { PDFDocument } = window.PDFLib;
       const src = await PDFDocument.load(pdfBytes);
       const out = await PDFDocument.create();
 
-      const copied = await out.copyPages(src, idx);
-      copied.forEach(p=>out.addPage(p));
+      const total = idx.length;
+      for(let i=0;i<total;i++){
+        const copied = await out.copyPages(src, [idx[i]]);
+        copied.forEach(p=>out.addPage(p));
+        setProgress(((i+1) / Math.max(1,total)) * 100);
+      }
 
       const bytes = await out.save({ useObjectStreams:true });
       const blob = new Blob([bytes], { type:"application/pdf" });
       downloadBlob(blob, buildName("pdf"));
+
       setMsg(t().msg_ok, "ok");
+      setTimeout(hideProgress, 500);
+      setBusy(false);
     }catch(e){
+      setBusy(false);
+      hideProgress();
       setMsg(t().msg_fail, "err");
     }
   });
 
   // init
   setLang(LANG);
+  zipModeEl.disabled = true;
+  refreshBadge();
 })();
 </script>
 </body>
