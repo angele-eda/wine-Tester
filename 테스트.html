@@ -202,33 +202,23 @@
       box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
     }
 
-    /* ✅ 배지 뜰 때만 여백 조금 */
-    .drop.hasBadge{ padding-top:22px; }
-
-    /* ✅ 드롭박스 내용 래퍼 */
+    /* ✅ 텍스트 겹침 방지: 배지 뜰 때 오른쪽 여백 자동 확보 */
     .dropInner{ width:100%; }
-
-    /* ✅ 제목이 배지 영역 피하게(겹침 방지) */
-    #drop_title{
-      display:inline-block;
-      max-width: calc(100% - 90px);
-      margin: 0 auto;
-      text-wrap: balance;
-    }
+    .drop.hasBadge .dropInner{ padding-right: 86px; }
 
     /* ✅ 우측 상단 배지(페이지 수) — 더 작게 */
     .dropBadge{
       position:absolute;
-      top:12px;
-      right:12px;
+      top:10px;
+      right:10px;
       display:none;
       align-items:center;
-      gap:5px;
-      padding:4px 8px;
+      gap:6px;
+      padding:6px 8px;
       border-radius:999px;
-      border:1px solid rgba(46, 204, 113, .35);
-      background: rgba(46, 204, 113, .14);
-      box-shadow: 0 6px 14px rgba(0,0,0,.22);
+      border:1px solid rgba(46, 204, 113, .32);
+      background: rgba(46, 204, 113, .12);
+      box-shadow: 0 10px 22px rgba(0,0,0,.28);
       color:#e9eef7;
       font-weight:900;
       letter-spacing:-0.2px;
@@ -239,25 +229,20 @@
       transform: translateZ(0);
     }
     .dropBadge .tick{
-      width:13px;
-      height:13px;
-      border-radius:4px;
+      width:16px;
+      height:16px;
+      border-radius:6px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       background: rgba(46, 204, 113, .92);
       color:#0b0f17;
-      font-weight:900;
-      font-size:9px;
+      font-weight:1000;
+      font-size:12px;
       line-height:1;
       box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
     }
-    .dropBadge .txt{
-      font-size:11px;
-      line-height:1;
-      font-weight:900;
-      opacity:.95;
-    }
+    .dropBadge .txt{ font-size:11px; font-weight:900; opacity:.95; }
 
     .dropEmoji{
       font-size:42px;
@@ -366,7 +351,7 @@
     .chk:hover{ background: rgba(47,109,246,.12); border-color: rgba(47,109,246,.30); }
     .chk input{ width:18px; height:18px; }
 
-    /* ✅ Progress bar */
+    /* ✅ Progress bar (버튼 바로 위) */
     .progressWrap{
       width:100%;
       height:8px;
@@ -440,7 +425,7 @@
       <div style="height:10px;"></div>
 
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
-        <div class="dropBadge" id="dropBadge" aria-hidden="true">
+        <div class="dropBadge" id="dropBadge">
           <span class="tick">✓</span>
           <span class="txt" id="dropBadgeText">0</span>
         </div>
@@ -468,7 +453,6 @@
 
       <div style="height:10px;"></div>
 
-      <!-- ✅ 전체 분리 ZIP 토글 -->
       <div class="row">
         <label class="chk" id="zipLabel" title="Split all pages to individual PDFs and download as ZIP">
           <input type="checkbox" id="zipMode" disabled>
@@ -478,7 +462,6 @@
 
       <div style="height:12px;"></div>
 
-      <!-- ✅ Progress bar (버튼 바로 위) -->
       <div class="progressWrap" id="progressWrap" aria-hidden="true">
         <div class="progressBar" id="progressBar"></div>
       </div>
@@ -510,7 +493,6 @@
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
 
-  // ===== i18n =====
   const STR = {
     en:{
       page_title:"Split PDF",
@@ -529,7 +511,6 @@
       range_hint:"Use 1-based pages. Supports commas and ranges.",
       zip:"Split ALL pages → ZIP",
       zip_hint_on:"ZIP mode is ON. All pages will be split into separate PDFs.",
-      zip_hint_off:"Tip: Turn on ZIP to split all pages (one PDF per page).",
       dl:"⬇️ Download extracted PDF",
       dl_zip:"⬇️ Download ZIP (all pages)",
       meta_idle:"<b>Status</b><br/>Upload a PDF to see page count.",
@@ -559,7 +540,6 @@
       range_hint:"페이지는 1부터 시작. 콤마/구간 지원.",
       zip:"전체 분리 → ZIP(페이지별 PDF)",
       zip_hint_on:"ZIP 모드 ON: 전체 페이지를 1페이지씩 나눠 ZIP으로 저장합니다.",
-      zip_hint_off:"팁: ZIP을 켜면 전체 페이지를 자동 분리(페이지별 PDF)합니다.",
       dl:"⬇️ 선택 페이지 PDF 다운로드",
       dl_zip:"⬇️ 전체 분리 ZIP 다운로드",
       meta_idle:"<b>상태</b><br/>PDF를 업로드하면 페이지 수가 표시돼요.",
@@ -589,7 +569,6 @@
       range_hint:"Páginas desde 1. Comas y rangos.",
       zip:"Dividir TODO → ZIP",
       zip_hint_on:"ZIP activado. Se creará 1 PDF por página.",
-      zip_hint_off:"Consejo: Activa ZIP para dividir todas las páginas.",
       dl:"⬇️ Descargar PDF extraído",
       dl_zip:"⬇️ Descargar ZIP (todas)",
       meta_idle:"<b>Estado</b><br/>Sube un PDF para ver páginas.",
@@ -619,7 +598,6 @@
       range_hint:"ページは1から。カンマ/範囲対応。",
       zip:"全ページ → ZIP",
       zip_hint_on:"ZIP ON: 1ページずつPDFに分割します。",
-      zip_hint_off:"ヒント: ZIPをONにすると全ページを分割します。",
       dl:"⬇️ 抽出PDFをダウンロード",
       dl_zip:"⬇️ ZIPをダウンロード(全ページ)",
       meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
@@ -662,7 +640,6 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
-  // ===== UI =====
   const pickInput = $("pickInput");
   const pickBtn = $("pickBtn");
   const clearBtn = $("clearBtn");
@@ -676,7 +653,6 @@
   const dropBadge = $("dropBadge");
   const dropBadgeText = $("dropBadgeText");
 
-  // progress
   const progressWrap = $("progressWrap");
   const progressBar = $("progressBar");
   const progressText = $("progressText");
@@ -703,7 +679,6 @@
     progressText.textContent = (p >= 100) ? t().done : t().progress(p);
   }
 
-  // ===== state =====
   let pdfBytes = null;
   let pdfName = "document.pdf";
   let pageCount = 0;
@@ -731,7 +706,6 @@
     $("h_step2").textContent = t().h2;
     $("lbl_range").textContent = t().lbl_range;
     rangeEl.placeholder = t().range_ph;
-    $("range_hint").textContent = t().range_hint;
 
     zipTextEl.textContent = t().zip;
     downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
@@ -768,7 +742,7 @@
     drop.style.pointerEvents = busy ? "none" : "auto";
     rangeEl.disabled = busy || !pdfBytes || zipModeEl.checked;
     zipModeEl.disabled = busy || !pdfBytes;
-    downloadBtn.disabled = busy || !pdfBytes;
+    downloadBtn.disabled = busy || !pdfBytes; // ✅ pdf만 있으면 버튼은 켜두고, 입력검증은 클릭 시 처리
   }
 
   pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
@@ -803,7 +777,7 @@
     zipModeEl.disabled = true;
     downloadBtn.disabled = true;
     clearBtn.disabled = true;
-    drop.classList.remove("active");
+    drop.classList.remove("active","hasBadge");
     metaEl.innerHTML = t().meta_idle;
     setMsg("", "");
     hideProgress();
@@ -817,7 +791,6 @@
     rangeEl.disabled = zipModeEl.checked;
     downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
     refreshZipHint();
-    downloadBtn.disabled = false;
   });
 
   async function loadFile(file){
@@ -846,7 +819,7 @@
       setBusy(false);
     }catch(err){
       pdfBytes = null; pageCount=0;
-      drop.classList.remove("active");
+      drop.classList.remove("active","hasBadge");
       rangeEl.disabled = true;
       zipModeEl.disabled = true;
       downloadBtn.disabled = true;
@@ -912,10 +885,9 @@
 
     const { PDFDocument } = window.PDFLib;
     const src = await PDFDocument.load(pdfBytes);
-
     const zip = new window.JSZip();
-    const total = pageCount;
 
+    const total = pageCount;
     for(let i=0;i<total;i++){
       setProgress((i / Math.max(1,total)) * 100);
 
@@ -929,7 +901,9 @@
     }
     setProgress(100);
 
-    const blob = await zip.generateAsync({ type:"blob" }, (meta)=> setProgress(meta.percent));
+    const blob = await zip.generateAsync({ type:"blob" }, (meta)=>{
+      setProgress(meta.percent);
+    });
     setProgress(100);
     return blob;
   }
@@ -984,7 +958,6 @@
     }
   });
 
-  // init
   setLang(LANG);
   zipModeEl.disabled = true;
   refreshBadge();
