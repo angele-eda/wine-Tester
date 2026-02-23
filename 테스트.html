@@ -315,50 +315,6 @@
     }
     .btn.secondary:hover{ background: rgba(47,109,246,.16); }
 
-    /* ✅ Progress bar (NEW) */
-    .progressWrap{
-      margin-top:10px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius:14px;
-      padding:10px 12px;
-      display:none;
-    }
-    .progressTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-      flex-wrap:wrap;
-    }
-    .progressLabel{
-      font-size:12px;
-      font-weight:900;
-      color:#dbe7ff;
-      letter-spacing:-0.2px;
-    }
-    .progressPct{
-      font-size:12px;
-      font-weight:900;
-      color:#9fb0ca;
-      letter-spacing:-0.2px;
-    }
-    .progressBar{
-      height:10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      overflow:hidden;
-    }
-    .progressFill{
-      height:100%;
-      width:0%;
-      border-radius:999px;
-      background: linear-gradient(90deg, rgba(47,109,246,.9), rgba(46,204,113,.85));
-      transition: width .12s ease;
-    }
-
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row > * { flex:1; min-width:160px; }
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
@@ -395,7 +351,7 @@
       align-items:center;
       gap:8px;
       white-space:nowrap;
-      transition: transform .08s ease, background .12s ease, opacity .12s ease, box-shadow .12s ease, border-color .12s ease;
+      transition: transform .08s ease, background .12s ease, opacity .12s ease;
     }
     .miniBtn:hover{ background:rgba(255,255,255,.10); }
     .miniBtn:active{ transform: scale(.99); }
@@ -403,14 +359,6 @@
 
     .miniBtn.secondary{
       background: rgba(255,255,255,.04);
-    }
-
-    /* ✅ Open list active only when 2+ */
-    .miniBtn.secondary.active{
-      background: linear-gradient(135deg,#2563eb,#1d4ed8);
-      color:#fff;
-      border: 1px solid rgba(59,130,246,.60);
-      box-shadow: 0 0 12px rgba(37,99,235,.32);
     }
 
     .preview{
@@ -460,28 +408,40 @@
       flex-wrap:wrap;
       margin-bottom:10px;
     }
+
+    /* ✅ 2개 이상일 때 옵션 존재감 강화 */
+    .list.isMultiActive{
+      border-top:1px solid rgba(47,109,246,.35);
+      background: rgba(47,109,246,.05);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
     .pill{
-      font-size:12px; color:#b8c6dc; border:var(--border);
+      font-size:12px; color:#d7e4ff; border:1px solid rgba(47,109,246,.28);
       padding:7px 10px; border-radius:999px;
-      background:rgba(255,255,255,.04);
+      background:rgba(47,109,246,.10);
       display:inline-flex; gap:8px; align-items:center;
       white-space:nowrap;
-      font-weight:700;
+      font-weight:900;
+      letter-spacing:-0.2px;
     }
     .toggle{
       display:flex; gap:8px; align-items:center; flex-wrap:wrap;
     }
     .chk{
       display:inline-flex; gap:8px; align-items:center;
-      border:var(--border);
-      background:rgba(255,255,255,.04);
+      border:1px solid rgba(47,109,246,.24);
+      background:rgba(47,109,246,.08);
       padding:8px 10px; border-radius:12px;
       cursor:pointer; user-select:none;
-      font-size:12px; color:#cfe0ff;
+      font-size:12px; color:#d7e4ff;
       white-space:nowrap;
-      transition: opacity .12s ease;
-      font-weight:700;
+      transition: opacity .12s ease, background .12s ease;
+      font-weight:900;
+      letter-spacing:-0.2px;
     }
+    .chk:hover{ background: rgba(47,109,246,.12); }
     .chk input{ width:16px; height:16px; }
 
     /* ✅ 목록이 길어져도 페이지가 과하게 늘어나지 않게: 토글 + 스크롤 */
@@ -503,7 +463,22 @@
       background:rgba(255,255,255,.02);
       margin-bottom:8px;
       overflow:hidden;
+      transition: background .12s ease, border-color .12s ease, transform .08s ease;
+      cursor:pointer;
     }
+    .fileRow:hover{
+      background: rgba(255,255,255,.04);
+    }
+    /* ✅ 선택된 row 활성화(존재감) */
+    .fileRow.active{
+      background: rgba(47,109,246,.14);
+      border-color: rgba(47,109,246,.35);
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+    }
+    .fileRow.active .fileName{
+      color:#ffffff;
+    }
+
     .fileName{
       flex:1; min-width:0;
       font-size:13px; color:#dbe7ff;
@@ -570,6 +545,32 @@
       font-size:12px;
       line-height:1.55;
     }
+
+    /* ✅ REAL Progress bar */
+    .progressWrap{
+      margin-top:12px;
+      width:100%;
+      height:8px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      display:none;
+    }
+    .progressBar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(46,204,113,.70));
+      transition: width .18s ease;
+    }
+    .progressText{
+      margin-top:8px;
+      font-size:12px;
+      color:#bcd1ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      display:none;
+    }
   </style>
 </head>
 
@@ -624,6 +625,7 @@
           </div>
         </div>
 
+        <!-- ✅ Multi list -->
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
@@ -713,20 +715,16 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download"></h2>
+
+        <!-- ✅ REAL Progress -->
+        <div class="progressWrap" id="progressWrap" aria-hidden="true">
+          <div class="progressBar" id="progressBar"></div>
+        </div>
+        <div class="progressText" id="progressText"></div>
+
         <button class="btn" id="convert" disabled></button>
         <div style="height:10px;"></div>
         <button class="btn secondary" id="reset" disabled></button>
-
-        <!-- ✅ Progress bar UI (NEW) -->
-        <div class="progressWrap" id="progressWrap" aria-live="polite">
-          <div class="progressTop">
-            <div class="progressLabel" id="progressLabel">Processing…</div>
-            <div class="progressPct" id="progressPct">0%</div>
-          </div>
-          <div class="progressBar">
-            <div class="progressFill" id="progressFill"></div>
-          </div>
-        </div>
 
         <div class="detailsBox">
           <details>
@@ -798,17 +796,15 @@
 
   const langSelectEl = $("langSelect");
 
-  // ✅ NEW: Home + Secure pill
   const homeBtn = $("homeBtn");
   const homeBtnText = $("homeBtnText");
   const securePillText = $("securePillText");
   const pageTitleEl = $("pageTitle");
 
-  // ✅ Progress UI refs (NEW)
+  // ✅ Progress
   const progressWrap = $("progressWrap");
-  const progressLabelEl = $("progressLabel");
-  const progressPctEl = $("progressPct");
-  const progressFillEl = $("progressFill");
+  const progressBar  = $("progressBar");
+  const progressText = $("progressText");
 
   $("year").textContent = new Date().getFullYear();
 
@@ -864,6 +860,9 @@
       list_close:"Close list",
       badge_files: (n)=> `${n} file(s)`,
 
+      progress: (done,total)=> `Processing ${done}/${total}…`,
+      progress_done: "Done.",
+
       msg_loading: "Loading…",
       msg_ready: "Ready! Click Convert & Download.",
       msg_png_q: "PNG is lossless; quality setting does not apply.",
@@ -880,11 +879,7 @@
         `Name: <b>${name}</b><br/>Type: <b>${type}</b><br/>Size: <b>${size}</b><br/>Resolution: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Name: <b>${name}</b><br/>Type: <b>application/pdf</b><br/>Size: <b>${size}</b>`,
-      multi_count: (n) => `Selected: ${n} file(s)`,
-
-      // ✅ Progress text (NEW)
-      prog_processing: "Processing…",
-      prog_done: "Done!"
+      multi_count: (n) => `Selected: ${n} file(s)`
     },
     ko: {
       pageTitle: "Convert",
@@ -937,6 +932,9 @@
       list_close:"목록 닫기",
       badge_files: (n)=> `${n}개`,
 
+      progress: (done,total)=> `처리 중 ${done}/${total}…`,
+      progress_done: "완료",
+
       msg_loading: "로딩 중…",
       msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
       msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
@@ -953,11 +951,7 @@
         `파일명: <b>${name}</b><br/>형식: <b>${type}</b><br/>크기: <b>${size}</b><br/>해상도: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `파일명: <b>${name}</b><br/>형식: <b>application/pdf</b><br/>크기: <b>${size}</b>`,
-      multi_count: (n) => `선택됨: ${n}개`,
-
-      // ✅ Progress text (NEW)
-      prog_processing: "처리 중…",
-      prog_done: "완료!"
+      multi_count: (n) => `선택됨: ${n}개`
     },
     ja: {
       pageTitle: "Convert",
@@ -1010,6 +1004,9 @@
       list_close:"リストを閉じる",
       badge_files: (n)=> `${n}件`,
 
+      progress: (done,total)=> `処理中 ${done}/${total}…`,
+      progress_done: "完了",
+
       msg_loading: "読み込み中…",
       msg_ready: "準備完了！変換 / 結合を押してください。",
       msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
@@ -1026,11 +1023,7 @@
         `ファイル名: <b>${name}</b><br/>形式: <b>${type}</b><br/>サイズ: <b>${size}</b><br/>解像度: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `ファイル名: <b>${name}</b><br/>形式: <b>application/pdf</b><br/>サイズ: <b>${size}</b>`,
-      multi_count: (n) => `選択: ${n}件`,
-
-      // ✅ Progress text (NEW)
-      prog_processing: "処理中…",
-      prog_done: "完了！"
+      multi_count: (n) => `選択: ${n}件`
     },
     es: {
       pageTitle: "Convert",
@@ -1083,6 +1076,9 @@
       list_close:"Cerrar lista",
       badge_files: (n)=> `${n}`,
 
+      progress: (done,total)=> `Procesando ${done}/${total}…`,
+      progress_done: "Hecho.",
+
       msg_loading: "Cargando…",
       msg_ready: "¡Listo! Pulsa Convertir / Unir.",
       msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
@@ -1099,11 +1095,7 @@
         `Nombre: <b>${name}</b><br/>Tipo: <b>${type}</b><br/>Tamaño: <b>${size}</b><br/>Resolución: <b>${w} × ${h}</b>`,
       meta_pdf: (name, size) =>
         `Nombre: <b>${name}</b><br/>Tipo: <b>application/pdf</b><br/>Tamaño: <b>${size}</b>`,
-      multi_count: (n) => `Seleccionados: ${n}`,
-
-      // ✅ Progress text (NEW)
-      prog_processing: "Procesando…",
-      prog_done: "¡Listo!"
+      multi_count: (n) => `Seleccionados: ${n}`
     }
   };
 
@@ -1149,30 +1141,6 @@
   function setMessage(text, type){
     msg.textContent = text || "";
     msg.className = "msg " + (type || "");
-  }
-
-  // ✅ Progress helpers (NEW)
-  function showProgress(label, pct){
-    const t = STR[LANG] || STR.en;
-    if(!progressWrap) return;
-    progressWrap.style.display = "block";
-    if(progressLabelEl) progressLabelEl.textContent = label || t.prog_processing;
-
-    const p = Math.max(0, Math.min(100, Number.isFinite(pct) ? pct : 0));
-    if(progressPctEl) progressPctEl.textContent = `${Math.round(p)}%`;
-    if(progressFillEl) progressFillEl.style.width = `${p}%`;
-  }
-  function hideProgress(){
-    if(!progressWrap) return;
-    progressWrap.style.display = "none";
-    if(progressFillEl) progressFillEl.style.width = "0%";
-    if(progressPctEl) progressPctEl.textContent = "0%";
-  }
-  function doneProgress(){
-    const t = STR[LANG] || STR.en;
-    showProgress(t.prog_done, 100);
-    // 짧게 보여주고 자동 숨김
-    setTimeout(()=> hideProgress(), 900);
   }
 
   function escapeHtml(s){
@@ -1231,6 +1199,26 @@
   function syncLangSelect(){
     if(!langSelectEl) return;
     langSelectEl.value = LANG;
+  }
+
+  // ✅ Progress helpers (real)
+  function showProgress(){
+    if(progressWrap) progressWrap.style.display = "block";
+    if(progressText) progressText.style.display = "block";
+    setProgress(0, 1);
+  }
+  function hideProgress(){
+    if(progressWrap) progressWrap.style.display = "none";
+    if(progressText) progressText.style.display = "none";
+    if(progressBar) progressBar.style.width = "0%";
+    if(progressText) progressText.textContent = "";
+  }
+  function setProgress(done, total){
+    const t = STR[LANG] || STR.en;
+    const safeTotal = Math.max(1, total || 1);
+    const pct = Math.max(0, Math.min(100, Math.round((done / safeTotal) * 100)));
+    if(progressBar) progressBar.style.width = pct + "%";
+    if(progressText) progressText.textContent = (done >= safeTotal) ? t.progress_done : t.progress(done, safeTotal);
   }
 
   // =========================
@@ -1376,12 +1364,12 @@
   function renderFileList(){
     if(files.length <= 1){
       multiPanel.style.display = "none";
+      multiPanel.classList.remove("isMultiActive");
       setListOpen(false);
-      if(listToggleBtn) listToggleBtn.classList.remove("active");
     } else {
       multiPanel.style.display = "block";
+      multiPanel.classList.add("isMultiActive");
       if(!isListOpen) setListOpen(false);
-      if(listToggleBtn) listToggleBtn.classList.toggle("active", files.length >= 2);
     }
 
     const t = STR[LANG] || STR.en;
@@ -1390,7 +1378,7 @@
     fileListEl.innerHTML = "";
     files.forEach((item, idx) => {
       const row = document.createElement("div");
-      row.className = "fileRow";
+      row.className = "fileRow" + (idx === activeIndex ? " active" : "");
 
       const name = document.createElement("div");
       name.className = "fileName";
@@ -1429,6 +1417,7 @@
 
       row.addEventListener("click", ()=>{
         activeIndex = idx;
+        renderFileList(); // ✅ active 색 즉시 갱신
         previewActive();
       });
 
@@ -1785,8 +1774,7 @@
     return { blob, canvas, w: canvas.width, h: canvas.height };
   }
 
-  // ✅ progressCb(current, total, label?) 지원 (NEW)
-  async function imagesToSinglePDF(imageItems, progressCb){
+  async function imagesToSinglePDF(imageItems){
     const t = STR[LANG] || STR.en;
     if(!window.PDFLib) throw new Error(t.err_pdf_lib);
 
@@ -1795,11 +1783,9 @@
 
     const total = imageItems.length;
     let done = 0;
+    setProgress(done, total);
 
     for(const it of imageItems){
-      done++;
-      progressCb && progressCb(done, total, `${t.prog_processing} (${done}/${total})`);
-
       const { canvas, w, h } = await imageToCanvasBlob(it.file, "image/png", 1);
       const pngBlob = await new Promise((resolve)=> canvas.toBlob(resolve, "image/png"));
       if(!pngBlob) throw new Error(t.err_convert);
@@ -1809,13 +1795,16 @@
 
       const page = pdfDoc.addPage([w, h]);
       page.drawImage(imgEmbed, { x:0, y:0, width:w, height:h });
+
+      done++;
+      setProgress(done, total);
     }
 
     const bytes = await pdfDoc.save();
     return new Blob([bytes], { type:"application/pdf" });
   }
 
-  async function mergePDFs(pdfItems, normalizeA4, progressCb){
+  async function mergePDFs(pdfItems, normalizeA4){
     const t = STR[LANG] || STR.en;
     if(!window.PDFLib) throw new Error(t.err_pdf_lib);
 
@@ -1823,39 +1812,55 @@
     const outDoc = await PDFDocument.create();
     const [a4w, a4h] = PageSizes.A4;
 
-    const total = pdfItems.length;
-    let done = 0;
+    // ✅ 1) preload & count pages (real progress)
+    const loaded = [];
+    let totalPages = 0;
 
     for(const it of pdfItems){
-      done++;
-      progressCb && progressCb(done, total, `${t.prog_processing} (${done}/${total})`);
-
       const f = it.file;
       try{
         const buf = await f.arrayBuffer();
         const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: false });
-
-        if(normalizeA4){
-          const srcPages = srcDoc.getPages();
-          for(let i=0;i<srcPages.length;i++){
-            const embedded = await outDoc.embedPage(srcPages[i]);
-            const w = embedded.width;
-            const h = embedded.height;
-            const scale = Math.min(a4w / w, a4h / h);
-            const drawW = w * scale;
-            const drawH = h * scale;
-            const x = (a4w - drawW) / 2;
-            const y = (a4h - drawH) / 2;
-
-            const page = outDoc.addPage([a4w, a4h]);
-            page.drawPage(embedded, { x, y, width: drawW, height: drawH });
-          }
-        }else{
-          const copied = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-          copied.forEach(p => outDoc.addPage(p));
-        }
+        const pageCount = srcDoc.getPageCount();
+        totalPages += pageCount;
+        loaded.push({ srcDoc, pageCount });
       }catch(e){
         throw new Error(t.err_pdf_locked);
+      }
+    }
+
+    let donePages = 0;
+    setProgress(donePages, Math.max(1,totalPages));
+
+    // ✅ 2) process pages with real progress
+    for(const pack of loaded){
+      const srcDoc = pack.srcDoc;
+
+      if(normalizeA4){
+        const srcPages = srcDoc.getPages();
+        for(let i=0;i<srcPages.length;i++){
+          const embedded = await outDoc.embedPage(srcPages[i]);
+          const w = embedded.width;
+          const h = embedded.height;
+          const scale = Math.min(a4w / w, a4h / h);
+          const drawW = w * scale;
+          const drawH = h * scale;
+          const x = (a4w - drawW) / 2;
+          const y = (a4h - drawH) / 2;
+
+          const page = outDoc.addPage([a4w, a4h]);
+          page.drawPage(embedded, { x, y, width: drawW, height: drawH });
+
+          donePages++;
+          setProgress(donePages, totalPages);
+        }
+      }else{
+        const copied = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copied.forEach(p => {
+          outDoc.addPage(p);
+          donePages++;
+          setProgress(donePages, totalPages);
+        });
       }
     }
 
@@ -1863,17 +1868,15 @@
     return new Blob([bytes], { type:"application/pdf" });
   }
 
-  async function convertImagesToZIP(imageItems, outMime, quality, progressCb){
+  async function convertImagesToZIP(imageItems, outMime, quality){
     if(!window.JSZip) throw new Error("ZIP library is not ready.");
     const zip = new window.JSZip();
 
     const total = imageItems.length;
     let done = 0;
+    setProgress(done, total);
 
     for(const it of imageItems){
-      done++;
-      progressCb && progressCb(done, total, `Processing… (${done}/${total})`);
-
       const f = it.file;
       const { blob } = await imageToCanvasBlob(f, outMime, quality);
 
@@ -1881,33 +1884,32 @@
       const base = (f.name || "image").replace(/\.[^.]+$/, "");
       const stamp = new Date().toISOString().replace(/[:.]/g,"-");
       zip.file(`${base}_${stamp}.${ext}`, blob);
+
+      done++;
+      setProgress(done, total);
     }
 
     return await zip.generateAsync({ type:"blob" });
   }
 
-  async function zipOriginalPDFs(pdfItems, progressCb){
+  async function zipOriginalPDFs(pdfItems){
     if(!window.JSZip) throw new Error("ZIP library is not ready.");
     const zip = new window.JSZip();
 
     const total = pdfItems.length;
     let done = 0;
+    setProgress(done, total);
 
     for(const it of pdfItems){
-      done++;
-      progressCb && progressCb(done, total, `Processing… (${done}/${total})`);
-
       const f = it.file;
       const buf = await f.arrayBuffer();
       zip.file(f.name || buildName("file","pdf"), buf);
+
+      done++;
+      setProgress(done, total);
     }
 
     return await zip.generateAsync({ type:"blob" });
-  }
-
-  function progressCb(done, total, label){
-    const pct = total ? (done / total) * 100 : 0;
-    showProgress(label, pct);
   }
 
   async function onConvert(){
@@ -1919,7 +1921,7 @@
 
     btnConvert.disabled = true;
     setMessage(t.msg_loading, "");
-    showProgress(t.prog_processing, 2);
+    showProgress();
 
     const outMime = selFormat.value;
     const quality = parseFloat(selQuality.value);
@@ -1931,33 +1933,33 @@
       if(outMime === "application/pdf"){
         if(pdfs.length >= 1){
           if(pdfs.length >= 2 && zipModeEl.checked){
-            showProgress(t.prog_processing, 5);
-            const zipBlob = await zipOriginalPDFs(pdfs, progressCb);
+            const zipBlob = await zipOriginalPDFs(pdfs);
             const name = buildName("pdf_files", "zip");
             downloadBlob(zipBlob, name);
             setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
-            doneProgress();
+            setProgress(1,1);
+            setTimeout(hideProgress, 450);
             btnConvert.disabled = false;
             return;
           }
 
-          showProgress(t.prog_processing, 5);
-          const merged = await mergePDFs(pdfs, !!a4ModeEl.checked, progressCb);
+          const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
           const name = buildName("merged_pdf", "pdf");
           downloadBlob(merged, name);
           setMessage(t.dl_start(name, humanSize(merged.size)), "ok");
-          doneProgress();
+          setProgress(1,1);
+          setTimeout(hideProgress, 450);
           btnConvert.disabled = false;
           return;
         }
 
         if(images.length >= 1){
-          showProgress(t.prog_processing, 5);
-          const pdfBlob = await imagesToSinglePDF(images, progressCb);
+          const pdfBlob = await imagesToSinglePDF(images);
           const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
           downloadBlob(pdfBlob, name);
           setMessage(t.dl_start(name, humanSize(pdfBlob.size)), "ok");
-          doneProgress();
+          setProgress(1,1);
+          setTimeout(hideProgress, 450);
           btnConvert.disabled = false;
           return;
         }
@@ -1970,25 +1972,27 @@
       }
 
       if(images.length >= 2 && zipModeEl.checked){
-        showProgress(t.prog_processing, 5);
-        const zipBlob = await convertImagesToZIP(images, outMime, quality, progressCb);
+        const zipBlob = await convertImagesToZIP(images, outMime, quality);
         const name = buildName("converted_images", "zip");
         downloadBlob(zipBlob, name);
         setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
-        doneProgress();
+        setProgress(1,1);
+        setTimeout(hideProgress, 450);
         btnConvert.disabled = false;
         return;
       }
 
-      // single image convert
-      showProgress(t.prog_processing, 30);
+      // single image convert (real 1-step)
+      setProgress(0,1);
       const first = images[0].file;
       const { blob } = await imageToCanvasBlob(first, outMime, quality);
-      showProgress(t.prog_processing, 85);
+      setProgress(1,1);
+
       const name = buildName(first.name, mimeToExt(outMime));
       downloadBlob(blob, name);
       setMessage(t.dl_start(name, humanSize(blob.size)), "ok");
-      doneProgress();
+
+      setTimeout(hideProgress, 450);
       btnConvert.disabled = false;
 
     }catch(e){
