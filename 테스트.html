@@ -15,6 +15,8 @@
 
   <!-- PDF-lib (local in browser) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- JSZip (for ZIP download) -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
   <style>
     :root{
@@ -276,32 +278,31 @@
     }
     .meta b{ color:#e9eef7; }
 
-    /* ===== Progress Bar (NEW) ===== */
-    .progressWrap{ margin-top:12px; }
-    .progressBar{
+    /* ===== Progress (bar + %) ===== */
+    .progressWrap{
+      margin-top:12px;
       width:100%;
       height:8px;
-      background:rgba(255,255,255,.08);
-      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
       overflow:hidden;
-      position:relative;
       border: 1px solid rgba(255,255,255,.10);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+      display:none;
     }
-    .progressFill{
+    .progressBar{
       height:100%;
       width:0%;
-      background: linear-gradient(90deg, rgba(47,109,246,.90), rgba(46,204,113,.70));
-      border-radius:999px;
-      transition: width .25s var(--ease);
+      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(46,204,113,.70));
+      transition: width .18s ease;
     }
     .progressText{
-      margin-top:6px;
+      margin-top:8px;
       font-size:12px;
-      color:#9fb0ca;
-      text-align:right;
+      color:#bcd1ff;
       font-weight:900;
       letter-spacing:-0.2px;
+      display:none;
+      text-align:right;
     }
 
     .footer{
@@ -374,22 +375,26 @@
         </div>
       </div>
 
+      <!-- Progress -->
+      <div class="progressWrap" id="progressWrap" aria-hidden="true">
+        <div class="progressBar" id="progressBar"></div>
+      </div>
+      <div class="progressText" id="progressText"></div>
+
       <div style="height:12px;"></div>
 
       <div class="row">
         <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download extracted PDF</button>
       </div>
 
+      <div style="height:10px;"></div>
+
+      <div class="row">
+        <button class="btn secondary" id="splitAllBtn" type="button" disabled>📦 Split all pages (ZIP)</button>
+      </div>
+
       <div style="height:12px;"></div>
       <div class="meta" id="meta"><b>Status</b><br/>Upload a PDF to see page count.</div>
-
-      <!-- Progress Bar (NEW) -->
-      <div class="progressWrap" id="progressWrap" hidden>
-        <div class="progressBar">
-          <div class="progressFill" id="progressFill"></div>
-        </div>
-        <div class="progressText" id="progressText">0%</div>
-      </div>
     </div>
 
     <div class="footer">
@@ -407,23 +412,6 @@
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
-  // ===== progress (NEW) =====
-  const progressWrap = $("progressWrap");
-  const progressFill = $("progressFill");
-  const progressText = $("progressText");
-
-  function setProgress(p){
-    const v = Math.max(0, Math.min(100, Math.round(p)));
-    progressWrap.hidden = false;
-    progressFill.style.width = v + "%";
-    progressText.textContent = v + "%";
-  }
-  function resetProgress(){
-    progressFill.style.width = "0%";
-    progressText.textContent = "0%";
-    progressWrap.hidden = true;
-  }
 
   // ===== i18n =====
   const STR = {
@@ -443,12 +431,15 @@
       range_ph:"e.g. 1-3, 5, 8-10",
       range_hint:"Use 1-based pages. Supports commas and ranges.",
       dl:"⬇️ Download extracted PDF",
+      split_all:"📦 Split all pages (ZIP)",
       meta_idle:"<b>Status</b><br/>Upload a PDF to see page count.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Pages</b><br/>${p}`,
       msg_need:"Please upload a PDF first.",
       msg_bad:"Invalid page range. Example: 1-3,5,8-10",
       msg_ok:"✅ Download ready",
-      msg_fail:"Failed to process PDF."
+      msg_zip_ok:"✅ ZIP download started",
+      msg_fail:"Failed to process PDF.",
+      msg_zip_fail:"ZIP failed. Try again."
     },
     ko:{
       page_title:"PDF 분리",
@@ -466,12 +457,15 @@
       range_ph:"예: 1-3, 5, 8-10",
       range_hint:"페이지는 1부터 시작. 콤마/구간 지원.",
       dl:"⬇️ 선택 페이지 PDF 다운로드",
+      split_all:"📦 전체 페이지 분리 (ZIP)",
       meta_idle:"<b>상태</b><br/>PDF를 업로드하면 페이지 수가 표시돼요.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>페이지</b><br/>${p}`,
       msg_need:"먼저 PDF를 업로드해 주세요.",
       msg_bad:"페이지 범위가 올바르지 않아요. 예: 1-3,5,8-10",
       msg_ok:"✅ 다운로드 준비 완료",
-      msg_fail:"PDF 처리 실패"
+      msg_zip_ok:"✅ ZIP 다운로드 시작",
+      msg_fail:"PDF 처리 실패",
+      msg_zip_fail:"ZIP 생성 실패. 다시 시도해 주세요."
     },
     es:{
       page_title:"Dividir PDF",
@@ -489,12 +483,15 @@
       range_ph:"ej. 1-3, 5, 8-10",
       range_hint:"Páginas desde 1. Comas y rangos.",
       dl:"⬇️ Descargar PDF extraído",
+      split_all:"📦 Dividir todas (ZIP)",
       meta_idle:"<b>Estado</b><br/>Sube un PDF para ver páginas.",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Páginas</b><br/>${p}`,
       msg_need:"Primero sube un PDF.",
       msg_bad:"Rango inválido. Ej: 1-3,5,8-10",
       msg_ok:"✅ Listo",
-      msg_fail:"Error al procesar PDF."
+      msg_zip_ok:"✅ ZIP descargando",
+      msg_fail:"Error al procesar PDF.",
+      msg_zip_fail:"Error al crear ZIP."
     },
     ja:{
       page_title:"PDF 分割",
@@ -512,12 +509,15 @@
       range_ph:"例: 1-3, 5, 8-10",
       range_hint:"ページは1から。カンマ/範囲対応。",
       dl:"⬇️ 抽出PDFをダウンロード",
+      split_all:"📦 全ページ分割 (ZIP)",
       meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
       meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>ページ</b><br/>${p}`,
       msg_need:"先にPDFをアップロードしてください。",
       msg_bad:"範囲が無効です。例: 1-3,5,8-10",
       msg_ok:"✅ 準備OK",
-      msg_fail:"PDFの処理に失敗しました。"
+      msg_zip_ok:"✅ ZIP ダウンロード開始",
+      msg_fail:"PDFの処理に失敗しました。",
+      msg_zip_fail:"ZIP作成に失敗しました。"
     }
   };
 
@@ -549,6 +549,59 @@
   let LANG = detectLang();
   function t(){ return STR[LANG] || STR.en; }
 
+  // ===== UI =====
+  const pickInput = $("pickInput");
+  const pickBtn = $("pickBtn");
+  const clearBtn = $("clearBtn");
+  const drop = $("drop");
+  const rangeEl = $("range");
+  const downloadBtn = $("downloadBtn");
+  const splitAllBtn = $("splitAllBtn");
+  const msgEl = $("msg");
+  const metaEl = $("meta");
+
+  const progressWrap = $("progressWrap");
+  const progressBar  = $("progressBar");
+  const progressText = $("progressText");
+
+  function setMsg(text, cls){
+    msgEl.textContent = text || "";
+    msgEl.className = "msg " + (cls || "");
+  }
+
+  function showProgress(){
+    progressWrap.style.display = "block";
+    progressText.style.display = "block";
+    setProgress(0, "");
+  }
+  function hideProgress(){
+    progressWrap.style.display = "none";
+    progressText.style.display = "none";
+    progressBar.style.width = "0%";
+    progressText.textContent = "";
+  }
+  function setProgress(pct, label){
+    const p = Math.max(0, Math.min(100, Math.round(pct)));
+    progressBar.style.width = p + "%";
+    progressText.textContent = label ? `${label} • ${p}%` : `${p}%`;
+  }
+
+  // ===== state =====
+  let pdfBytes = null;
+  let pdfName = "document.pdf";
+  let pageCount = 0;
+  let busy = false;
+
+  function setBusy(v){
+    busy = !!v;
+    pickBtn.disabled = busy;
+    drop.style.pointerEvents = busy ? "none" : "auto";
+    downloadBtn.disabled = busy || !pdfBytes;
+    splitAllBtn.disabled = busy || !pdfBytes;
+    clearBtn.disabled = busy || !pdfBytes;
+    rangeEl.disabled = busy || !pdfBytes;
+  }
+
   function setLang(lang){
     if(!STR[lang]) lang = "en";
     LANG = lang;
@@ -574,38 +627,20 @@
     $("range_hint").textContent = t().range_hint;
 
     $("downloadBtn").textContent = t().dl;
+    $("splitAllBtn").textContent = t().split_all;
 
     if(!pdfBytes) $("meta").innerHTML = t().meta_idle;
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // ===== UI =====
-  const pickInput = $("pickInput");
-  const pickBtn = $("pickBtn");
-  const clearBtn = $("clearBtn");
-  const drop = $("drop");
-  const rangeEl = $("range");
-  const downloadBtn = $("downloadBtn");
-  const msgEl = $("msg");
-  const metaEl = $("meta");
-
-  function setMsg(text, cls){
-    msgEl.textContent = text || "";
-    msgEl.className = "msg " + (cls || "");
-  }
-
-  // ===== state =====
-  let pdfBytes = null;
-  let pdfName = "document.pdf";
-  let pageCount = 0;
-
-  pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
+  // ===== file picking =====
+  pickBtn.addEventListener("click", ()=>{ if(busy) return; pickInput.value=""; pickInput.click(); });
   pickInput.addEventListener("change", (e)=>{
     const f = e.target.files && e.target.files[0];
     if(f) loadFile(f);
   });
 
-  function openDropPicker(){ pickInput.value=""; pickInput.click(); }
+  function openDropPicker(){ if(busy) return; pickInput.value=""; pickInput.click(); }
   drop.addEventListener("click", openDropPicker);
   drop.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
@@ -618,53 +653,46 @@
     drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
   });
   drop.addEventListener("drop", (e)=>{
+    if(busy) return;
     const f = e.dataTransfer.files && e.dataTransfer.files[0];
     if(f) loadFile(f);
   });
 
   clearBtn.addEventListener("click", ()=>{
+    if(busy) return;
     pdfBytes = null; pdfName="document.pdf"; pageCount=0;
     rangeEl.value = "";
-    rangeEl.disabled = true;
-    downloadBtn.disabled = true;
-    clearBtn.disabled = true;
     metaEl.innerHTML = t().meta_idle;
     setMsg("", "");
-    resetProgress(); // NEW
+    hideProgress();
+    setBusy(false);
   });
 
   async function loadFile(file){
     try{
-      setMsg("", "");
-      setProgress(10); // NEW
+      setBusy(true);
+      showProgress();
+      setProgress(8, "Loading");
 
       const buf = await file.arrayBuffer();
-      setProgress(35); // NEW
-
       const { PDFDocument } = window.PDFLib;
       const doc = await PDFDocument.load(buf, { ignoreEncryption:false });
-      setProgress(80); // NEW
 
       pdfBytes = buf;
       pdfName = file.name || "document.pdf";
       pageCount = doc.getPageCount();
 
-      rangeEl.disabled = false;
-      downloadBtn.disabled = false;
-      clearBtn.disabled = false;
-
       metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
-
-      setProgress(100); // NEW
-      setTimeout(resetProgress, 650); // NEW
+      setMsg("", "");
+      setProgress(100, "Ready");
+      setTimeout(hideProgress, 250);
+      setBusy(false);
     }catch(err){
       pdfBytes = null; pageCount=0;
-      rangeEl.disabled = true;
-      downloadBtn.disabled = true;
-      clearBtn.disabled = true;
       metaEl.innerHTML = t().meta_idle;
       setMsg(t().msg_fail, "err");
-      resetProgress(); // NEW
+      hideProgress();
+      setBusy(false);
     }
   }
 
@@ -712,43 +740,106 @@
     return `${base}_split_${stamp}.${ext}`;
   }
 
+  function pad3(n){ return String(n).padStart(3,"0"); }
+
+  // ===== Extract selected pages -> one PDF =====
   downloadBtn.addEventListener("click", async ()=>{
     try{
+      if(busy) return;
       if(!pdfBytes) return setMsg(t().msg_need, "err");
       const idx = parseRanges(rangeEl.value, pageCount);
       if(!idx || idx.length === 0) return setMsg(t().msg_bad, "err");
 
+      setBusy(true);
       setMsg("", "");
-      setProgress(15); // NEW
+      showProgress();
+      setProgress(5, "Preparing");
 
       const { PDFDocument } = window.PDFLib;
       const src = await PDFDocument.load(pdfBytes);
-      setProgress(35); // NEW
 
       const out = await PDFDocument.create();
       const copied = await out.copyPages(src, idx);
-      setProgress(70); // NEW
-
       copied.forEach(p=>out.addPage(p));
 
+      setProgress(75, "Saving");
       const bytes = await out.save({ useObjectStreams:true });
-      setProgress(92); // NEW
 
       const blob = new Blob([bytes], { type:"application/pdf" });
       downloadBlob(blob, buildName("pdf"));
 
-      setProgress(100); // NEW
-      setTimeout(resetProgress, 700); // NEW
+      setProgress(100, "Done");
       setMsg(t().msg_ok, "ok");
+      setTimeout(hideProgress, 400);
+      setBusy(false);
     }catch(e){
-      resetProgress(); // NEW
+      hideProgress();
+      setBusy(false);
       setMsg(t().msg_fail, "err");
+    }
+  });
+
+  // ===== Split ALL pages -> ZIP =====
+  splitAllBtn.addEventListener("click", async ()=>{
+    try{
+      if(busy) return;
+      if(!pdfBytes) return setMsg(t().msg_need, "err");
+      if(!window.JSZip) return setMsg(t().msg_zip_fail, "err");
+
+      setBusy(true);
+      setMsg("", "");
+      showProgress();
+      setProgress(2, "Reading");
+
+      const { PDFDocument } = window.PDFLib;
+      const src = await PDFDocument.load(pdfBytes);
+      const total = src.getPageCount();
+
+      const zip = new window.JSZip();
+      const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+
+      for(let i=0;i<total;i++){
+        // UI update chance (mobile)
+        if(i % 2 === 0) await new Promise(r=>setTimeout(r, 0));
+
+        const out = await PDFDocument.create();
+        const [p] = await out.copyPages(src, [i]);
+        out.addPage(p);
+
+        const bytes = await out.save({ useObjectStreams:true });
+        const fname = `${base}_page_${pad3(i+1)}.pdf`;
+        zip.file(fname, bytes);
+
+        const pct = Math.round(((i+1)/total)*88) + 5; // 5~93
+        setProgress(pct, `Pages ${i+1}/${total}`);
+      }
+
+      setProgress(95, "Zipping");
+      const zipBlob = await zip.generateAsync({ type: "blob" }, (meta)=>{
+        // meta.percent: 0~100 (zip compression stage)
+        const p = 95 + Math.round((meta.percent || 0) * 0.05); // 95~100
+        setProgress(p, "Zipping");
+      });
+
+      const zipName = buildName("zip");
+      downloadBlob(zipBlob, zipName);
+
+      setProgress(100, "Done");
+      setMsg(t().msg_zip_ok, "ok");
+      setTimeout(hideProgress, 550);
+      setBusy(false);
+    }catch(e){
+      hideProgress();
+      setBusy(false);
+      setMsg(t().msg_zip_fail, "err");
     }
   });
 
   // init
   setLang(LANG);
-  resetProgress(); // NEW
+  hideProgress();
+  setBusy(false);
+
 })();
 </script>
 </body>
