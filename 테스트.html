@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Split PDF | ConvertFiles24</title>
+  <meta name="description" content="Split PDF pages online. Extract page ranges and download instantly. 100% local processing (no server upload)." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f17" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- PDF-lib (local in browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- JSZip (for split all -> zip) -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <style>
+    :root{
+      --radius:16px;
+      --pad:16px;
+      --border:1px solid rgba(255,255,255,.12);
+      --blue: 47,109,246;
+      --ease: cubic-bezier(.2,.8,.2,1);
+
+      --softBlueBg: rgba(120, 200, 255, .06);
+      --softBlueBd: rgba(120, 200, 255, .22);
+      --softBlueTx: #cfe6ff;
+      --softBlueHi: rgba(120, 200, 255, .12);
+    }
+    *{ box-sizing:border-box; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+    body{
+      margin:0;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
+      background:#0b0f17;
+      color:#e9eef7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+
+    body:not(.loaded) .card, body:not(.loaded) .top{ opacity:0; transform: translateY(8px); }
+    body.loaded .top{ animation: cfFadeUp .35s var(--ease) both; }
+    body.loaded .card{ animation: cfFadeUp .38s var(--ease) both; }
+    @keyframes cfFadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+      body:not(.loaded) .card, body:not(.loaded) .top{ opacity:1; transform:none; }
+    }
+
+    .wrap{
+      max-width:980px;
+      width:100%;
+      margin:0 auto;
+      padding:22px 14px 44px;
+      overflow-x: clip;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      min-width:0;
+    }
+
+    .title{
+      margin:0;
+      font-weight:900;
+      letter-spacing:-0.35px;
+      line-height:1.15;
+      color:#ffffff;
+      font-size:22px;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:#a7b3c7;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .homeBtn{
+      width:100%;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
+      border:1px solid rgba(47,109,246,.55);
+      background:rgba(47,109,246,.18);
+      color:#e9eef7;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      user-select:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      max-width:380px;
+      transition: transform .08s var(--ease), background .12s var(--ease), box-shadow .12s var(--ease);
+    }
+    .homeBtn:hover{ background:rgba(47,109,246,.24); }
+    .homeBtn:active{ transform: scale(.99); }
+    .homeBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.35), 0 10px 24px rgba(0,0,0,.25);
+    }
+
+    .langRow{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      min-width:220px;
+      max-width:100%;
+      margin-left:auto;
+    }
+    .langLabel{
+      font-size:12px;
+      font-weight:900;
+      color:#9fb0ca;
+      letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.95;
+    }
+    .langSelect{
+      width:220px;
+      max-width:100%;
+      padding:12px 12px;
+      border-radius:999px;
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      outline:none;
+      font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease), transform .08s var(--ease);
+    }
+    .langSelect:focus-visible{
+      outline:none;
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.25);
+    }
+    option{ background:#0b0f17; color:#e9eef7; }
+
+    .pill{
+      width:100%;
+      border:1px solid rgba(120, 200, 255, .22);
+      background:rgba(120, 200, 255, .06);
+      border-radius:999px;
+      padding:10px 14px;
+      color:#cfe6ff;
+      font-size:13px;
+      font-weight:900;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      min-width:0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .card{
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      margin-top:12px;
+      min-width:0;
+      max-width:100%;
+      overflow-x: clip;
+      will-change: transform, opacity;
+    }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; letter-spacing:-0.2px; }
+
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      background:rgba(255,255,255,.02);
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease), transform .05s var(--ease);
+      position: relative;
+      min-height: 160px;
+      display:flex; align-items:center; justify-content:center;
+      max-width:100%;
+      overflow:hidden;
+    }
+    .drop.drag{
+      background:rgba(106,169,255,.12);
+      border-color:rgba(106,169,255,.45);
+      box-shadow: 0 0 0 3px rgba(106,169,255,.10) inset;
+    }
+    .drop:active{ transform: scale(0.998); }
+    .drop:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
+    /* ✅ active 느낌 */
+    .drop.active{
+      border-color: rgba(47,109,246,.55);
+      background: rgba(47,109,246,.07);
+      box-shadow: 0 0 0 1px rgba(47,109,246,.18), 0 18px 40px rgba(0,0,0,.35);
+    }
+
+    /* ✅ 우측 상단 배지(페이지 수) */
+    .dropBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:none;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(46, 204, 113, .35);
+      background: rgba(46, 204, 113, .14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .dropBadge .tick{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(46, 204, 113, .92);
+      color:#0b0f17;
+      font-weight:900;
+      line-height:1;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
+    }
+    .dropBadge .txt{ font-size:12px; font-weight:900; opacity:.95; }
+
+    .dropEmoji{
+      font-size:42px;
+      line-height:1;
+      margin:10px 0 8px;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
+    }
+
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .small{ color:#a7b3c7; font-size:12px; line-height:1.5; }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+    .row > *{ flex:1; min-width:160px; max-width:100%; min-width:0; }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:#2f6df6; color:white; font-weight:900;
+      padding:12px 14px; border-radius:14px; width:100%;
+      font-size:14px;
+      letter-spacing: -0.2px;
+      user-select:none;
+      transition: transform .08s var(--ease), filter .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
+    }
+    .btn.secondary{
+      background: var(--softBlueBg);
+      border: 1px solid var(--softBlueBd);
+      color: var(--softBlueTx);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .btn.secondary:hover{ background: var(--softBlueHi); }
+
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.25); }
+
+    .btn:disabled{
+      opacity:1;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+      filter: saturate(.7);
+      background: linear-gradient(180deg, rgba(47,109,246,.40), rgba(47,109,246,.30));
+      color:#ffffff;
+    }
+    .btn.secondary:disabled{
+      filter: none;
+      background: rgba(120, 200, 255, .05);
+      border: 1px solid rgba(120, 200, 255, .16);
+      color: rgba(207, 230, 255, .70);
+      box-shadow:none;
+    }
+
+    input[type="file"]{ display:none; }
+    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+
+    input[type="text"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      border:var(--border);
+      outline:none;
+      font-weight:900;
+      transition: box-shadow .12s var(--ease), border-color .12s var(--ease);
+    }
+    input[type="text"]:focus-visible{
+      border-color: rgba(var(--blue), .55);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
+    }
+
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .msg.err{ color:#ffb4b4; }
+    .msg.ok{ color:#b8ffcc; }
+
+    .meta{
+      color:#b7c3d9;
+      font-size:13px;
+      line-height:1.5;
+      word-break:break-word;
+      min-width:0;
+    }
+    .meta b{ color:#e9eef7; }
+
+    /* ✅ ZIP 토글(체크) */
+    .chk{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(47,109,246,.22);
+      background: rgba(47,109,246,.08);
+      color:#d7e4ff;
+      font-weight:900;
+      user-select:none;
+      cursor:pointer;
+      transition: background .12s var(--ease), border-color .12s var(--ease);
+    }
+    .chk:hover{ background: rgba(47,109,246,.12); border-color: rgba(47,109,246,.30); }
+    .chk input{ width:18px; height:18px; }
+
+    /* ✅ Progress bar */
+    .progressWrap{
+      width:100%;
+      height:8px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      display:none;
+    }
+    .progressBar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(46,204,113,.70));
+      transition: width .18s ease;
+    }
+    .progressText{
+      margin-top:8px;
+      font-size:12px;
+      color:#bcd1ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      display:none;
+    }
+
+    .footer{
+      margin-top:16px;
+      color:#94a6c2;
+      font-size:12px;
+      text-align:center;
+    }
+    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div style="flex:1; min-width:240px;">
+        <h1 class="title" id="page_title">Split PDF</h1>
+        <p class="sub" id="page_sub">Upload → choose pages → download. 100% local processing.</p>
+
+        <div style="margin-top:10px;">
+          <a class="homeBtn" href="/" id="home_btn">🏠 Home</a>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="pill">🔒 <span id="local_processing">Processed locally — no server upload</span></div>
+        </div>
+      </div>
+
+      <div class="langRow">
+        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+        <select class="langSelect" id="langSelect" aria-label="Language">
+          <option value="en">Global (English)</option>
+          <option value="ko">한국어</option>
+          <option value="es">Español</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="h_step1">Upload PDF</h2>
+
+      <div class="row">
+        <button class="btn secondary" id="pickBtn" type="button">📄 Choose PDF</button>
+        <button class="btn secondary" id="clearBtn" type="button" disabled>🧹 Clear</button>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF">
+        <div class="dropBadge" id="dropBadge">
+          <span class="tick">✓</span>
+          <span class="txt" id="dropBadgeText">0</span>
+        </div>
+
+        <div style="width:100%;">
+          <div style="font-weight:900; margin-bottom:6px;" id="drop_title">Drop PDF here<br/>or tap to upload</div>
+          <div class="dropEmoji" aria-hidden="true">📄</div>
+          <div class="hint" id="drop_hint">Tip: Large PDFs may take a moment on mobile.</div>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="card">
+      <h2 id="h_step2">Pages</h2>
+
+      <div class="row">
+        <div>
+          <label id="lbl_range">Pages to extract</label>
+          <input id="range" type="text" placeholder="e.g. 1-3, 5, 8-10" disabled>
+          <div class="small" id="range_hint">Use 1-based pages. Supports commas and ranges.</div>
+        </div>
+      </div>
+
+      <div style="height:10px;"></div>
+
+      <!-- ✅ 전체 분리 ZIP 토글 -->
+      <div class="row">
+        <label class="chk" id="zipLabel" title="Split all pages to individual PDFs and download as ZIP">
+          <input type="checkbox" id="zipMode" disabled>
+          <span id="zip_text">Split ALL pages → ZIP</span>
+        </label>
+      </div>
+
+      <div style="height:12px;"></div>
+
+      <!-- ✅ Progress bar (버튼 바로 위) -->
+      <div class="progressWrap" id="progressWrap" aria-hidden="true">
+        <div class="progressBar" id="progressBar"></div>
+      </div>
+      <div class="progressText" id="progressText"></div>
+
+      <div style="height:10px;"></div>
+
+      <div class="row">
+        <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download extracted PDF</button>
+      </div>
+
+      <div style="height:12px;"></div>
+      <div class="meta" id="meta"><b>Status</b><br/>Upload a PDF to see page count.</div>
+    </div>
+
+    <div class="footer">
+      © <span id="year"></span> ConvertFiles24 ·
+      <a href="/privacy.html">Privacy</a> ·
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+
+  <input id="pickInput" type="file" accept="application/pdf">
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id)=>document.getElementById(id);
+  $("year").textContent = new Date().getFullYear();
+  requestAnimationFrame(()=> document.body.classList.add("loaded"));
+
+  // ===== i18n =====
+  const STR = {
+    en:{
+      page_title:"Split PDF",
+      page_sub:"Upload → choose pages → download. 100% local processing.",
+      home:"🏠 Home",
+      local:"Processed locally — no server upload",
+      lang_label:"Language",
+      h1:"Upload PDF",
+      pick:"📄 Choose PDF",
+      clear:"🧹 Clear",
+      drop_title:"Drop PDF here<br/>or tap to upload",
+      drop_hint:"Tip: Large PDFs may take a moment on mobile.",
+      h2:"Pages",
+      lbl_range:"Pages to extract",
+      range_ph:"e.g. 1-3, 5, 8-10",
+      range_hint:"Use 1-based pages. Supports commas and ranges.",
+      zip:"Split ALL pages → ZIP",
+      zip_hint_on:"ZIP mode is ON. All pages will be split into separate PDFs.",
+      zip_hint_off:"Tip: Turn on ZIP to split all pages (one PDF per page).",
+      dl:"⬇️ Download extracted PDF",
+      dl_zip:"⬇️ Download ZIP (all pages)",
+      meta_idle:"<b>Status</b><br/>Upload a PDF to see page count.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Pages</b><br/>${p}`,
+      msg_need:"Please upload a PDF first.",
+      msg_bad:"Invalid page range. Example: 1-3,5,8-10",
+      msg_ok:"✅ Download ready",
+      msg_fail:"Failed to process PDF.",
+      err_zip_lib:"ZIP library is not ready.",
+      progress:(pct)=>`Processing… ${pct}%`,
+      done:"Done."
+    },
+    ko:{
+      page_title:"PDF 분리",
+      page_sub:"업로드 → 페이지 선택 → 다운로드. 100% 로컬 처리.",
+      home:"🏠 홈으로",
+      local:"로컬 처리 — 서버 업로드 없음",
+      lang_label:"언어",
+      h1:"PDF 업로드",
+      pick:"📄 PDF 선택",
+      clear:"🧹 비우기",
+      drop_title:"여기에 PDF를 끌어다 놓거나<br/>탭해서 업로드",
+      drop_hint:"팁: 큰 PDF는 모바일에서 조금 걸릴 수 있어요.",
+      h2:"페이지",
+      lbl_range:"추출할 페이지",
+      range_ph:"예: 1-3, 5, 8-10",
+      range_hint:"페이지는 1부터 시작. 콤마/구간 지원.",
+      zip:"전체 분리 → ZIP(페이지별 PDF)",
+      zip_hint_on:"ZIP 모드 ON: 전체 페이지를 1페이지씩 나눠 ZIP으로 저장합니다.",
+      zip_hint_off:"팁: ZIP을 켜면 전체 페이지를 자동 분리(페이지별 PDF)합니다.",
+      dl:"⬇️ 선택 페이지 PDF 다운로드",
+      dl_zip:"⬇️ 전체 분리 ZIP 다운로드",
+      meta_idle:"<b>상태</b><br/>PDF를 업로드하면 페이지 수가 표시돼요.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>페이지</b><br/>${p}`,
+      msg_need:"먼저 PDF를 업로드해 주세요.",
+      msg_bad:"페이지 범위가 올바르지 않아요. 예: 1-3,5,8-10",
+      msg_ok:"✅ 다운로드 준비 완료",
+      msg_fail:"PDF 처리 실패",
+      err_zip_lib:"ZIP 라이브러리가 준비되지 않았어요.",
+      progress:(pct)=>`처리 중… ${pct}%`,
+      done:"완료"
+    },
+    es:{
+      page_title:"Dividir PDF",
+      page_sub:"Sube → elige páginas → descarga. 100% local.",
+      home:"🏠 Inicio",
+      local:"Procesado local — sin servidor",
+      lang_label:"Idioma",
+      h1:"Subir PDF",
+      pick:"📄 Elegir PDF",
+      clear:"🧹 Limpiar",
+      drop_title:"Suelta el PDF aquí<br/>o toca para subir",
+      drop_hint:"Consejo: PDFs grandes pueden tardar en móvil.",
+      h2:"Páginas",
+      lbl_range:"Páginas a extraer",
+      range_ph:"ej. 1-3, 5, 8-10",
+      range_hint:"Páginas desde 1. Comas y rangos.",
+      zip:"Dividir TODO → ZIP",
+      zip_hint_on:"ZIP activado. Se creará 1 PDF por página.",
+      zip_hint_off:"Consejo: Activa ZIP para dividir todas las páginas.",
+      dl:"⬇️ Descargar PDF extraído",
+      dl_zip:"⬇️ Descargar ZIP (todas)",
+      meta_idle:"<b>Estado</b><br/>Sube un PDF para ver páginas.",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>Páginas</b><br/>${p}`,
+      msg_need:"Primero sube un PDF.",
+      msg_bad:"Rango inválido. Ej: 1-3,5,8-10",
+      msg_ok:"✅ Listo",
+      msg_fail:"Error al procesar PDF.",
+      err_zip_lib:"La librería ZIP no está lista.",
+      progress:(pct)=>`Procesando… ${pct}%`,
+      done:"Hecho."
+    },
+    ja:{
+      page_title:"PDF 分割",
+      page_sub:"アップロード → ページ選択 → ダウンロード。100% ローカル処理。",
+      home:"🏠 ホーム",
+      local:"ローカル処理 — サーバーなし",
+      lang_label:"言語",
+      h1:"PDF アップロード",
+      pick:"📄 PDF を選択",
+      clear:"🧹 クリア",
+      drop_title:"ここにPDFをドロップ<br/>またはタップして選択",
+      drop_hint:"ヒント: 大きいPDFは少し時間がかかります。",
+      h2:"ページ",
+      lbl_range:"抽出するページ",
+      range_ph:"例: 1-3, 5, 8-10",
+      range_hint:"ページは1から。カンマ/範囲対応。",
+      zip:"全ページ → ZIP",
+      zip_hint_on:"ZIP ON: 1ページずつPDFに分割します。",
+      zip_hint_off:"ヒント: ZIPをONにすると全ページを分割します。",
+      dl:"⬇️ 抽出PDFをダウンロード",
+      dl_zip:"⬇️ ZIPをダウンロード(全ページ)",
+      meta_idle:"<b>状態</b><br/>PDFをアップロードしてください。",
+      meta_loaded:(name,p)=>`<b>PDF</b><br/>${escapeHtml(name)}<br/><b>ページ</b><br/>${p}`,
+      msg_need:"先にPDFをアップロードしてください。",
+      msg_bad:"範囲が無効です。例: 1-3,5,8-10",
+      msg_ok:"✅ 準備OK",
+      msg_fail:"PDFの処理に失敗しました。",
+      err_zip_lib:"ZIPライブラリの準備ができていません。",
+      progress:(pct)=>`処理中… ${pct}%`,
+      done:"完了"
+    }
+  };
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  function getQueryLang(){
+    try{
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toLowerCase();
+      if(q && STR[q]) return q;
+    }catch(e){}
+    return null;
+  }
+  function detectLang(){
+    const q = getQueryLang();
+    if(q) return q;
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("es")) return "es";
+    return "en";
+  }
+  let LANG = detectLang();
+  function t(){ return STR[LANG] || STR.en; }
+
+  // ===== UI =====
+  const pickInput = $("pickInput");
+  const pickBtn = $("pickBtn");
+  const clearBtn = $("clearBtn");
+  const drop = $("drop");
+  const rangeEl = $("range");
+  const downloadBtn = $("downloadBtn");
+  const msgEl = $("msg");
+  const metaEl = $("meta");
+  const zipModeEl = $("zipMode");
+  const zipTextEl = $("zip_text");
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
+
+  // progress
+  const progressWrap = $("progressWrap");
+  const progressBar = $("progressBar");
+  const progressText = $("progressText");
+
+  function setMsg(text, cls){
+    msgEl.textContent = text || "";
+    msgEl.className = "msg " + (cls || "");
+  }
+
+  function showProgress(){
+    progressWrap.style.display = "block";
+    progressText.style.display = "block";
+    setProgress(0);
+  }
+  function hideProgress(){
+    progressWrap.style.display = "none";
+    progressText.style.display = "none";
+    progressBar.style.width = "0%";
+    progressText.textContent = "";
+  }
+  function setProgress(pct){
+    const p = Math.max(0, Math.min(100, Math.round(pct)));
+    progressBar.style.width = p + "%";
+    progressText.textContent = (p >= 100) ? t().done : t().progress(p);
+  }
+
+  // ===== state =====
+  let pdfBytes = null;
+  let pdfName = "document.pdf";
+  let pageCount = 0;
+  let busy = false;
+
+  function setLang(lang){
+    if(!STR[lang]) lang = "en";
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+    $("langSelect").value = lang;
+    document.documentElement.lang = lang;
+
+    $("page_title").textContent = t().page_title;
+    $("page_sub").textContent = t().page_sub;
+    $("home_btn").textContent = t().home;
+    $("local_processing").textContent = t().local;
+    $("lang_label").textContent = t().lang_label;
+
+    $("h_step1").textContent = t().h1;
+    pickBtn.textContent = t().pick;
+    clearBtn.textContent = t().clear;
+    $("drop_title").innerHTML = t().drop_title;
+    $("drop_hint").textContent = t().drop_hint;
+
+    $("h_step2").textContent = t().h2;
+    $("lbl_range").textContent = t().lbl_range;
+    rangeEl.placeholder = t().range_ph;
+    $("range_hint").textContent = t().range_hint;
+
+    zipTextEl.textContent = t().zip;
+
+    downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
+
+    if(!pdfBytes) metaEl.innerHTML = t().meta_idle;
+    refreshZipHint();
+    refreshBadge();
+  }
+  $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
+
+  function refreshBadge(){
+    if(!dropBadge || !dropBadgeText) return;
+    if(pdfBytes && pageCount > 0){
+      dropBadge.style.display = "inline-flex";
+      dropBadgeText.textContent = `${pageCount}p`;
+    }else{
+      dropBadge.style.display = "none";
+      dropBadgeText.textContent = "0";
+    }
+  }
+
+  function refreshZipHint(){
+    const hintEl = $("range_hint");
+    if(!hintEl) return;
+    hintEl.textContent = zipModeEl.checked ? t().zip_hint_on : t().range_hint;
+  }
+
+  function setBusy(on){
+    busy = !!on;
+    pickBtn.disabled = busy;
+    clearBtn.disabled = busy || !pdfBytes;
+    drop.style.pointerEvents = busy ? "none" : "auto";
+    rangeEl.disabled = busy || !pdfBytes || zipModeEl.checked;
+    zipModeEl.disabled = busy || !pdfBytes;
+    downloadBtn.disabled = busy || !pdfBytes || (zipModeEl.checked ? false : true);
+    // (다운로드 버튼은 pdf 로드되면 아래에서 별도 켜줌)
+  }
+
+  pickBtn.addEventListener("click", ()=>{ pickInput.value=""; pickInput.click(); });
+  pickInput.addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  function openDropPicker(){ pickInput.value=""; pickInput.click(); }
+  drop.addEventListener("click", openDropPicker);
+  drop.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openDropPicker(); }
+  });
+
+  ["dragenter","dragover"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(evt=>{
+    drop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove("drag"); });
+  });
+  drop.addEventListener("drop", (e)=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+
+  clearBtn.addEventListener("click", ()=>{
+    if(busy) return;
+    pdfBytes = null; pdfName="document.pdf"; pageCount=0;
+    rangeEl.value = "";
+    rangeEl.disabled = true;
+    zipModeEl.checked = false;
+    zipModeEl.disabled = true;
+    downloadBtn.disabled = true;
+    clearBtn.disabled = true;
+    drop.classList.remove("active");
+    metaEl.innerHTML = t().meta_idle;
+    setMsg("", "");
+    hideProgress();
+    refreshZipHint();
+    refreshBadge();
+    downloadBtn.textContent = t().dl;
+  });
+
+  zipModeEl.addEventListener("change", ()=>{
+    if(!pdfBytes || busy) return;
+    rangeEl.disabled = zipModeEl.checked;
+    downloadBtn.textContent = zipModeEl.checked ? t().dl_zip : t().dl;
+    refreshZipHint();
+    // pdf 로드 상태면 다운로드 버튼 활성 유지
+    downloadBtn.disabled = false;
+  });
+
+  async function loadFile(file){
+    try{
+      setMsg("", "");
+      hideProgress();
+      setBusy(true);
+
+      const buf = await file.arrayBuffer();
+      const { PDFDocument } = window.PDFLib;
+      const doc = await PDFDocument.load(buf, { ignoreEncryption:false });
+
+      pdfBytes = buf;
+      pdfName = file.name || "document.pdf";
+      pageCount = doc.getPageCount();
+
+      drop.classList.add("active");
+      rangeEl.disabled = false;
+      zipModeEl.disabled = false;
+      clearBtn.disabled = false;
+      downloadBtn.disabled = false;
+
+      metaEl.innerHTML = t().meta_loaded(pdfName, pageCount);
+      refreshZipHint();
+      refreshBadge();
+      setBusy(false);
+    }catch(err){
+      pdfBytes = null; pageCount=0;
+      drop.classList.remove("active");
+      rangeEl.disabled = true;
+      zipModeEl.disabled = true;
+      downloadBtn.disabled = true;
+      clearBtn.disabled = true;
+      metaEl.innerHTML = t().meta_idle;
+      setMsg(t().msg_fail, "err");
+      refreshBadge();
+      setBusy(false);
+    }
+  }
+
+  function parseRanges(input, maxPage){
+    const s = String(input || "").replace(/\s+/g,"");
+    if(!s) return null;
+    const parts = s.split(",").filter(Boolean);
+    const out = new Set();
+
+    for(const p of parts){
+      if(/^\d+$/.test(p)){
+        const n = parseInt(p,10);
+        if(n < 1 || n > maxPage) return null;
+        out.add(n-1);
+        continue;
+      }
+      if(/^\d+\-\d+$/.test(p)){
+        const [a,b] = p.split("-").map(x=>parseInt(x,10));
+        if(a < 1 || b < 1 || a > maxPage || b > maxPage) return null;
+        const start = Math.min(a,b);
+        const end = Math.max(a,b);
+        for(let i=start;i<=end;i++) out.add(i-1);
+        continue;
+      }
+      return null;
+    }
+    return Array.from(out).sort((x,y)=>x-y);
+  }
+
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+
+  function buildName(ext){
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+    return `${base}_split_${stamp}.${ext}`;
+  }
+
+  function buildZipName(){
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    const base = (pdfName || "document.pdf").replace(/\.[^.]+$/, "");
+    return `${base}_pages_${stamp}.zip`;
+  }
+
+  async function splitAllToZip(){
+    if(!window.JSZip) throw new Error(t().err_zip_lib);
+
+    const { PDFDocument } = window.PDFLib;
+    const src = await PDFDocument.load(pdfBytes);
+
+    const zip = new window.JSZip();
+
+    const total = pageCount;
+    for(let i=0;i<total;i++){
+      // progress
+      setProgress((i / Math.max(1,total)) * 100);
+
+      const out = await PDFDocument.create();
+      const [p] = await out.copyPages(src, [i]);
+      out.addPage(p);
+      const bytes = await out.save({ useObjectStreams:true });
+
+      const num = String(i+1).padStart(3,"0");
+      const filename = `page_${num}.pdf`;
+      zip.file(filename, bytes);
+    }
+    setProgress(100);
+
+    const blob = await zip.generateAsync({ type:"blob" }, (meta)=>{
+      // meta.percent: 0~100
+      setProgress(meta.percent);
+    });
+    setProgress(100);
+    return blob;
+  }
+
+  downloadBtn.addEventListener("click", async ()=>{
+    try{
+      if(busy) return;
+      if(!pdfBytes) return setMsg(t().msg_need, "err");
+
+      setMsg("", "");
+      showProgress();
+      setBusy(true);
+
+      if(zipModeEl.checked){
+        // ✅ 전체 분리 ZIP
+        const zipBlob = await splitAllToZip();
+        downloadBlob(zipBlob, buildZipName());
+        setMsg(t().msg_ok, "ok");
+        setTimeout(hideProgress, 500);
+        setBusy(false);
+        return;
+      }
+
+      // ✅ 선택 범위 PDF 1개로 추출
+      const idx = parseRanges(rangeEl.value, pageCount);
+      if(!idx || idx.length === 0){
+        setBusy(false);
+        hideProgress();
+        return setMsg(t().msg_bad, "err");
+      }
+
+      const { PDFDocument } = window.PDFLib;
+      const src = await PDFDocument.load(pdfBytes);
+      const out = await PDFDocument.create();
+
+      const total = idx.length;
+      for(let i=0;i<total;i++){
+        const copied = await out.copyPages(src, [idx[i]]);
+        copied.forEach(p=>out.addPage(p));
+        setProgress(((i+1) / Math.max(1,total)) * 100);
+      }
+
+      const bytes = await out.save({ useObjectStreams:true });
+      const blob = new Blob([bytes], { type:"application/pdf" });
+      downloadBlob(blob, buildName("pdf"));
+
+      setMsg(t().msg_ok, "ok");
+      setTimeout(hideProgress, 500);
+      setBusy(false);
+    }catch(e){
+      setBusy(false);
+      hideProgress();
+      setMsg(t().msg_fail, "err");
+    }
+  });
+
+  // init
+  setLang(LANG);
+  zipModeEl.disabled = true;
+  refreshBadge();
+})();
+</script>
+</body>
+</html>
