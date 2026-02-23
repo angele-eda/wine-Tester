@@ -571,6 +571,18 @@
       letter-spacing:-0.2px;
       display:none;
     }
+/* ===== 2개 이상일 때 목록열기 버튼 강조 ===== */
+#multiPanel.isMultiActive #listToggleBtn{
+  background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+  border: 1px solid rgba(59,130,246,.7) !important;
+  color:#ffffff !important;
+  box-shadow: 0 12px 24px rgba(0,0,0,.35) !important;
+  transform: translateY(-1px);
+}
+
+#multiPanel.isMultiActive #listToggleBtn:hover{
+  filter: brightness(1.08);
+}
   </style>
 </head>
 
