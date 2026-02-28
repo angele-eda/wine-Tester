@@ -211,6 +211,14 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
     }
     .uploadBox:active{ transform: scale(.995); }
+
+    /* ✅ 파일 1개 이상이면 “항상 활성(ready)” 유지 */
+    .uploadBox.ready{
+      background: rgba(47,109,246,.06);
+      border-color: rgba(47,109,246,.38);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
     .uploadBox.drag{
       background: rgba(47,109,246,.10);
       border-color: rgba(47,109,246,.55);
@@ -479,7 +487,7 @@
 
         <div class="row">
           <button class="btn secondary" id="addBtn" type="button">➕ Add PDFs</button>
-          <button class="btn secondary" id="clearBtn" type="button" disabled>🗑️ Clear</button>
+          <!-- ✅ Clear(초기화) 버튼 제거 -->
         </div>
 
         <div style="height:10px;"></div>
@@ -539,7 +547,6 @@
 
       h_controls: "Controls",
       add: "➕ Add PDFs",
-      clear: "🗑️ Clear",
 
       h_output: "Output",
       merge: "🧩 Merge & Download",
@@ -572,7 +579,6 @@
 
       h_controls: "조작",
       add: "➕ PDF 추가",
-      clear: "🗑️ 비우기",
 
       h_output: "출력",
       merge: "🧩 병합 후 다운로드",
@@ -605,7 +611,6 @@
 
       h_controls: "Controles",
       add: "➕ Añadir PDFs",
-      clear: "🗑️ Vaciar",
 
       h_output: "Salida",
       merge: "🧩 Unir y descargar",
@@ -638,7 +643,6 @@
 
       h_controls: "操作",
       add: "➕ PDF追加",
-      clear: "🗑️ クリア",
 
       h_output: "出力",
       merge: "🧩 結合してダウンロード",
@@ -702,7 +706,6 @@
 
     $("h_controls").textContent = t().h_controls;
     $("addBtn").textContent = t().add;
-    $("clearBtn").textContent = t().clear;
 
     $("h_output").textContent = t().h_output;
     $("mergeBtn").textContent = t().merge;
@@ -718,7 +721,6 @@
   const listWrap = $("fileListWrap");
   const msgEl = $("msg");
   const addBtn = $("addBtn");
-  const clearBtn = $("clearBtn");
   const mergeBtn = $("mergeBtn");
   const metaEl = $("meta");
 
@@ -731,6 +733,11 @@
   /** items: { file:File, name:string, size:number } */
   let items = [];
   let busy = false;
+
+  function syncDropBox(){
+    // ✅ 파일 1개 이상이면 항상 ready 유지 (병합 작업중일 땐 ready만 끔)
+    uploadBox.classList.toggle("ready", items.length >= 1 && !busy);
+  }
 
   function setMsg(text, cls){
     msgEl.textContent = text || "";
@@ -792,7 +799,6 @@
   }
 
   function updateButtons(){
-    clearBtn.disabled = busy || items.length === 0;
     mergeBtn.disabled = !canMerge();
   }
 
@@ -802,6 +808,7 @@
       updateListScroll();
       updateMeta();
       updateButtons();
+      syncDropBox();
       return;
     }
 
@@ -883,6 +890,7 @@
     updateListScroll();
     updateMeta();
     updateButtons();
+    syncDropBox();
   }
 
   function onlyPDF(files){
@@ -916,21 +924,22 @@
     }
   });
 
-  fileInput.addEventListener("change", (e)=>{
-    addFiles(e.target.files);
-    fileInput.value = "";
-
-    // ✅ 핵심: 파일 선택 후 drag 상태가 꼬여 “다음부터 비활성처럼 보이는” 현상 방지
-    uploadBox.classList.remove("drag");
-    dragDepth = 0;
-  });
-
-  // ✅ drag 상태가 한번만 켜지고 다음에 꺼지는 문제 방지(깊이 카운트)
+  // ✅ drag 상태 꼬임 방지(깊이 카운트)
   let dragDepth = 0;
   const isFileDrag = (e)=>{
     const dt = e.dataTransfer;
     return dt && dt.types && Array.from(dt.types).includes("Files");
   };
+
+  fileInput.addEventListener("change", (e)=>{
+    addFiles(e.target.files);
+    fileInput.value = "";
+
+    // 파일 선택창 이후 drag 상태 꼬임 리셋 (ready는 유지됨)
+    uploadBox.classList.remove("drag");
+    dragDepth = 0;
+    syncDropBox();
+  });
 
   uploadBox.addEventListener("dragenter", (e)=>{
     if(!isFileDrag(e)) return;
@@ -966,14 +975,9 @@
 
     uploadBox.classList.remove("drag");
     dragDepth = 0;
-    addFiles(e.dataTransfer.files);
-  });
 
-  clearBtn.addEventListener("click", ()=>{
-    if(busy) return;
-    items = [];
-    setMsg("", "");
-    renderList();
+    addFiles(e.dataTransfer.files);
+    syncDropBox();
   });
 
   // ========= merge =========
@@ -1032,6 +1036,7 @@
         return;
       }
       busy = true;
+      syncDropBox();
       setMsg("", "");
       updateButtons();
       updateMeta();
@@ -1043,6 +1048,7 @@
       downloadBytes(bytes, name);
 
       busy = false;
+      syncDropBox();
       setMsg(t().msg_ok, "ok");
       metaEl.innerHTML = t().meta_done(escapeHtml(name), fmtBytes(bytes.byteLength || bytes.length || 0));
       updateButtons();
@@ -1050,6 +1056,7 @@
       hideProgressSoon();
     }catch(err){
       busy = false;
+      syncDropBox();
       updateButtons();
       updateMeta();
       setMsg((err && err.message) ? err.message : t().msg_err, "err");
@@ -1060,6 +1067,7 @@
   // init
   setLang(LANG);
   renderList();
+  syncDropBox();
 })();
 </script>
 </body>
