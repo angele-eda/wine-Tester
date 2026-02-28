@@ -212,7 +212,7 @@
     }
     .uploadBox:active{ transform: scale(.995); }
 
-    /* ✅ 파일 1개 이상이면 “항상 활성(ready)” 유지 */
+    /* ✅ 파일 1개 이상이면 계속 활성(ready) 유지 */
     .uploadBox.ready{
       background: rgba(47,109,246,.06);
       border-color: rgba(47,109,246,.38);
@@ -224,16 +224,8 @@
       border-color: rgba(47,109,246,.55);
       box-shadow: 0 0 0 3px rgba(var(--blue),.20), inset 0 0 0 1px rgba(255,255,255,0.10);
     }
-    .uploadTitle{
-      font-weight:900;
-      color:#e9eef7;
-      letter-spacing:-.2px;
-    }
-    .uploadSub{
-      color:#a7b3c7;
-      font-size:12px;
-      line-height:1.45;
-    }
+    .uploadTitle{ font-weight:900; color:#e9eef7; letter-spacing:-.2px; }
+    .uploadSub{ color:#a7b3c7; font-size:12px; line-height:1.45; }
 
     /* Buttons */
     .row{
@@ -271,18 +263,9 @@
     }
 
     /* List */
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-width:0;
-    }
+    .list{ display:flex; flex-direction:column; gap:10px; min-width:0; }
 
-    /* list scroll wrapper (4개 이상일 때 JS로 maxHeight/overflow 적용) */
-    .listWrap{
-      min-width:0;
-      max-width:100%;
-    }
+    .listWrap{ min-width:0; max-width:100%; }
     .listWrap.scroll{
       max-height: min(320px, 42vh);
       overflow:auto;
@@ -298,11 +281,7 @@
       border: 2px solid rgba(0,0,0,0);
       background-clip: padding-box;
     }
-    .listWrap.scroll::-webkit-scrollbar-thumb:hover{
-      background: rgba(255,255,255,.16);
-      border: 2px solid rgba(0,0,0,0);
-      background-clip: padding-box;
-    }
+    .listWrap.scroll::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.16); }
 
     .item{
       border: var(--border);
@@ -315,34 +294,16 @@
       gap:10px;
       min-width:0;
     }
-    .itemLeft{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-      flex:1;
-    }
+    .itemLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; flex:1; }
     .itemName{
-      font-weight:900;
-      color:#e9eef7;
-      font-size:13px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-weight:900; color:#e9eef7; font-size:13px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .itemMeta{
-      font-size:12px;
-      color:#9fb0ca;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:12px; color:#9fb0ca;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .itemBtns{
-      display:flex;
-      gap:8px;
-      flex:0 0 auto;
-      align-items:center;
-    }
+    .itemBtns{ display:flex; gap:8px; flex:0 0 auto; align-items:center; }
     .miniBtn{
       appearance:none;
       border: 1px solid rgba(255,255,255,.14);
@@ -355,19 +316,11 @@
       user-select:none;
       transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease);
       min-width:44px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
     }
-    .miniBtn:hover{
-      background: rgba(47,109,246,.10);
-      border-color: rgba(47,109,246,.35);
-    }
+    .miniBtn:hover{ background: rgba(47,109,246,.10); border-color: rgba(47,109,246,.35); }
     .miniBtn:active{ transform: scale(.98); }
-    .miniBtn:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(var(--blue),.20);
-    }
+    .miniBtn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.20); }
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
     .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
@@ -384,24 +337,17 @@
     .meta b{ color:#e9eef7; }
 
     /* progress UI */
-    .progressWrap{
-      margin-top: 6px;
-      width:100%;
-      display:none;
-    }
+    .progressWrap{ margin-top: 6px; width:100%; display:none; }
     .progressWrap.show{ display:block; }
     .progressTrack{
-      margin-top:12px;
-      width:100%;
-      height:8px;
+      margin-top:12px; width:100%; height:8px;
       background: rgba(255,255,255,.08);
       border-radius: 999px;
       overflow:hidden;
       border: 1px solid rgba(255,255,255,.10);
     }
     .progressBar{
-      height:100%;
-      width:0%;
+      height:100%; width:0%;
       background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(46,204,113,.70));
       transition: width .18s var(--ease);
     }
@@ -462,6 +408,7 @@
         <h2 id="h_stage">Files</h2>
 
         <input id="fileInput" type="file" accept="application/pdf" multiple>
+        <!-- ✅ 드래그박스는 1개만 -->
         <div class="uploadBox" id="uploadBox" role="button" tabindex="0" aria-label="Upload PDFs">
           <div class="uploadTitle" id="upload_title">Tap to choose PDFs, or drag & drop here</div>
           <div class="uploadSub" id="upload_sub">Tip: add multiple PDFs • reorder with ↑↓ • remove with ✖</div>
@@ -471,7 +418,6 @@
 
         <div style="height:12px;"></div>
 
-        <!-- list scroll wrapper -->
         <div class="listWrap" id="fileListWrap">
           <div class="list" id="list"></div>
         </div>
@@ -485,16 +431,16 @@
       <div class="card">
         <h2 id="h_controls">Controls</h2>
 
+        <!-- ✅ PDF추가 옆에 비우기 버튼 유지 -->
         <div class="row">
           <button class="btn secondary" id="addBtn" type="button">➕ Add PDFs</button>
-          <!-- ✅ Clear(초기화) 버튼 제거 -->
+          <button class="btn secondary" id="clearBtn" type="button" disabled>🗑️ Clear</button>
         </div>
 
         <div style="height:10px;"></div>
 
         <h2 id="h_output">Output</h2>
 
-        <!-- progress bar above merge button -->
         <div class="progressWrap" id="progressWrap" aria-live="polite">
           <div class="progressTrack">
             <div class="progressBar" id="progressBar"></div>
@@ -517,6 +463,7 @@
       </div>
     </div>
 
+    <!-- ✅ 푸터(젤 하단)에는 초기화 버튼 없음 -->
     <div class="footer">
       © <span id="year"></span> ConvertFiles24 ·
       <a href="/privacy.html">Privacy</a> ·
@@ -547,6 +494,7 @@
 
       h_controls: "Controls",
       add: "➕ Add PDFs",
+      clear: "🗑️ Clear",
 
       h_output: "Output",
       merge: "🧩 Merge & Download",
@@ -579,6 +527,7 @@
 
       h_controls: "조작",
       add: "➕ PDF 추가",
+      clear: "🗑️ 비우기",
 
       h_output: "출력",
       merge: "🧩 병합 후 다운로드",
@@ -611,6 +560,7 @@
 
       h_controls: "Controles",
       add: "➕ Añadir PDFs",
+      clear: "🗑️ Vaciar",
 
       h_output: "Salida",
       merge: "🧩 Unir y descargar",
@@ -643,6 +593,7 @@
 
       h_controls: "操作",
       add: "➕ PDF追加",
+      clear: "🗑️ クリア",
 
       h_output: "出力",
       merge: "🧩 結合してダウンロード",
@@ -706,6 +657,7 @@
 
     $("h_controls").textContent = t().h_controls;
     $("addBtn").textContent = t().add;
+    $("clearBtn").textContent = t().clear;
 
     $("h_output").textContent = t().h_output;
     $("mergeBtn").textContent = t().merge;
@@ -721,6 +673,7 @@
   const listWrap = $("fileListWrap");
   const msgEl = $("msg");
   const addBtn = $("addBtn");
+  const clearBtn = $("clearBtn");
   const mergeBtn = $("mergeBtn");
   const metaEl = $("meta");
 
@@ -734,9 +687,9 @@
   let items = [];
   let busy = false;
 
+  // ✅ 파일 1개 이상이면 드롭박스 ready 유지
   function syncDropBox(){
-    // ✅ 파일 1개 이상이면 항상 ready 유지 (병합 작업중일 땐 ready만 끔)
-    uploadBox.classList.toggle("ready", items.length >= 1 && !busy);
+    uploadBox.classList.toggle("ready", items.length >= 1);
   }
 
   function setMsg(text, cls){
@@ -799,6 +752,7 @@
   }
 
   function updateButtons(){
+    clearBtn.disabled = busy || items.length === 0;
     mergeBtn.disabled = !canMerge();
   }
 
@@ -845,8 +799,6 @@
         items[idx-1] = items[idx];
         items[idx] = tmp;
         renderList();
-        updateMeta();
-        updateButtons();
       });
 
       const down = document.createElement("button");
@@ -861,8 +813,6 @@
         items[idx+1] = items[idx];
         items[idx] = tmp;
         renderList();
-        updateMeta();
-        updateButtons();
       });
 
       const del = document.createElement("button");
@@ -874,8 +824,6 @@
       del.addEventListener("click", ()=>{
         items.splice(idx,1);
         renderList();
-        updateMeta();
-        updateButtons();
       });
 
       btns.appendChild(up);
@@ -924,6 +872,14 @@
     }
   });
 
+  // 비우기 버튼
+  clearBtn.addEventListener("click", ()=>{
+    if(busy) return;
+    items = [];
+    setMsg("", "");
+    renderList();
+  });
+
   // ✅ drag 상태 꼬임 방지(깊이 카운트)
   let dragDepth = 0;
   const isFileDrag = (e)=>{
@@ -931,53 +887,42 @@
     return dt && dt.types && Array.from(dt.types).includes("Files");
   };
 
-  fileInput.addEventListener("change", (e)=>{
-    addFiles(e.target.files);
-    fileInput.value = "";
-
-    // 파일 선택창 이후 drag 상태 꼬임 리셋 (ready는 유지됨)
-    uploadBox.classList.remove("drag");
-    dragDepth = 0;
-    syncDropBox();
+  ["dragenter","dragover"].forEach(evt=>{
+    uploadBox.addEventListener(evt, (e)=>{
+      if(!isFileDrag(e)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if(evt === "dragenter") dragDepth++;
+      uploadBox.classList.add("drag");
+    });
   });
 
-  uploadBox.addEventListener("dragenter", (e)=>{
-    if(!isFileDrag(e)) return;
-    e.preventDefault();
-    e.stopPropagation();
-    dragDepth++;
-    uploadBox.classList.add("drag");
-  });
-
-  uploadBox.addEventListener("dragover", (e)=>{
-    if(!isFileDrag(e)) return;
-    e.preventDefault();
-    e.stopPropagation();
-    uploadBox.classList.add("drag");
-  });
-
-  uploadBox.addEventListener("dragleave", (e)=>{
-    if(!isFileDrag(e)) return;
-    e.preventDefault();
-    e.stopPropagation();
-
-    // 내부 요소 이동으로 발생한 dragleave는 무시
-    if(e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
-
-    dragDepth = Math.max(0, dragDepth - 1);
-    if(dragDepth === 0) uploadBox.classList.remove("drag");
+  ["dragleave","drop"].forEach(evt=>{
+    uploadBox.addEventListener(evt, (e)=>{
+      if(!isFileDrag(e)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if(evt === "dragleave"){
+        if(e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
+        dragDepth = Math.max(0, dragDepth - 1);
+        if(dragDepth === 0) uploadBox.classList.remove("drag");
+      }else{
+        uploadBox.classList.remove("drag");
+        dragDepth = 0;
+      }
+    });
   });
 
   uploadBox.addEventListener("drop", (e)=>{
     if(!isFileDrag(e)) return;
-    e.preventDefault();
-    e.stopPropagation();
+    addFiles(e.dataTransfer.files);
+  });
 
+  fileInput.addEventListener("change", (e)=>{
+    addFiles(e.target.files);
+    fileInput.value = "";
     uploadBox.classList.remove("drag");
     dragDepth = 0;
-
-    addFiles(e.dataTransfer.files);
-    syncDropBox();
   });
 
   // ========= merge =========
@@ -1036,7 +981,6 @@
         return;
       }
       busy = true;
-      syncDropBox();
       setMsg("", "");
       updateButtons();
       updateMeta();
@@ -1048,7 +992,6 @@
       downloadBytes(bytes, name);
 
       busy = false;
-      syncDropBox();
       setMsg(t().msg_ok, "ok");
       metaEl.innerHTML = t().meta_done(escapeHtml(name), fmtBytes(bytes.byteLength || bytes.length || 0));
       updateButtons();
@@ -1056,7 +999,6 @@
       hideProgressSoon();
     }catch(err){
       busy = false;
-      syncDropBox();
       updateButtons();
       updateMeta();
       setMsg((err && err.message) ? err.message : t().msg_err, "err");
@@ -1067,7 +1009,6 @@
   // init
   setLang(LANG);
   renderList();
-  syncDropBox();
 })();
 </script>
 </body>
