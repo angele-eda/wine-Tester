@@ -23,6 +23,7 @@
       --pad:16px;
       --border:1px solid rgba(255,255,255,.12);
       --blue: 47,109,246;
+      --green: 46,204,113; /* ✅ 은은한 녹색 톤 */
       --ease: cubic-bezier(.2,.8,.2,1);
     }
     *{ box-sizing:border-box; }
@@ -212,11 +213,18 @@
     }
     .uploadBox:active{ transform: scale(.995); }
 
-    /* ✅ 파일 1개 이상이면 계속 활성(ready) 유지 */
+    /* ✅ 파일 1개 이상이면 계속 활성(ready) 유지 - 은은한 녹색 */
     .uploadBox.ready{
-      background: rgba(47,109,246,.06);
-      border-color: rgba(47,109,246,.38);
+      background: rgba(var(--green), .06);
+      border-color: rgba(var(--green), .38);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
+    /* ✅ PDF 추가 버튼 클릭 시 잠깐 녹색 하이라이트 */
+    .uploadBox.pick{
+      background: rgba(var(--green), .09);
+      border-color: rgba(var(--green), .55);
+      box-shadow: 0 0 0 3px rgba(var(--green), .16), inset 0 0 0 1px rgba(255,255,255,0.10);
     }
 
     .uploadBox.drag{
@@ -408,7 +416,6 @@
         <h2 id="h_stage">Files</h2>
 
         <input id="fileInput" type="file" accept="application/pdf" multiple>
-        <!-- ✅ 드래그박스는 1개만 -->
         <div class="uploadBox" id="uploadBox" role="button" tabindex="0" aria-label="Upload PDFs">
           <div class="uploadTitle" id="upload_title">Tap to choose PDFs, or drag & drop here</div>
           <div class="uploadSub" id="upload_sub">Tip: add multiple PDFs • reorder with ↑↓ • remove with ✖</div>
@@ -431,7 +438,7 @@
       <div class="card">
         <h2 id="h_controls">Controls</h2>
 
-        <!-- ✅ PDF추가 옆에 비우기 버튼 유지 -->
+        <!-- ✅ PDF추가 옆 비우기 유지 -->
         <div class="row">
           <button class="btn secondary" id="addBtn" type="button">➕ Add PDFs</button>
           <button class="btn secondary" id="clearBtn" type="button" disabled>🗑️ Clear</button>
@@ -463,7 +470,7 @@
       </div>
     </div>
 
-    <!-- ✅ 푸터(젤 하단)에는 초기화 버튼 없음 -->
+    <!-- ✅ 젤 하단(푸터) 초기화 버튼 없음 -->
     <div class="footer">
       © <span id="year"></span> ConvertFiles24 ·
       <a href="/privacy.html">Privacy</a> ·
@@ -692,6 +699,14 @@
     uploadBox.classList.toggle("ready", items.length >= 1);
   }
 
+  // ✅ PDF 추가 버튼 클릭 시 “은은한 녹색” 하이라이트
+  let pickTimer = null;
+  function flashPick(){
+    uploadBox.classList.add("pick");
+    if(pickTimer) clearTimeout(pickTimer);
+    pickTimer = setTimeout(()=> uploadBox.classList.remove("pick"), 520);
+  }
+
   function setMsg(text, cls){
     msgEl.textContent = text || "";
     msgEl.className = "msg " + (cls || "");
@@ -863,7 +878,11 @@
   }
 
   // ========= upload interactions =========
-  addBtn.addEventListener("click", ()=> fileInput.click());
+  addBtn.addEventListener("click", ()=>{
+    flashPick();          // ✅ PDF추가 클릭 시 녹색 하이라이트
+    fileInput.click();
+  });
+
   uploadBox.addEventListener("click", ()=> fileInput.click());
   uploadBox.addEventListener("keydown", (e)=>{
     if(e.key === "Enter" || e.key === " "){
