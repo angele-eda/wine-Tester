@@ -213,16 +213,16 @@
     }
     .uploadBox:active{ transform: scale(.995); }
 
-    /* ✅ 파일 1개 이상이면 계속 활성(ready) 유지 - 은은한 녹색 */
+    /* ✅ 파일 1개 이상이면 계속 활성(ready) 유지 - 은은한 녹색 (투명도 조정) */
     .uploadBox.ready{
-      background: rgba(var(--green), .06);
-      border-color: rgba(var(--green), .38);
+      background: rgba(var(--green), .05);     /* ✅ .06 → .05 */
+      border-color: rgba(var(--green), .32);   /* ✅ .38 → .32 */
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
     }
 
-    /* ✅ PDF 추가 버튼 클릭 시 잠깐 녹색 하이라이트 */
+    /* ✅ PDF 추가 버튼 클릭 시 잠깐 녹색 하이라이트 (투명도 살짝 다운) */
     .uploadBox.pick{
-      background: rgba(var(--green), .09);
+      background: rgba(var(--green), .08);     /* ✅ .09 → .08 */
       border-color: rgba(var(--green), .55);
       box-shadow: 0 0 0 3px rgba(var(--green), .16), inset 0 0 0 1px rgba(255,255,255,0.10);
     }
@@ -673,7 +673,6 @@
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
 
-  // ========= state =========
   const fileInput = $("fileInput");
   const uploadBox = $("uploadBox");
   const listEl = $("list");
@@ -684,22 +683,18 @@
   const mergeBtn = $("mergeBtn");
   const metaEl = $("meta");
 
-  // progress
   const progressWrap = $("progressWrap");
   const progressBar = $("progressBar");
   const progressLeft = $("progressLeft");
   const progressRight = $("progressRight");
 
-  /** items: { file:File, name:string, size:number } */
   let items = [];
   let busy = false;
 
-  // ✅ 파일 1개 이상이면 드롭박스 ready 유지
   function syncDropBox(){
     uploadBox.classList.toggle("ready", items.length >= 1);
   }
 
-  // ✅ PDF 추가 버튼 클릭 시 “은은한 녹색” 하이라이트
   let pickTimer = null;
   function flashPick(){
     uploadBox.classList.add("pick");
@@ -762,7 +757,7 @@
       metaEl.innerHTML = t().meta_idle;
       return;
     }
-    const approxPages = items.length; // light estimate
+    const approxPages = items.length;
     metaEl.innerHTML = t().meta_count(items.length, approxPages);
   }
 
@@ -877,9 +872,8 @@
     renderList();
   }
 
-  // ========= upload interactions =========
   addBtn.addEventListener("click", ()=>{
-    flashPick();          // ✅ PDF추가 클릭 시 녹색 하이라이트
+    flashPick();
     fileInput.click();
   });
 
@@ -891,7 +885,6 @@
     }
   });
 
-  // 비우기 버튼
   clearBtn.addEventListener("click", ()=>{
     if(busy) return;
     items = [];
@@ -899,7 +892,6 @@
     renderList();
   });
 
-  // ✅ drag 상태 꼬임 방지(깊이 카운트)
   let dragDepth = 0;
   const isFileDrag = (e)=>{
     const dt = e.dataTransfer;
@@ -944,7 +936,6 @@
     dragDepth = 0;
   });
 
-  // ========= merge =========
   function downloadBytes(bytes, filename){
     const blob = new Blob([bytes], { type: "application/pdf" });
     const a = document.createElement("a");
@@ -1025,7 +1016,6 @@
     }
   });
 
-  // init
   setLang(LANG);
   renderList();
 })();
