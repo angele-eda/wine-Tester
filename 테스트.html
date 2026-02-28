@@ -921,21 +921,45 @@
     fileInput.value = "";
   });
 
-  ["dragenter","dragover"].forEach(evt=>{
-    uploadBox.addEventListener(evt, (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      uploadBox.classList.add("drag");
-    });
+  // ✅ 드롭박스 drag 상태 안정화 (여기만 수정)
+  let dragDepth = 0;
+
+  function dragOn(){
+    uploadBox.classList.add("drag");
+  }
+  function dragOff(){
+    uploadBox.classList.remove("drag");
+    dragDepth = 0;
+  }
+
+  uploadBox.addEventListener("dragenter", (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dragDepth++;
+    dragOn();
   });
-  ["dragleave","drop"].forEach(evt=>{
-    uploadBox.addEventListener(evt, (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      uploadBox.classList.remove("drag");
-    });
+
+  uploadBox.addEventListener("dragover", (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dragOn();
   });
+
+  uploadBox.addEventListener("dragleave", (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 내부 요소 이동으로 발생하는 dragleave는 무시
+    if (e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
+
+    dragDepth = Math.max(0, dragDepth - 1);
+    if(dragDepth === 0) uploadBox.classList.remove("drag");
+  });
+
   uploadBox.addEventListener("drop", (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    dragOff();
     addFiles(e.dataTransfer.files);
   });
 
