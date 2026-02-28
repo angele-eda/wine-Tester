@@ -210,6 +210,14 @@
       border-color: rgba(47,109,246,.35);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
     }
+
+    /* ✅ 파일이 1개 이상 있을 때 “활성(ready)” 유지 */
+    .uploadBox.ready{
+      background: rgba(47,109,246,.05);
+      border-color: rgba(47,109,246,.30);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
     .uploadBox:active{ transform: scale(.995); }
     .uploadBox.drag{
       background: rgba(47,109,246,.10);
@@ -732,6 +740,12 @@
   let items = [];
   let busy = false;
 
+  // ✅ 드롭박스 “준비됨(ready)” 상태 동기화
+  function syncUploadBoxState(){
+    const hasFiles = items.length > 0;
+    uploadBox.classList.toggle("ready", hasFiles && !busy);
+  }
+
   function setMsg(text, cls){
     msgEl.textContent = text || "";
     msgEl.className = "msg " + (cls || "");
@@ -802,6 +816,7 @@
       updateListScroll();
       updateMeta();
       updateButtons();
+      syncUploadBoxState();
       return;
     }
 
@@ -840,6 +855,7 @@
         renderList();
         updateMeta();
         updateButtons();
+        syncUploadBoxState();
       });
 
       const down = document.createElement("button");
@@ -856,6 +872,7 @@
         renderList();
         updateMeta();
         updateButtons();
+        syncUploadBoxState();
       });
 
       const del = document.createElement("button");
@@ -869,6 +886,7 @@
         renderList();
         updateMeta();
         updateButtons();
+        syncUploadBoxState();
       });
 
       btns.appendChild(up);
@@ -883,6 +901,7 @@
     updateListScroll();
     updateMeta();
     updateButtons();
+    syncUploadBoxState();
   }
 
   function onlyPDF(files){
@@ -916,21 +935,15 @@
     }
   });
 
-  // ✅ 드롭 이벤트가 페이지 기본 동작으로 먹히지 않게 (드롭박스 안정화)
-  window.addEventListener("dragover", (e)=> e.preventDefault(), { passive:false });
-  window.addEventListener("drop", (e)=> e.preventDefault(), { passive:false });
-
-  // ✅ 드롭박스 drag 상태 안정화용 카운터
-  let dragDepth = 0;
-
   fileInput.addEventListener("change", (e)=>{
     addFiles(e.target.files);
     fileInput.value = "";
-
-    // ✅ 파일 선택창 이후 드래그 상태 꼬임 방지 (드롭박스만 리셋)
+    // drag 상태만 리셋 (ready는 items 기반으로 유지됨)
     uploadBox.classList.remove("drag");
-    dragDepth = 0;
   });
+
+  // ✅ 드래그 상태만 안정적으로(드롭박스 내부 이동 드랍리브 무시)
+  let dragDepth = 0;
 
   uploadBox.addEventListener("dragenter", (e)=>{
     e.preventDefault();
@@ -948,8 +961,6 @@
   uploadBox.addEventListener("dragleave", (e)=>{
     e.preventDefault();
     e.stopPropagation();
-
-    // 내부 요소 이동으로 발생하는 dragleave는 무시
     if (e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
 
     dragDepth = Math.max(0, dragDepth - 1);
@@ -959,10 +970,8 @@
   uploadBox.addEventListener("drop", (e)=>{
     e.preventDefault();
     e.stopPropagation();
-
     uploadBox.classList.remove("drag");
     dragDepth = 0;
-
     addFiles(e.dataTransfer.files);
   });
 
@@ -1029,6 +1038,7 @@
         return;
       }
       busy = true;
+      syncUploadBoxState();
       setMsg("", "");
       updateButtons();
       updateMeta();
@@ -1040,6 +1050,7 @@
       downloadBytes(bytes, name);
 
       busy = false;
+      syncUploadBoxState();
       setMsg(t().msg_ok, "ok");
       metaEl.innerHTML = t().meta_done(escapeHtml(name), fmtBytes(bytes.byteLength || bytes.length || 0));
       updateButtons();
@@ -1047,6 +1058,7 @@
       hideProgressSoon();
     }catch(err){
       busy = false;
+      syncUploadBoxState();
       updateButtons();
       updateMeta();
       setMsg((err && err.message) ? err.message : t().msg_err, "err");
