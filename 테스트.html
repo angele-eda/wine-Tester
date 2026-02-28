@@ -230,21 +230,21 @@
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
 
-    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 */
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (2• 스타일) */
     .dropBadge{
       position:absolute;
       top:12px;
       right:12px;
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:8px 10px;
+      padding:6px 12px;
       border-radius:999px;
       border:1px solid rgba(var(--green), .35);
       background: rgba(var(--green), .14);
       box-shadow: 0 12px 26px rgba(0,0,0,.30);
-      color:#e9eef7;
+      color:#b8ffcc;
       font-weight:900;
+      font-size:14px;
       letter-spacing:-0.2px;
       user-select:none;
       pointer-events:none;
@@ -252,21 +252,8 @@
       -webkit-backdrop-filter: blur(10px);
       transform: translateZ(0);
     }
-    .dropBadge .tick{
-      width:18px;
-      height:18px;
-      border-radius:6px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(var(--green), .92);
-      color:#0b0f17;
-      font-weight:900;
-      line-height:1;
-      box-shadow: 0 0 0 1px rgba(0,0,0,.10) inset;
-    }
     .dropBadge .txt{
-      font-size:12px;
+      font-size:14px;
       font-weight:900;
       opacity:.95;
     }
@@ -639,9 +626,9 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
+          <!-- ✅ 2• badge -->
           <div class="dropBadge" id="dropBadge" style="display:none;">
-            <span class="tick">✓</span>
-            <span class="txt" id="dropBadgeText">0</span>
+            <span class="txt" id="dropBadgeText">0•</span>
           </div>
 
           <div style="width:100%;">
@@ -885,7 +872,7 @@
 
       list_open: "Open list",
       list_close:"Close list",
-      badge_files: (n)=> `${n} file(s)`,
+      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `Processing ${done}/${total}…`,
       progress_done: "Done.",
@@ -957,7 +944,7 @@
 
       list_open: "목록 열기",
       list_close:"목록 닫기",
-      badge_files: (n)=> `${n}개`,
+      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `처리 중 ${done}/${total}…`,
       progress_done: "완료",
@@ -1029,7 +1016,7 @@
 
       list_open: "リストを開く",
       list_close:"リストを閉じる",
-      badge_files: (n)=> `${n}件`,
+      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `処理中 ${done}/${total}…`,
       progress_done: "完了",
@@ -1101,7 +1088,7 @@
 
       list_open: "Abrir lista",
       list_close:"Cerrar lista",
-      badge_files: (n)=> `${n}`,
+      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `Procesando ${done}/${total}…`,
       progress_done: "Hecho.",
@@ -1262,20 +1249,19 @@
   }
 
   function updateDropBadge(){
-    const t = STR[LANG] || STR.en;
     const n = files.length;
 
     if(!dropBadge || !dropBadgeText) return;
 
     if(n <= 0){
       dropBadge.style.display = "none";
-      dropBadgeText.textContent = "0";
+      dropBadgeText.textContent = "0•";
       syncDropReady();
       return;
     }
 
     dropBadge.style.display = "inline-flex";
-    dropBadgeText.textContent = t.badge_files(n);
+    dropBadgeText.textContent = n + "•";
     syncDropReady();
   }
 
