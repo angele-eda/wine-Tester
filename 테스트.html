@@ -4,11 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- ✅ SEO -->
-  <title>ConvertFiles24 – Free Converter (Images & PDF)</title>
-  <meta name="description" content="Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — processed locally in your browser." />
-  <meta name="robots" content="index,follow" />
+  <!-- ✅ Primary SEO (x-default / base) -->
+  <title>ConvertFiles24 – Free Image & PDF Converter (Local)</title>
+  <meta name="description" content="Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload)." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="theme-color" content="#0b0f17" />
+
+  <!-- ✅ Canonical (important: no lang param) -->
+  <link rel="canonical" href="https://convertfiles24.com/convert/" />
+
+  <!-- ✅ hreflang (important for /convert/?lang=xx) -->
+  <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/convert/" />
+  <link rel="alternate" hreflang="en" href="https://convertfiles24.com/convert/?lang=en" />
+  <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/convert/?lang=ko" />
+  <link rel="alternate" hreflang="ja" href="https://convertfiles24.com/convert/?lang=ja" />
+  <link rel="alternate" hreflang="es" href="https://convertfiles24.com/convert/?lang=es" />
 
   <!-- Fonts (Inter + Noto Sans KR) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,12 +31,39 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-  <!-- Android / PWA -->
+  <!-- PWA -->
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#0b0f17">
 
-  <!-- ✅ Canonical -->
-  <link rel="canonical" href="https://convertfiles24.com/" />
+  <!-- ✅ Open Graph (use canonical URL) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ConvertFiles24" />
+  <meta property="og:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
+  <meta property="og:description" content="Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)." />
+  <meta property="og:url" content="https://convertfiles24.com/convert/" />
+
+  <!-- ✅ Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
+  <meta name="twitter:description" content="Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)." />
+
+  <!-- ✅ Structured Data (stronger) -->
+  <script type="application/ld+json" id="jsonld">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ConvertFiles24",
+    "url": "https://convertfiles24.com/convert/",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "All",
+    "description": "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": [
+      "Image to JPG/PNG/WebP/PDF",
+      "Merge PDF files",
+      "Local processing (no server upload)"
+    ]
+  }
+  </script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-NH19QJHQKL"></script>
@@ -37,582 +74,69 @@
     gtag('config', 'G-NH19QJHQKL');
   </script>
 
-  <!-- ✅ Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="ConvertFiles24 - Converter (Images & PDF)" />
-  <meta property="og:description" content="Convert images, create PDFs, merge PDFs — processed locally in your browser." />
-  <meta property="og:url" content="https://convertfiles24.com/" />
-
-  <!-- ✅ Twitter -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="ConvertFiles24 - Converter (Images & PDF)" />
-  <meta name="twitter:description" content="Convert images, create PDFs, merge PDFs — processed locally in your browser." />
-
-  <!-- ✅ JSON-LD -->
-  <script type="application/ld+json" id="jsonld">
-  {
-    "@context":"https://schema.org",
-    "@type":"SoftwareApplication",
-    "name":"ConvertFiles24",
-    "applicationCategory":"MultimediaApplication",
-    "operatingSystem":"Web",
-    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
-    "url":"https://convertfiles24.com/"
-  }
-  </script>
-
   <!-- ✅ Libraries (Local in browser) -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
+  <!-- ✅ Optional: make JS-language SEO titles/descriptions “earlier” -->
+  <script>
+    (function(){
+      try{
+        var u = new URL(location.href);
+        var lang = (u.searchParams.get("lang")||"").toLowerCase();
+        var map = {
+          en: {
+            title: "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            desc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
+            ogt:  "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            ogd:  "Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)."
+          },
+          ko: {
+            title: "ConvertFiles24 – 무료 이미지·PDF 변환기 (로컬 처리)",
+            desc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF 병합까지 — 서버 업로드 없이 브라우저에서 로컬 처리.",
+            ogt:  "ConvertFiles24 – 이미지·PDF 변환 (로컬 처리)",
+            ogd:  "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없음"
+          },
+          ja: {
+            title: "ConvertFiles24 – 無料 画像・PDF 変換（ローカル処理）",
+            desc: "画像をJPG/PNG/WebP/PDFに変換、PDF結合も可能 — サーバー送信なしでブラウザ内処理。",
+            ogt:  "ConvertFiles24 – 画像・PDF 変換（ローカル処理）",
+            ogd:  "画像変換、PDF作成、PDF結合 — サーバー送信なし"
+          },
+          es: {
+            title: "ConvertFiles24 – Convertidor Gratis de Imágenes y PDF (Local)",
+            desc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs — todo se procesa localmente en tu navegador (sin subir archivos).",
+            ogt:  "ConvertFiles24 – Convertidor (Imágenes y PDF) (Local)",
+            ogd:  "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor."
+          }
+        };
+        if(!map[lang]) lang = "en";
+        var t = map[lang];
+
+        document.documentElement.lang = lang;
+
+        document.title = t.title;
+
+        var md = document.querySelector('meta[name="description"]');
+        if(md) md.setAttribute("content", t.desc);
+
+        var ogt = document.querySelector('meta[property="og:title"]');
+        var ogd = document.querySelector('meta[property="og:description"]');
+        var twt = document.querySelector('meta[name="twitter:title"]');
+        var twd = document.querySelector('meta[name="twitter:description"]');
+
+        if(ogt) ogt.setAttribute("content", t.ogt);
+        if(ogd) ogd.setAttribute("content", t.ogd);
+        if(twt) twt.setAttribute("content", t.ogt);
+        if(twd) twd.setAttribute("content", t.ogd);
+      }catch(e){}
+    })();
+  </script>
+
   <style>
-    :root {
-      --radius:16px;
-      --pad:16px;
-      --border:1px solid rgba(255,255,255,.12);
-      /* ✅ Green token for "ready" */
-      --green: 46, 204, 113;
-    }
-    *{ box-sizing:border-box; }
-
-    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
-
-    body{
-      margin:0;
-      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
-      background:#0b0f17;
-      color:#e9eef7;
-      overflow-x:hidden;
-
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: geometricPrecision;
-      font-kerning: normal;
-      font-optical-sizing: auto;
-    }
-
-    button, input, select, textarea{
-      font-family: inherit;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-    }
-
-    /* ✅ 상단 공백 줄임 */
-    .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 44px; }
-
-    .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
-      flex-wrap:wrap; margin-bottom:10px;
-    }
-
-    .site-title{
-      margin:0;
-      font-weight:800;
-      letter-spacing:-0.35px;
-      line-height:1.15;
-      color:#ffffff;
-      font-size:24px;
-    }
-    @media (min-width: 1024px){ .site-title{ font-size:32px; } }
-    @media (max-width: 768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
-
-    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
-
-    /* ✅ tools (Home + Secure) */
-    .tools{
-      margin-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:flex-start;
-      max-width: 520px;
-    }
-
-    .homeBtn{
-      width:100%;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding:12px 14px;
-      border-radius:999px;
-      text-decoration:none;
-      cursor:pointer;
-      user-select:none;
-      font-weight:900;
-      letter-spacing:-0.2px;
-      border: 1px solid rgba(80,120,255,.35);
-      background: rgba(47,109,246,.22);
-      color:#e9eef7;
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
-      transition: transform .08s ease, filter .12s ease, background .12s ease;
-    }
-    .homeBtn:hover{ filter: brightness(1.03); background: rgba(47,109,246,.26); }
-    .homeBtn:active{ transform: scale(.99); }
-
-    .securePill{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding:12px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color:#cfe0ff;
-      font-size:13px;
-      font-weight:900;
-      letter-spacing:-0.2px;
-      user-select:none;
-    }
-
-    /* ✅ LANGUAGE AREA (항상 오른쪽으로 밀기) */
-    .langArea{
-      margin-left:auto;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:flex-end;
-      min-width: 220px;
-    }
-    .langLabel{
-      font-size:12px;
-      font-weight:800;
-      color:#9fb0ca;
-      letter-spacing:-0.2px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      opacity:.95;
-    }
-    .langbar{ display:none !important; }
-
-    .langSelect{
-      width: 100%;
-      max-width: 220px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color:#e9eef7;
-      font-weight: 800;
-      font-size: 12px;
-      outline: none;
-    }
-    .langSelect option{ background:#0b0f17; color:#e9eef7; }
-
-    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
-    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
-
-    .card{
-      border:var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:var(--radius);
-      padding:var(--pad);
-      min-width:0;
-    }
-    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
-
-    .drop{
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px; padding:18px;
-      display:flex; align-items:center; justify-content:center; text-align:center;
-      background:rgba(255,255,255,.02);
-      min-width:0;
-
-      cursor:pointer;
-      user-select:none;
-      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
-      position: relative;
-      min-height: 240px;
-      overflow:hidden;
-    }
-    @media (max-width: 480px){ .drop{ min-height: 210px; } }
-
-    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (숫자만) — 더 작게 */
-    .dropBadge{
-      position:absolute;
-      top:14px;
-      right:14px;
-
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-
-      min-width:28px;
-      height:28px;
-      padding:0 10px;
-
-      border-radius:999px;
-      border:1px solid rgba(var(--green), .35);
-      background: rgba(var(--green), .14);
-
-      box-shadow: 0 10px 22px rgba(0,0,0,.28);
-
-      color:#b8ffcc;
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:-0.2px;
-
-      user-select:none;
-      pointer-events:none;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transform: translateZ(0);
-    }
-
-    #drop_title{ white-space: pre-line; }
-    .drop:active{ transform: scale(0.998); }
-
-    /* ✅ Drag 중(호버 느낌)은 블루로 유지 */
-    .drop.drag{
-      background:rgba(106,169,255,.12);
-      border-color:rgba(106,169,255,.45);
-    }
-
-    /* ✅ 파일 선택/추가된 "활성(ready)" 상태 = 은은한 그린 */
-    .drop.active{
-      border-color: rgba(var(--green), .48);
-      background: rgba(var(--green), .06);
-      box-shadow:
-        0 0 0 1px rgba(var(--green), .18),
-        0 18px 40px rgba(0,0,0,.35);
-    }
-
-    .dropEmoji{
-      font-size:42px;
-      line-height:1;
-      margin:12px 0 8px;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
-    }
-
-    /* ✅ Buttons */
-    .btn{
-      appearance:none; border:none; cursor:pointer;
-      background: rgba(47,109,246,.78);
-      color: rgba(233,238,247,.92);
-      font-weight:900;
-      padding:12px 14px;
-      border-radius:14px;
-      width:100%;
-      font-size:15px;
-      letter-spacing: -0.2px;
-      transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease, opacity .12s ease;
-    }
-    .btn:hover{ filter: brightness(1.03); }
-    .btn:active{ transform: scale(.99); }
-    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(47,109,246,.22); }
-
-    .btn:disabled{
-      cursor:not-allowed;
-      opacity: 1;
-      background: rgba(47,109,246,.26);
-      color: rgba(233,238,247,.62);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-      transform:none;
-      filter:none;
-    }
-
-    .btn.secondary{
-      background: rgba(47,109,246,.12);
-      color: rgba(233,238,247,.86);
-      border: 1px solid rgba(47,109,246,.26);
-    }
-    .btn.secondary:hover{ background: rgba(47,109,246,.16); }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > * { flex:1; min-width:160px; }
-    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
-    input[type="file"]{ display:none; }
-
-    select, input[type="number"]{
-      width:100%; padding:12px 12px; border-radius:14px;
-      background:rgba(255,255,255,.06);
-      color:#e9eef7; border:var(--border);
-      outline:none;
-      font-weight:800;
-    }
-
-    .previewHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-    .previewActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-
-    .miniBtn{
-      border:var(--border);
-      background:rgba(255,255,255,.06);
-      color:#e9eef7;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:900;
-      font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      white-space:nowrap;
-      transition: transform .08s ease, background .12s ease, opacity .12s ease;
-    }
-    .miniBtn:hover{ background:rgba(255,255,255,.10); }
-    .miniBtn:active{ transform: scale(.99); }
-    .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
-
-    .miniBtn.secondary{
-      background: rgba(255,255,255,.04);
-    }
-
-    .preview{
-      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
-      min-width:0;
-    }
-    .thumb{
-      width:140px; height:140px; border-radius:14px; border:var(--border);
-      background:rgba(255,255,255,.03);
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
-    }
-    @media (min-width: 1024px){
-      .preview{ grid-template-columns: 180px 1fr; }
-      .thumb{ width:180px; height:180px; }
-    }
-
-    .thumb img{ width:100%; height:100%; object-fit:cover; }
-
-    /* ✅ meta: 파일명 줄바꿈 + 안 삐져나감 */
-    .meta{
-      color:#b7c3d9;
-      font-size:13px;
-      line-height:1.5;
-      min-width:0;
-      max-width:100%;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-    .meta .fileName{
-      display:block;
-      font-weight:900;            /* ✅ 파일명만 강조 */
-      color:#e9eef7;
-      margin:2px 0 8px;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-    .meta .metaLine{
-      display:block;
-      font-weight:600;            /* ✅ 메타는 얇고 은은하게 */
-      color: rgba(183,195,217,.80);
-      margin:0;
-    }
-
-    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
-    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
-    .err{ color:#ffb4b4; }
-    .ok{ color:#b8ffcc; }
-
-    .footer{
-      margin-top:14px;
-      color:#94a6c2;
-      font-size:12px;
-      text-align:center;
-    }
-
-    select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
-    option { background-color: #0b0f17; color:#e9eef7; }
-
-    .list{
-      margin-top:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:12px;
-      display:none;
-    }
-    .listTitle{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-
-    /* ✅ 2개 이상일 때 옵션 존재감 강화 */
-    .list.isMultiActive{
-      border-top:1px solid rgba(47,109,246,.35);
-      background: rgba(47,109,246,.05);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .pill{
-      font-size:12px; color:#d7e4ff; border:1px solid rgba(47,109,246,.28);
-      padding:7px 10px; border-radius:999px;
-      background:rgba(47,109,246,.10);
-      display:inline-flex; gap:8px; align-items:center;
-      white-space:nowrap;
-      font-weight:900;
-      letter-spacing:-0.2px;
-    }
-    .toggle{
-      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
-    }
-    .chk{
-      display:inline-flex; gap:8px; align-items:center;
-      border:1px solid rgba(47,109,246,.24);
-      background:rgba(47,109,246,.08);
-      padding:8px 10px; border-radius:12px;
-      cursor:pointer; user-select:none;
-      font-size:12px; color:#d7e4ff;
-      white-space:nowrap;
-      transition: opacity .12s ease, background .12s ease;
-      font-weight:900;
-      letter-spacing:-0.2px;
-    }
-    .chk:hover{ background: rgba(47,109,246,.12); }
-    .chk input{ width:16px; height:16px; }
-
-    /* ✅ 목록이 길어져도 페이지가 과하게 늘어나지 않게: 토글 + 스크롤 */
-    .fileListWrap{
-      display:none;
-      max-height: 320px;
-      overflow:auto;
-      padding-right:4px;
-    }
-    .fileListWrap::-webkit-scrollbar{ width:10px; }
-    .fileListWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius:999px; }
-    .fileListWrap::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius:999px; }
-
-    .fileRow{
-      display:flex; gap:8px; align-items:center;
-      padding:10px 10px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
-      background:rgba(255,255,255,.02);
-      margin-bottom:8px;
-      overflow:hidden;
-      transition: background .12s ease, border-color .12s ease, transform .08s ease;
-      cursor:pointer;
-    }
-    .fileRow:hover{
-      background: rgba(255,255,255,.04);
-    }
-    /* ✅ 선택된 row 활성화(존재감) */
-    .fileRow.active{
-      background: rgba(47,109,246,.14);
-      border-color: rgba(47,109,246,.35);
-      box-shadow: 0 10px 22px rgba(0,0,0,.22);
-    }
-    .fileRow.active .fileName{
-      color:#ffffff;
-    }
-
-    .fileName{
-      flex:1; min-width:0;
-      font-size:13px; color:#dbe7ff;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      font-weight:600;
-      letter-spacing:-0.1px;
-    }
-    .mini{ display:flex; gap:6px; align-items:center; }
-    .iconBtn{
-      border:var(--border);
-      background:rgba(255,255,255,.06);
-      color:#e9eef7;
-      padding:8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:900;
-      line-height:1;
-      min-width:42px;
-      transition: background .12s ease, transform .08s ease, opacity .12s ease;
-    }
-    .iconBtn:hover{ background:rgba(255,255,255,.10); }
-    .iconBtn:active{ transform: scale(.99); }
-    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
-    .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
-
-    .footer a{ color:#9fb0ca; text-decoration:none; border-bottom:1px dashed rgba(159,176,202,.35); }
-    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
-
-    html[data-samsung="true"] .drop{
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-    }
-    html[data-samsung="true"] .drop::before{
-      content:"";
-      position:absolute;
-      inset: 10px;
-      border: 1px dashed rgba(255,255,255,0.35);
-      border-radius: 14px;
-      pointer-events:none;
-    }
-
-    .detailsBox{
-      margin-top:10px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:10px;
-    }
-    details{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.02);
-    }
-    summary{
-      cursor:pointer;
-      font-weight:900;
-      color:#dbe7ff;
-      list-style:none;
-    }
-    summary::-webkit-details-marker{ display:none; }
-    .detailsBody{
-      margin-top:8px;
-      color:#9fb0ca;
-      font-size:12px;
-      line-height:1.55;
-    }
-
-    /* ✅ REAL Progress bar */
-    .progressWrap{
-      margin-top:12px;
-      width:100%;
-      height:8px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.10);
-      display:none;
-    }
-    .progressBar{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(var(--green),.70));
-      transition: width .18s ease;
-    }
-    .progressText{
-      margin-top:8px;
-      font-size:12px;
-      color:#bcd1ff;
-      font-weight:900;
-      letter-spacing:-0.2px;
-      display:none;
-    }
-
-    /* ===== 2개 이상일 때 목록열기 버튼 강조 ===== */
-    #multiPanel.isMultiActive #listToggleBtn{
-      background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-      border: 1px solid rgba(59,130,246,.7) !important;
-      color:#ffffff !important;
-      box-shadow: 0 12px 24px rgba(0,0,0,.35) !important;
-      transform: translateY(-1px);
-    }
-    #multiPanel.isMultiActive #listToggleBtn:hover{
-      filter: brightness(1.08);
-    }
+    /* (기존 CSS 그대로 두면 됨) */
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="top">
