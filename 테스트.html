@@ -230,29 +230,29 @@
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
 
-    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (숫자만) */
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (숫자만) — 더 작게 */
     .dropBadge{
       position:absolute;
-      top:16px;
-      right:16px;
+      top:14px;
+      right:14px;
 
       display:inline-flex;
       align-items:center;
       justify-content:center;
 
-      min-width:34px;
-      height:34px;
-      padding:0 12px;
+      min-width:28px;
+      height:28px;
+      padding:0 10px;
 
       border-radius:999px;
       border:1px solid rgba(var(--green), .35);
       background: rgba(var(--green), .14);
 
-      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+      box-shadow: 0 10px 22px rgba(0,0,0,.28);
 
       color:#b8ffcc;
       font-weight:900;
-      font-size:14px;
+      font-size:12px;
       letter-spacing:-0.2px;
 
       user-select:none;
@@ -384,26 +384,29 @@
 
     .thumb img{ width:100%; height:100%; object-fit:cover; }
 
-    /* ✅ META: 파일명만 강조 + 메타는 얇고 은은 */
+    /* ✅ meta: 파일명 줄바꿈 + 안 삐져나감 */
     .meta{
-      color: rgba(183,195,217,.86);
+      color:#b7c3d9;
       font-size:13px;
-      line-height:1.55;
+      line-height:1.5;
       min-width:0;
+      max-width:100%;
+      overflow-wrap:anywhere;
       word-break:break-word;
     }
     .meta .fileName{
-      font-weight:800;
+      display:block;
+      font-weight:900;            /* ✅ 파일명만 강조 */
       color:#e9eef7;
+      margin:2px 0 8px;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
-    .meta .fileMeta{
-      font-weight:400;
-      opacity:.75;
-    }
-    /* 기존 <b>가 남아도 튀지 않게 */
-    .meta b{
-      font-weight:inherit;
-      color:inherit;
+    .meta .metaLine{
+      display:block;
+      font-weight:600;            /* ✅ 메타는 얇고 은은하게 */
+      color: rgba(183,195,217,.80);
+      margin:0;
     }
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
@@ -910,9 +913,14 @@
       err_heic: "HEIC/HEIF may not work on some browsers. Please save as JPG/PNG and try again.",
       dl_start: (name, size) => `Download started: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `Name: <span class="fileName">${name}</span><br/>Type: <span class="fileMeta">${type}</span><br/>Size: <span class="fileMeta">${size}</span><br/>Resolution: <span class="fileMeta">${w} × ${h}</span>`,
+        `<div class="metaLine">Name:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Type: ${type}</div>` +
+        `<div class="metaLine">Size: ${size}</div>` +
+        `<div class="metaLine">Resolution: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `Name: <span class="fileName">${name}</span><br/>Type: <span class="fileMeta">application/pdf</span><br/>Size: <span class="fileMeta">${size}</span>`,
+        `<div class="metaLine">Name:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Type: application/pdf</div>` +
+        `<div class="metaLine">Size: ${size}</div>`,
       multi_count: (n) => `Selected: ${n} file(s)`
     },
     ko: {
@@ -981,9 +989,14 @@
       err_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. JPG/PNG로 저장 후 다시 시도해 주세요.",
       dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `파일명: <span class="fileName">${name}</span><br/>형식: <span class="fileMeta">${type}</span><br/>크기: <span class="fileMeta">${size}</span><br/>해상도: <span class="fileMeta">${w} × ${h}</span>`,
+        `<div class="metaLine">파일명:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">형식: ${type}</div>` +
+        `<div class="metaLine">크기: ${size}</div>` +
+        `<div class="metaLine">해상도: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `파일명: <span class="fileName">${name}</span><br/>형식: <span class="fileMeta">application/pdf</span><br/>크기: <span class="fileMeta">${size}</span>`,
+        `<div class="metaLine">파일명:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">형식: application/pdf</div>` +
+        `<div class="metaLine">크기: ${size}</div>`,
       multi_count: (n) => `선택됨: ${n}개`
     },
     ja: {
@@ -1052,9 +1065,14 @@
       err_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGで保存してお試しください。",
       dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `ファイル名: <span class="fileName">${name}</span><br/>形式: <span class="fileMeta">${type}</span><br/>サイズ: <span class="fileMeta">${size}</span><br/>解像度: <span class="fileMeta">${w} × ${h}</span>`,
+        `<div class="metaLine">ファイル名:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">形式: ${type}</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>` +
+        `<div class="metaLine">解像度: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `ファイル名: <span class="fileName">${name}</span><br/>形式: <span class="fileMeta">application/pdf</span><br/>サイズ: <span class="fileMeta">${size}</span>`,
+        `<div class="metaLine">ファイル名:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">形式: application/pdf</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>`,
       multi_count: (n) => `選択: ${n}件`
     },
     es: {
@@ -1123,9 +1141,14 @@
       err_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
       dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `Nombre: <span class="fileName">${name}</span><br/>Tipo: <span class="fileMeta">${type}</span><br/>Tamaño: <span class="fileMeta">${size}</span><br/>Resolución: <span class="fileMeta">${w} × ${h}</span>`,
+        `<div class="metaLine">Nombre:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Tipo: ${type}</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>` +
+        `<div class="metaLine">Resolución: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `Nombre: <span class="fileName">${name}</span><br/>Tipo: <span class="fileMeta">application/pdf</span><br/>Tamaño: <span class="fileMeta">${size}</span>`,
+        `<div class="metaLine">Nombre:</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Tipo: application/pdf</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>`,
       multi_count: (n) => `Seleccionados: ${n}`
     }
   };
