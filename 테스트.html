@@ -916,33 +916,33 @@
     }
   });
 
+  // ✅ 드롭 이벤트가 페이지 기본 동작으로 먹히지 않게 (드롭박스 안정화)
+  window.addEventListener("dragover", (e)=> e.preventDefault(), { passive:false });
+  window.addEventListener("drop", (e)=> e.preventDefault(), { passive:false });
+
+  // ✅ 드롭박스 drag 상태 안정화용 카운터
+  let dragDepth = 0;
+
   fileInput.addEventListener("change", (e)=>{
     addFiles(e.target.files);
     fileInput.value = "";
-  });
 
-  // ✅ 드롭박스 drag 상태 안정화 (여기만 수정)
-  let dragDepth = 0;
-
-  function dragOn(){
-    uploadBox.classList.add("drag");
-  }
-  function dragOff(){
+    // ✅ 파일 선택창 이후 드래그 상태 꼬임 방지 (드롭박스만 리셋)
     uploadBox.classList.remove("drag");
     dragDepth = 0;
-  }
+  });
 
   uploadBox.addEventListener("dragenter", (e)=>{
     e.preventDefault();
     e.stopPropagation();
     dragDepth++;
-    dragOn();
+    uploadBox.classList.add("drag");
   });
 
   uploadBox.addEventListener("dragover", (e)=>{
     e.preventDefault();
     e.stopPropagation();
-    dragOn();
+    uploadBox.classList.add("drag");
   });
 
   uploadBox.addEventListener("dragleave", (e)=>{
@@ -959,7 +959,10 @@
   uploadBox.addEventListener("drop", (e)=>{
     e.preventDefault();
     e.stopPropagation();
-    dragOff();
+
+    uploadBox.classList.remove("drag");
+    dragDepth = 0;
+
     addFiles(e.dataTransfer.files);
   });
 
