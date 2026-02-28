@@ -10,10 +10,10 @@
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- ✅ Canonical (no lang param) -->
+  <!-- ✅ Canonical (important: no lang param) -->
   <link rel="canonical" href="https://convertfiles24.com/convert/" />
 
-  <!-- ✅ hreflang -->
+  <!-- ✅ hreflang (important for /convert/?lang=xx) -->
   <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/convert/" />
   <link rel="alternate" hreflang="en" href="https://convertfiles24.com/convert/?lang=en" />
   <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/convert/?lang=ko" />
@@ -34,7 +34,7 @@
   <!-- PWA -->
   <link rel="manifest" href="/site.webmanifest">
 
-  <!-- ✅ Open Graph (canonical URL) -->
+  <!-- ✅ Open Graph (use canonical URL) -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ConvertFiles24" />
   <meta property="og:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
@@ -46,15 +46,17 @@
   <meta name="twitter:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
   <meta name="twitter:description" content="Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)." />
 
-  <!-- ✅ Structured Data -->
+  <!-- ✅ Structured Data (stronger) -->
   <script type="application/ld+json" id="jsonld">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
+    "@id": "https://convertfiles24.com/convert/#app",
     "name": "ConvertFiles24",
     "url": "https://convertfiles24.com/convert/",
     "applicationCategory": "UtilityApplication",
     "operatingSystem": "All",
+    "inLanguage": "en",
     "description": "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "featureList": [
@@ -78,6 +80,71 @@
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
+  <!-- ✅ SEO-safe: set meta early based on ?lang=xx (do NOT rely on later JS UI rendering) -->
+  <script>
+    (function(){
+      try{
+        var u = new URL(location.href);
+        var lang = (u.searchParams.get("lang")||"").toLowerCase();
+        var map = {
+          en: {
+            title: "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            desc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
+            ogt:  "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            ogd:  "Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)."
+          },
+          ko: {
+            title: "ConvertFiles24 – 무료 이미지·PDF 변환기 (로컬 처리)",
+            desc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF 병합까지 — 서버 업로드 없이 브라우저에서 로컬 처리.",
+            ogt:  "ConvertFiles24 – 이미지·PDF 변환 (로컬 처리)",
+            ogd:  "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없음"
+          },
+          ja: {
+            title: "ConvertFiles24 – 無料 画像・PDF 変換（ローカル処理）",
+            desc: "画像をJPG/PNG/WebP/PDFに変換、PDF結合も可能 — サーバー送信なしでブラウザ内処理。",
+            ogt:  "ConvertFiles24 – 画像・PDF 変換（ローカル処理）",
+            ogd:  "画像変換、PDF作成、PDF結合 — サーバー送信なし"
+          },
+          es: {
+            title: "ConvertFiles24 – Convertidor Gratis de Imágenes y PDF (Local)",
+            desc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs — todo se procesa localmente en tu navegador (sin subir archivos).",
+            ogt:  "ConvertFiles24 – Convertidor (Imágenes y PDF) (Local)",
+            ogd:  "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor."
+          }
+        };
+        if(!map[lang]) lang = "en";
+        var t = map[lang];
+
+        document.documentElement.lang = lang;
+
+        document.title = t.title;
+
+        var md = document.querySelector('meta[name="description"]');
+        if(md) md.setAttribute("content", t.desc);
+
+        var ogt = document.querySelector('meta[property="og:title"]');
+        var ogd = document.querySelector('meta[property="og:description"]');
+        var twt = document.querySelector('meta[name="twitter:title"]');
+        var twd = document.querySelector('meta[name="twitter:description"]');
+
+        if(ogt) ogt.setAttribute("content", t.ogt);
+        if(ogd) ogd.setAttribute("content", t.ogd);
+        if(twt) twt.setAttribute("content", t.ogt);
+        if(twd) twd.setAttribute("content", t.ogd);
+
+        // JSON-LD language sync (light + safe)
+        var jsonld = document.getElementById("jsonld");
+        if(jsonld){
+          try{
+            var obj = JSON.parse(jsonld.textContent);
+            obj.inLanguage = lang;
+            jsonld.textContent = JSON.stringify(obj);
+          }catch(e){}
+        }
+      }catch(e){}
+    })();
+  </script>
+
   <style>
     :root {
       --radius:16px;
@@ -95,6 +162,7 @@
       background:#0b0f17;
       color:#e9eef7;
       overflow-x:hidden;
+
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
@@ -228,6 +296,7 @@
       display:flex; align-items:center; justify-content:center; text-align:center;
       background:rgba(255,255,255,.02);
       min-width:0;
+
       cursor:pointer;
       user-select:none;
       transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
@@ -237,18 +306,18 @@
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
 
-    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (더 작게) */
+    /* ✅ Drop badge: slightly smaller */
     .dropBadge{
       position:absolute;
-      top:14px;
-      right:14px;
+      top:16px;
+      right:16px;
 
       display:inline-flex;
       align-items:center;
       justify-content:center;
 
-      min-width:28px;
-      height:28px;
+      min-width:30px;
+      height:30px;
       padding:0 10px;
 
       border-radius:999px;
@@ -259,7 +328,7 @@
 
       color:#b8ffcc;
       font-weight:900;
-      font-size:12px;
+      font-size:12px; /* smaller */
       letter-spacing:-0.2px;
 
       user-select:none;
@@ -370,7 +439,7 @@
     .miniBtn.secondary{ background: rgba(255,255,255,.04); }
 
     .preview{
-      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:start;
+      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
       min-width:0;
     }
     .thumb{
@@ -386,36 +455,31 @@
 
     .thumb img{ width:100%; height:100%; object-fit:cover; }
 
-    /* ✅ Meta: 파일명만 강조 + 메타는 얇고 은은하게 + 줄바꿈 안전 */
     .meta{
-      color:#b7c3d9;
-      font-size:13px;
-      line-height:1.5;
+      color:#b7c3d9; font-size:13px; line-height:1.5;
       min-width:0;
-      overflow:hidden;
+      word-break:break-word;
+      overflow-wrap:anywhere;
     }
-    .metaGrid{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-width:0;
-    }
+
+    /* ✅ Meta typography: filename bold, others subtle */
     .metaLine{
-      font-weight:600;
-      color: rgba(183,195,217,.88);
-      font-size:12.5px;
-      letter-spacing:-0.1px;
+      font-size:12px;
+      line-height:1.55;
+      color:#9fb0ca;
+      font-weight:500;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
     .fileName{
-      font-weight:900;
+      margin:2px 0 8px;
       color:#e9eef7;
-      letter-spacing:-0.2px;
-      line-height:1.35;
-
-      /* 핵심: 우측 삐져나감 방지 */
-      white-space: normal;
-      word-break: break-word;
-      overflow-wrap: anywhere;
+      font-weight:900;
+      letter-spacing:-0.15px;
+      line-height:1.25;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:normal;
     }
 
     .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
@@ -461,7 +525,9 @@
       font-weight:900;
       letter-spacing:-0.2px;
     }
-    .toggle{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .toggle{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    }
     .chk{
       display:inline-flex; gap:8px; align-items:center;
       border:1px solid rgba(47,109,246,.24);
@@ -625,18 +691,19 @@
       <div class="langArea" aria-label="Language selector">
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
 
+        <!-- ✅ Language order: Global(English) → Korean → Japanese → Spanish -->
         <select class="langSelect" id="langSelect" aria-label="Language">
           <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="ja">日本語</option>
           <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+          <option value="es">Español</option>
         </select>
 
         <div class="langbar" aria-hidden="true">
-          <div class="langbtn" data-lang="en">🇺🇸 EN</div>
-          <div class="langbtn" data-lang="es">🇪🇸 ES</div>
-          <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
+          <div class="langbtn" data-lang="en">🌐 EN</div>
           <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+          <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
+          <div class="langbtn" data-lang="es">🇪🇸 ES</div>
         </div>
       </div>
     </div>
@@ -659,7 +726,7 @@
           </div>
         </div>
 
-        <!-- Multi list -->
+        <!-- ✅ Multi list -->
         <div class="list" id="multiPanel">
           <div class="listTitle">
             <div class="pill" id="multiCount"></div>
@@ -673,7 +740,6 @@
                 <input type="checkbox" id="zipMode" />
                 <span id="zip_label"></span>
               </label>
-
               <label class="chk" id="a4ChkLabel" title="PDF page size A4 normalization (when merging PDFs)">
                 <input type="checkbox" id="a4Mode" />
                 <span id="a4_label"></span>
@@ -751,7 +817,7 @@
 
         <h2 id="h_download"></h2>
 
-        <!-- REAL Progress -->
+        <!-- ✅ REAL Progress -->
         <div class="progressWrap" id="progressWrap" aria-hidden="true">
           <div class="progressBar" id="progressBar"></div>
         </div>
@@ -836,7 +902,6 @@
   const securePillText = $("securePillText");
   const pageTitleEl = $("pageTitle");
 
-  // Progress
   const progressWrap = $("progressWrap");
   const progressBar  = $("progressBar");
   const progressText = $("progressText");
@@ -848,11 +913,6 @@
       pageTitle: "Convert",
       home: "Home",
       secure: "Local processing — No server upload",
-
-      seoTitle: "ConvertFiles24 – Free Image & PDF Converter (Local)",
-      seoDesc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
-      ogTitle: "ConvertFiles24 – Free Image & PDF Converter (Local)",
-      ogDesc: "Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload).",
 
       subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
       lang_label: "Language",
@@ -911,30 +971,20 @@
       err_heic: "HEIC/HEIF may not work on some browsers. Please save as JPG/PNG and try again.",
       dl_start: (name, size) => `Download started: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">Name</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">Type: ${type}</div>` +
-          `<div class="metaLine">Size: ${size}</div>` +
-          `<div class="metaLine">Resolution: ${w} × ${h}</div>` +
-        `</div>`,
+        `<div class="metaLine">Name</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Type: ${type}</div>` +
+        `<div class="metaLine">Size: ${size}</div>` +
+        `<div class="metaLine">Resolution: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">Name</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">Type: application/pdf</div>` +
-          `<div class="metaLine">Size: ${size}</div>` +
-        `</div>`,
+        `<div class="metaLine">Name</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Type: application/pdf</div>` +
+        `<div class="metaLine">Size: ${size}</div>`,
       multi_count: (n) => `Selected: ${n} file(s)`
     },
-
     ko: {
       pageTitle: "Convert",
       home: "홈으로",
       secure: "로컬 처리 — 서버 업로드 없음",
-
-      seoTitle: "ConvertFiles24 – 무료 이미지·PDF 변환기 (로컬 처리)",
-      seoDesc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF 병합까지 — 서버 업로드 없이 브라우저에서 로컬 처리.",
-      ogTitle: "ConvertFiles24 – 무료 이미지·PDF 변환 (로컬 처리)",
-      ogDesc: "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없음",
 
       subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
       lang_label: "언어",
@@ -993,30 +1043,20 @@
       err_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. JPG/PNG로 저장 후 다시 시도해 주세요.",
       dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">파일명</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">형식: ${type}</div>` +
-          `<div class="metaLine">크기: ${size}</div>` +
-          `<div class="metaLine">해상도: ${w} × ${h}</div>` +
-        `</div>`,
+        `<div class="metaLine">파일명</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">형식: ${type}</div>` +
+        `<div class="metaLine">크기: ${size}</div>` +
+        `<div class="metaLine">해상도: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">파일명</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">형식: application/pdf</div>` +
-          `<div class="metaLine">크기: ${size}</div>` +
-        `</div>`,
+        `<div class="metaLine">파일명</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">형식: application/pdf</div>` +
+        `<div class="metaLine">크기: ${size}</div>`,
       multi_count: (n) => `선택됨: ${n}개`
     },
-
     ja: {
       pageTitle: "Convert",
       home: "ホームへ",
       secure: "ローカル処理 — サーバー送信なし",
-
-      seoTitle: "ConvertFiles24 – 無料 画像・PDF 変換（ローカル処理）",
-      seoDesc: "画像をJPG/PNG/WebP/PDFに変換、PDF結合も可能 — サーバー送信なしでブラウザ内処理。",
-      ogTitle: "ConvertFiles24 – 画像・PDF 変換（ローカル処理）",
-      ogDesc: "画像変換、PDF作成、PDF結合 — サーバー送信なし",
 
       subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
       lang_label: "言語",
@@ -1075,30 +1115,20 @@
       err_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGで保存してお試しください。",
       dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">ファイル名</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">形式: ${type}</div>` +
-          `<div class="metaLine">サイズ: ${size}</div>` +
-          `<div class="metaLine">解像度: ${w} × ${h}</div>` +
-        `</div>`,
+        `<div class="metaLine">ファイル名</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">形式: ${type}</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>` +
+        `<div class="metaLine">解像度: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">ファイル名</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">形式: application/pdf</div>` +
-          `<div class="metaLine">サイズ: ${size}</div>` +
-        `</div>`,
+        `<div class="metaLine">ファイル名</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">形式: application/pdf</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>`,
       multi_count: (n) => `選択: ${n}件`
     },
-
     es: {
       pageTitle: "Convert",
       home: "Inicio",
       secure: "Procesamiento local — Sin subir al servidor",
-
-      seoTitle: "ConvertFiles24 – Convertidor Gratis de Imágenes y PDF (Local)",
-      seoDesc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs — todo se procesa localmente en tu navegador (sin subir archivos).",
-      ogTitle: "ConvertFiles24 – Convertidor Gratis de Imágenes y PDF (Local)",
-      ogDesc: "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor.",
 
       subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
       lang_label: "Idioma",
@@ -1157,28 +1187,17 @@
       err_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
       dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
       meta_img: (name, type, size, w, h) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">Nombre</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">Tipo: ${type}</div>` +
-          `<div class="metaLine">Tamaño: ${size}</div>` +
-          `<div class="metaLine">Resolución: ${w} × ${h}</div>` +
-        `</div>`,
+        `<div class="metaLine">Nombre</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Tipo: ${type}</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>` +
+        `<div class="metaLine">Resolución: ${w} × ${h}</div>`,
       meta_pdf: (name, size) =>
-        `<div class="metaGrid">` +
-          `<div class="metaLine">Nombre</div><div class="fileName">${name}</div>` +
-          `<div class="metaLine">Tipo: application/pdf</div>` +
-          `<div class="metaLine">Tamaño: ${size}</div>` +
-        `</div>`,
+        `<div class="metaLine">Nombre</div><div class="fileName">${name}</div>` +
+        `<div class="metaLine">Tipo: application/pdf</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>`,
       multi_count: (n) => `Seleccionados: ${n}`
     }
   };
-
-  const META_DESC = document.querySelector('meta[name="description"]');
-  const OG_TITLE = document.querySelector('meta[property="og:title"]');
-  const OG_DESC  = document.querySelector('meta[property="og:description"]');
-  const TW_TITLE = document.querySelector('meta[name="twitter:title"]');
-  const TW_DESC  = document.querySelector('meta[name="twitter:description"]');
-  const JSONLD   = document.getElementById('jsonld');
 
   function getQueryLang(){
     try{
@@ -1197,8 +1216,8 @@
     if(saved && STR[saved]) return saved;
 
     const nav = (navigator.language || "").toLowerCase();
-    if(nav.startsWith("ja")) return "ja";
     if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
     if(nav.startsWith("es")) return "es";
     return "en";
   }
@@ -1294,7 +1313,6 @@
     if(progressText) progressText.textContent = (done >= safeTotal) ? t.progress_done : t.progress(done, safeTotal);
   }
 
-  // State
   let files = [];
   let activeIndex = 0;
   let isListOpen = false;
@@ -1340,23 +1358,6 @@
     if(pageTitleEl) pageTitleEl.textContent = t.pageTitle;
     if(homeBtnText) homeBtnText.textContent = t.home;
     if(securePillText) securePillText.textContent = t.secure;
-
-    // ✅ SEO meta (single source of truth)
-    document.title = t.seoTitle;
-    if(META_DESC) META_DESC.setAttribute("content", t.seoDesc);
-    if(OG_TITLE)  OG_TITLE.setAttribute("content", t.ogTitle);
-    if(OG_DESC)   OG_DESC.setAttribute("content", t.ogDesc);
-    if(TW_TITLE)  TW_TITLE.setAttribute("content", t.ogTitle);
-    if(TW_DESC)   TW_DESC.setAttribute("content", t.ogDesc);
-
-    if(JSONLD){
-      try{
-        const obj = JSON.parse(JSONLD.textContent);
-        obj.name = "ConvertFiles24";
-        obj.url = (document.querySelector('link[rel="canonical"]')?.href) || obj.url;
-        JSONLD.textContent = JSON.stringify(obj);
-      }catch(e){}
-    }
 
     $("subtitle").innerHTML = t.subtitle;
     $("lang_label").textContent = t.lang_label;
@@ -1667,6 +1668,7 @@
     appendFiles(selected);
 
     const mime = selFormat.value;
+
     if(mime === "image/png"){
       setMessage(t.msg_png_q, "");
     } else if(mime === "application/pdf"){
@@ -1759,32 +1761,39 @@
     selQuality.style.opacity = disableQuality ? ".6" : "1";
   }
 
-  // ✅ A4 옵션은 "PDF 병합 모드"에서만 활성화
   function updateZipAvailability(){
     const outMime = selFormat.value;
     const images = files.filter(x => isImage(x.file));
     const pdfs   = files.filter(x => isPDF(x.file));
 
-    // 자동 ZIP: 이미지 2개 이상 + 출력이 PDF가 아닐 때
+    zipModeEl.disabled = false;
+
     const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
     if(shouldAutoZip && zipModeEl.checked === false){
       zipModeEl.checked = true;
     }
 
-    const isPdfMergeMode = (outMime === "application/pdf" && pdfs.length >= 2 && zipModeEl.checked === false);
-
-    a4ModeEl.disabled = !isPdfMergeMode;
-    if(!isPdfMergeMode) a4ModeEl.checked = false;
-
-    if(a4ChkLabel){
-      a4ChkLabel.style.opacity = isPdfMergeMode ? "1" : ".55";
-      a4ChkLabel.style.cursor = isPdfMergeMode ? "pointer" : "not-allowed";
+    if(outMime === "application/pdf" && zipModeEl.checked){
+      a4ModeEl.checked = false;
+      a4ModeEl.disabled = true;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = ".55";
+        a4ChkLabel.style.cursor = "not-allowed";
+      }
+    } else {
+      a4ModeEl.disabled = false;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = "1";
+        a4ChkLabel.style.cursor = "pointer";
+      }
     }
 
     if(zipChkLabel){
       zipChkLabel.style.opacity = "1";
       zipChkLabel.style.cursor = "pointer";
     }
+
+    void pdfs;
   }
 
   selFormat.addEventListener("change", ()=>{
@@ -2010,7 +2019,6 @@
     try{
       if(outMime === "application/pdf"){
         if(pdfs.length >= 1){
-          // ZIP 모드: PDF 여러 개면 원본 PDF들을 ZIP
           if(pdfs.length >= 2 && zipModeEl.checked){
             const zipBlob = await zipOriginalPDFs(pdfs);
             const name = buildName("pdf_files", "zip");
