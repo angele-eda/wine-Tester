@@ -211,6 +211,21 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
     }
     .uploadBox:active{ transform: scale(.995); }
+
+    /* ✅ 파일이 이미 들어있을 때도 “준비(ready)” 느낌 유지 */
+    .uploadBox.ready{
+      background: rgba(47,109,246,.06);
+      border-color: rgba(47,109,246,.38);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
+    /* ✅ “활성화 버튼”을 눌렀을 때 강제 활성(파일 없어도) */
+    .uploadBox.forced{
+      background: rgba(47,109,246,.06);
+      border-color: rgba(47,109,246,.50);
+      box-shadow: 0 0 0 3px rgba(var(--blue),.16), inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+
     .uploadBox.drag{
       background: rgba(47,109,246,.10);
       border-color: rgba(47,109,246,.55);
@@ -479,7 +494,7 @@
 
         <div class="row">
           <button class="btn secondary" id="addBtn" type="button">➕ Add PDFs</button>
-          <button class="btn secondary" id="clearBtn" type="button" disabled>🗑️ Clear</button>
+          <button class="btn secondary" id="activateBtn" type="button" aria-pressed="false">✨ Activate Drop Zone</button>
         </div>
 
         <div style="height:10px;"></div>
@@ -539,7 +554,8 @@
 
       h_controls: "Controls",
       add: "➕ Add PDFs",
-      clear: "🗑️ Clear",
+      activate_on: "✨ Activate Drop Zone",
+      activate_off: "✅ Drop Zone Active",
 
       h_output: "Output",
       merge: "🧩 Merge & Download",
@@ -572,7 +588,8 @@
 
       h_controls: "조작",
       add: "➕ PDF 추가",
-      clear: "🗑️ 비우기",
+      activate_on: "✨ 드롭영역 활성화",
+      activate_off: "✅ 드롭영역 활성중",
 
       h_output: "출력",
       merge: "🧩 병합 후 다운로드",
@@ -605,7 +622,8 @@
 
       h_controls: "Controles",
       add: "➕ Añadir PDFs",
-      clear: "🗑️ Vaciar",
+      activate_on: "✨ Activar zona de arrastre",
+      activate_off: "✅ Zona activa",
 
       h_output: "Salida",
       merge: "🧩 Unir y descargar",
@@ -638,7 +656,8 @@
 
       h_controls: "操作",
       add: "➕ PDF追加",
-      clear: "🗑️ クリア",
+      activate_on: "✨ ドロップ領域を有効化",
+      activate_off: "✅ 有効化中",
 
       h_output: "出力",
       merge: "🧩 結合してダウンロード",
@@ -702,11 +721,11 @@
 
     $("h_controls").textContent = t().h_controls;
     $("addBtn").textContent = t().add;
-    $("clearBtn").textContent = t().clear;
 
     $("h_output").textContent = t().h_output;
     $("mergeBtn").textContent = t().merge;
 
+    updateActivateBtn();
     updateMeta();
   }
   $("langSelect").addEventListener("change", (e)=> setLang(e.target.value));
@@ -718,9 +737,9 @@
   const listWrap = $("fileListWrap");
   const msgEl = $("msg");
   const addBtn = $("addBtn");
-  const clearBtn = $("clearBtn");
   const mergeBtn = $("mergeBtn");
   const metaEl = $("meta");
+  const activateBtn = $("activateBtn");
 
   // progress
   const progressWrap = $("progressWrap");
@@ -731,6 +750,19 @@
   /** items: { file:File, name:string, size:number } */
   let items = [];
   let busy = false;
+
+  // ✅ 활성화 버튼 토글 (파일 없어도 드롭박스 “활성” 표시)
+  let forceActive = false;
+  function updateActivateBtn(){
+    activateBtn.textContent = forceActive ? t().activate_off : t().activate_on;
+    activateBtn.setAttribute("aria-pressed", forceActive ? "true" : "false");
+  }
+
+  // ✅ 드롭박스 상태 동기화
+  function syncDropBox(){
+    uploadBox.classList.toggle("ready", items.length > 0 && !busy);
+    uploadBox.classList.toggle("forced", forceActive && !busy);
+  }
 
   function setMsg(text, cls){
     msgEl.textContent = text || "";
@@ -792,7 +824,6 @@
   }
 
   function updateButtons(){
-    clearBtn.disabled = busy || items.length === 0;
     mergeBtn.disabled = !canMerge();
   }
 
@@ -802,6 +833,7 @@
       updateListScroll();
       updateMeta();
       updateButtons();
+      syncDropBox();
       return;
     }
 
@@ -883,6 +915,7 @@
     updateListScroll();
     updateMeta();
     updateButtons();
+    syncDropBox();
   }
 
   function onlyPDF(files){
@@ -916,58 +949,66 @@
     }
   });
 
+  activateBtn.addEventListener("click", ()=>{
+    forceActive = !forceActive;
+    updateActivateBtn();
+    syncDropBox();
+  });
+
+  // ✅ 드래그가 “한번만 되고 다음부터 꺼지는” 현상 방지
+  let dragDepth = 0;
+  const isFileDrag = (e)=>{
+    const dt = e.dataTransfer;
+    return dt && dt.types && Array.from(dt.types).includes("Files");
+  };
+
   fileInput.addEventListener("change", (e)=>{
     addFiles(e.target.files);
     fileInput.value = "";
-  });
 
-  // ✅ 드롭박스 drag 상태 안정화 (여기만 수정)
-  let dragDepth = 0;
-
-  function dragOn(){
-    uploadBox.classList.add("drag");
-  }
-  function dragOff(){
+    // 파일 선택창 이후 drag 상태 꼬임 리셋
     uploadBox.classList.remove("drag");
     dragDepth = 0;
-  }
+    syncDropBox();
+  });
 
   uploadBox.addEventListener("dragenter", (e)=>{
+    if(!isFileDrag(e)) return;
     e.preventDefault();
     e.stopPropagation();
     dragDepth++;
-    dragOn();
+    uploadBox.classList.add("drag");
   });
 
   uploadBox.addEventListener("dragover", (e)=>{
+    if(!isFileDrag(e)) return;
     e.preventDefault();
     e.stopPropagation();
-    dragOn();
+    uploadBox.classList.add("drag");
   });
 
   uploadBox.addEventListener("dragleave", (e)=>{
+    if(!isFileDrag(e)) return;
     e.preventDefault();
     e.stopPropagation();
 
-    // 내부 요소 이동으로 발생하는 dragleave는 무시
-    if (e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
+    // 내부 요소 이동으로 발생한 dragleave는 무시
+    if(e.relatedTarget && uploadBox.contains(e.relatedTarget)) return;
 
     dragDepth = Math.max(0, dragDepth - 1);
     if(dragDepth === 0) uploadBox.classList.remove("drag");
   });
 
   uploadBox.addEventListener("drop", (e)=>{
+    if(!isFileDrag(e)) return;
     e.preventDefault();
     e.stopPropagation();
-    dragOff();
-    addFiles(e.dataTransfer.files);
-  });
 
-  clearBtn.addEventListener("click", ()=>{
-    if(busy) return;
-    items = [];
-    setMsg("", "");
-    renderList();
+    uploadBox.classList.remove("drag");
+    dragDepth = 0;
+
+    addFiles(e.dataTransfer.files);
+    syncDropBox();
   });
 
   // ========= merge =========
@@ -1026,6 +1067,7 @@
         return;
       }
       busy = true;
+      syncDropBox();
       setMsg("", "");
       updateButtons();
       updateMeta();
@@ -1037,6 +1079,7 @@
       downloadBytes(bytes, name);
 
       busy = false;
+      syncDropBox();
       setMsg(t().msg_ok, "ok");
       metaEl.innerHTML = t().meta_done(escapeHtml(name), fmtBytes(bytes.byteLength || bytes.length || 0));
       updateButtons();
@@ -1044,6 +1087,7 @@
       hideProgressSoon();
     }catch(err){
       busy = false;
+      syncDropBox();
       updateButtons();
       updateMeta();
       setMsg((err && err.message) ? err.message : t().msg_err, "err");
@@ -1053,7 +1097,9 @@
 
   // init
   setLang(LANG);
+  updateActivateBtn();
   renderList();
+  syncDropBox();
 })();
 </script>
 </body>
