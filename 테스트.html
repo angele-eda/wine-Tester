@@ -230,32 +230,36 @@
     }
     @media (max-width: 480px){ .drop{ min-height: 210px; } }
 
-    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (2• 스타일) */
+    /* ✅ 드롭박스 우측 상단 파일 개수 뱃지 (숫자만) */
     .dropBadge{
       position:absolute;
-      top:12px;
-      right:12px;
+      top:16px;
+      right:16px;
+
       display:inline-flex;
       align-items:center;
-      padding:6px 12px;
+      justify-content:center;
+
+      min-width:34px;
+      height:34px;
+      padding:0 12px;
+
       border-radius:999px;
       border:1px solid rgba(var(--green), .35);
       background: rgba(var(--green), .14);
+
       box-shadow: 0 12px 26px rgba(0,0,0,.30);
+
       color:#b8ffcc;
       font-weight:900;
       font-size:14px;
       letter-spacing:-0.2px;
+
       user-select:none;
       pointer-events:none;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       transform: translateZ(0);
-    }
-    .dropBadge .txt{
-      font-size:14px;
-      font-weight:900;
-      opacity:.95;
     }
 
     #drop_title{ white-space: pre-line; }
@@ -626,9 +630,8 @@
         <h2 id="h_upload"></h2>
 
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
-          <!-- ✅ 2• badge -->
           <div class="dropBadge" id="dropBadge" style="display:none;">
-            <span class="txt" id="dropBadgeText">0•</span>
+            <span id="dropBadgeText">0</span>
           </div>
 
           <div style="width:100%;">
@@ -872,7 +875,6 @@
 
       list_open: "Open list",
       list_close:"Close list",
-      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `Processing ${done}/${total}…`,
       progress_done: "Done.",
@@ -944,7 +946,6 @@
 
       list_open: "목록 열기",
       list_close:"목록 닫기",
-      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `처리 중 ${done}/${total}…`,
       progress_done: "완료",
@@ -1016,7 +1017,6 @@
 
       list_open: "リストを開く",
       list_close:"リストを閉じる",
-      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `処理中 ${done}/${total}…`,
       progress_done: "完了",
@@ -1088,7 +1088,6 @@
 
       list_open: "Abrir lista",
       list_close:"Cerrar lista",
-      badge_files: (n)=> `${n}•`,
 
       progress: (done,total)=> `Procesando ${done}/${total}…`,
       progress_done: "Hecho.",
@@ -1255,13 +1254,13 @@
 
     if(n <= 0){
       dropBadge.style.display = "none";
-      dropBadgeText.textContent = "0•";
+      dropBadgeText.textContent = "0";
       syncDropReady();
       return;
     }
 
     dropBadge.style.display = "inline-flex";
-    dropBadgeText.textContent = n + "•";
+    dropBadgeText.textContent = String(n); // ✅ 숫자만
     syncDropReady();
   }
 
