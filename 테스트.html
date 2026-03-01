@@ -175,7 +175,8 @@
       text-rendering: geometricPrecision;
     }
 
-    .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 44px; }
+    /* ✅ 하단 여백 줄임 (스크린샷 느낌) */
+    .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 16px; }
 
     .top{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
@@ -485,11 +486,13 @@
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
 
+    /* ✅ footer 간격 줄임 + safe-area */
     .footer{
-      margin-top:14px;
+      margin-top:8px;
       color:#94a6c2;
       font-size:12px;
       text-align:center;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .footer-inner{
       display:inline-flex;
