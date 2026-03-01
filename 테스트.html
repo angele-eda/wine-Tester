@@ -328,7 +328,7 @@
 
       color:#b8ffcc;
       font-weight:900;
-      font-size:12px; /* smaller */
+      font-size:12px;
       letter-spacing:-0.2px;
 
       user-select:none;
@@ -487,6 +487,7 @@
     .err{ color:#ffb4b4; }
     .ok{ color:#b8ffcc; }
 
+    /* base footer */
     .footer{
       margin-top:14px;
       color:#94a6c2;
@@ -570,15 +571,20 @@
       border-color: rgba(47,109,246,.35);
       box-shadow: 0 10px 22px rgba(0,0,0,.22);
     }
-    .fileRow.active .fileName{ color:#ffffff; }
 
-    .fileName{
+    /* ✅ FIX: file list name class 분리 (preview .fileName과 충돌 방지) */
+    .fileRowName{
       flex:1; min-width:0;
-      font-size:13px; color:#dbe7ff;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-size:13px;
+      color:#dbe7ff;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
       font-weight:600;
       letter-spacing:-0.1px;
     }
+    .fileRow.active .fileRowName{ color:#ffffff; }
+
     .mini{ display:flex; gap:6px; align-items:center; }
     .iconBtn{
       border:var(--border);
@@ -672,6 +678,36 @@
       transform: translateY(-1px);
     }
     #multiPanel.isMultiActive #listToggleBtn:hover{ filter: brightness(1.08); }
+
+    /* ✅ footer polish (most refined) */
+    .footer{
+      margin-top:18px;
+      padding:14px 0 6px;
+      color:#91a4c2;
+      font-size:12px;
+      text-align:center;
+    }
+    .footer-inner{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .footer .sep{
+      opacity:.55;
+      padding:0 2px;
+    }
+    .footer a{
+      color:#a7b9d6;
+      text-decoration:none;
+      border-bottom:1px dashed rgba(167,185,214,.35);
+      transition: filter .12s ease, border-color .12s ease;
+    }
+    .footer a:hover{
+      filter: brightness(1.08);
+      border-bottom-color: rgba(207,224,255,.65);
+    }
   </style>
 </head>
 
@@ -848,13 +884,13 @@
     </div>
 
     <div class="footer">
-  <div class="footer-inner">
-    © <span id="year"></span> ConvertFiles24
-    <span class="sep">·</span>
-    <a href="/privacy.html">Privacy</a>
-    <span class="sep">·</span>
-    <a href="/terms.html">Terms</a>
-  </div>
+      <div class="footer-inner">
+        © <span id="year"></span> ConvertFiles24
+        <span class="sep">·</span>
+        <a href="/privacy.html">Privacy</a>
+        <span class="sep">·</span>
+        <a href="/terms.html">Terms</a>
+      </div>
     </div>
   </div>
 
@@ -1464,7 +1500,7 @@
       row.className = "fileRow" + (idx === activeIndex ? " active" : "");
 
       const name = document.createElement("div");
-      name.className = "fileName";
+      name.className = "fileRowName"; // ✅ FIX: was fileName
       name.title = item.file.name;
       name.textContent = item.file.name;
 
