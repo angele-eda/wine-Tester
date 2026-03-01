@@ -1,0 +1,2174 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ✅ Primary SEO (x-default / base) -->
+  <title>ConvertFiles24 – Free Image & PDF Converter (Local)</title>
+  <meta name="description" content="Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload)." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="theme-color" content="#0b0f17" />
+
+  <!-- ✅ Canonical (important: no lang param) -->
+  <link rel="canonical" href="https://convertfiles24.com/convert/" />
+
+  <!-- ✅ hreflang (important for /convert/?lang=xx) -->
+  <link rel="alternate" hreflang="x-default" href="https://convertfiles24.com/convert/" />
+  <link rel="alternate" hreflang="en" href="https://convertfiles24.com/convert/?lang=en" />
+  <link rel="alternate" hreflang="ko" href="https://convertfiles24.com/convert/?lang=ko" />
+  <link rel="alternate" hreflang="ja" href="https://convertfiles24.com/convert/?lang=ja" />
+  <link rel="alternate" hreflang="es" href="https://convertfiles24.com/convert/?lang=es" />
+
+  <!-- Fonts (Inter + Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- ✅ Open Graph (use canonical URL) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ConvertFiles24" />
+  <meta property="og:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
+  <meta property="og:description" content="Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)." />
+  <meta property="og:url" content="https://convertfiles24.com/convert/" />
+
+  <!-- ✅ Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ConvertFiles24 – Free Image & PDF Converter (Local)" />
+  <meta name="twitter:description" content="Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)." />
+
+  <!-- ✅ Structured Data (stronger) -->
+  <script type="application/ld+json" id="jsonld">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": "https://convertfiles24.com/convert/#app",
+    "name": "ConvertFiles24",
+    "url": "https://convertfiles24.com/convert/",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "All",
+    "inLanguage": "en",
+    "description": "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": [
+      "Image to JPG/PNG/WebP/PDF",
+      "Merge PDF files",
+      "Local processing (no server upload)"
+    ]
+  }
+  </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NH19QJHQKL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NH19QJHQKL');
+  </script>
+
+  <!-- ✅ Libraries (Local in browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <!-- ✅ SEO-safe: set meta early based on ?lang=xx (do NOT rely on later JS UI rendering) -->
+  <script>
+    (function(){
+      try{
+        var u = new URL(location.href);
+        var lang = (u.searchParams.get("lang")||"").toLowerCase();
+        var map = {
+          en: {
+            title: "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            desc: "Convert images to JPG/PNG/WebP/PDF and merge PDFs instantly — 100% processed locally in your browser (no server upload).",
+            ogt:  "ConvertFiles24 – Free Image & PDF Converter (Local)",
+            ogd:  "Convert images, create PDFs, and merge PDFs — 100% local processing (no server upload)."
+          },
+          ko: {
+            title: "ConvertFiles24 – 무료 이미지·PDF 변환기 (로컬 처리)",
+            desc: "이미지를 JPG/PNG/WebP/PDF로 변환하고 PDF 병합까지 — 서버 업로드 없이 브라우저에서 로컬 처리.",
+            ogt:  "ConvertFiles24 – 이미지·PDF 변환 (로컬 처리)",
+            ogd:  "이미지 변환, PDF 생성, PDF 병합 — 서버 업로드 없음"
+          },
+          ja: {
+            title: "ConvertFiles24 – 無料 画像・PDF 変換（ローカル処理）",
+            desc: "画像をJPG/PNG/WebP/PDFに変換、PDF結合も可能 — サーバー送信なしでブラウザ内処理。",
+            ogt:  "ConvertFiles24 – 画像・PDF 変換（ローカル処理）",
+            ogd:  "画像変換、PDF作成、PDF結合 — サーバー送信なし"
+          },
+          es: {
+            title: "ConvertFiles24 – Convertidor Gratis de Imágenes y PDF (Local)",
+            desc: "Convierte imágenes a JPG/PNG/WebP/PDF y une PDFs — todo se procesa localmente en tu navegador (sin subir archivos).",
+            ogt:  "ConvertFiles24 – Convertidor (Imágenes y PDF) (Local)",
+            ogd:  "Convierte imágenes, crea PDFs y une PDFs — sin subir archivos al servidor."
+          }
+        };
+        if(!map[lang]) lang = "en";
+        var t = map[lang];
+
+        document.documentElement.lang = lang;
+        document.title = t.title;
+
+        var md = document.querySelector('meta[name="description"]');
+        if(md) md.setAttribute("content", t.desc);
+
+        var ogt = document.querySelector('meta[property="og:title"]');
+        var ogd = document.querySelector('meta[property="og:description"]');
+        var twt = document.querySelector('meta[name="twitter:title"]');
+        var twd = document.querySelector('meta[name="twitter:description"]');
+
+        if(ogt) ogt.setAttribute("content", t.ogt);
+        if(ogd) ogd.setAttribute("content", t.ogd);
+        if(twt) twt.setAttribute("content", t.ogt);
+        if(twd) twd.setAttribute("content", t.ogd);
+
+        // JSON-LD language sync (light + safe)
+        var jsonld = document.getElementById("jsonld");
+        if(jsonld){
+          try{
+            var obj = JSON.parse(jsonld.textContent);
+            obj.inLanguage = lang;
+            jsonld.textContent = JSON.stringify(obj);
+          }catch(e){}
+        }
+      }catch(e){}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --radius:16px;
+      --pad:16px;
+      --border:1px solid rgba(255,255,255,.12);
+      --green: 46, 204, 113;
+    }
+    *{ box-sizing:border-box; }
+
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+    body{
+      margin:0;
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif;
+      background:#0b0f17;
+      color:#e9eef7;
+      overflow-x:hidden;
+
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+      font-kerning: normal;
+      font-optical-sizing: auto;
+    }
+
+    button, input, select, textarea{
+      font-family: inherit;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    /* ✅ 하단 여백 줄임 (스크린샷 느낌) */
+    .wrap{ max-width:980px; margin:0 auto; padding:14px 14px 16px; }
+
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+      flex-wrap:wrap; margin-bottom:10px;
+    }
+
+    .site-title{
+      margin:0;
+      font-weight:800;
+      letter-spacing:-0.35px;
+      line-height:1.15;
+      color:#ffffff;
+      font-size:24px;
+    }
+    @media (min-width: 1024px){ .site-title{ font-size:32px; } }
+    @media (max-width: 768px){ .site-title{ font-size:20px; letter-spacing:-0.25px; } }
+
+    .sub{ margin:6px 0 0; color:#a7b3c7; font-size:13px; line-height:1.45; }
+
+    .tools{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:flex-start;
+      max-width: 520px;
+    }
+
+    .homeBtn{
+      width:100%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
+      text-decoration:none;
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      border: 1px solid rgba(80,120,255,.35);
+      background: rgba(47,109,246,.22);
+      color:#e9eef7;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      transition: transform .08s ease, filter .12s ease, background .12s ease;
+    }
+    .homeBtn:hover{ filter: brightness(1.03); background: rgba(47,109,246,.26); }
+    .homeBtn:active{ transform: scale(.99); }
+
+    .securePill{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#cfe0ff;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      user-select:none;
+    }
+
+    .langArea{
+      margin-left:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+      min-width: 220px;
+    }
+    .langLabel{
+      font-size:12px;
+      font-weight:800;
+      color:#9fb0ca;
+      letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.95;
+    }
+    .langbar{ display:none !important; }
+
+    .langSelect{
+      width: 100%;
+      max-width: 220px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:#e9eef7;
+      font-weight: 800;
+      font-size: 12px;
+      outline: none;
+    }
+    .langSelect option{ background:#0b0f17; color:#e9eef7; }
+
+    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
+    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{
+      border:var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      min-width:0;
+    }
+    .card h2{ margin:0 0 10px; font-size:15px; color:#dbe7ff; }
+
+    .drop{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px; padding:18px;
+      display:flex; align-items:center; justify-content:center; text-align:center;
+      background:rgba(255,255,255,.02);
+      min-width:0;
+
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
+      position: relative;
+      min-height: 240px;
+      overflow:hidden;
+    }
+    @media (max-width: 480px){ .drop{ min-height: 210px; } }
+
+    .dropBadge{
+      position:absolute;
+      top:16px;
+      right:16px;
+
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      min-width:30px;
+      height:30px;
+      padding:0 10px;
+
+      border-radius:999px;
+      border:1px solid rgba(var(--green), .35);
+      background: rgba(var(--green), .14);
+
+      box-shadow: 0 12px 26px rgba(0,0,0,.30);
+
+      color:#b8ffcc;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:-0.2px;
+
+      user-select:none;
+      pointer-events:none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+
+    #drop_title{ white-space: pre-line; }
+    .drop:active{ transform: scale(0.998); }
+
+    .drop.drag{
+      background:rgba(106,169,255,.12);
+      border-color:rgba(106,169,255,.45);
+    }
+
+    .drop.active{
+      border-color: rgba(var(--green), .48);
+      background: rgba(var(--green), .06);
+      box-shadow:
+        0 0 0 1px rgba(var(--green), .18),
+        0 18px 40px rgba(0,0,0,.35);
+    }
+
+    .dropEmoji{
+      font-size:42px;
+      line-height:1;
+      margin:12px 0 8px;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.28));
+    }
+
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background: rgba(47,109,246,.78);
+      color: rgba(233,238,247,.92);
+      font-weight:900;
+      padding:12px 14px;
+      border-radius:14px;
+      width:100%;
+      font-size:15px;
+      letter-spacing: -0.2px;
+      transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(47,109,246,.22); }
+
+    .btn:disabled{
+      cursor:not-allowed;
+      opacity: 1;
+      background: rgba(47,109,246,.26);
+      color: rgba(233,238,247,.62);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      transform:none;
+      filter:none;
+    }
+
+    .btn.secondary{
+      background: rgba(47,109,246,.12);
+      color: rgba(233,238,247,.86);
+      border: 1px solid rgba(47,109,246,.26);
+    }
+    .btn.secondary:hover{ background: rgba(47,109,246,.16); }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+    .row > * { flex:1; min-width:160px; }
+    label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
+    input[type="file"]{ display:none; }
+
+    select, input[type="number"]{
+      width:100%; padding:12px 12px; border-radius:14px;
+      background:rgba(255,255,255,.06);
+      color:#e9eef7; border:var(--border);
+      outline:none;
+      font-weight:800;
+    }
+
+    .previewHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    .previewActions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+    .miniBtn{
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      transition: transform .08s ease, background .12s ease, opacity .12s ease;
+    }
+    .miniBtn:hover{ background:rgba(255,255,255,.10); }
+    .miniBtn:active{ transform: scale(.99); }
+    .miniBtn:disabled{ opacity:.45; cursor:not-allowed; }
+
+    .miniBtn.secondary{ background: rgba(255,255,255,.04); }
+
+    .preview{
+      display:grid; grid-template-columns: 140px 1fr; gap:12px; align-items:center;
+      min-width:0;
+    }
+    .thumb{
+      width:140px; height:140px; border-radius:14px; border:var(--border);
+      background:rgba(255,255,255,.03);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    @media (min-width: 1024px){
+      .preview{ grid-template-columns: 180px 1fr; }
+      .thumb{ width:180px; height:180px; }
+    }
+
+    .thumb img{ width:100%; height:100%; object-fit:cover; }
+
+    .meta{
+      color:#b7c3d9; font-size:13px; line-height:1.5;
+      min-width:0;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+    }
+
+    .metaLine{
+      font-size:12px;
+      line-height:1.55;
+      color:#9fb0ca;
+      font-weight:500;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
+    /* ✅ 미리보기(메타) 전용 파일명: 기존 .fileName 충돌 방지 */
+    .metaFileName{
+      margin:2px 0 8px;
+      color:#e9eef7;
+      font-weight:900;
+      letter-spacing:-0.15px;
+      line-height:1.25;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:normal;
+    }
+
+    .hint{ margin-top:10px; color:#9fb0ca; font-size:12px; line-height:1.5; }
+    .msg{ margin-top:10px; font-size:13px; color:#cfe0ff; }
+    .err{ color:#ffb4b4; }
+    .ok{ color:#b8ffcc; }
+
+    /* ✅ footer 간격 줄임 + safe-area */
+    .footer{
+      margin-top:8px;
+      color:#94a6c2;
+      font-size:12px;
+      text-align:center;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .footer-inner{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:2px;
+      flex-wrap:wrap;
+    }
+    .footer a{
+      color:#9fb0ca;
+      text-decoration:none;
+      border-bottom:1px dashed rgba(159,176,202,.35);
+      padding:2px 2px;
+    }
+    .footer a:hover{ color:#cfe0ff; border-bottom-color:rgba(207,224,255,.6); }
+    .sep{ opacity:.75; }
+
+    select { background-color: #0b0f17; color:#e9eef7; border:1px solid rgba(255,255,255,.2); }
+    option { background-color: #0b0f17; color:#e9eef7; }
+
+    .list{
+      margin-top:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:12px;
+      display:none;
+    }
+    .listTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .list.isMultiActive{
+      border-top:1px solid rgba(47,109,246,.35);
+      background: rgba(47,109,246,.05);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .pill{
+      font-size:12px; color:#d7e4ff; border:1px solid rgba(47,109,246,.28);
+      padding:7px 10px; border-radius:999px;
+      background:rgba(47,109,246,.10);
+      display:inline-flex; gap:8px; align-items:center;
+      white-space:nowrap;
+      font-weight:900;
+      letter-spacing:-0.2px;
+    }
+    .toggle{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    }
+    .chk{
+      display:inline-flex; gap:8px; align-items:center;
+      border:1px solid rgba(47,109,246,.24);
+      background:rgba(47,109,246,.08);
+      padding:8px 10px; border-radius:12px;
+      cursor:pointer; user-select:none;
+      font-size:12px; color:#d7e4ff;
+      white-space:nowrap;
+      transition: opacity .12s ease, background .12s ease;
+      font-weight:900;
+      letter-spacing:-0.2px;
+    }
+    .chk:hover{ background: rgba(47,109,246,.12); }
+    .chk input{ width:16px; height:16px; }
+
+    .fileListWrap{
+      display:none;
+      max-height: 320px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .fileListWrap::-webkit-scrollbar{ width:10px; }
+    .fileListWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius:999px; }
+    .fileListWrap::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius:999px; }
+
+    .fileRow{
+      display:flex; gap:8px; align-items:center;
+      padding:10px 10px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      margin-bottom:8px;
+      overflow:hidden;
+      transition: background .12s ease, border-color .12s ease, transform .08s ease;
+      cursor:pointer;
+    }
+    .fileRow:hover{ background: rgba(255,255,255,.04); }
+    .fileRow.active{
+      background: rgba(47,109,246,.14);
+      border-color: rgba(47,109,246,.35);
+      box-shadow: 0 10px 22px rgba(0,0,0,.22);
+    }
+
+    /* ✅ 파일 리스트용 파일명(기존 유지) */
+    .fileName{
+      flex:1; min-width:0;
+      font-size:13px; color:#dbe7ff;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-weight:600;
+      letter-spacing:-0.1px;
+    }
+
+    .mini{ display:flex; gap:6px; align-items:center; }
+    .iconBtn{
+      border:var(--border);
+      background:rgba(255,255,255,.06);
+      color:#e9eef7;
+      padding:8px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:900;
+      line-height:1;
+      min-width:42px;
+      transition: background .12s ease, transform .08s ease, opacity .12s ease;
+    }
+    .iconBtn:hover{ background:rgba(255,255,255,.10); }
+    .iconBtn:active{ transform: scale(.99); }
+    .iconBtn:disabled{ opacity:.45; cursor:not-allowed; }
+    .note{ font-size:12px; color:#a7b3c7; margin-top:8px; }
+
+    html[data-samsung="true"] .drop{
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    html[data-samsung="true"] .drop::before{
+      content:"";
+      position:absolute;
+      inset: 10px;
+      border: 1px dashed rgba(255,255,255,0.35);
+      border-radius: 14px;
+      pointer-events:none;
+    }
+
+    .detailsBox{
+      margin-top:10px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:10px;
+    }
+
+    /* ✅ 더 얇고 미니멀한 details */
+details{
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+  summary{
+  cursor:pointer;
+  list-style:none;
+
+  padding:12px 10px;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:-0.2px;
+
+  color:rgba(233,238,247,.92);
+
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+
+  transition:background .12s ease, border-color .12s ease;
+}
+
+summary:hover{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.12);
+}
+
+details[open] > summary{
+  background:rgba(47,109,246,.10);
+  border-color:rgba(47,109,246,.22);
+}
+    summary::-webkit-details-marker{ display:none; }
+    .detailsBody{
+     margin:0;
+     padding: 0 14px 12px;
+     color:#9fb0ca;
+     font-size:12px;
+     line-height:1.55;
+     border-top: 0;
+  }
+
+    .progressWrap{
+      margin-top:12px;
+      width:100%;
+      height:8px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      display:none;
+    }
+    .progressBar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(47,109,246,.85), rgba(var(--green),.70));
+      transition: width .18s ease;
+    }
+    .progressText{
+      margin-top:8px;
+      font-size:12px;
+      color:#bcd1ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      display:none;
+    }
+
+    #multiPanel.isMultiActive #listToggleBtn{
+      background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+      border: 1px solid rgba(59,130,246,.7) !important;
+      color:#ffffff !important;
+      box-shadow: 0 12px 24px rgba(0,0,0,.35) !important;
+      transform: translateY(-1px);
+    }
+    #multiPanel.isMultiActive #listToggleBtn:hover{ filter: brightness(1.08); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1 class="site-title" id="pageTitle">Convert</h1>
+        <p class="sub" id="subtitle"></p>
+
+        <div class="tools">
+          <a class="homeBtn" id="homeBtn" href="/?lang=ko">🏠 <span id="homeBtnText">홈으로</span></a>
+          <div class="securePill" id="securePill">🔒 <span id="securePillText">로컬 처리 — 서버 업로드 없음</span></div>
+        </div>
+      </div>
+
+      <div class="langArea" aria-label="Language selector">
+        <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
+
+        <select class="langSelect" id="langSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+          <option value="es">Español</option>
+        </select>
+
+        <div class="langbar" aria-hidden="true">
+          <div class="langbtn" data-lang="en">🌐 EN</div>
+          <div class="langbtn" data-lang="ko">🇰🇷 KO</div>
+          <div class="langbtn" data-lang="ja">🇯🇵 日本語</div>
+          <div class="langbtn" data-lang="es">🇪🇸 ES</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="convertSection">
+      <!-- Left -->
+      <div class="card">
+        <h2 id="h_upload"></h2>
+
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose files">
+          <div class="dropBadge" id="dropBadge" style="display:none;">
+            <span id="dropBadgeText">0</span>
+          </div>
+
+          <div style="width:100%;">
+            <div style="font-weight:800; margin-bottom:6px;" id="drop_title"></div>
+            <div class="dropEmoji" aria-hidden="true">📁</div>
+            <input id="file" type="file" multiple accept="image/*,application/pdf" />
+            <div class="hint" id="drop_hint"></div>
+          </div>
+        </div>
+
+        <!-- ✅ Multi list -->
+        <div class="list" id="multiPanel">
+          <div class="listTitle">
+            <div class="pill" id="multiCount"></div>
+
+            <div class="toggle">
+              <button class="miniBtn secondary" id="listToggleBtn" type="button">
+                ▾ <span id="listToggleLabel">Open list</span>
+              </button>
+
+              <label class="chk" id="zipChkLabel" title="Download multiple outputs as ZIP">
+                <input type="checkbox" id="zipMode" />
+                <span id="zip_label"></span>
+              </label>
+              <label class="chk" id="a4ChkLabel" title="PDF page size A4 normalization (when merging PDFs)">
+                <input type="checkbox" id="a4Mode" />
+                <span id="a4_label"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="fileListWrap" id="fileListWrap">
+            <div id="fileList"></div>
+          </div>
+
+          <div class="note" id="multi_note"></div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <div class="previewHead">
+          <h2 id="h_preview" style="margin:0;"></h2>
+          <div class="previewActions">
+            <button class="miniBtn" id="addMoreBtn" type="button" disabled>
+              ➕ <span id="addMoreLabel">Add more</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="thumb" id="thumb"></div>
+          <div class="meta" id="meta"></div>
+        </div>
+
+        <div class="msg" id="msg"></div>
+      </div>
+
+      <!-- Right -->
+      <div class="card">
+        <h2 id="h_settings"></h2>
+
+        <div class="row">
+          <div>
+            <label id="lbl_format"></label>
+            <select id="format">
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WebP</option>
+              <option value="application/pdf">PDF</option>
+            </select>
+          </div>
+          <div>
+            <label id="lbl_quality"></label>
+            <select id="quality">
+              <option value="0.95" id="q_095"></option>
+              <option value="0.9" selected id="q_090"></option>
+              <option value="0.8" id="q_080"></option>
+              <option value="0.7" id="q_070"></option>
+            </select>
+          </div>
+        </div>
+
+        <div style="height:10px;"></div>
+
+        <div class="row">
+          <div>
+            <label id="lbl_w"></label>
+            <input id="w" type="number" min="1" />
+          </div>
+          <div>
+            <label id="lbl_h"></label>
+            <input id="h" type="number" min="1" />
+          </div>
+        </div>
+
+        <div class="hint" id="size_hint"></div>
+
+        <div style="height:12px;"></div>
+
+        <h2 id="h_download"></h2>
+
+        <!-- ✅ REAL Progress -->
+        <div class="progressWrap" id="progressWrap" aria-hidden="true">
+          <div class="progressBar" id="progressBar"></div>
+        </div>
+        <div class="progressText" id="progressText"></div>
+
+        <button class="btn" id="convert" disabled></button>
+        <div style="height:10px;"></div>
+        <button class="btn secondary" id="reset" disabled></button>
+
+        <div class="detailsBox">
+          <details>
+            <summary id="privacy_summary"></summary>
+            <div class="detailsBody" id="privacy_body"></div>
+          </details>
+          <div style="height:10px;"></div>
+          <details>
+            <summary id="pdfzip_summary"></summary>
+            <div class="detailsBody" id="pdfzip_body"></div>
+          </details>
+        </div>
+
+        <div class="hint" id="privacy_hint" style="display:none;"></div>
+        <div class="hint" style="margin-top:10px; display:none;">
+          <b id="pdfzip_title"></b><br/>
+          <span id="pdfzip_desc"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ footer 링크: 폴더 구조에 맞게 /privacy/ /terms/ -->
+    <div class="footer">
+      <div class="footer-inner">
+        © <span id="year"></span> ConvertFiles24
+        <span class="sep">·</span>
+        <a href="/privacy/">Privacy</a>
+        <span class="sep">·</span>
+        <a href="/terms/">Terms</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  if (/SamsungBrowser/i.test(navigator.userAgent)) {
+    document.documentElement.dataset.samsung = "true";
+  }
+
+  const $ = (id) => document.getElementById(id);
+
+  const fileInput   = $("file");
+  const drop        = $("drop");
+  const thumb       = $("thumb");
+  const meta        = $("meta");
+  const msg         = $("msg");
+  const btnConvert  = $("convert");
+  const btnReset    = $("reset");
+  const selFormat   = $("format");
+  const selQuality  = $("quality");
+  const inW         = $("w");
+  const inH         = $("h");
+
+  const multiPanel  = $("multiPanel");
+  const multiCount  = $("multiCount");
+  const fileListEl  = $("fileList");
+  const fileListWrap= $("fileListWrap");
+  const zipModeEl   = $("zipMode");
+  const a4ModeEl    = $("a4Mode");
+
+  const zipChkLabel = $("zipChkLabel");
+  const a4ChkLabel  = $("a4ChkLabel");
+
+  const addMoreBtn   = $("addMoreBtn");
+  const addMoreLabel = $("addMoreLabel");
+
+  const listToggleBtn = $("listToggleBtn");
+  const listToggleLabel = $("listToggleLabel");
+
+  const dropBadge = $("dropBadge");
+  const dropBadgeText = $("dropBadgeText");
+
+  const langSelectEl = $("langSelect");
+
+  const homeBtn = $("homeBtn");
+  const homeBtnText = $("homeBtnText");
+  const securePillText = $("securePillText");
+  const pageTitleEl = $("pageTitle");
+
+  const progressWrap = $("progressWrap");
+  const progressBar  = $("progressBar");
+  const progressText = $("progressText");
+
+  $("year").textContent = new Date().getFullYear();
+
+  const STR = {
+    en: {
+      pageTitle: "Convert",
+      home: "Home",
+      secure: "Local processing — No server upload",
+
+      subtitle: 'Convert <b>images</b> to <b>JPG / PNG / WebP / PDF</b> and merge <b>PDF + PDF</b>. (No server upload)',
+      lang_label: "Language",
+
+      h_upload: "Upload",
+      drop_title: "Drop files here\nor tap to select files",
+      drop_hint: "Supports: JPG, PNG, WebP, PDF • Multiple selection supported",
+
+      h_preview: "Preview",
+      add_more: "Add more",
+      thumb_label: "Preview",
+      meta_idle: "Select files to see details.",
+
+      h_settings: "Settings",
+      lbl_format: "Output",
+      lbl_quality: "Quality (JPG/WebP only)",
+      q_095: "Max (0.95)",
+      q_090: "High (0.90)",
+      q_080: "Normal (0.80)",
+      q_070: "Small (0.70)",
+      lbl_w: "Width (px) (blank = original)",
+      lbl_h: "Height (px) (blank = original)",
+      ph_w: "e.g., 1200",
+      ph_h: "e.g., 800",
+      size_hint: "If you enter only one side, aspect ratio is preserved automatically.",
+
+      h_download: "Download",
+      convert: "Convert & Download",
+      reset: "Reset",
+
+      privacy_summary: "🔒 Privacy / Local processing",
+      privacy_body: "Files are processed locally in your browser (no server upload).",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: Merge multiple pages into ONE PDF.<br/>• ZIP: Download multiple converted files as ONE .zip",
+
+      zip_label: "ZIP download",
+      a4_label: "A4 normalize (PDF merge)",
+      multi_note: "Tip: Use ▲▼ to reorder and 🗑️ to remove before converting/merging.",
+
+      list_open: "Open list",
+      list_close:"Close list",
+
+      progress: (done,total)=> `Processing ${done}/${total}…`,
+      progress_done: "Done.",
+
+      msg_loading: "Loading…",
+      msg_ready: "Ready! Click Convert & Download.",
+      msg_png_q: "PNG is lossless; quality setting does not apply.",
+      msg_pdf_one: "Image→PDF will be saved. (Multiple images become one merged PDF.)",
+      msg_pdf_merge: "PDF+PDF merge will output a single merged PDF.",
+      err_only_supported: "Only images and PDFs are supported.",
+      err_preview: "Failed to preview.",
+      err_convert: "Conversion failed. Try different files/options.",
+      err_pdf_lib: "PDF library is not ready. Please refresh and try again.",
+      err_pdf_locked: "This PDF may be password-protected or corrupted. Please unlock it and try again.",
+      err_heic: "HEIC/HEIF may not work on some browsers. Please save as JPG/PNG and try again.",
+      dl_start: (name, size) => `Download started: ${name} (${size})`,
+      meta_img: (name, type, size, w, h) =>
+        `<div class="metaLine">Name</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">Type: ${type}</div>` +
+        `<div class="metaLine">Size: ${size}</div>` +
+        `<div class="metaLine">Resolution: ${w} × ${h}</div>`,
+      meta_pdf: (name, size) =>
+        `<div class="metaLine">Name</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">Type: application/pdf</div>` +
+        `<div class="metaLine">Size: ${size}</div>`,
+      multi_count: (n) => `Selected: ${n} file(s)`
+    },
+    ko: {
+      pageTitle: "Convert",
+      home: "홈으로",
+      secure: "로컬 처리 — 서버 업로드 없음",
+
+      subtitle: '이미지를 <b>JPG / PNG / WebP / PDF</b>로 변환하고 <b>PDF+PDF</b>도 합칠 수 있어요. (서버 업로드 없음)',
+      lang_label: "언어",
+
+      h_upload: "업로드",
+      drop_title: "여기에 파일을 끌어다 놓거나\n또는 탭해서 파일 선택",
+      drop_hint: "지원: JPG, PNG, WebP, PDF • 여러 개 선택 가능",
+
+      h_preview: "미리보기",
+      add_more: "추가하기",
+      thumb_label: "미리보기",
+      meta_idle: "파일을 선택하면 정보가 표시됩니다.",
+
+      h_settings: "설정",
+      lbl_format: "출력",
+      lbl_quality: "품질 (JPG/WebP만)",
+      q_095: "최고(0.95)",
+      q_090: "높음(0.90)",
+      q_080: "보통(0.80)",
+      q_070: "압축(0.70)",
+      lbl_w: "가로(px) (비우면 원본)",
+      lbl_h: "세로(px) (비우면 원본)",
+      ph_w: "예: 1200",
+      ph_h: "예: 800",
+      size_hint: "가로/세로를 하나만 입력하면 비율 유지로 자동 계산됩니다.",
+
+      h_download: "다운로드",
+      convert: "변환 / 합치기",
+      reset: "초기화",
+
+      privacy_summary: "🔒 개인정보 / 로컬 처리 안내",
+      privacy_body: "파일은 서버로 전송되지 않고 브라우저에서 로컬 처리됩니다.",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: 여러 페이지를 1개 PDF로 합침<br/>• ZIP: 여러 변환 파일을 1개 zip으로 받기",
+
+      zip_label: "ZIP 받기",
+      a4_label: "A4 통일(PDF 병합)",
+      multi_note: "팁: ▲▼로 순서 변경, 🗑️로 삭제 후 변환/합치기 하세요.",
+
+      list_open: "목록 열기",
+      list_close:"목록 닫기",
+
+      progress: (done,total)=> `처리 중 ${done}/${total}…`,
+      progress_done: "완료",
+
+      msg_loading: "로딩 중…",
+      msg_ready: "준비 완료! 변환 / 합치기 버튼을 누르세요.",
+      msg_png_q: "PNG는 무손실이라 품질 설정이 적용되지 않아요.",
+      msg_pdf_one: "이미지→PDF는 저장됩니다. (여러 이미지는 1개 PDF로 합쳐집니다.)",
+      msg_pdf_merge: "PDF+PDF 병합은 1개의 합쳐진 PDF로 저장됩니다.",
+      err_only_supported: "이미지와 PDF만 지원합니다.",
+      err_preview: "미리보기에 실패했어요.",
+      err_convert: "변환 실패. 다른 파일/옵션으로 다시 시도해 주세요.",
+      err_pdf_lib: "PDF 라이브러리가 준비되지 않았어요. 새로고침 후 다시 시도해 주세요.",
+      err_pdf_locked: "PDF가 암호로 잠겼거나 손상된 것 같아요. 잠금 해제 후 다시 시도해 주세요.",
+      err_heic: "HEIC/HEIF는 일부 브라우저에서 안 될 수 있어요. JPG/PNG로 저장 후 다시 시도해 주세요.",
+      dl_start: (name, size) => `다운로드 시작: ${name} (${size})`,
+      meta_img: (name, type, size, w, h) =>
+        `<div class="metaLine">파일명</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">형식: ${type}</div>` +
+        `<div class="metaLine">크기: ${size}</div>` +
+        `<div class="metaLine">해상도: ${w} × ${h}</div>`,
+      meta_pdf: (name, size) =>
+        `<div class="metaLine">파일명</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">형식: application/pdf</div>` +
+        `<div class="metaLine">크기: ${size}</div>`,
+      multi_count: (n) => `선택됨: ${n}개`
+    },
+    ja: {
+      pageTitle: "Convert",
+      home: "ホームへ",
+      secure: "ローカル処理 — サーバー送信なし",
+
+      subtitle: '画像を <b>JPG / PNG / WebP / PDF</b> に変換し、<b>PDF+PDF</b> 結合もできます。（サーバー送信なし）',
+      lang_label: "言語",
+
+      h_upload: "アップロード",
+      drop_title: "ここにファイルをドロップ\nまたはタップして選択",
+      drop_hint: "対応: JPG, PNG, WebP, PDF • 複数選択OK",
+
+      h_preview: "プレビュー",
+      add_more: "追加",
+      thumb_label: "プレビュー",
+      meta_idle: "ファイルを選択すると情報が表示されます。",
+
+      h_settings: "設定",
+      lbl_format: "出力",
+      lbl_quality: "品質（JPG/WebPのみ）",
+      q_095: "最高(0.95)",
+      q_090: "高(0.90)",
+      q_080: "標準(0.80)",
+      q_070: "圧縮(0.70)",
+      lbl_w: "幅(px)（空欄=元サイズ）",
+      lbl_h: "高さ(px)（空欄=元サイズ）",
+      ph_w: "例: 1200",
+      ph_h: "例: 800",
+      size_hint: "片方だけ入力すると、比率を維持して自動計算します。",
+
+      h_download: "ダウンロード",
+      convert: "変換 / 結合",
+      reset: "リセット",
+
+      privacy_summary: "🔒 プライバシー / ローカル処理",
+      privacy_body: "ファイルはサーバー送信されず、ブラウザ内で処理されます。",
+      pdfzip_summary: "PDF と ZIP",
+      pdfzip_body: "• PDF: 複数ページを1つに結合<br/>• ZIP: 複数ファイルをzipで受け取る",
+
+      zip_label: "ZIPで受け取る",
+      a4_label: "A4統一(PDF結合)",
+      multi_note: "ヒント: ▲▼で順序変更、🗑️で削除してから実行できます。",
+
+      list_open: "リストを開く",
+      list_close:"リストを閉じる",
+
+      progress: (done,total)=> `処理中 ${done}/${total}…`,
+      progress_done: "完了",
+
+      msg_loading: "読み込み中…",
+      msg_ready: "準備完了！変換 / 結合を押してください。",
+      msg_png_q: "PNGは無劣化のため、品質設定は適用されません。",
+      msg_pdf_one: "画像→PDFは保存されます。（複数画像は1つのPDFに結合）",
+      msg_pdf_merge: "PDF+PDF結合は1つの結合PDFとして保存されます。",
+      err_only_supported: "画像とPDFのみ対応です。",
+      err_preview: "プレビューに失敗しました。",
+      err_convert: "変換に失敗しました。別のファイル/設定でお試しください。",
+      err_pdf_lib: "PDFライブラリが準備できていません。更新して再試行してください。",
+      err_pdf_locked: "PDFがパスワード保護または破損している可能性があります。解除して再試行してください。",
+      err_heic: "HEIC/HEIFは一部ブラウザで非対応です。JPG/PNGで保存してお試しください。",
+      dl_start: (name, size) => `ダウンロード開始: ${name} (${size})`,
+      meta_img: (name, type, size, w, h) =>
+        `<div class="metaLine">ファイル名</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">形式: ${type}</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>` +
+        `<div class="metaLine">解像度: ${w} × ${h}</div>`,
+      meta_pdf: (name, size) =>
+        `<div class="metaLine">ファイル名</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">形式: application/pdf</div>` +
+        `<div class="metaLine">サイズ: ${size}</div>`,
+      multi_count: (n) => `選択: ${n}件`
+    },
+    es: {
+      pageTitle: "Convert",
+      home: "Inicio",
+      secure: "Procesamiento local — Sin subir al servidor",
+
+      subtitle: 'Convierte imágenes a <b>JPG / PNG / WebP / PDF</b> y une <b>PDF+PDF</b>. (Sin subir archivos)',
+      lang_label: "Idioma",
+
+      h_upload: "Subir",
+      drop_title: "Suelta los archivos aquí\no toca para seleccionarlos",
+      drop_hint: "Soporta: JPG, PNG, WebP, PDF • Selección múltiple",
+
+      h_preview: "Vista previa",
+      add_more: "Añadir",
+      thumb_label: "Vista previa",
+      meta_idle: "Elige archivos para ver detalles.",
+
+      h_settings: "Ajustes",
+      lbl_format: "Salida",
+      lbl_quality: "Calidad (solo JPG/WebP)",
+      q_095: "Máx (0.95)",
+      q_090: "Alta (0.90)",
+      q_080: "Normal (0.80)",
+      q_070: "Pequeña (0.70)",
+      lbl_w: "Ancho (px) (vacío = original)",
+      lbl_h: "Alto (px) (vacío = original)",
+      ph_w: "p. ej., 1200",
+      ph_h: "p. ej., 800",
+      size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
+
+      h_download: "Descargar",
+      convert: "Convertir / Unir",
+      reset: "Reiniciar",
+
+      privacy_summary: "🔒 Privacidad / Procesamiento local",
+      privacy_body: "Los archivos no se suben al servidor; se procesan localmente en tu navegador.",
+      pdfzip_summary: "PDF vs ZIP",
+      pdfzip_body: "• PDF: Une varias páginas en un PDF<br/>• ZIP: Descarga varios archivos en un .zip",
+
+      zip_label: "Descargar en ZIP",
+      a4_label: "Normalizar a A4 (unir PDF)",
+      multi_note: "Consejo: Usa ▲▼ para reordenar y 🗑️ para eliminar antes de convertir/unir.",
+
+      list_open: "Abrir lista",
+      list_close:"Cerrar lista",
+
+      progress: (done,total)=> `Procesando ${done}/${total}…`,
+      progress_done: "Hecho.",
+
+      msg_loading: "Cargando…",
+      msg_ready: "¡Listo! Pulsa Convertir / Unir.",
+      msg_png_q: "PNG es sin pérdida; la calidad no aplica.",
+      msg_pdf_one: "Imagen→PDF se guardará. (Varias imágenes se combinan en un solo PDF.)",
+      msg_pdf_merge: "Unir PDF+PDF generará un solo PDF combinado.",
+      err_only_supported: "Solo se admiten imágenes y PDFs.",
+      err_preview: "Falló la vista previa.",
+      err_convert: "Falló la conversión. Prueba con otros archivos/opciones.",
+      err_pdf_lib: "La librería PDF no está lista. Actualiza y reintenta.",
+      err_pdf_locked: "Este PDF puede estar protegido con contraseña o dañado. Desbloquéalo y reintenta.",
+      err_heic: "HEIC/HEIF puede no funcionar en algunos navegadores. Guarda como JPG/PNG y reintenta.",
+      dl_start: (name, size) => `Descarga iniciada: ${name} (${size})`,
+      meta_img: (name, type, size, w, h) =>
+        `<div class="metaLine">Nombre</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">Tipo: ${type}</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>` +
+        `<div class="metaLine">Resolución: ${w} × ${h}</div>`,
+      meta_pdf: (name, size) =>
+        `<div class="metaLine">Nombre</div><div class="metaFileName">${name}</div>` +
+        `<div class="metaLine">Tipo: application/pdf</div>` +
+        `<div class="metaLine">Tamaño: ${size}</div>`,
+      multi_count: (n) => `Seleccionados: ${n}`
+    }
+  };
+
+  function getQueryLang(){
+    try{
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toLowerCase();
+      if(q && STR[q]) return q;
+    }catch(e){}
+    return null;
+  }
+
+  function detectLang(){
+    const q = getQueryLang();
+    if(q) return q;
+
+    const saved = localStorage.getItem("cf24_lang");
+    if(saved && STR[saved]) return saved;
+
+    const nav = (navigator.language || "").toLowerCase();
+    if(nav.startsWith("ko")) return "ko";
+    if(nav.startsWith("ja")) return "ja";
+    if(nav.startsWith("es")) return "es";
+    return "en";
+  }
+
+  let LANG = detectLang();
+
+  function humanSize(bytes){
+    const units = ["B","KB","MB","GB"];
+    let i = 0, v = bytes;
+    while(v >= 1024 && i < units.length-1){ v/=1024; i++; }
+    return `${v.toFixed(i===0?0:1)} ${units[i]}`;
+  }
+
+  function setMessage(text, type){
+    msg.textContent = text || "";
+    msg.className = "msg " + (type || "");
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  function extLower(name){
+    return (name || "").toLowerCase().split(".").pop();
+  }
+
+  function isImage(file){
+    const t = (file.type || "").toLowerCase();
+    if(t.startsWith("image/")) return true;
+    const ext = extLower(file.name);
+    return ["jpg","jpeg","png","webp","gif","bmp","heic","heif"].includes(ext);
+  }
+
+  function isPDF(file){
+    const t = (file.type || "").toLowerCase();
+    if(t === "application/pdf") return true;
+    return extLower(file.name) === "pdf";
+  }
+
+  function mimeToExt(mime){
+    if(mime === "image/jpeg") return "jpg";
+    if(mime === "image/png") return "png";
+    if(mime === "image/webp") return "webp";
+    if(mime === "application/pdf") return "pdf";
+    return "bin";
+  }
+
+  function buildName(baseName, ext){
+    const base = (baseName || "file").replace(/\.[^.]+$/, "");
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    return `${base}_${stamp}.${ext}`;
+  }
+
+  function downloadBlob(blob, filename){
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+
+  function syncHomeLink(){
+    if(!homeBtn) return;
+    homeBtn.href = "/?lang=" + encodeURIComponent(LANG);
+  }
+
+  function syncLangSelect(){
+    if(!langSelectEl) return;
+    langSelectEl.value = LANG;
+  }
+
+  function showProgress(){
+    if(progressWrap) progressWrap.style.display = "block";
+    if(progressText) progressText.style.display = "block";
+    setProgress(0, 1);
+  }
+  function hideProgress(){
+    if(progressWrap) progressWrap.style.display = "none";
+    if(progressText) progressText.style.display = "none";
+    if(progressBar) progressBar.style.width = "0%";
+    if(progressText) progressText.textContent = "";
+  }
+  function setProgress(done, total){
+    const t = STR[LANG] || STR.en;
+    const safeTotal = Math.max(1, total || 1);
+    const pct = Math.max(0, Math.min(100, Math.round((done / safeTotal) * 100)));
+    if(progressBar) progressBar.style.width = pct + "%";
+    if(progressText) progressText.textContent = (done >= safeTotal) ? t.progress_done : t.progress(done, safeTotal);
+  }
+
+  let files = [];
+  let activeIndex = 0;
+  let isListOpen = false;
+
+  function syncDropReady(){
+    if(!drop) return;
+    drop.classList.toggle("active", files.length > 0);
+  }
+
+  function updateDropBadge(){
+    const n = files.length;
+    if(!dropBadge || !dropBadgeText) return;
+
+    if(n <= 0){
+      dropBadge.style.display = "none";
+      dropBadgeText.textContent = "0";
+      syncDropReady();
+      return;
+    }
+
+    dropBadge.style.display = "inline-flex";
+    dropBadgeText.textContent = String(n);
+    syncDropReady();
+  }
+
+  function setListOpen(open){
+    isListOpen = !!open;
+    const t = STR[LANG] || STR.en;
+
+    if(fileListWrap) fileListWrap.style.display = isListOpen ? "block" : "none";
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
+    if(listToggleBtn){
+      listToggleBtn.firstChild && (listToggleBtn.firstChild.textContent = isListOpen ? "▴ " : "▾ ");
+    }
+  }
+
+  function renderTexts(){
+    const t = STR[LANG] || STR.en;
+
+    document.documentElement.lang = LANG;
+
+    if(pageTitleEl) pageTitleEl.textContent = t.pageTitle;
+    if(homeBtnText) homeBtnText.textContent = t.home;
+    if(securePillText) securePillText.textContent = t.secure;
+
+    $("subtitle").innerHTML = t.subtitle;
+    $("lang_label").textContent = t.lang_label;
+
+    $("h_upload").textContent = t.h_upload;
+    $("drop_title").textContent = t.drop_title;
+    $("drop_hint").textContent = t.drop_hint;
+
+    $("h_preview").textContent = t.h_preview;
+    addMoreLabel.textContent = t.add_more;
+
+    $("h_settings").textContent = t.h_settings;
+    $("lbl_format").textContent = t.lbl_format;
+    $("lbl_quality").textContent = t.lbl_quality;
+
+    $("q_095").textContent = t.q_095;
+    $("q_090").textContent = t.q_090;
+    $("q_080").textContent = t.q_080;
+    $("q_070").textContent = t.q_070;
+
+    $("lbl_w").textContent = t.lbl_w;
+    $("lbl_h").textContent = t.lbl_h;
+    inW.placeholder = t.ph_w;
+    inH.placeholder = t.ph_h;
+    $("size_hint").textContent = t.size_hint;
+
+    $("h_download").textContent = t.h_download;
+    btnConvert.textContent = t.convert;
+    btnReset.textContent = t.reset;
+
+    const ps = $("privacy_summary");
+    const pb = $("privacy_body");
+    const zs = $("pdfzip_summary");
+    const zb = $("pdfzip_body");
+    if(ps) ps.textContent = t.privacy_summary;
+    if(pb) pb.innerHTML = t.privacy_body;
+    if(zs) zs.textContent = t.pdfzip_summary;
+    if(zb) zb.innerHTML = t.pdfzip_body;
+
+    $("zip_label").textContent = t.zip_label;
+    $("a4_label").textContent = t.a4_label;
+    $("multi_note").textContent = t.multi_note;
+
+    if(listToggleLabel) listToggleLabel.textContent = isListOpen ? t.list_close : t.list_open;
+
+    if(files.length === 0){
+      meta.textContent = t.meta_idle;
+      thumb.innerHTML = `<span style="color:#90a3c1; font-size:12px;">${t.thumb_label}</span>`;
+    }
+
+    if(multiCount) multiCount.textContent = t.multi_count(files.length);
+
+    syncHomeLink();
+    syncLangSelect();
+    updateDropBadge();
+    syncDropReady();
+  }
+
+  function setLang(lang){
+    if(!STR[lang]) lang = "en";
+    LANG = lang;
+    localStorage.setItem("cf24_lang", lang);
+
+    try{
+      const u = new URL(location.href);
+      u.searchParams.set("lang", LANG);
+      history.replaceState({}, "", u.toString());
+    }catch(e){}
+
+    renderTexts();
+    updateQualityState();
+    renderFileList();
+    updateAddMoreState();
+    updateZipAvailability();
+    setListOpen(isListOpen);
+    syncDropReady();
+  }
+
+  if(langSelectEl){
+    langSelectEl.addEventListener("change", ()=> setLang(langSelectEl.value));
+  }
+
+  function renderFileList(){
+    if(files.length <= 1){
+      multiPanel.style.display = "none";
+      multiPanel.classList.remove("isMultiActive");
+      setListOpen(false);
+    } else {
+      multiPanel.style.display = "block";
+      multiPanel.classList.add("isMultiActive");
+      if(!isListOpen) setListOpen(false);
+    }
+
+    const t = STR[LANG] || STR.en;
+    multiCount.textContent = t.multi_count(files.length);
+
+    fileListEl.innerHTML = "";
+    files.forEach((item, idx) => {
+      const row = document.createElement("div");
+      row.className = "fileRow" + (idx === activeIndex ? " active" : "");
+
+      const name = document.createElement("div");
+      name.className = "fileName";
+      name.title = item.file.name;
+      name.textContent = item.file.name;
+
+      const mini = document.createElement("div");
+      mini.className = "mini";
+
+      const up = document.createElement("button");
+      up.className = "iconBtn";
+      up.type = "button";
+      up.textContent = "▲";
+      up.disabled = idx === 0;
+      up.addEventListener("click", (e)=>{ e.stopPropagation(); move(idx, idx-1); });
+
+      const down = document.createElement("button");
+      down.className = "iconBtn";
+      down.type = "button";
+      down.textContent = "▼";
+      down.disabled = idx === files.length-1;
+      down.addEventListener("click", (e)=>{ e.stopPropagation(); move(idx, idx+1); });
+
+      const del = document.createElement("button");
+      del.className = "iconBtn";
+      del.type = "button";
+      del.textContent = "🗑️";
+      del.addEventListener("click", (e)=>{ e.stopPropagation(); removeAt(idx); });
+
+      mini.appendChild(up);
+      mini.appendChild(down);
+      mini.appendChild(del);
+
+      row.appendChild(name);
+      row.appendChild(mini);
+
+      row.addEventListener("click", ()=>{
+        activeIndex = idx;
+        renderFileList();
+        previewActive();
+      });
+
+      fileListEl.appendChild(row);
+    });
+
+    updateDropBadge();
+    syncDropReady();
+  }
+
+  function move(from, to){
+    if(to < 0 || to >= files.length) return;
+    const t = files[from];
+    files.splice(from,1);
+    files.splice(to,0,t);
+    if(activeIndex === from) activeIndex = to;
+    renderFileList();
+    previewActive();
+    updateZipAvailability();
+    syncDropReady();
+  }
+
+  function removeAt(idx){
+    files.splice(idx,1);
+    if(activeIndex >= files.length) activeIndex = Math.max(0, files.length-1);
+    renderFileList();
+
+    if(files.length === 0){
+      resetAll();
+      return;
+    }
+
+    previewActive();
+    updateZipAvailability();
+    updateDropBadge();
+    syncDropReady();
+  }
+
+  function updateAddMoreState(){
+    addMoreBtn.disabled = (files.length === 0);
+  }
+
+  async function previewActive(){
+    const t = STR[LANG] || STR.en;
+
+    if(files.length === 0){
+      renderTexts();
+      btnConvert.disabled = true;
+      btnReset.disabled = true;
+      updateAddMoreState();
+      updateZipAvailability();
+      updateDropBadge();
+      syncDropReady();
+      return;
+    }
+
+    const f = files[activeIndex]?.file;
+    if(!f) return;
+
+    btnConvert.disabled = false;
+    btnReset.disabled = false;
+
+    if(isImage(f)){
+      const ext = extLower(f.name);
+      if(ext === "heic" || ext === "heif"){
+        setMessage(t.err_heic, "err");
+      }else{
+        setMessage(t.msg_loading, "");
+      }
+
+      const url = URL.createObjectURL(f);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        thumb.innerHTML = "";
+        thumb.appendChild(img);
+
+        const w = img.naturalWidth || 0;
+        const h = img.naturalHeight || 0;
+
+        meta.innerHTML = t.meta_img(
+          escapeHtml(f.name),
+          escapeHtml((f.type || "image/*")),
+          humanSize(f.size),
+          w, h
+        );
+
+        if(!(ext === "heic" || ext === "heif")) setMessage(t.msg_ready, "ok");
+        updateAddMoreState();
+        updateZipAvailability();
+        updateDropBadge();
+        syncDropReady();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        thumb.innerHTML = "";
+        meta.textContent = t.err_preview;
+        setMessage(t.err_preview, "err");
+        updateAddMoreState();
+        updateZipAvailability();
+        updateDropBadge();
+        syncDropReady();
+      };
+      img.src = url;
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "cover";
+      return;
+    }
+
+    if(isPDF(f)){
+      thumb.innerHTML = `<div style="font-weight:900; font-size:22px; color:#cfe0ff;">PDF</div>`;
+      meta.innerHTML = t.meta_pdf(escapeHtml(f.name), humanSize(f.size));
+      setMessage(t.msg_ready, "ok");
+      updateAddMoreState();
+      updateZipAvailability();
+      updateDropBadge();
+      syncDropReady();
+      return;
+    }
+
+    meta.textContent = t.err_only_supported;
+    setMessage(t.err_only_supported, "err");
+    btnConvert.disabled = true;
+    updateAddMoreState();
+    updateZipAvailability();
+    updateDropBadge();
+    syncDropReady();
+  }
+
+  function appendFiles(selected){
+    const t = STR[LANG] || STR.en;
+    if(!selected || selected.length === 0) return;
+
+    const arr = Array.from(selected);
+    const ok = arr.filter(f => isImage(f) || isPDF(f));
+    if(ok.length === 0){
+      setMessage(t.err_only_supported, "err");
+      return;
+    }
+
+    const base = files.slice();
+    ok.forEach((file, i)=>{
+      base.push({ file, id: `${Date.now()}_${Math.random().toString(16).slice(2)}_${i}` });
+    });
+    files = base;
+
+    syncDropReady();
+
+    btnReset.disabled = false;
+    btnConvert.disabled = (files.length === 0);
+
+    renderFileList();
+    renderTexts();
+    previewActive();
+    updateQualityState();
+    updateAddMoreState();
+    updateZipAvailability();
+    updateDropBadge();
+  }
+
+  async function handleFiles(selected){
+    const t = STR[LANG] || STR.en;
+    if(!selected || selected.length === 0) return;
+
+    files = [];
+    activeIndex = 0;
+
+    appendFiles(selected);
+
+    const mime = selFormat.value;
+
+    if(mime === "image/png"){
+      setMessage(t.msg_png_q, "");
+    } else if(mime === "application/pdf"){
+      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
+      else setMessage(t.msg_pdf_one, "");
+    } else {
+      setMessage(t.msg_ready, "ok");
+    }
+
+    updateZipAvailability();
+    updateDropBadge();
+    syncDropReady();
+  }
+
+  function openFilePicker(){
+    try{
+      fileInput.value = "";
+      fileInput.focus();
+      fileInput.click();
+    }catch(e){
+      const tmp = document.createElement("input");
+      tmp.type = "file";
+      tmp.accept = "image/*,application/pdf";
+      tmp.multiple = true;
+      tmp.style.position = "fixed";
+      tmp.style.left = "-9999px";
+      document.body.appendChild(tmp);
+      tmp.addEventListener("change", (ev)=>{
+        handleFiles(ev.target.files);
+        document.body.removeChild(tmp);
+      }, { once:true });
+      tmp.click();
+    }
+  }
+
+  function openFilePickerAppend(){
+    const tmp = document.createElement("input");
+    tmp.type = "file";
+    tmp.accept = "image/*,application/pdf";
+    tmp.multiple = true;
+    tmp.style.position = "fixed";
+    tmp.style.left = "-9999px";
+    document.body.appendChild(tmp);
+    tmp.addEventListener("change", (ev)=>{
+      appendFiles(ev.target.files);
+      document.body.removeChild(tmp);
+    }, { once:true });
+    tmp.click();
+  }
+
+  addMoreBtn.addEventListener("click", openFilePickerAppend);
+
+  if(listToggleBtn){
+    listToggleBtn.addEventListener("click", ()=>{
+      setListOpen(!isListOpen);
+    });
+  }
+
+  drop.addEventListener("click", openFilePicker);
+  drop.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openFilePicker();
+    }
+  });
+
+  fileInput.addEventListener("change", (e)=> handleFiles(e.target.files));
+
+  ["dragenter","dragover"].forEach(evt => {
+    drop.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.add("drag");
+    });
+  });
+  ["dragleave","drop"].forEach(evt => {
+    drop.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.remove("drag");
+    });
+  });
+  drop.addEventListener("drop", (e) => {
+    const fs = e.dataTransfer.files;
+    handleFiles(fs);
+  });
+
+  function updateQualityState(){
+    const mime = selFormat.value;
+    const disableQuality = (mime === "image/png" || mime === "application/pdf");
+    selQuality.disabled = disableQuality;
+    selQuality.style.opacity = disableQuality ? ".6" : "1";
+  }
+
+  function updateZipAvailability(){
+    const outMime = selFormat.value;
+    const images = files.filter(x => isImage(x.file));
+    const pdfs   = files.filter(x => isPDF(x.file));
+
+    zipModeEl.disabled = false;
+
+    const shouldAutoZip = (outMime !== "application/pdf" && images.length >= 2);
+    if(shouldAutoZip && zipModeEl.checked === false){
+      zipModeEl.checked = true;
+    }
+
+    if(outMime === "application/pdf" && zipModeEl.checked){
+      a4ModeEl.checked = false;
+      a4ModeEl.disabled = true;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = ".55";
+        a4ChkLabel.style.cursor = "not-allowed";
+      }
+    } else {
+      a4ModeEl.disabled = false;
+      if(a4ChkLabel){
+        a4ChkLabel.style.opacity = "1";
+        a4ChkLabel.style.cursor = "pointer";
+      }
+    }
+
+    if(zipChkLabel){
+      zipChkLabel.style.opacity = "1";
+      zipChkLabel.style.cursor = "pointer";
+    }
+
+    void pdfs;
+  }
+
+  selFormat.addEventListener("change", ()=>{
+    updateQualityState();
+    updateZipAvailability();
+
+    const t = STR[LANG] || STR.en;
+    const mime = selFormat.value;
+
+    if(mime === "image/png"){
+      setMessage(t.msg_png_q, "");
+    } else if(mime === "application/pdf"){
+      if(files.some(x=>isPDF(x.file))) setMessage(t.msg_pdf_merge, "");
+      else setMessage(t.msg_pdf_one, "");
+    } else if(files.length){
+      setMessage(t.msg_ready, "ok");
+    } else {
+      setMessage("", "");
+    }
+  });
+
+  zipModeEl.addEventListener("change", updateZipAvailability);
+
+  function getTargetSize(origW, origH){
+    const w = parseInt(inW.value, 10);
+    const h = parseInt(inH.value, 10);
+    if(!w && !h) return { w: origW, h: origH };
+    if(w && !h) return { w, h: Math.round(w * (origH / origW)) };
+    if(!w && h) return { w: Math.round(h * (origW / origH)), h };
+    return { w, h };
+  }
+
+  async function imageToCanvasBlob(file, outMime, quality){
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    await new Promise((resolve, reject)=>{
+      img.onload = () => resolve(true);
+      img.onerror = () => reject(new Error("image load fail"));
+      img.src = url;
+    });
+
+    URL.revokeObjectURL(url);
+
+    const origW = img.naturalWidth || 0;
+    const origH = img.naturalHeight || 0;
+    const { w, h } = getTargetSize(origW, origH);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, w);
+    canvas.height = Math.max(1, h);
+
+    const ctx = canvas.getContext("2d", { alpha:true });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise((resolve)=>{
+      if(outMime === "image/png"){
+        canvas.toBlob(resolve, outMime);
+      } else {
+        canvas.toBlob(resolve, outMime, quality);
+      }
+    });
+
+    if(!blob) throw new Error("toBlob failed");
+    return { blob, canvas, w: canvas.width, h: canvas.height };
+  }
+
+  async function imagesToSinglePDF(imageItems){
+    const t = STR[LANG] || STR.en;
+    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
+
+    const { PDFDocument } = window.PDFLib;
+    const pdfDoc = await PDFDocument.create();
+
+    const total = imageItems.length;
+    let done = 0;
+    setProgress(done, total);
+
+    for(const it of imageItems){
+      const { canvas, w, h } = await imageToCanvasBlob(it.file, "image/png", 1);
+      const pngBlob = await new Promise((resolve)=> canvas.toBlob(resolve, "image/png"));
+      if(!pngBlob) throw new Error(t.err_convert);
+
+      const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
+      const imgEmbed = await pdfDoc.embedPng(pngBytes);
+
+      const page = pdfDoc.addPage([w, h]);
+      page.drawImage(imgEmbed, { x:0, y:0, width:w, height:h });
+
+      done++;
+      setProgress(done, total);
+    }
+
+    const bytes = await pdfDoc.save();
+    return new Blob([bytes], { type:"application/pdf" });
+  }
+
+  async function mergePDFs(pdfItems, normalizeA4){
+    const t = STR[LANG] || STR.en;
+    if(!window.PDFLib) throw new Error(t.err_pdf_lib);
+
+    const { PDFDocument, PageSizes } = window.PDFLib;
+    const outDoc = await PDFDocument.create();
+    const [a4w, a4h] = PageSizes.A4;
+
+    const loaded = [];
+    let totalPages = 0;
+
+    for(const it of pdfItems){
+      const f = it.file;
+      try{
+        const buf = await f.arrayBuffer();
+        const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: false });
+        const pageCount = srcDoc.getPageCount();
+        totalPages += pageCount;
+        loaded.push({ srcDoc, pageCount });
+      }catch(e){
+        throw new Error(t.err_pdf_locked);
+      }
+    }
+
+    let donePages = 0;
+    setProgress(donePages, Math.max(1,totalPages));
+
+    for(const pack of loaded){
+      const srcDoc = pack.srcDoc;
+
+      if(normalizeA4){
+        const srcPages = srcDoc.getPages();
+        for(let i=0;i<srcPages.length;i++){
+          const embedded = await outDoc.embedPage(srcPages[i]);
+          const w = embedded.width;
+          const h = embedded.height;
+          const scale = Math.min(a4w / w, a4h / h);
+          const drawW = w * scale;
+          const drawH = h * scale;
+          const x = (a4w - drawW) / 2;
+          const y = (a4h - drawH) / 2;
+
+          const page = outDoc.addPage([a4w, a4h]);
+          page.drawPage(embedded, { x, y, width: drawW, height: drawH });
+
+          donePages++;
+          setProgress(donePages, totalPages);
+        }
+      }else{
+        const copied = await outDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copied.forEach(p => {
+          outDoc.addPage(p);
+          donePages++;
+          setProgress(donePages, totalPages);
+        });
+      }
+    }
+
+    const bytes = await outDoc.save();
+    return new Blob([bytes], { type:"application/pdf" });
+  }
+
+  async function convertImagesToZIP(imageItems, outMime, quality){
+    if(!window.JSZip) throw new Error("ZIP library is not ready.");
+    const zip = new window.JSZip();
+
+    const total = imageItems.length;
+    let done = 0;
+    setProgress(done, total);
+
+    for(const it of imageItems){
+      const f = it.file;
+      const { blob } = await imageToCanvasBlob(f, outMime, quality);
+
+      const ext = mimeToExt(outMime);
+      const base = (f.name || "image").replace(/\.[^.]+$/, "");
+      const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+      zip.file(`${base}_${stamp}.${ext}`, blob);
+
+      done++;
+      setProgress(done, total);
+    }
+
+    return await zip.generateAsync({ type:"blob" });
+  }
+
+  async function zipOriginalPDFs(pdfItems){
+    if(!window.JSZip) throw new Error("ZIP library is not ready.");
+    const zip = new window.JSZip();
+
+    const total = pdfItems.length;
+    let done = 0;
+    setProgress(done, total);
+
+    for(const it of pdfItems){
+      const f = it.file;
+      const buf = await f.arrayBuffer();
+      zip.file(f.name || buildName("file","pdf"), buf);
+
+      done++;
+      setProgress(done, total);
+    }
+
+    return await zip.generateAsync({ type:"blob" });
+  }
+
+  async function onConvert(){
+    const t = STR[LANG] || STR.en;
+    if(files.length === 0){
+      setMessage(t.err_only_supported, "err");
+      return;
+    }
+
+    btnConvert.disabled = true;
+    setMessage(t.msg_loading, "");
+    showProgress();
+
+    const outMime = selFormat.value;
+    const quality = parseFloat(selQuality.value);
+
+    const images = files.filter(x => isImage(x.file));
+    const pdfs   = files.filter(x => isPDF(x.file));
+
+    try{
+      if(outMime === "application/pdf"){
+        if(pdfs.length >= 1){
+          if(pdfs.length >= 2 && zipModeEl.checked){
+            const zipBlob = await zipOriginalPDFs(pdfs);
+            const name = buildName("pdf_files", "zip");
+            downloadBlob(zipBlob, name);
+            setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
+            setProgress(1,1);
+            setTimeout(hideProgress, 450);
+            btnConvert.disabled = false;
+            return;
+          }
+
+          const merged = await mergePDFs(pdfs, !!a4ModeEl.checked);
+          const name = buildName("merged_pdf", "pdf");
+          downloadBlob(merged, name);
+          setMessage(t.dl_start(name, humanSize(merged.size)), "ok");
+          setProgress(1,1);
+          setTimeout(hideProgress, 450);
+          btnConvert.disabled = false;
+          return;
+        }
+
+        if(images.length >= 1){
+          const pdfBlob = await imagesToSinglePDF(images);
+          const name = buildName(images.length >= 2 ? "images_to_pdf" : "image_to_pdf", "pdf");
+          downloadBlob(pdfBlob, name);
+          setMessage(t.dl_start(name, humanSize(pdfBlob.size)), "ok");
+          setProgress(1,1);
+          setTimeout(hideProgress, 450);
+          btnConvert.disabled = false;
+          return;
+        }
+
+        throw new Error(t.err_only_supported);
+      }
+
+      if(images.length === 0){
+        throw new Error(t.err_only_supported);
+      }
+
+      if(images.length >= 2 && zipModeEl.checked){
+        const zipBlob = await convertImagesToZIP(images, outMime, quality);
+        const name = buildName("converted_images", "zip");
+        downloadBlob(zipBlob, name);
+        setMessage(t.dl_start(name, humanSize(zipBlob.size)), "ok");
+        setProgress(1,1);
+        setTimeout(hideProgress, 450);
+        btnConvert.disabled = false;
+        return;
+      }
+
+      setProgress(0,1);
+      const first = images[0].file;
+      const { blob } = await imageToCanvasBlob(first, outMime, quality);
+      setProgress(1,1);
+
+      const name = buildName(first.name, mimeToExt(outMime));
+      downloadBlob(blob, name);
+      setMessage(t.dl_start(name, humanSize(blob.size)), "ok");
+
+      setTimeout(hideProgress, 450);
+      btnConvert.disabled = false;
+
+    }catch(e){
+      const errText = (e && e.message) ? e.message : (STR[LANG]||STR.en).err_convert;
+      setMessage(errText, "err");
+      hideProgress();
+      btnConvert.disabled = false;
+    }
+  }
+
+  function resetAll(){
+    files = [];
+    activeIndex = 0;
+
+    fileInput.value = "";
+    drop.classList.remove("active");
+
+    btnConvert.disabled = true;
+    btnReset.disabled = true;
+
+    inW.value = "";
+    inH.value = "";
+
+    zipModeEl.checked = false;
+    a4ModeEl.checked = false;
+
+    setMessage("", "");
+    hideProgress();
+
+    isListOpen = false;
+
+    renderTexts();
+    renderFileList();
+    updateAddMoreState();
+    updateZipAvailability();
+    updateDropBadge();
+    setListOpen(false);
+    syncDropReady();
+  }
+
+  btnConvert.addEventListener("click", onConvert);
+  btnReset.addEventListener("click", resetAll);
+
+  // init
+  setLang(LANG);
+  resetAll();
+})();
+</script>
+</body>
+</html>
