@@ -528,6 +528,13 @@
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
     .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
 
+    /* ✅ download button busy state */
+    .btn.isBusy{
+      cursor: progress;
+      filter: brightness(1.02);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 10px 18px rgba(0,0,0,.18);
+    }
+
     label{ display:block; font-size:12px; color:#a7b3c7; margin-bottom:6px; }
     select, input[type="number"]{
       width:100%;
@@ -889,7 +896,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled>⬇️ Download</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">⬇️ Download</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -903,8 +910,8 @@
 
     <div class="footer">
       © <span id="year"></span> ConvertFiles24 ·
-      <a href="/privacy/">Privacy</a> ·
-      <a href="/terms/">Terms</a>
+      <a href="/privacy.html">Privacy</a> ·
+      <a href="/terms.html">Terms</a>
     </div>
   </div>
 
@@ -970,6 +977,9 @@
 
       h_download: "Download",
       download: "⬇️ Download",
+      downloading: "⏳ Processing…",
+      downloaded: "✅ Ready",
+
       reset_all: "Reset (remove image)",
 
       msg_need: "No image yet. Use the drop box above to load an image.",
@@ -1035,6 +1045,9 @@
 
       h_download: "다운로드",
       download: "⬇️ 다운로드",
+      downloading: "⏳ 처리 중...",
+      downloaded: "✅ 준비됨",
+
       reset_all: "초기화(이미지 제거)",
 
       msg_need: "아직 이미지가 없어요. 위 드롭박스에서 이미지를 불러와 주세요.",
@@ -1100,6 +1113,9 @@
 
       h_download: "Descargar",
       download: "⬇️ Descargar",
+      downloading: "⏳ Procesando…",
+      downloaded: "✅ Listo",
+
       reset_all: "Reiniciar (quitar imagen)",
 
       msg_need: "Aún no hay imagen. Usa el cuadro de arriba para cargar una.",
@@ -1165,6 +1181,9 @@
 
       h_download: "ダウンロード",
       download: "⬇️ ダウンロード",
+      downloading: "⏳ 処理中…",
+      downloaded: "✅ 準備OK",
+
       reset_all: "リセット(画像削除)",
 
       msg_need: "まだ画像がありません。上のドロップボックスから読み込んでください。",
@@ -1291,7 +1310,15 @@
     $("aspect_hint").textContent = t().aspect_hint;
 
     $("h_download").textContent = t().h_download;
-    $("downloadBtn").textContent = t().download;
+
+    // ✅ download button text should reflect current busy state
+    if(downloadBtn.dataset.busy === "1"){
+      $("downloadBtn").textContent = t().downloading;
+    } else if(downloadBtn.dataset.justdone === "1"){
+      $("downloadBtn").textContent = t().downloaded;
+    } else {
+      $("downloadBtn").textContent = t().download;
+    }
 
     if(!img) $("meta").innerHTML = t().meta_idle;
     if(MSG_STATE.key) setMsgKey(MSG_STATE.key, MSG_STATE.cls);
@@ -1385,6 +1412,32 @@
 
   const downloadBtn = $("downloadBtn");
   const resetAllBtn = $("resetAllBtn");
+
+  // ✅ download button state helpers (NO percent)
+  let downloadBusy = false;
+  let downloadDoneTimer = null;
+  const downloadDefaultText = ()=> t().download;
+
+  function setDownloadBusy(on){
+    downloadBusy = !!on;
+    downloadBtn.dataset.busy = downloadBusy ? "1" : "0";
+    downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
+    downloadBtn.classList.toggle("isBusy", downloadBusy);
+    downloadBtn.disabled = downloadBusy || !img;
+    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
+  }
+
+  function flashDownloadDone(){
+    downloadBtn.dataset.justdone = "1";
+    downloadBtn.textContent = t().downloaded;
+    if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
+    downloadDoneTimer = setTimeout(()=>{
+      downloadBtn.dataset.justdone = "0";
+      if(!downloadBusy){
+        downloadBtn.textContent = downloadDefaultText();
+      }
+    }, 900);
+  }
 
   // ✅ empty state button also opens picker
   emptyPickBtn.addEventListener("click", ()=>{
@@ -1554,6 +1607,7 @@
   function updateMeta(){
     if(!img){
       $("meta").innerHTML = t().meta_idle;
+      setDownloadBusy(false);
       downloadBtn.disabled = true;
       resetAllBtn.disabled = true;
       resetMiniBtn.disabled = true;
@@ -1563,8 +1617,9 @@
       clearHistory();
       return;
     }
+
     $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
-    downloadBtn.disabled = false;
+
     resetAllBtn.disabled = false;
     resetMiniBtn.disabled = false;
     cropToggleBtn.disabled = false;
@@ -1577,6 +1632,12 @@
     qualityEl.style.opacity = disableQ ? ".6" : "1";
 
     undoBtn.disabled = history.length === 0;
+
+    // ✅ only enable download if not busy
+    downloadBtn.disabled = downloadBusy;
+    if(!downloadBusy && downloadBtn.dataset.justdone !== "1"){
+      downloadBtn.textContent = t().download;
+    }
   }
 
   function escapeHtml(s){
@@ -2312,14 +2373,30 @@
   }
 
   downloadBtn.addEventListener("click", async ()=>{
+    if(downloadBusy) return;
     try{
+      if(!img) return setMsgKey("msg_need", "err");
+
+      // ✅ 버튼 상태: 처리중
+      setDownloadBusy(true);
+
+      // ✅ UI 업데이트가 먼저 보이도록 한 프레임 양보
+      await new Promise(r => requestAnimationFrame(r));
+
       const blob = await stageToOutputBlob();
       downloadBlob(blob, buildName());
+
       setMsgKey("msg_ok", "ok");
+
+      // ✅ 버튼 상태: 완료(잠깐 보여주고 원복)
+      flashDownloadDone();
     }catch(e){
       const m = (e && e.message) ? e.message : "Download failed";
       setMsgKey(null, "err");
       $("msg").textContent = m;
+    }finally{
+      setDownloadBusy(false);
+      updateMeta();
     }
   });
 
@@ -2345,6 +2422,9 @@
     clearSessionKeys();
 
     setMsgKey(null, "");
+    downloadBtn.dataset.justdone = "0";
+    setDownloadBusy(false);
+
     redraw();
     updateMeta();
     resizeCanvas();
