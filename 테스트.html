@@ -9,12 +9,10 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f17" />
 
-  <!-- ✅ If JS fails, don't hide everything -->
   <script>
     document.documentElement.classList.add("js");
   </script>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -184,6 +182,103 @@
       line-height:1.2;
     }
 
+    /* ===== Stage head (Preview/Edit + Presets on same row) ===== */
+    .stageHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+      min-width:0;
+    }
+    .stageHead h2{ margin:0; }
+
+    .presetRow{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .presetBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      color:#dbe7ff;
+      cursor:pointer;
+      padding:9px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:-0.2px;
+      user-select:none;
+      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
+      min-height:40px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+    .presetBtn:hover{
+      background:rgba(47,109,246,.10);
+      border-color:rgba(47,109,246,.28);
+    }
+    .presetBtn:active{
+      transform:scale(.99);
+      filter:brightness(1.05);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .presetBtn.isActive{
+      background:rgba(47,109,246,.16);
+      border-color:rgba(47,109,246,.44);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+    .presetWrap{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+    }
+    .presetMenu{
+      position:absolute;
+      right:0;
+      top:calc(100% + 8px);
+      min-width:200px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(11,15,23,.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      padding:6px;
+      display:none;
+      z-index:30;
+    }
+    .presetMenu.show{ display:block; }
+    .presetItem{
+      width:100%;
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:#e9eef7;
+      cursor:pointer;
+      padding:10px 10px;
+      border-radius:12px;
+      text-align:left;
+      font-weight:800;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      user-select:none;
+    }
+    .presetItem:hover{ background: rgba(47,109,246,.14); }
+    .presetItem small{
+      color:#9fb0ca;
+      font-weight:800;
+      font-size:11px;
+    }
+
     .cardHead{
       display:flex;
       align-items:center;
@@ -241,72 +336,6 @@
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
-    /* ✅ Stage head (title + presets) */
-    .stageHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin:0 0 10px;
-      min-width:0;
-      flex-wrap:wrap;
-    }
-    .stageTitle{
-      margin:0;
-      font-size:15px;
-      color:#dbe7ff;
-      font-weight:900;
-      letter-spacing:-0.2px;
-      line-height:1.2;
-      min-width:0;
-      white-space:nowrap;
-    }
-    .presetRow{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-left:auto;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .presetBtn{
-      appearance:none;
-      border:1px solid rgba(47,109,246,.28);
-      background: rgba(47,109,246,.10);
-      color:#e9eef7;
-      font-weight:900;
-      font-size:12px;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
-      min-height:38px;
-      line-height:1;
-      white-space:nowrap;
-    }
-    .presetBtn:hover{
-      background: rgba(47,109,246,.14);
-      border-color: rgba(47,109,246,.36);
-    }
-    .presetBtn:active{
-      transform: scale(.99);
-      filter: brightness(1.04);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-    }
-    .presetBtn:focus-visible{
-      outline:none;
-      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
-    }
-    .presetBtn:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-      transform:none;
-      filter:none;
-      box-shadow:none;
-    }
-
-    /* stage */
     .stage{
       border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
@@ -335,7 +364,6 @@
       height:100%;
     }
 
-    /* ✅ Empty dropzone overlay (shows only when no image) */
     .emptyState{
       position:absolute;
       inset:16px;
@@ -410,7 +438,6 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
 
-    /* Crosshair overlay */
     .crosshair{
       position:absolute;
       left:50%; top:50%;
@@ -446,7 +473,6 @@
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
     }
 
-    /* Crop overlay */
     .cropOverlay{
       position:absolute;
       inset:0;
@@ -593,7 +619,6 @@
     .btn:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(var(--blue),.22); }
     .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; filter:none; box-shadow:none; }
 
-    /* ✅ download button busy state */
     .btn.isBusy{
       cursor: progress;
       filter: brightness(1.02);
@@ -668,7 +693,7 @@
     .cropInfo{
       flex:0 0 auto;
       font-size:12px;
-      font-weight:600;
+      font-weight:700;
       color:#bcd0ff;
       opacity:.95;
       padding:8px 10px;
@@ -768,20 +793,26 @@
     <div class="stageWrap">
       <!-- Left: stage -->
       <div class="card">
-        <!-- ✅ title + presets (right aligned) -->
         <div class="stageHead">
-          <div class="stageTitle" id="h_stage">Preview / Edit</div>
+          <h2 id="h_stage">Preview / Edit</h2>
 
           <div class="presetRow" aria-label="Presets">
-            <!-- ✅ 클릭하면: 크롭 비율 + w/h 입력 자동 세팅 -->
-            <button class="presetBtn" id="presetIG" type="button" data-w="1080" data-h="1350">📱 Instagram</button>
-            <button class="presetBtn" id="presetX"  type="button" data-w="1600" data-h="900">🐦 Twitter</button>
-            <button class="presetBtn" id="presetOG" type="button" data-w="1200" data-h="630">🌐 OG 1200×630</button>
+            <div class="presetWrap">
+              <button class="presetBtn" id="presetIGBtn" type="button" aria-haspopup="menu" aria-expanded="false">📱 IG ▾</button>
+              <div class="presetMenu" id="igMenu" role="menu" aria-label="IG sizes">
+                <button class="presetItem" type="button" data-ig="1x1">1:1 <small>1080×1080</small></button>
+                <button class="presetItem" type="button" data-ig="4x5">4:5 <small>1080×1350</small></button>
+                <button class="presetItem" type="button" data-ig="9x16">9:16 <small>1080×1920</small></button>
+              </div>
+            </div>
+
+            <button class="presetBtn" id="presetXBtn" type="button">🐦 X</button>
+            <button class="presetBtn" id="presetOGBtn" type="button">🌐 OG</button>
+            <button class="presetBtn" id="presetFreeBtn" type="button">🔓 Free</button>
           </div>
         </div>
 
         <div class="stage" id="stage">
-          <!-- ✅ empty dropzone -->
           <div class="emptyState" id="emptyState" aria-label="Dropzone">
             <div class="emptyInner">
               <div class="emptyIcon" aria-hidden="true">🖼️</div>
@@ -919,21 +950,6 @@
           </div>
         </div>
 
-        <div style="height:10px;"></div>
-
-        <div class="row">
-          <div>
-            <label id="lbl_w">Width (px)</label>
-            <input id="w" type="number" min="1" placeholder="blank = stage size">
-          </div>
-          <div>
-            <label id="lbl_h">Height (px)</label>
-            <input id="h" type="number" min="1" placeholder="blank = stage size">
-          </div>
-        </div>
-
-        <div class="hint" id="size_hint">If you fill only one side, aspect ratio is preserved automatically.</div>
-
         <div style="height:12px;"></div>
 
         <h2 id="h_aspect">Aspect</h2>
@@ -945,6 +961,22 @@
           </summary>
 
           <div class="advBody">
+            <!-- ✅ Output size moved here -->
+            <div class="row">
+              <div>
+                <label id="lbl_w">Width (px)</label>
+                <input id="w" type="number" min="1" placeholder="blank = auto/preset">
+              </div>
+              <div>
+                <label id="lbl_h">Height (px)</label>
+                <input id="h" type="number" min="1" placeholder="blank = auto/preset">
+              </div>
+            </div>
+
+            <div class="hint" id="size_hint">If you fill only one side, aspect ratio is preserved automatically.</div>
+
+            <div style="height:10px;"></div>
+
             <div class="chkRow">
               <label class="chk" title="Keep aspect ratio when exporting">
                 <input type="checkbox" id="aspectLock" checked>
@@ -1041,7 +1073,7 @@
       quality: "Quality",
       w: "Width (px)",
       h: "Height (px)",
-      placeholder_stage: "blank = stage size",
+      placeholder_stage: "blank = auto/preset",
       size_hint: "If you fill only one side, aspect ratio is preserved automatically.",
 
       h_aspect: "Aspect",
@@ -1059,7 +1091,7 @@
 
       msg_need: "No image yet. Use the drop box above to load an image.",
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
-      msg_crop_on: "Crop ON: Drag handles to resize. (Box does not move.) Press Crop to apply.",
+      msg_crop_on: "Crop ON: Drag handles to resize. Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
       msg_ok: "✅ Downloaded",
       msg_idb_fail: "Could not load from local storage. Please load again.",
@@ -1067,7 +1099,7 @@
       meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
       meta_info: (name, w, h) => `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px`,
 
-      crop_info: (w,h,hw,hh)=> `Crop: ${w}×${h}px · Hi-Res: ${hw}×${hh}px`
+      crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
       page_title: "편집",
@@ -1109,7 +1141,7 @@
       quality: "품질",
       w: "가로(px)",
       h: "세로(px)",
-      placeholder_stage: "비워두면 스테이지 크기",
+      placeholder_stage: "비워두면 자동/프리셋",
       size_hint: "한쪽만 입력하면 비율 유지로 자동 계산됩니다.",
 
       h_aspect: "비율",
@@ -1127,7 +1159,7 @@
 
       msg_need: "아직 이미지가 없어요. 위 드롭박스에서 이미지를 불러와 주세요.",
       msg_ready: "준비 완료! 드래그 이동 · 핀치/휠/버튼 확대",
-      msg_crop_on: "자르기 ON: 핸들로 크기만 조절합니다(박스 이동 없음). ‘자르기’로 적용하세요.",
+      msg_crop_on: "자르기 ON: 핸들로 크기 조절 → ‘자르기’로 적용",
       msg_crop_applied: "✅ 잘라냈어요",
       msg_ok: "✅ 다운로드 완료",
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
@@ -1135,7 +1167,7 @@
       meta_idle: "<b>미리보기</b><br/>위 드롭박스에서 이미지를 불러와 주세요.",
       meta_info: (name, w, h) => `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`,
 
-      crop_info: (w,h,hw,hh)=> `크롭: ${w}×${h}px · 고화질: ${hw}×${hh}px`
+      crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
       page_title: "Editar",
@@ -1177,7 +1209,7 @@
       quality: "Calidad",
       w: "Ancho (px)",
       h: "Alto (px)",
-      placeholder_stage: "vacío = tamaño del escenario",
+      placeholder_stage: "vacío = auto/preset",
       size_hint: "Si introduces solo un lado, se mantiene la proporción automáticamente.",
 
       h_aspect: "Proporción",
@@ -1195,7 +1227,7 @@
 
       msg_need: "Aún no hay imagen. Usa el cuadro de arriba para cargar una.",
       msg_ready: "Listo. Arrastra para mover. Pellizca / rueda / botones para zoom.",
-      msg_crop_on: "Recorte ON: Ajusta SOLO con asas. (El cuadro no se mueve.) Pulsa Recortar para aplicar.",
+      msg_crop_on: "Recorte ON: Ajusta con asas y aplica con Recortar.",
       msg_crop_applied: "✅ Recortado",
       msg_ok: "✅ Descargado",
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
@@ -1203,7 +1235,7 @@
       meta_idle: "<b>Vista previa</b><br/>Usa el cuadro de arriba para cargar una imagen.",
       meta_info: (name, w, h) => `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px`,
 
-      crop_info: (w,h,hw,hh)=> `Recorte: ${w}×${h}px · Alta: ${hw}×${hh}px`
+      crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
       page_title: "編集",
@@ -1245,7 +1277,7 @@
       quality: "品質",
       w: "幅(px)",
       h: "高さ(px)",
-      placeholder_stage: "空欄 = ステージサイズ",
+      placeholder_stage: "空欄 = 自動/プリセット",
       size_hint: "片方だけ入力すると比率を維持して自動計算します。",
 
       h_aspect: "比率",
@@ -1263,7 +1295,7 @@
 
       msg_need: "まだ画像がありません。上のドロップボックスから読み込んでください。",
       msg_ready: "準備OK。ドラッグで移動、ピンチ/ホイール/ボタンでズーム。",
-      msg_crop_on: "切り抜きON: ハンドルのみでサイズ変更。(枠は移動しません) 切り抜きで適用。",
+      msg_crop_on: "切り抜きON: ハンドルで調整して適用。",
       msg_crop_applied: "✅ 切り抜き完了",
       msg_ok: "✅ ダウンロード完了",
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
@@ -1271,7 +1303,7 @@
       meta_idle: "<b>プレビュー</b><br/>上のドロップボックスから画像を読み込んでください。",
       meta_info: (name, w, h) => `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px`,
 
-      crop_info: (w,h,hw,hh)=> `切り抜き: ${w}×${h}px · 高画質: ${hw}×${hh}px`
+      crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
 
@@ -1386,7 +1418,6 @@
 
     $("h_download").textContent = t().h_download;
 
-    // ✅ download button text should reflect current busy state
     if(downloadBtn.dataset.busy === "1"){
       $("downloadBtn").textContent = t().downloading;
     } else if(downloadBtn.dataset.justdone === "1"){
@@ -1488,10 +1519,218 @@
   const downloadBtn = $("downloadBtn");
   const resetAllBtn = $("resetAllBtn");
 
-  // ✅ presets
-  const presetBtns = Array.from(document.querySelectorAll(".presetBtn"));
+  const advBox = $("advBox");
 
-  // ✅ download button state helpers (NO percent)
+  // ===== Presets =====
+  const presetIGBtn = $("presetIGBtn");
+  const presetXBtn  = $("presetXBtn");
+  const presetOGBtn = $("presetOGBtn");
+  const presetFreeBtn = $("presetFreeBtn");
+  const igMenu = $("igMenu");
+
+  // Current preset output (image px) and crop aspect lock ratio
+  let presetName = "free"; // "ig_1x1" | "ig_4x5" | "ig_9x16" | "x" | "og" | "free"
+  let presetOutW = 0;
+  let presetOutH = 0;
+  let cropAspect = null; // null = Free (no lock) / number = w/h lock
+
+  function setActivePresetButtons(){
+    // reset
+    [presetIGBtn, presetXBtn, presetOGBtn, presetFreeBtn].forEach(b=> b.classList.remove("isActive"));
+    if(presetName.startsWith("ig_")) presetIGBtn.classList.add("isActive");
+    else if(presetName === "x") presetXBtn.classList.add("isActive");
+    else if(presetName === "og") presetOGBtn.classList.add("isActive");
+    else presetFreeBtn.classList.add("isActive");
+  }
+
+  function applyPreset(name){
+    presetName = name;
+
+    // defaults
+    if(name === "x" || name === "og"){
+      presetOutW = 1200; presetOutH = 630;
+      cropAspect = presetOutW / presetOutH;
+      wEl.value = String(presetOutW);
+      hEl.value = String(presetOutH);
+      advBox.open = false;
+    } else if(name === "ig_1x1"){
+      presetOutW = 1080; presetOutH = 1080;
+      cropAspect = 1;
+      wEl.value = "1080"; hEl.value = "1080";
+      advBox.open = false;
+    } else if(name === "ig_4x5"){
+      presetOutW = 1080; presetOutH = 1350;
+      cropAspect = presetOutW / presetOutH;
+      wEl.value = "1080"; hEl.value = "1350";
+      advBox.open = false;
+    } else if(name === "ig_9x16"){
+      presetOutW = 1080; presetOutH = 1920;
+      cropAspect = presetOutW / presetOutH;
+      wEl.value = "1080"; hEl.value = "1920";
+      advBox.open = false;
+    } else {
+      // Free
+      presetOutW = 0; presetOutH = 0;
+      cropAspect = null; // unlock crop ratio
+      // keep user's manual values (do not force clear), but open advanced so they can edit
+      advBox.open = true;
+    }
+
+    setActivePresetButtons();
+
+    // If we have an image and crop exists, reshape crop box to match aspect (only when locked)
+    if(img && cropOn){
+      ensureCropDefault(true);
+      if(cropAspect){
+        fitCropToAspectCenter(cropAspect);
+      }
+      redraw();
+    } else {
+      updateCropInfo();
+    }
+  }
+
+  function fitCropToAspectCenter(ratio){
+    const rect = stageRect();
+    const cx = crop.x + crop.w/2;
+    const cy = crop.y + crop.h/2;
+
+    // keep current area-ish, but enforce ratio
+    let w = crop.w, h = crop.h;
+    if(w / h > ratio){
+      w = h * ratio;
+    } else {
+      h = w / ratio;
+    }
+
+    // expand a bit if too small
+    const minSide = Math.max(CROP_MIN, Math.min(rect.width, rect.height) * 0.35);
+    if(Math.max(w,h) < minSide){
+      if(ratio >= 1){
+        w = minSide;
+        h = w / ratio;
+      } else {
+        h = minSide;
+        w = h * ratio;
+      }
+    }
+
+    crop.w = Math.max(CROP_MIN, Math.round(w));
+    crop.h = Math.max(CROP_MIN, Math.round(h));
+    crop.x = Math.round(cx - crop.w/2);
+    crop.y = Math.round(cy - crop.h/2);
+    clampCropToStage();
+    // if still ratio drift due to clamps, re-fix
+    enforceCropAspect(ratio, null);
+  }
+
+  function enforceCropAspect(ratio, handle){
+    // ratio = w/h
+    if(!ratio) return;
+    const rect = stageRect();
+
+    let x = crop.x, y = crop.y, w = crop.w, h = crop.h;
+
+    // Decide which side to adjust based on handle direction
+    // If dragging E/W adjust h, if dragging N/S adjust w, corners adjust based on larger change
+    if(handle){
+      const isEW = (handle === "e" || handle === "w");
+      const isNS = (handle === "n" || handle === "s");
+      if(isEW){
+        h = w / ratio;
+      } else if(isNS){
+        w = h * ratio;
+      } else {
+        // corners: keep whichever change leads to less distortion
+        const hFromW = w / ratio;
+        const wFromH = h * ratio;
+        // choose closer
+        if(Math.abs(hFromW - h) < Math.abs(wFromH - w)){
+          h = hFromW;
+        } else {
+          w = wFromH;
+        }
+      }
+    } else {
+      // no handle info -> just enforce
+      h = w / ratio;
+    }
+
+    w = Math.max(CROP_MIN, Math.round(w));
+    h = Math.max(CROP_MIN, Math.round(h));
+
+    // clamp within stage while keeping anchor-ish
+    // keep top-left as anchor if dragging nw/w/n, etc.
+    const anchor = (() => {
+      if(!handle) return "c";
+      if(handle.includes("n") && handle.includes("w")) return "nw";
+      if(handle.includes("n") && handle.includes("e")) return "ne";
+      if(handle.includes("s") && handle.includes("w")) return "sw";
+      if(handle.includes("s") && handle.includes("e")) return "se";
+      if(handle === "n") return "n";
+      if(handle === "s") return "s";
+      if(handle === "w") return "w";
+      if(handle === "e") return "e";
+      return "c";
+    })();
+
+    const ox = crop.x, oy = crop.y, ow = crop.w, oh = crop.h;
+
+    if(anchor === "nw"){ x = ox + (ow - w); y = oy + (oh - h); }
+    else if(anchor === "ne"){ x = ox; y = oy + (oh - h); }
+    else if(anchor === "sw"){ x = ox + (ow - w); y = oy; }
+    else if(anchor === "se"){ x = ox; y = oy; }
+    else if(anchor === "n"){ x = ox + (ow - w)/2; y = oy + (oh - h); }
+    else if(anchor === "s"){ x = ox + (ow - w)/2; y = oy; }
+    else if(anchor === "w"){ x = ox + (ow - w); y = oy + (oh - h)/2; }
+    else if(anchor === "e"){ x = ox; y = oy + (oh - h)/2; }
+    else { x = ox + (ow - w)/2; y = oy + (oh - h)/2; }
+
+    crop.x = Math.round(x);
+    crop.y = Math.round(y);
+    crop.w = w;
+    crop.h = h;
+
+    // hard clamp
+    crop.x = Math.max(0, Math.min(crop.x, rect.width - crop.w));
+    crop.y = Math.max(0, Math.min(crop.y, rect.height - crop.h));
+  }
+
+  // IG dropdown
+  function closeIGMenu(){
+    igMenu.classList.remove("show");
+    presetIGBtn.setAttribute("aria-expanded","false");
+  }
+  function toggleIGMenu(){
+    const show = !igMenu.classList.contains("show");
+    if(show){
+      igMenu.classList.add("show");
+      presetIGBtn.setAttribute("aria-expanded","true");
+    } else {
+      closeIGMenu();
+    }
+  }
+
+  presetIGBtn.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    toggleIGMenu();
+  });
+  igMenu.addEventListener("click",(e)=>{
+    const btn = e.target.closest("button[data-ig]");
+    if(!btn) return;
+    const v = btn.getAttribute("data-ig");
+    closeIGMenu();
+    if(v === "1x1") applyPreset("ig_1x1");
+    if(v === "4x5") applyPreset("ig_4x5");
+    if(v === "9x16") applyPreset("ig_9x16");
+  });
+  document.addEventListener("click", ()=> closeIGMenu(), { passive:true });
+
+  presetXBtn.addEventListener("click", ()=> applyPreset("x"));
+  presetOGBtn.addEventListener("click", ()=> applyPreset("og"));
+  presetFreeBtn.addEventListener("click", ()=> applyPreset("free"));
+
+  // ========= download button state helpers (NO percent) =========
   let downloadBusy = false;
   let downloadDoneTimer = null;
   const downloadDefaultText = ()=> t().download;
@@ -1517,13 +1756,11 @@
     }, 900);
   }
 
-  // ✅ empty state button also opens picker
   emptyPickBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
   });
 
-  // ✅ mini reset triggers big reset logic
   resetMiniBtn.addEventListener("click", ()=> resetAllBtn.click());
 
   let img = null;
@@ -1537,12 +1774,9 @@
   const crop = { x: 0, y: 0, w: 0, h: 0 };
   const CROP_MIN = 60;
 
-  // ✅ crop aspect lock for presets
-  let CROP_ASPECT = null; // null = free
-
   const history = [];
   function snap(){
-    return { view: { ...view }, crop: { ...crop }, cropOn, HIRES, CROP_ASPECT };
+    return { view: { ...view }, crop: { ...crop }, cropOn, HIRES, presetName, presetOutW, presetOutH, cropAspect };
   }
   function sameSnap(a,b){
     if(!a || !b) return false;
@@ -1562,7 +1796,10 @@
       Math.abs(c1.h-c2.h)<0.5 &&
       a.cropOn===b.cropOn &&
       (!!a.HIRES === !!b.HIRES) &&
-      (a.CROP_ASPECT === b.CROP_ASPECT);
+      (a.presetName === b.presetName) &&
+      (a.presetOutW === b.presetOutW) &&
+      (a.presetOutH === b.presetOutH) &&
+      ((a.cropAspect||0) === (b.cropAspect||0));
     return eqV && eqC;
   }
   function pushHistory(prev){
@@ -1583,7 +1820,13 @@
     cropOn = !!s.cropOn;
     Object.assign(crop, s.crop);
     if(typeof s.HIRES !== "undefined") setHiRes(!!s.HIRES);
-    CROP_ASPECT = (typeof s.CROP_ASPECT === "number") ? s.CROP_ASPECT : null;
+    if(typeof s.presetName !== "undefined"){
+      presetName = s.presetName || "free";
+      presetOutW = s.presetOutW || 0;
+      presetOutH = s.presetOutH || 0;
+      cropAspect = (typeof s.cropAspect === "number") ? s.cropAspect : null;
+      setActivePresetButtons();
+    }
     syncCropUI();
     redraw();
   }
@@ -1606,6 +1849,46 @@
     return clamp(m, 1, maxMul);
   }
 
+  function currentTargetOutputSize(){
+    // Priority: manual advanced width/height > preset > hi-res crop size
+    const wIn = parseInt(wEl.value, 10);
+    const hIn = parseInt(hEl.value, 10);
+
+    if(wIn || hIn){
+      // compute final based on keep aspect behavior like export
+      const cw = Math.max(1, Math.round(crop.w));
+      const ch = Math.max(1, Math.round(crop.h));
+      let sw = cw, sh = ch;
+
+      let targetW = sw;
+      let targetH = sh;
+      const keep = !!aspectLockEl.checked;
+
+      if(wIn && !hIn){
+        targetW = Math.max(1, wIn);
+        targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
+      } else if(!wIn && hIn){
+        targetH = Math.max(1, hIn);
+        targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
+      } else {
+        targetW = Math.max(1, wIn || sw);
+        targetH = Math.max(1, hIn || sh);
+      }
+      return { ow: targetW, oh: targetH };
+    }
+
+    if(presetOutW && presetOutH){
+      return { ow: presetOutW, oh: presetOutH };
+    }
+
+    // fallback: hi-res crop
+    const mult = hiResMult();
+    return {
+      ow: Math.max(1, Math.round(crop.w * mult)),
+      oh: Math.max(1, Math.round(crop.h * mult))
+    };
+  }
+
   function updateCropInfo(){
     if(!cropInfoEl || !cropSizeBadgeEl) return;
     if(!(img && cropOn)){
@@ -1614,18 +1897,16 @@
       cropSizeBadgeEl.style.display = "none";
       return;
     }
-    const sw = Math.max(1, Math.round(crop.w));
-    const sh = Math.max(1, Math.round(crop.h));
-    const mult = hiResMult();
-    const hw = Math.max(1, Math.round(crop.w * mult));
-    const hh = Math.max(1, Math.round(crop.h * mult));
+    const cw = Math.max(1, Math.round(crop.w));
+    const ch = Math.max(1, Math.round(crop.h));
+    const out = currentTargetOutputSize();
 
     const text = (t().crop_info)
-      ? t().crop_info(sw, sh, hw, hh)
-      : `Crop: ${sw}×${sh}px · Hi-Res: ${hw}×${hh}px`;
+      ? t().crop_info(cw, ch, out.ow, out.oh)
+      : `Crop box: ${cw}×${ch} (stage px) · Output: ${out.ow}×${out.oh} (image px)`;
 
     cropInfoEl.textContent = text;
-    cropSizeBadgeEl.textContent = `${sw}×${sh}px · ${hw}×${hh}px`;
+    cropSizeBadgeEl.textContent = `${cw}×${ch}px · ${out.ow}×${out.oh}px`;
     cropSizeBadgeEl.style.display = "inline-flex";
   }
 
@@ -1688,9 +1969,6 @@
   }
 
   function updateMeta(){
-    // presets disabled until image
-    presetBtns.forEach(b=> b.disabled = !img);
-
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       setDownloadBusy(false);
@@ -1719,7 +1997,6 @@
 
     undoBtn.disabled = history.length === 0;
 
-    // ✅ only enable download if not busy
     downloadBtn.disabled = downloadBusy;
     if(!downloadBusy && downloadBtn.dataset.justdone !== "1"){
       downloadBtn.textContent = t().download;
@@ -1762,6 +2039,11 @@
       crop.w = Math.max(CROP_MIN, rect.width - m*2);
       crop.h = Math.max(CROP_MIN, rect.height - m*2);
       clampCropToStage();
+
+      // if preset ratio is locked, enforce on default too
+      if(cropAspect){
+        fitCropToAspectCenter(cropAspect);
+      }
     }
   }
   function clampCropToStage(){
@@ -1902,39 +2184,6 @@
   function startCropResize(startX, startY, handle){
     cropDrag = { handle, sx: startX, sy: startY, start: { ...crop } };
   }
-
-  // ✅ apply aspect lock when resizing (if preset chosen)
-  function applyAspectResize(x, y, w, h, s, left, right, top, bottom){
-    if(!(CROP_ASPECT && isFinite(CROP_ASPECT) && CROP_ASPECT > 0)) return { x, y, w, h };
-
-    // keep ratio: w/h = aspect
-    // choose which dimension drives depending on drag direction
-    const aspect = CROP_ASPECT;
-    const driveW = (left || right) && !(top || bottom);
-    const driveH = (top || bottom) && !(left || right);
-
-    if(driveW){
-      h = w / aspect;
-      if(top){ y = s.y + (s.h - h); }
-    } else if(driveH){
-      w = h * aspect;
-      if(left){ x = s.x + (s.w - w); }
-    } else {
-      // corner: pick the stronger delta by comparing implied sizes
-      const hFromW = w / aspect;
-      const wFromH = h * aspect;
-      if(Math.abs(hFromW - h) < Math.abs(wFromH - w)){
-        h = hFromW;
-        if(top){ y = s.y + (s.h - h); }
-      } else {
-        w = wFromH;
-        if(left){ x = s.x + (s.w - w); }
-      }
-    }
-
-    return { x, y, w, h };
-  }
-
   function applyCropResize(px, py){
     if(!cropDrag) return;
     const dx = px - cropDrag.sx;
@@ -1954,9 +2203,6 @@
     if(top){ y = s.y + dy; h = s.h - dy; }
     if(bottom){ h = s.h + dy; }
 
-    // ✅ aspect lock
-    ({ x, y, w, h } = applyAspectResize(x, y, w, h, s, left, right, top, bottom));
-
     if(w < CROP_MIN){
       const diff = CROP_MIN - w;
       w = CROP_MIN;
@@ -1970,6 +2216,13 @@
 
     crop.x = x; crop.y = y; crop.w = w; crop.h = h;
     clampCropToStage();
+
+    // ✅ If preset ratio is locked, enforce aspect while resizing
+    if(cropAspect){
+      enforceCropAspect(cropAspect, hd);
+      clampCropToStage();
+    }
+
     syncCropBoxEl();
   }
 
@@ -2001,56 +2254,6 @@
       setMsgKey(null, "err");
       $("msg").textContent = m;
     }
-  });
-
-  // ========= Presets: click -> set w/h + set crop aspect + fit crop box =========
-  function fitCropBoxToAspect(aspect){
-    const rect = stageRect();
-    const m = Math.max(22, Math.round(Math.min(rect.width, rect.height) * 0.10));
-    const maxW = Math.max(CROP_MIN, rect.width - m*2);
-    const maxH = Math.max(CROP_MIN, rect.height - m*2);
-
-    let w = maxW;
-    let h = w / aspect;
-    if(h > maxH){
-      h = maxH;
-      w = h * aspect;
-    }
-
-    crop.w = Math.max(CROP_MIN, w);
-    crop.h = Math.max(CROP_MIN, h);
-    crop.x = (rect.width - crop.w) / 2;
-    crop.y = (rect.height - crop.h) / 2;
-    clampCropToStage();
-    syncCropBoxEl();
-  }
-
-  function applyPreset(W, H){
-    if(!img) return setMsgKey("msg_need", "err");
-
-    pushHistory(snap());
-
-    // output inputs
-    wEl.value = String(W);
-    hEl.value = String(H);
-
-    // crop on + aspect lock for crop box
-    cropOn = true;
-    CROP_ASPECT = W / H;
-
-    // fit crop box to that ratio
-    fitCropBoxToAspect(CROP_ASPECT);
-
-    syncCropUI();
-    setMsgKey("msg_crop_on", "");
-  }
-
-  presetBtns.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const W = parseInt(btn.dataset.w || "0", 10);
-      const H = parseInt(btn.dataset.h || "0", 10);
-      if(W > 0 && H > 0) applyPreset(W, H);
-    });
   });
 
   // ========= Controls wiring =========
@@ -2220,9 +2423,7 @@
   }, { passive:false });
 
   // ========= Drag & Drop (desktop) =========
-  stage.addEventListener("dragover", (e)=>{
-    e.preventDefault();
-  });
+  stage.addEventListener("dragover", (e)=>{ e.preventDefault(); });
   stage.addEventListener("drop", (e)=>{
     e.preventDefault();
     const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
@@ -2253,7 +2454,6 @@
     Object.assign(view, initialView);
 
     cropOn = true;
-    CROP_ASPECT = null; // reset preset aspect unless you want to keep it
     ensureCropDefault(true);
 
     clearHistory();
@@ -2273,7 +2473,6 @@
         const key = `cf24_blob_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         await idbPut(key, file);
 
-        // ✅ store timestamp for "recent navigation" check
         sessionStorage.setItem("cf24_edit_ts", String(Date.now()));
 
         sessionStorage.setItem("cf24_edit_source", "idb");
@@ -2297,19 +2496,15 @@
     im.src = url;
   }
 
-  // ✅ Hard clear all stored navigation keys so old image won't reappear
   function clearSessionKeys(){
     const keys = [
       "cf24_edit_ts",
       "cf24_edit_source","cf24_edit_key","cf24_edit_name",
       "cf24_idphoto_source","cf24_idphoto_key","cf24_idphoto_name"
     ];
-    try{
-      keys.forEach(k=> sessionStorage.removeItem(k));
-    }catch(_){}
+    try{ keys.forEach(k=> sessionStorage.removeItem(k)); }catch(_){}
   }
 
-  // ✅ Only auto-load if it was "recently" created (e.g. within 20 minutes)
   function canAutoLoadFromSession(){
     try{
       const ts = parseInt(sessionStorage.getItem("cf24_edit_ts") || "0", 10);
@@ -2323,7 +2518,6 @@
 
   async function loadFromSession(){
     if(!canAutoLoadFromSession()){
-      // Direct visit or too old -> do NOT show old image
       clearSessionKeys();
       img = null;
       setMsgKey(null, "");
@@ -2361,7 +2555,6 @@
       }catch(_){}
     }
 
-    // fallback
     clearSessionKeys();
     img = null;
     setMsgKey("msg_need", "err");
@@ -2480,8 +2673,15 @@
 
     bctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    const wIn = parseInt(wEl.value, 10);
-    const hIn = parseInt(hEl.value, 10);
+    // Use advanced width/height OR preset width/height
+    let wIn = parseInt(wEl.value, 10);
+    let hIn = parseInt(hEl.value, 10);
+
+    if(!(wIn || hIn) && presetOutW && presetOutH){
+      wIn = presetOutW;
+      hIn = presetOutH;
+    }
+
     if(!wIn && !hIn){
       return new Promise((resolve, reject)=>{
         if(outMime === "image/png"){
@@ -2549,19 +2749,13 @@
     if(downloadBusy) return;
     try{
       if(!img) return setMsgKey("msg_need", "err");
-
-      // ✅ 버튼 상태: 처리중
       setDownloadBusy(true);
-
-      // ✅ UI 업데이트가 먼저 보이도록 한 프레임 양보
       await new Promise(r => requestAnimationFrame(r));
 
       const blob = await stageToOutputBlob();
       downloadBlob(blob, buildName());
 
       setMsgKey("msg_ok", "ok");
-
-      // ✅ 버튼 상태: 완료(잠깐 보여주고 원복)
       flashDownloadDone();
     }catch(e){
       const m = (e && e.message) ? e.message : "Download failed";
@@ -2570,6 +2764,7 @@
     }finally{
       setDownloadBusy(false);
       updateMeta();
+      updateCropInfo();
     }
   });
 
@@ -2582,17 +2777,15 @@
     Object.assign(initialView, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
 
     cropOn = true;
-    CROP_ASPECT = null;
     Object.assign(crop, { x:0, y:0, w:0, h:0 });
 
+    // keep preset, but clear manual output
     wEl.value = "";
     hEl.value = "";
     aspectLockEl.checked = true;
     aspectModeEl.value = "contain";
 
     clearHistory();
-
-    // ✅ 핵심: edit/id-photo 관련 세션키 전부 제거 -> 과거 이미지 재등장 방지
     clearSessionKeys();
 
     setMsgKey(null, "");
@@ -2605,7 +2798,13 @@
     updateCropInfo();
   });
 
-  outFormatEl.addEventListener("change", updateMeta);
+  outFormatEl.addEventListener("change", ()=>{
+    updateMeta();
+    updateCropInfo();
+  });
+  wEl.addEventListener("input", updateCropInfo);
+  hEl.addEventListener("input", updateCropInfo);
+  aspectLockEl.addEventListener("change", updateCropInfo);
 
   // init
   $("langSelect").value = LANG;
@@ -2614,6 +2813,10 @@
   updateMeta();
   resizeCanvas();
   syncCropUI();
+
+  // Default preset: OG (sensible)
+  applyPreset("og");
+
   loadFromSession();
 })();
 </script>
