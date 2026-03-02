@@ -241,6 +241,71 @@
     }
     @media (max-width: 860px){ .stageWrap{ grid-template-columns: 1fr; } }
 
+    /* ✅ Stage head (title + presets) */
+    .stageHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+      min-width:0;
+      flex-wrap:wrap;
+    }
+    .stageTitle{
+      margin:0;
+      font-size:15px;
+      color:#dbe7ff;
+      font-weight:900;
+      letter-spacing:-0.2px;
+      line-height:1.2;
+      min-width:0;
+      white-space:nowrap;
+    }
+    .presetRow{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-left:auto;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .presetBtn{
+      appearance:none;
+      border:1px solid rgba(47,109,246,.28);
+      background: rgba(47,109,246,.10);
+      color:#e9eef7;
+      font-weight:900;
+      font-size:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
+      min-height:38px;
+      line-height:1;
+      white-space:nowrap;
+    }
+    .presetBtn:hover{
+      background: rgba(47,109,246,.14);
+      border-color: rgba(47,109,246,.36);
+    }
+    .presetBtn:active{
+      transform: scale(.99);
+      filter: brightness(1.04);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .presetBtn:focus-visible{
+      outline:none;
+      box-shadow: 0 0 0 3px rgba(var(--blue),.22);
+    }
+    .presetBtn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+      filter:none;
+      box-shadow:none;
+    }
+
     /* stage */
     .stage{
       border:1px solid rgba(255,255,255,.12);
@@ -703,7 +768,17 @@
     <div class="stageWrap">
       <!-- Left: stage -->
       <div class="card">
-        <h2 id="h_stage">Preview / Edit</h2>
+        <!-- ✅ title + presets (right aligned) -->
+        <div class="stageHead">
+          <div class="stageTitle" id="h_stage">Preview / Edit</div>
+
+          <div class="presetRow" aria-label="Presets">
+            <!-- ✅ 클릭하면: 크롭 비율 + w/h 입력 자동 세팅 -->
+            <button class="presetBtn" id="presetIG" type="button" data-w="1080" data-h="1350">📱 Instagram</button>
+            <button class="presetBtn" id="presetX"  type="button" data-w="1600" data-h="900">🐦 Twitter</button>
+            <button class="presetBtn" id="presetOG" type="button" data-w="1200" data-h="630">🌐 OG 1200×630</button>
+          </div>
+        </div>
 
         <div class="stage" id="stage">
           <!-- ✅ empty dropzone -->
@@ -1413,6 +1488,9 @@
   const downloadBtn = $("downloadBtn");
   const resetAllBtn = $("resetAllBtn");
 
+  // ✅ presets
+  const presetBtns = Array.from(document.querySelectorAll(".presetBtn"));
+
   // ✅ download button state helpers (NO percent)
   let downloadBusy = false;
   let downloadDoneTimer = null;
@@ -1459,9 +1537,12 @@
   const crop = { x: 0, y: 0, w: 0, h: 0 };
   const CROP_MIN = 60;
 
+  // ✅ crop aspect lock for presets
+  let CROP_ASPECT = null; // null = free
+
   const history = [];
   function snap(){
-    return { view: { ...view }, crop: { ...crop }, cropOn, HIRES };
+    return { view: { ...view }, crop: { ...crop }, cropOn, HIRES, CROP_ASPECT };
   }
   function sameSnap(a,b){
     if(!a || !b) return false;
@@ -1480,7 +1561,8 @@
       Math.abs(c1.w-c2.w)<0.5 &&
       Math.abs(c1.h-c2.h)<0.5 &&
       a.cropOn===b.cropOn &&
-      (!!a.HIRES === !!b.HIRES);
+      (!!a.HIRES === !!b.HIRES) &&
+      (a.CROP_ASPECT === b.CROP_ASPECT);
     return eqV && eqC;
   }
   function pushHistory(prev){
@@ -1501,6 +1583,7 @@
     cropOn = !!s.cropOn;
     Object.assign(crop, s.crop);
     if(typeof s.HIRES !== "undefined") setHiRes(!!s.HIRES);
+    CROP_ASPECT = (typeof s.CROP_ASPECT === "number") ? s.CROP_ASPECT : null;
     syncCropUI();
     redraw();
   }
@@ -1605,6 +1688,9 @@
   }
 
   function updateMeta(){
+    // presets disabled until image
+    presetBtns.forEach(b=> b.disabled = !img);
+
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       setDownloadBusy(false);
@@ -1816,6 +1902,39 @@
   function startCropResize(startX, startY, handle){
     cropDrag = { handle, sx: startX, sy: startY, start: { ...crop } };
   }
+
+  // ✅ apply aspect lock when resizing (if preset chosen)
+  function applyAspectResize(x, y, w, h, s, left, right, top, bottom){
+    if(!(CROP_ASPECT && isFinite(CROP_ASPECT) && CROP_ASPECT > 0)) return { x, y, w, h };
+
+    // keep ratio: w/h = aspect
+    // choose which dimension drives depending on drag direction
+    const aspect = CROP_ASPECT;
+    const driveW = (left || right) && !(top || bottom);
+    const driveH = (top || bottom) && !(left || right);
+
+    if(driveW){
+      h = w / aspect;
+      if(top){ y = s.y + (s.h - h); }
+    } else if(driveH){
+      w = h * aspect;
+      if(left){ x = s.x + (s.w - w); }
+    } else {
+      // corner: pick the stronger delta by comparing implied sizes
+      const hFromW = w / aspect;
+      const wFromH = h * aspect;
+      if(Math.abs(hFromW - h) < Math.abs(wFromH - w)){
+        h = hFromW;
+        if(top){ y = s.y + (s.h - h); }
+      } else {
+        w = wFromH;
+        if(left){ x = s.x + (s.w - w); }
+      }
+    }
+
+    return { x, y, w, h };
+  }
+
   function applyCropResize(px, py){
     if(!cropDrag) return;
     const dx = px - cropDrag.sx;
@@ -1834,6 +1953,9 @@
     if(right){ w = s.w + dx; }
     if(top){ y = s.y + dy; h = s.h - dy; }
     if(bottom){ h = s.h + dy; }
+
+    // ✅ aspect lock
+    ({ x, y, w, h } = applyAspectResize(x, y, w, h, s, left, right, top, bottom));
 
     if(w < CROP_MIN){
       const diff = CROP_MIN - w;
@@ -1879,6 +2001,56 @@
       setMsgKey(null, "err");
       $("msg").textContent = m;
     }
+  });
+
+  // ========= Presets: click -> set w/h + set crop aspect + fit crop box =========
+  function fitCropBoxToAspect(aspect){
+    const rect = stageRect();
+    const m = Math.max(22, Math.round(Math.min(rect.width, rect.height) * 0.10));
+    const maxW = Math.max(CROP_MIN, rect.width - m*2);
+    const maxH = Math.max(CROP_MIN, rect.height - m*2);
+
+    let w = maxW;
+    let h = w / aspect;
+    if(h > maxH){
+      h = maxH;
+      w = h * aspect;
+    }
+
+    crop.w = Math.max(CROP_MIN, w);
+    crop.h = Math.max(CROP_MIN, h);
+    crop.x = (rect.width - crop.w) / 2;
+    crop.y = (rect.height - crop.h) / 2;
+    clampCropToStage();
+    syncCropBoxEl();
+  }
+
+  function applyPreset(W, H){
+    if(!img) return setMsgKey("msg_need", "err");
+
+    pushHistory(snap());
+
+    // output inputs
+    wEl.value = String(W);
+    hEl.value = String(H);
+
+    // crop on + aspect lock for crop box
+    cropOn = true;
+    CROP_ASPECT = W / H;
+
+    // fit crop box to that ratio
+    fitCropBoxToAspect(CROP_ASPECT);
+
+    syncCropUI();
+    setMsgKey("msg_crop_on", "");
+  }
+
+  presetBtns.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const W = parseInt(btn.dataset.w || "0", 10);
+      const H = parseInt(btn.dataset.h || "0", 10);
+      if(W > 0 && H > 0) applyPreset(W, H);
+    });
   });
 
   // ========= Controls wiring =========
@@ -2081,6 +2253,7 @@
     Object.assign(view, initialView);
 
     cropOn = true;
+    CROP_ASPECT = null; // reset preset aspect unless you want to keep it
     ensureCropDefault(true);
 
     clearHistory();
@@ -2409,6 +2582,7 @@
     Object.assign(initialView, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
 
     cropOn = true;
+    CROP_ASPECT = null;
     Object.assign(crop, { x:0, y:0, w:0, h:0 });
 
     wEl.value = "";
