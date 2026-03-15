@@ -209,48 +209,6 @@
       line-height:1.2;
     }
 
-    .downloadStatusWrap{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-bottom:10px;
-    }
-
-    .downloadStatusLabel{
-      font-size:13px;
-      font-weight:900;
-      color:#cfe0ff;
-      letter-spacing:-0.2px;
-    }
-
-    .downloadStatusValue{
-      min-height:46px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      color:#f4f8ff;
-      font-size:14px;
-      font-weight:900;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
-    }
-
-    .downloadStatusValue[data-state="busy"]{
-      border-color:rgba(255,210,90,.42);
-      background:rgba(255,210,90,.10);
-      color:#fff0b8;
-    }
-
-    .downloadStatusValue[data-state="done"]{
-      border-color:rgba(70,208,140,.42);
-      background:rgba(70,208,140,.10);
-      color:#cffff0;
-    }
-
     .card.isCustomActive{
       border-color:rgba(47,109,246,.42);
       background:rgba(47,109,246,.05);
@@ -1213,13 +1171,8 @@
 
         <div style="height:12px;"></div>
 
-        <div class="downloadStatusWrap">
-          <div class="downloadStatusLabel" id="download_status_label">저장 여부 확인</div>
-          <div class="downloadStatusValue" id="downloadStatus" data-state="idle">대기 중</div>
-        </div>
-
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">다운로드</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">편집 이미지 다운로드</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -1300,14 +1253,10 @@
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
-      h_download: "Download",
-      download: "Download",
-      downloading: "Saving...",
-      downloaded: "Saved",
-      download_status_label: "Save status",
-      download_status_idle: "Waiting",
-      download_status_busy: "Saving...",
-      download_status_done: "Saved",
+      h_download: "편집 이미지 다운로드",
+      download: "⬇️ Download",
+      downloading: "다운로드 준비 중...",
+      downloaded: "다운로드 완료",
 
       reset_all: "Reset (remove image)",
 
@@ -1374,13 +1323,9 @@
       aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
 
       h_download: "다운로드",
-      download: "다운로드",
-      downloading: "저장 중...",
-      downloaded: "저장 완료",
-      download_status_label: "저장 여부 확인",
-      download_status_idle: "대기 중",
-      download_status_busy: "저장 중...",
-      download_status_done: "저장 완료",
+      download: "⬇️ 다운로드",
+      downloading: "⏳ 처리 중...",
+      downloaded: "✅ 준비됨",
 
       reset_all: "초기화(이미지 제거)",
 
@@ -1447,13 +1392,9 @@
       aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
 
       h_download: "Descargar",
-      download: "Descargar",
-      downloading: "Guardando…",
-      downloaded: "Guardado",
-      download_status_label: "Estado de guardado",
-      download_status_idle: "En espera",
-      download_status_busy: "Guardando…",
-      download_status_done: "Guardado",
+      download: "⬇️ Descargar",
+      downloading: "⏳ Procesando…",
+      downloaded: "✅ Listo",
 
       reset_all: "Reiniciar (quitar imagen)",
 
@@ -1520,13 +1461,9 @@
       aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
 
       h_download: "ダウンロード",
-      download: "ダウンロード",
-      downloading: "保存中…",
-      downloaded: "保存完了",
-      download_status_label: "保存状況の確認",
-      download_status_idle: "待機中",
-      download_status_busy: "保存中…",
-      download_status_done: "保存完了",
+      download: "⬇️ ダウンロード",
+      downloading: "⏳ 処理中…",
+      downloaded: "✅ 準備OK",
 
       reset_all: "リセット(画像削除)",
 
@@ -1616,44 +1553,47 @@
   }
 
   const downloadBtn = $("downloadBtn");
-  const downloadStatus = $("downloadStatus");
+  const downloadTitle = $("h_download");
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
-  
-function setDownloadState(state){
-  if(!downloadStatus) return;
-  const key = state === "busy" ? "download_status_busy" : state === "done" ? "download_status_done" : "download_status_idle";
-  downloadStatus.dataset.state = state;
-  downloadStatus.textContent = (t && t()[key]) ? t()[key] : (state === "busy" ? "저장 중..." : state === "done" ? "저장 완료" : "대기 중");
-}
+  function syncDownloadHeading(){
+    if(!downloadTitle) return;
+    if(downloadBusy){
+      downloadTitle.textContent = t().downloading;
+    } else if(downloadBtn.dataset.justdone === "1"){
+      downloadTitle.textContent = t().downloaded;
+    } else {
+      downloadTitle.textContent = t().h_download;
+    }
+  }
 
-function setDownloadIdle() {
-  const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().download) ? t().download : "다운로드";
-  btn.disabled = false;
-  btn.setAttribute("aria-busy", "false");
-  setDownloadState("idle");
-}
+  function setDownloadIdle() {
+    const btn = document.getElementById("downloadBtn");
+    if (!btn) return;
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = false;
+    btn.setAttribute("aria-busy", "false");
+    syncDownloadHeading();
+  }
 
-function setDownloading() {
-  const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().download) ? t().download : "다운로드";
-  btn.disabled = true;
-  btn.setAttribute("aria-busy", "true");
-  setDownloadState("busy");
-}
+  function setDownloading() {
+    const btn = document.getElementById("downloadBtn");
+    if (!btn) return;
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+    syncDownloadHeading();
+  }
 
-function setDownloaded() {
-  const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().download) ? t().download : "다운로드";
-  btn.disabled = false;
-  btn.setAttribute("aria-busy", "false");
-  setDownloadState("done");
-}
+  function setDownloaded() {
+    const btn = document.getElementById("downloadBtn");
+    if (!btn) return;
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = false;
+    btn.setAttribute("aria-busy", "false");
+    syncDownloadHeading();
+  }
 
 function downloadDefaultText(){ return t().download; }
 
@@ -1664,21 +1604,19 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
     downloadBtn.textContent = downloadDefaultText();
-    setDownloadState(downloadBusy ? "busy" : (downloadBtn.dataset.justdone === "1" ? "done" : "idle"));
+    syncDownloadHeading();
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
     downloadBtn.textContent = downloadDefaultText();
-    setDownloadState("done");
+    syncDownloadHeading();
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
-      if(!downloadBusy){
-        downloadBtn.textContent = downloadDefaultText();
-        setDownloadState("idle");
-      }
-    }, 1600);
+      if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
+      syncDownloadHeading();
+    }, 900);
   }
 
   function setLang(lang){
@@ -1742,14 +1680,15 @@ function downloadDefaultText(){ return t().download; }
     $("aspect_hint").textContent = t().aspect_hint;
 
     $("h_download").textContent = t().h_download;
-    $("download_status_label").textContent = t().download_status_label;
 
     if(downloadBtn.dataset.busy === "1"){
       setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
-      downloadBtn.textContent = t().downloaded;
+      downloadBtn.textContent = t().download;
+      syncDownloadHeading();
     } else {
       downloadBtn.textContent = t().download;
+      syncDownloadHeading();
     }
 
     if(!img) $("meta").innerHTML = t().meta_idle;
