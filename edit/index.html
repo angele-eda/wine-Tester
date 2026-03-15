@@ -1172,7 +1172,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">다운로드</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">편집 이미지 다운로드</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -1253,10 +1253,10 @@
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
-      h_download: "Download",
-      download: "Download",
-      downloading: "Saving...",
-      downloaded: "Saved",
+      h_download: "편집 이미지 다운로드",
+      download: "⬇️ Download",
+      downloading: "다운로드 준비 중...",
+      downloaded: "다운로드 완료",
 
       reset_all: "Reset (remove image)",
 
@@ -1323,9 +1323,9 @@
       aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
 
       h_download: "다운로드",
-      download: "다운로드",
-      downloading: "저장 중...",
-      downloaded: "저장 완료",
+      download: "⬇️ 다운로드",
+      downloading: "⏳ 처리 중...",
+      downloaded: "✅ 준비됨",
 
       reset_all: "초기화(이미지 제거)",
 
@@ -1553,18 +1553,34 @@
   }
 
   const downloadBtn = $("downloadBtn");
-  const downloadTitle = $("h_download");
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
-  function updateDownloadHeading(){
-    if(!downloadTitle) return;
-    if(downloadBusy) downloadTitle.textContent = t().downloading;
-    else if(downloadBtn.dataset.justdone === "1") downloadTitle.textContent = t().downloaded;
-    else downloadTitle.textContent = t().h_download;
-  }
-
   
+function setDownloadIdle() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().download) ? t().download : "편집 이미지 다운로드";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
+function setDownloading() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
+  btn.disabled = true;
+  btn.setAttribute("aria-busy", "true");
+}
+
+function setDownloaded() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
 function downloadDefaultText(){ return t().download; }
 
   function setDownloadBusy(on){
@@ -1573,20 +1589,17 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    downloadBtn.textContent = downloadDefaultText();
-    updateDownloadHeading();
+    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    downloadBtn.textContent = downloadDefaultText();
-    updateDownloadHeading();
+    downloadBtn.textContent = t().downloaded;
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
       if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
-      updateDownloadHeading();
-    }, 1000);
+    }, 900);
   }
 
   function setLang(lang){
@@ -1649,8 +1662,15 @@ function downloadDefaultText(){ return t().download; }
     $("lbl_aspectMode").textContent = t().aspect_mode;
     $("aspect_hint").textContent = t().aspect_hint;
 
-    updateDownloadHeading();
-    downloadBtn.textContent = t().download;
+    $("h_download").textContent = t().h_download;
+
+    if(downloadBtn.dataset.busy === "1"){
+      setDownloading();
+    } else if(downloadBtn.dataset.justdone === "1"){
+      downloadBtn.textContent = t().downloaded;
+    } else {
+      downloadBtn.textContent = t().download;
+    }
 
     if(!img) $("meta").innerHTML = t().meta_idle;
     if(MSG_STATE.key) setMsgKey(MSG_STATE.key, MSG_STATE.cls);
@@ -2096,10 +2116,10 @@ function downloadDefaultText(){ return t().download; }
 
       if(wIn && !hIn){
         targetW = Math.max(1, wIn);
-        targetH = keep ? Math.max(1, Math.round(targetW * (cleanH / cleanW))) : targetH;
+        targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
       } else if(!wIn && hIn){
         targetH = Math.max(1, hIn);
-        targetW = keep ? Math.max(1, Math.round(targetH * (cleanW / cleanH))) : targetW;
+        targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
       } else {
         targetW = Math.max(1, wIn || sw);
         targetH = Math.max(1, hIn || sh);
@@ -2329,6 +2349,65 @@ function downloadDefaultText(){ return t().download; }
     return { sx, sy, sw, sh };
   }
 
+
+  function trimLightEdgeBorder(canvas, maxTrim=2){
+    if(!canvas || !canvas.width || !canvas.height) return canvas;
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    if(!ctx) return canvas;
+    const { width, height } = canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+
+    const isBrightPixel = (i)=>{
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+      if(a < 180) return false;
+      const lum = (r + g + b) / 3;
+      return lum > 225 || (r > 232 && g > 232 && b > 232);
+    };
+
+    const brightCol = (x)=>{
+      let bright = 0, solid = 0;
+      for(let y = 0; y < height; y++){
+        const i = (y * width + x) * 4;
+        if(data[i+3] > 180){
+          solid++;
+          if(isBrightPixel(i)) bright++;
+        }
+      }
+      return solid > 0 && (bright / solid) > 0.6;
+    };
+
+    const brightRow = (y)=>{
+      let bright = 0, solid = 0;
+      const row = y * width;
+      for(let x = 0; x < width; x++){
+        const i = (row + x) * 4;
+        if(data[i+3] > 180){
+          solid++;
+          if(isBrightPixel(i)) bright++;
+        }
+      }
+      return solid > 0 && (bright / solid) > 0.6;
+    };
+
+    let left = 0, right = 0, top = 0, bottom = 0;
+    while(left < Math.min(maxTrim, width - 1) && brightCol(left)) left++;
+    while(right < Math.min(maxTrim, width - left - 1) && brightCol(width - 1 - right)) right++;
+    while(top < Math.min(maxTrim, height - 1) && brightRow(top)) top++;
+    while(bottom < Math.min(maxTrim, height - top - 1) && brightRow(height - 1 - bottom)) bottom++;
+
+    if(!(left || right || top || bottom)) return canvas;
+
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, width - left - right);
+    out.height = Math.max(1, height - top - bottom);
+    out.getContext("2d", { alpha:true }).drawImage(
+      canvas,
+      left, top, out.width, out.height,
+      0, 0, out.width, out.height
+    );
+    return out;
+  }
+
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const stageW = Math.round(rect.width);
@@ -2354,61 +2433,6 @@ function downloadDefaultText(){ return t().download; }
     octx.drawImage(img, -imgW/2, -imgH/2, imgW, imgH);
     octx.restore();
 
-    return out;
-  }
-
-  function trimTransparentEdges(canvas, threshold=24, maxTrim=3){
-    if(!canvas || !canvas.width || !canvas.height) return canvas;
-    const ctx = canvas.getContext("2d", { willReadFrequently:true });
-    if(!ctx) return canvas;
-    const { width, height } = canvas;
-    const data = ctx.getImageData(0, 0, width, height).data;
-    const colMax = (x)=>{
-      let m = 0;
-      for(let y=0; y<height; y++){
-        const a = data[(y*width + x)*4 + 3];
-        if(a > m) m = a;
-        if(m >= threshold) break;
-      }
-      return m;
-    };
-    let left=0, right=0;
-    while(left < Math.min(maxTrim, width-1) && colMax(left) < threshold) left++;
-    while(right < Math.min(maxTrim, width-left-1) && colMax(width-1-right) < threshold) right++;
-    if(!(left || right)) return canvas;
-    const out = document.createElement("canvas");
-    out.width = Math.max(1, width-left-right);
-    out.height = height;
-    out.getContext("2d", { alpha:true }).drawImage(canvas, left, 0, out.width, height, 0, 0, out.width, height);
-    return out;
-  }
-
-  function trimLightEdgeLine(canvas, maxTrim=1){
-    if(!canvas || !canvas.width || !canvas.height) return canvas;
-    const ctx = canvas.getContext("2d", { willReadFrequently:true });
-    if(!ctx) return canvas;
-    const { width, height } = canvas;
-    const data = ctx.getImageData(0, 0, width, height).data;
-    const brightCol = (x)=>{
-      let bright=0, opaque=0;
-      for(let y=0; y<height; y++){
-        const i=(y*width + x)*4;
-        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-        if(a > 220){
-          opaque++;
-          if(r > 230 && g > 230 && b > 230) bright++;
-        }
-      }
-      return opaque > 0 && bright / opaque > 0.85;
-    };
-    let left=0, right=0;
-    while(left < Math.min(maxTrim, width-1) && brightCol(left)) left++;
-    while(right < Math.min(maxTrim, width-left-1) && brightCol(width-1-right)) right++;
-    if(!(left || right)) return canvas;
-    const out = document.createElement("canvas");
-    out.width = Math.max(1, width-left-right);
-    out.height = height;
-    out.getContext("2d", { alpha:true }).drawImage(canvas, left, 0, out.width, height, 0, 0, out.width, height);
     return out;
   }
 
@@ -2439,9 +2463,11 @@ function downloadDefaultText(){ return t().download; }
     cctx.clearRect(0,0,sw,sh);
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    let croppedCanvas = trimTransparentEdges(c, 24, 3);
-    croppedCanvas = trimLightEdgeLine(croppedCanvas, 1);
-    const dataUrl = croppedCanvas.toDataURL("image/png");
+    const cleaned = trimLightEdgeBorder(c, 2);
+    const extMatch = String(imgName || "image.jpg").match(/\.([^.]+)$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "jpg";
+    const mime = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+    const dataUrl = cleaned.toDataURL(mime, 0.98);
     const im = new Image();
 
     await new Promise((res, rej)=>{
@@ -2453,8 +2479,6 @@ function downloadDefaultText(){ return t().download; }
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    const extMatch = String(imgName || "image.png").match(/\.([^.]+)$/);
-    const ext = extMatch ? extMatch[1] : "png";
     imgName = (imgName || "image").replace(/\.[^.]+$/, "") + `_crop.${ext}`;
 
     const rect = stageRect();
@@ -2742,7 +2766,11 @@ function downloadDefaultText(){ return t().download; }
   loadImgBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
-  });
+  
+  setDownloaded();
+  try { if (typeof toast === "function") toast((t && t().msg_ok) ? t().msg_ok : "다운로드가 시작되었습니다."); } catch (e) {}
+  setTimeout(() => { try { setDownloadIdle(); } catch (e) {} }, 1600);
+});
 
   emptyPickBtn.addEventListener("click", ()=>{
     pickInput.value = "";
@@ -2990,11 +3018,6 @@ function downloadDefaultText(){ return t().download; }
 
     bctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    let cleanBase = trimTransparentEdges(base, 24, 2);
-    cleanBase = trimLightEdgeLine(cleanBase, 1);
-    let cleanW = cleanBase.width;
-    let cleanH = cleanBase.height;
-
     let wIn = parseInt(wEl.value, 10);
     let hIn = parseInt(hEl.value, 10);
 
@@ -3006,11 +3029,11 @@ function downloadDefaultText(){ return t().download; }
     if(!wIn && !hIn){
       return new Promise((resolve, reject)=>{
         if(outMime === "image/png"){
-          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
         } else if(outMime === "image/webp"){
-          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
         } else {
-          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
+          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
         }
       });
     }
@@ -3022,20 +3045,20 @@ function downloadDefaultText(){ return t().download; }
 
     if(wIn && !hIn){
       targetW = Math.max(1, wIn);
-      targetH = keep ? Math.max(1, Math.round(targetW * (cleanH / cleanW))) : targetH;
+      targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
     } else if(!wIn && hIn){
       targetH = Math.max(1, hIn);
-      targetW = keep ? Math.max(1, Math.round(targetH * (cleanW / cleanH))) : targetW;
+      targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
     } else {
       targetW = Math.max(1, wIn);
       targetH = Math.max(1, hIn);
 
       if(keep && mode !== "stretch"){
         const s = mode === "cover"
-          ? Math.max(targetW / cleanW, targetH / cleanH)
-          : Math.min(targetW / cleanW, targetH / cleanH);
-        targetW = Math.max(1, Math.round(cleanW * s));
-        targetH = Math.max(1, Math.round(cleanH * s));
+          ? Math.max(targetW / sw, targetH / sh)
+          : Math.min(targetW / sw, targetH / sh);
+        targetW = Math.max(1, Math.round(sw * s));
+        targetH = Math.max(1, Math.round(sh * s));
       }
     }
 
@@ -3054,7 +3077,7 @@ function downloadDefaultText(){ return t().download; }
       octx.clearRect(0,0,targetW,targetH);
     }
 
-    octx.drawImage(cleanBase, 0, 0, cleanW, cleanH, 0, 0, targetW, targetH);
+    octx.drawImage(base, 0, 0, sw, sh, 0, 0, targetW, targetH);
 
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
