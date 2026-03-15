@@ -11,7 +11,14 @@
 
   <script>
     document.documentElement.classList.add("js");
-  </script>
+  
+function getOutputFileName(name, format) {
+  const base = (name || "image").replace(/\.[^.]+$/, "");
+  const ext = String(format || "png").toLowerCase();
+  return `${base}.${ext}`;
+}
+
+</script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1278,7 +1285,7 @@
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
       meta_idle: "<b>Result</b><br/>Load an image above to see the output info.",
-      meta_info: (name, w, h) => `<b>Result</b><br/>File name: ${name}<br/>Resolution: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Resolution: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
@@ -1348,7 +1355,7 @@
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
 
       meta_idle: "<b>결과 정보</b><br/>위에서 이미지를 불러오면 저장될 파일 정보를 보여줍니다.",
-      meta_info: (name, w, h) => `<b>결과 정보</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>해상도: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
@@ -1418,7 +1425,7 @@
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
 
       meta_idle: "<b>Resultado</b><br/>Carga una imagen arriba para ver la información del archivo de salida.",
-      meta_info: (name, w, h) => `<b>Resultado</b><br/>Archivo: ${name}<br/>Resolución: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Resolución: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
@@ -1488,7 +1495,7 @@
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
 
       meta_idle: "<b>結果情報</b><br/>上で画像を読み込むと保存されるファイル情報を表示します。",
-      meta_info: (name, w, h) => `<b>結果情報</b><br/>ファイル名: ${name}<br/>解像度: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>解像度: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
