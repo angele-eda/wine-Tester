@@ -1268,7 +1268,7 @@
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
       meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
-      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
@@ -1337,7 +1337,7 @@
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
 
       meta_idle: "<b>미리보기</b><br/>위 드롭박스에서 이미지를 불러와 주세요.",
-      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
@@ -1406,7 +1406,7 @@
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
 
       meta_idle: "<b>Vista previa</b><br/>Usa el cuadro de arriba para cargar una imagen.",
-      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
@@ -1475,7 +1475,7 @@
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
 
       meta_idle: "<b>プレビュー</b><br/>上のドロップボックスから画像を読み込んでください。",
-      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
@@ -1496,9 +1496,20 @@
     return `${base}.${extMap[label] || label.toLowerCase()}`;
   }
 
-  function getOriginalFormatLabel(name){
+  function getOriginalFormatLabel(){
+    return getFormatLabel(originalFormat || "png");
+  }
+
+  function detectFormatFromNameOrMime(name, mime){
+    const mv = String(mime || "").toLowerCase().trim();
+    if(mv === "image/jpeg" || mv === "image/jpg") return "jpg";
+    if(mv === "image/png") return "png";
+    if(mv === "image/webp") return "webp";
     const m = String(name || "").match(/\.([^.]+)$/);
-    return getFormatLabel(m ? m[1] : "png");
+    const ext = (m ? m[1] : "png").toLowerCase();
+    if(ext === "jpeg") return "jpg";
+    if(ext === "jpg" || ext === "png" || ext === "webp") return ext;
+    return "png";
   }
 
   function getQueryLang(){
@@ -1771,6 +1782,7 @@ function downloadDefaultText(){ return t().download; }
 
   let img = null;
   let imgName = "image";
+  let originalFormat = "png";
   let imgW = 0, imgH = 0;
 
   const initialView = { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 };
@@ -2452,7 +2464,8 @@ function downloadDefaultText(){ return t().download; }
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
     const croppedCanvas = trimTransparentEdges(c, 8, 4);
-    const dataUrl = croppedCanvas.toDataURL("image/png");
+    const workingMime = (originalFormat === "webp") ? "image/webp" : ((originalFormat === "png") ? "image/png" : "image/jpeg");
+    const dataUrl = croppedCanvas.toDataURL(workingMime);
     const im = new Image();
 
     await new Promise((res, rej)=>{
@@ -2464,7 +2477,7 @@ function downloadDefaultText(){ return t().download; }
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
+    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + `_crop.${originalFormat === "jpeg" ? "jpg" : originalFormat}`;
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2769,11 +2782,12 @@ function downloadDefaultText(){ return t().download; }
 
   resetMiniBtn.addEventListener("click", ()=> resetAllBtn.click());
 
-  function applyLoadedImage(im, name){
+  function applyLoadedImage(im, name, sourceFormat){
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
     imgName = name || "image";
+    originalFormat = detectFormatFromNameOrMime(name, sourceFormat);
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2811,7 +2825,7 @@ function downloadDefaultText(){ return t().download; }
         sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
       }catch(_){}
 
-      applyLoadedImage(im, file.name || "image");
+      applyLoadedImage(im, file.name || "image", file.type || "");
     };
 
     im.onerror = ()=>{
@@ -2869,7 +2883,7 @@ function downloadDefaultText(){ return t().download; }
 
           im.onload = ()=>{
             URL.revokeObjectURL(url);
-            applyLoadedImage(im, name);
+            applyLoadedImage(im, name, blob.type || "");
           };
 
           im.onerror = ()=>{
@@ -3103,6 +3117,7 @@ function downloadDefaultText(){ return t().download; }
   resetAllBtn.addEventListener("click", ()=>{
     img = null;
     imgName = "image";
+    originalFormat = "png";
     imgW = imgH = 0;
 
     Object.assign(view, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
