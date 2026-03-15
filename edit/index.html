@@ -1172,7 +1172,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">⬇️ Download</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">편집 이미지 다운로드</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -1253,10 +1253,10 @@
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
-      h_download: "Download",
+      h_download: "편집 이미지 다운로드",
       download: "⬇️ Download",
-      downloading: "⏳ Processing…",
-      downloaded: "✅ Ready",
+      downloading: "다운로드 준비 중...",
+      downloaded: "다운로드 완료",
 
       reset_all: "Reset (remove image)",
 
@@ -1264,7 +1264,7 @@
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
       msg_crop_on: "Crop ON: Drag handles to resize. Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
-      msg_ok: "✅ Downloaded",
+      msg_ok: "다운로드가 시작되었습니다.",
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
       meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
@@ -1556,7 +1556,32 @@
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
-  function downloadDefaultText(){ return t().download; }
+  
+function setDownloadIdle() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().download) ? t().download : "편집 이미지 다운로드";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
+function setDownloading() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
+  btn.disabled = true;
+  btn.setAttribute("aria-busy", "true");
+}
+
+function setDownloaded() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
+function downloadDefaultText(){ return t().download; }
 
   function setDownloadBusy(on){
     downloadBusy = !!on;
@@ -1640,7 +1665,7 @@
     $("h_download").textContent = t().h_download;
 
     if(downloadBtn.dataset.busy === "1"){
-      downloadBtn.textContent = t().downloading;
+      setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
       downloadBtn.textContent = t().downloaded;
     } else {
@@ -2200,7 +2225,7 @@
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       setDownloadBusy(false);
-      downloadBtn.disabled = true;
+      
       resetAllBtn.disabled = true;
       resetMiniBtn.disabled = true;
       cropToggleBtn.disabled = true;
@@ -2678,7 +2703,11 @@
   loadImgBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
-  });
+  
+  setDownloaded();
+  try { if (typeof toast === "function") toast((t && t().msg_ok) ? t().msg_ok : "다운로드가 시작되었습니다."); } catch (e) {}
+  setTimeout(() => { try { setDownloadIdle(); } catch (e) {} }, 1600);
+});
 
   emptyPickBtn.addEventListener("click", ()=>{
     pickInput.value = "";
