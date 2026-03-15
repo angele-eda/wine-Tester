@@ -1501,6 +1501,28 @@
     return getFormatLabel(m ? m[1] : "png");
   }
 
+  function normalizeImageMime(v){
+    const value = String(v || "").toLowerCase().trim();
+    if(value === "image/png" || value === "png") return "image/png";
+    if(value === "image/webp" || value === "webp") return "image/webp";
+    if(value === "image/jpeg" || value === "image/jpg" || value === "jpeg" || value === "jpg") return "image/jpeg";
+    return "";
+  }
+
+  function guessMimeFromName(name){
+    const ext = String(name || "").split(".").pop().toLowerCase();
+    return normalizeImageMime(ext);
+  }
+
+  function appendSuffixBeforeExt(name, suffix){
+    const safe = String(name || "image");
+    const lastDot = safe.lastIndexOf(".");
+    if(lastDot > 0){
+      return `${safe.slice(0, lastDot)}${suffix}${safe.slice(lastDot)}`;
+    }
+    return `${safe}${suffix}`;
+  }
+
   function getQueryLang(){
     try{
       const u = new URL(location.href);
@@ -2435,7 +2457,7 @@ function downloadDefaultText(){ return t().download; }
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
+    imgName = appendSuffixBeforeExt(imgName || "image", "_crop");
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2740,11 +2762,16 @@ function downloadDefaultText(){ return t().download; }
 
   resetMiniBtn.addEventListener("click", ()=> resetAllBtn.click());
 
-  function applyLoadedImage(im, name){
+  function applyLoadedImage(im, name, sourceMime){
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
     imgName = name || "image";
+
+    const detectedMime = normalizeImageMime(sourceMime) || guessMimeFromName(imgName);
+    if(detectedMime && outFormatEl && outFormatEl.value !== detectedMime){
+      outFormatEl.value = detectedMime;
+    }
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2782,7 +2809,7 @@ function downloadDefaultText(){ return t().download; }
         sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
       }catch(_){}
 
-      applyLoadedImage(im, file.name || "image");
+      applyLoadedImage(im, file.name || "image", file.type || guessMimeFromName(file.name));
     };
 
     im.onerror = ()=>{
@@ -2840,7 +2867,7 @@ function downloadDefaultText(){ return t().download; }
 
           im.onload = ()=>{
             URL.revokeObjectURL(url);
-            applyLoadedImage(im, name);
+            applyLoadedImage(im, name, blob.type || guessMimeFromName(name));
           };
 
           im.onerror = ()=>{
