@@ -11,14 +11,7 @@
 
   <script>
     document.documentElement.classList.add("js");
-  
-function getOutputFileName(name, format) {
-  const base = (name || "image").replace(/\.[^.]+$/, "");
-  const ext = String(format || "png").toLowerCase();
-  return `${base}.${ext}`;
-}
-
-</script>
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,14 +207,6 @@ function getOutputFileName(name, format) {
       color:#dbe7ff;
       letter-spacing:-0.2px;
       line-height:1.2;
-    }
-
-    .hint{
-      margin:0 0 10px;
-      color:#a7b3c7;
-      font-size:13px;
-      line-height:1.5;
-      font-weight:700;
     }
 
     .card.isCustomActive{
@@ -1187,15 +1172,14 @@ function getOutputFileName(name, format) {
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <div class="hint" id="download_hint">Save the edited image with the current settings.</div>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">Download edited image</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">⬇️ Download</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
 
         <div style="height:12px;"></div>
         <div class="meta" id="meta">
-          <b>Result</b><br/>Load an image above to see the output info.
+          <b>Preview</b><br/>Use the drop box to load an image.
         </div>
       </div>
     </div>
@@ -1270,10 +1254,9 @@ function getOutputFileName(name, format) {
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
       h_download: "Download",
-      download_hint: "Save the edited image with the current settings.",
-      download: "Download edited image",
+      download: "⬇️ Download",
       downloading: "⏳ Processing…",
-      downloaded: "Download complete",
+      downloaded: "✅ Ready",
 
       reset_all: "Reset (remove image)",
 
@@ -1281,11 +1264,11 @@ function getOutputFileName(name, format) {
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
       msg_crop_on: "Crop ON: Drag handles to resize. Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
-      msg_ok: "Download complete",
+      msg_ok: "✅ Downloaded",
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
-      meta_idle: "<b>Result</b><br/>Load an image above to see the output info.",
-      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Resolution: ${w}×${h}px`,
+      meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
+      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
@@ -1340,10 +1323,9 @@ function getOutputFileName(name, format) {
       aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
 
       h_download: "다운로드",
-      download_hint: "현재 설정으로 편집된 이미지를 저장합니다.",
-      download: "편집 이미지 다운로드",
+      download: "⬇️ 다운로드",
       downloading: "⏳ 처리 중...",
-      downloaded: "다운로드 완료",
+      downloaded: "✅ 준비됨",
 
       reset_all: "초기화(이미지 제거)",
 
@@ -1351,11 +1333,11 @@ function getOutputFileName(name, format) {
       msg_ready: "준비 완료! 드래그 이동 · 핀치/휠/버튼 확대",
       msg_crop_on: "자르기 ON: 핸들로 크기 조절 → ‘자르기’로 적용",
       msg_crop_applied: "✅ 잘라냈어요",
-      msg_ok: "다운로드 완료",
+      msg_ok: "✅ 다운로드 완료",
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
 
-      meta_idle: "<b>결과 정보</b><br/>위에서 이미지를 불러오면 저장될 파일 정보를 보여줍니다.",
-      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>해상도: ${w}×${h}px`,
+      meta_idle: "<b>미리보기</b><br/>위 드롭박스에서 이미지를 불러와 주세요.",
+      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
@@ -1410,10 +1392,9 @@ function getOutputFileName(name, format) {
       aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
 
       h_download: "Descargar",
-      download_hint: "Guarda la imagen editada con la configuración actual.",
-      download: "Descargar imagen editada",
+      download: "⬇️ Descargar",
       downloading: "⏳ Procesando…",
-      downloaded: "Descarga completa",
+      downloaded: "✅ Listo",
 
       reset_all: "Reiniciar (quitar imagen)",
 
@@ -1421,11 +1402,11 @@ function getOutputFileName(name, format) {
       msg_ready: "Listo. Arrastra para mover. Pellizca / rueda / botones para zoom.",
       msg_crop_on: "Recorte ON: Ajusta con asas y aplica con Recortar.",
       msg_crop_applied: "✅ Recortado",
-      msg_ok: "Descarga completa",
+      msg_ok: "✅ Descargado",
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
 
-      meta_idle: "<b>Resultado</b><br/>Carga una imagen arriba para ver la información del archivo de salida.",
-      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Resolución: ${w}×${h}px`,
+      meta_idle: "<b>Vista previa</b><br/>Usa el cuadro de arriba para cargar una imagen.",
+      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
@@ -1480,10 +1461,9 @@ function getOutputFileName(name, format) {
       aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
 
       h_download: "ダウンロード",
-      download_hint: "現在の設定で編集した画像を保存します。",
-      download: "編集画像をダウンロード",
+      download: "⬇️ ダウンロード",
       downloading: "⏳ 処理中…",
-      downloaded: "ダウンロード完了",
+      downloaded: "✅ 準備OK",
 
       reset_all: "リセット(画像削除)",
 
@@ -1491,14 +1471,35 @@ function getOutputFileName(name, format) {
       msg_ready: "準備OK。ドラッグで移動、ピンチ/ホイール/ボタンでズーム。",
       msg_crop_on: "切り抜きON: ハンドルで調整して適用。",
       msg_crop_applied: "✅ 切り抜き完了",
-      msg_ok: "ダウンロード完了",
+      msg_ok: "✅ ダウンロード完了",
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
 
-      meta_idle: "<b>結果情報</b><br/>上で画像を読み込むと保存されるファイル情報を表示します。",
-      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>解像度: ${w}×${h}px`,
+      meta_idle: "<b>プレビュー</b><br/>上のドロップボックスから画像を読み込んでください。",
+      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
+
+
+  function getFormatLabel(formatOrMime){
+    const v = String(formatOrMime || "").toLowerCase().trim();
+    if (v === "jpg" || v === "jpeg" || v === "image/jpeg") return "JPG";
+    if (v === "png" || v === "image/png") return "PNG";
+    if (v === "webp" || v === "image/webp") return "WEBP";
+    return (v.replace(/^image\//, "") || "PNG").toUpperCase();
+  }
+
+  function getOutputFileName(name, formatOrMime){
+    const base = String(name || "image").replace(/\.[^.]+$/, "");
+    const extMap = { JPG: "jpg", PNG: "png", WEBP: "webp" };
+    const label = getFormatLabel(formatOrMime);
+    return `${base}.${extMap[label] || label.toLowerCase()}`;
+  }
+
+  function getOriginalFormatLabel(name){
+    const m = String(name || "").match(/\.([^.]+)$/);
+    return getFormatLabel(m ? m[1] : "png");
+  }
 
   function getQueryLang(){
     try{
@@ -1637,7 +1638,6 @@ function getOutputFileName(name, format) {
     $("aspect_hint").textContent = t().aspect_hint;
 
     $("h_download").textContent = t().h_download;
-    $("download_hint").textContent = t().download_hint;
 
     if(downloadBtn.dataset.busy === "1"){
       downloadBtn.textContent = t().downloading;
@@ -2210,7 +2210,7 @@ function getOutputFileName(name, format) {
       return;
     }
 
-    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
+    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), outFormatEl.value, imgW, imgH);
 
     resetAllBtn.disabled = false;
     resetMiniBtn.disabled = false;
