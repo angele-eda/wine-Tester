@@ -1254,7 +1254,7 @@
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
       h_download: "편집 이미지 다운로드",
-      download: "⬇️ Download",
+      download: "Download",
       downloading: "다운로드 준비 중...",
       downloaded: "다운로드 완료",
 
@@ -1323,9 +1323,9 @@
       aspect_hint: "Contain=여백 가능 • Cover=꽉 채우고 일부 잘릴 수 있음 • Stretch=늘어남",
 
       h_download: "다운로드",
-      download: "⬇️ 다운로드",
-      downloading: "⏳ 처리 중...",
-      downloaded: "✅ 준비됨",
+      download: "다운로드",
+      downloading: "저장 중...",
+      downloaded: "저장 완료",
 
       reset_all: "초기화(이미지 제거)",
 
@@ -1570,26 +1570,35 @@
   
 function setDownloadIdle() {
   const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().download) ? t().download : "편집 이미지 다운로드";
-  btn.disabled = false;
-  btn.setAttribute("aria-busy", "false");
+  const title = document.getElementById("h_download");
+  if (btn) {
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = false;
+    btn.setAttribute("aria-busy", "false");
+  }
+  if (title) title.textContent = (t && t().h_download) ? t().h_download : "다운로드";
 }
 
 function setDownloading() {
   const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
-  btn.disabled = true;
-  btn.setAttribute("aria-busy", "true");
+  const title = document.getElementById("h_download");
+  if (btn) {
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+  }
+  if (title) title.textContent = (t && t().downloading) ? t().downloading : "저장 중...";
 }
 
 function setDownloaded() {
   const btn = document.getElementById("downloadBtn");
-  if (!btn) return;
-  btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
-  btn.disabled = false;
-  btn.setAttribute("aria-busy", "false");
+  const title = document.getElementById("h_download");
+  if (btn) {
+    btn.textContent = (t && t().download) ? t().download : "다운로드";
+    btn.disabled = false;
+    btn.setAttribute("aria-busy", "false");
+  }
+  if (title) title.textContent = (t && t().downloaded) ? t().downloaded : "저장 완료";
 }
 
 function downloadDefaultText(){ return t().download; }
@@ -1600,17 +1609,28 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
+    if(downloadBusy){
+      setDownloading();
+    } else if(downloadBtn.dataset.justdone === "1"){
+      setDownloaded();
+      downloadBtn.disabled = !img;
+    } else {
+      setDownloadIdle();
+      downloadBtn.disabled = !img;
+    }
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    downloadBtn.textContent = t().downloaded;
+    setDownloaded();
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
-      if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
-    }, 900);
+      if(!downloadBusy) {
+        setDownloadIdle();
+        downloadBtn.disabled = !img;
+      }
+    }, 1200);
   }
 
   function setLang(lang){
@@ -1678,9 +1698,10 @@ function downloadDefaultText(){ return t().download; }
     if(downloadBtn.dataset.busy === "1"){
       setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
-      downloadBtn.textContent = t().downloaded;
+      setDownloaded();
     } else {
-      downloadBtn.textContent = t().download;
+      setDownloadIdle();
+      downloadBtn.disabled = !img;
     }
 
     if(!img) $("meta").innerHTML = t().meta_idle;
@@ -2453,6 +2474,13 @@ function downloadDefaultText(){ return t().download; }
 
     ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
 
+    if(sw > 10 && sh > 10){
+      sx += 1;
+      sy += 1;
+      sw = Math.max(1, sw - 2);
+      sh = Math.max(1, sh - 2);
+    }
+
     const c = document.createElement("canvas");
     c.width = Math.max(1, sw);
     c.height = Math.max(1, sh);
@@ -2764,11 +2792,7 @@ function downloadDefaultText(){ return t().download; }
   loadImgBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
-  
-  setDownloaded();
-  try { if (typeof toast === "function") toast((t && t().msg_ok) ? t().msg_ok : "다운로드가 시작되었습니다."); } catch (e) {}
-  setTimeout(() => { try { setDownloadIdle(); } catch (e) {} }, 1600);
-});
+  });
 
   emptyPickBtn.addEventListener("click", ()=>{
     pickInput.value = "";
