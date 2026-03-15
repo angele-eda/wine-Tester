@@ -1501,28 +1501,6 @@
     return getFormatLabel(m ? m[1] : "png");
   }
 
-  function normalizeImageMime(v){
-    const value = String(v || "").toLowerCase().trim();
-    if(value === "image/png" || value === "png") return "image/png";
-    if(value === "image/webp" || value === "webp") return "image/webp";
-    if(value === "image/jpeg" || value === "image/jpg" || value === "jpeg" || value === "jpg") return "image/jpeg";
-    return "";
-  }
-
-  function guessMimeFromName(name){
-    const ext = String(name || "").split(".").pop().toLowerCase();
-    return normalizeImageMime(ext);
-  }
-
-  function appendSuffixBeforeExt(name, suffix){
-    const safe = String(name || "image");
-    const lastDot = safe.lastIndexOf(".");
-    if(lastDot > 0){
-      return `${safe.slice(0, lastDot)}${suffix}${safe.slice(lastDot)}`;
-    }
-    return `${safe}${suffix}`;
-  }
-
   function getQueryLang(){
     try{
       const u = new URL(location.href);
@@ -1575,47 +1553,33 @@
   }
 
   const downloadBtn = $("downloadBtn");
-  const downloadTitle = $("h_download");
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
-  function syncDownloadHeading(){
-    if(!downloadTitle) return;
-    if(downloadBusy){
-      downloadTitle.textContent = t().downloading;
-    } else if(downloadBtn.dataset.justdone === "1"){
-      downloadTitle.textContent = t().downloaded;
-    } else {
-      downloadTitle.textContent = t().h_download;
-    }
-  }
+  
+function setDownloadIdle() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().download) ? t().download : "편집 이미지 다운로드";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
 
-  function setDownloadIdle() {
-    const btn = document.getElementById("downloadBtn");
-    if (!btn) return;
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = false;
-    btn.setAttribute("aria-busy", "false");
-    syncDownloadHeading();
-  }
+function setDownloading() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
+  btn.disabled = true;
+  btn.setAttribute("aria-busy", "true");
+}
 
-  function setDownloading() {
-    const btn = document.getElementById("downloadBtn");
-    if (!btn) return;
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = true;
-    btn.setAttribute("aria-busy", "true");
-    syncDownloadHeading();
-  }
-
-  function setDownloaded() {
-    const btn = document.getElementById("downloadBtn");
-    if (!btn) return;
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = false;
-    btn.setAttribute("aria-busy", "false");
-    syncDownloadHeading();
-  }
+function setDownloaded() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
 
 function downloadDefaultText(){ return t().download; }
 
@@ -1625,19 +1589,16 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    downloadBtn.textContent = downloadDefaultText();
-    syncDownloadHeading();
+    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    downloadBtn.textContent = downloadDefaultText();
-    syncDownloadHeading();
+    downloadBtn.textContent = t().downloaded;
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
       if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
-      syncDownloadHeading();
     }, 900);
   }
 
@@ -1706,11 +1667,9 @@ function downloadDefaultText(){ return t().download; }
     if(downloadBtn.dataset.busy === "1"){
       setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
-      downloadBtn.textContent = t().download;
-      syncDownloadHeading();
+      downloadBtn.textContent = t().downloaded;
     } else {
       downloadBtn.textContent = t().download;
-      syncDownloadHeading();
     }
 
     if(!img) $("meta").innerHTML = t().meta_idle;
@@ -2390,6 +2349,53 @@ function downloadDefaultText(){ return t().download; }
     return { sx, sy, sw, sh };
   }
 
+
+  function trimTransparentEdges(canvas, threshold=8, maxTrim=4){
+    if(!canvas || !canvas.width || !canvas.height) return canvas;
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    if(!ctx) return canvas;
+    const { width, height } = canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+
+    const colAlphaMax = (x) => {
+      let maxA = 0;
+      for(let y = 0; y < height; y++){
+        const a = data[(y * width + x) * 4 + 3];
+        if(a > maxA) maxA = a;
+        if(maxA >= threshold) break;
+      }
+      return maxA;
+    };
+
+    const rowAlphaMax = (y) => {
+      let maxA = 0;
+      const row = y * width;
+      for(let x = 0; x < width; x++){
+        const a = data[(row + x) * 4 + 3];
+        if(a > maxA) maxA = a;
+        if(maxA >= threshold) break;
+      }
+      return maxA;
+    };
+
+    let left = 0, right = 0, top = 0, bottom = 0;
+    while(left < Math.min(maxTrim, width - 1) && colAlphaMax(left) < threshold) left++;
+    while(right < Math.min(maxTrim, width - left - 1) && colAlphaMax(width - 1 - right) < threshold) right++;
+    while(top < Math.min(maxTrim, height - 1) && rowAlphaMax(top) < threshold) top++;
+    while(bottom < Math.min(maxTrim, height - top - 1) && rowAlphaMax(height - 1 - bottom) < threshold) bottom++;
+
+    if(!(left || right || top || bottom)) return canvas;
+
+    const tw = Math.max(1, width - left - right);
+    const th = Math.max(1, height - top - bottom);
+    const trimmed = document.createElement("canvas");
+    trimmed.width = tw;
+    trimmed.height = th;
+    const tctx = trimmed.getContext("2d", { alpha:true });
+    tctx.drawImage(canvas, left, top, tw, th, 0, 0, tw, th);
+    return trimmed;
+  }
+
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const stageW = Math.round(rect.width);
@@ -2445,7 +2451,8 @@ function downloadDefaultText(){ return t().download; }
     cctx.clearRect(0,0,sw,sh);
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    const dataUrl = c.toDataURL("image/png");
+    const croppedCanvas = trimTransparentEdges(c, 8, 4);
+    const dataUrl = croppedCanvas.toDataURL("image/png");
     const im = new Image();
 
     await new Promise((res, rej)=>{
@@ -2457,7 +2464,7 @@ function downloadDefaultText(){ return t().download; }
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    imgName = appendSuffixBeforeExt(imgName || "image", "_crop");
+    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2762,16 +2769,11 @@ function downloadDefaultText(){ return t().download; }
 
   resetMiniBtn.addEventListener("click", ()=> resetAllBtn.click());
 
-  function applyLoadedImage(im, name, sourceMime){
+  function applyLoadedImage(im, name){
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
     imgName = name || "image";
-
-    const detectedMime = normalizeImageMime(sourceMime) || guessMimeFromName(imgName);
-    if(detectedMime && outFormatEl && outFormatEl.value !== detectedMime){
-      outFormatEl.value = detectedMime;
-    }
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2809,7 +2811,7 @@ function downloadDefaultText(){ return t().download; }
         sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
       }catch(_){}
 
-      applyLoadedImage(im, file.name || "image", file.type || guessMimeFromName(file.name));
+      applyLoadedImage(im, file.name || "image");
     };
 
     im.onerror = ()=>{
@@ -2867,7 +2869,7 @@ function downloadDefaultText(){ return t().download; }
 
           im.onload = ()=>{
             URL.revokeObjectURL(url);
-            applyLoadedImage(im, name, blob.type || guessMimeFromName(name));
+            applyLoadedImage(im, name);
           };
 
           im.onerror = ()=>{
