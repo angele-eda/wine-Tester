@@ -1172,7 +1172,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">편집 이미지 다운로드</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">다운로드</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -1253,10 +1253,10 @@
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
-      h_download: "편집 이미지 다운로드",
+      h_download: "Download",
       download: "Download",
-      downloading: "다운로드 준비 중...",
-      downloaded: "다운로드 완료",
+      downloading: "Saving...",
+      downloaded: "Saved",
 
       reset_all: "Reset (remove image)",
 
@@ -1268,7 +1268,7 @@
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
       meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
-      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
@@ -1337,7 +1337,7 @@
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
 
       meta_idle: "<b>미리보기</b><br/>위 드롭박스에서 이미지를 불러와 주세요.",
-      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
@@ -1406,7 +1406,7 @@
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
 
       meta_idle: "<b>Vista previa</b><br/>Usa el cuadro de arriba para cargar una imagen.",
-      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
@@ -1475,7 +1475,7 @@
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
 
       meta_idle: "<b>プレビュー</b><br/>上のドロップボックスから画像を読み込んでください。",
-      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel()} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
@@ -1496,20 +1496,9 @@
     return `${base}.${extMap[label] || label.toLowerCase()}`;
   }
 
-  function getOriginalFormatLabel(){
-    return getFormatLabel(originalFormat || "png");
-  }
-
-  function detectFormatFromNameOrMime(name, mime){
-    const mv = String(mime || "").toLowerCase().trim();
-    if(mv === "image/jpeg" || mv === "image/jpg") return "jpg";
-    if(mv === "image/png") return "png";
-    if(mv === "image/webp") return "webp";
+  function getOriginalFormatLabel(name){
     const m = String(name || "").match(/\.([^.]+)$/);
-    const ext = (m ? m[1] : "png").toLowerCase();
-    if(ext === "jpeg") return "jpg";
-    if(ext === "jpg" || ext === "png" || ext === "webp") return ext;
-    return "png";
+    return getFormatLabel(m ? m[1] : "png");
   }
 
   function getQueryLang(){
@@ -1564,43 +1553,18 @@
   }
 
   const downloadBtn = $("downloadBtn");
+  const downloadTitle = $("h_download");
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
+  function updateDownloadHeading(){
+    if(!downloadTitle) return;
+    if(downloadBusy) downloadTitle.textContent = t().downloading;
+    else if(downloadBtn.dataset.justdone === "1") downloadTitle.textContent = t().downloaded;
+    else downloadTitle.textContent = t().h_download;
+  }
+
   
-function setDownloadIdle() {
-  const btn = document.getElementById("downloadBtn");
-  const title = document.getElementById("h_download");
-  if (btn) {
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = false;
-    btn.setAttribute("aria-busy", "false");
-  }
-  if (title) title.textContent = (t && t().h_download) ? t().h_download : "다운로드";
-}
-
-function setDownloading() {
-  const btn = document.getElementById("downloadBtn");
-  const title = document.getElementById("h_download");
-  if (btn) {
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = true;
-    btn.setAttribute("aria-busy", "true");
-  }
-  if (title) title.textContent = (t && t().downloading) ? t().downloading : "저장 중...";
-}
-
-function setDownloaded() {
-  const btn = document.getElementById("downloadBtn");
-  const title = document.getElementById("h_download");
-  if (btn) {
-    btn.textContent = (t && t().download) ? t().download : "다운로드";
-    btn.disabled = false;
-    btn.setAttribute("aria-busy", "false");
-  }
-  if (title) title.textContent = (t && t().downloaded) ? t().downloaded : "저장 완료";
-}
-
 function downloadDefaultText(){ return t().download; }
 
   function setDownloadBusy(on){
@@ -1609,28 +1573,20 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    if(downloadBusy){
-      setDownloading();
-    } else if(downloadBtn.dataset.justdone === "1"){
-      setDownloaded();
-      downloadBtn.disabled = !img;
-    } else {
-      setDownloadIdle();
-      downloadBtn.disabled = !img;
-    }
+    downloadBtn.textContent = downloadDefaultText();
+    updateDownloadHeading();
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    setDownloaded();
+    downloadBtn.textContent = downloadDefaultText();
+    updateDownloadHeading();
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
-      if(!downloadBusy) {
-        setDownloadIdle();
-        downloadBtn.disabled = !img;
-      }
-    }, 1200);
+      if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
+      updateDownloadHeading();
+    }, 1000);
   }
 
   function setLang(lang){
@@ -1693,16 +1649,8 @@ function downloadDefaultText(){ return t().download; }
     $("lbl_aspectMode").textContent = t().aspect_mode;
     $("aspect_hint").textContent = t().aspect_hint;
 
-    $("h_download").textContent = t().h_download;
-
-    if(downloadBtn.dataset.busy === "1"){
-      setDownloading();
-    } else if(downloadBtn.dataset.justdone === "1"){
-      setDownloaded();
-    } else {
-      setDownloadIdle();
-      downloadBtn.disabled = !img;
-    }
+    updateDownloadHeading();
+    downloadBtn.textContent = t().download;
 
     if(!img) $("meta").innerHTML = t().meta_idle;
     if(MSG_STATE.key) setMsgKey(MSG_STATE.key, MSG_STATE.cls);
@@ -1803,7 +1751,6 @@ function downloadDefaultText(){ return t().download; }
 
   let img = null;
   let imgName = "image";
-  let originalFormat = "png";
   let imgW = 0, imgH = 0;
 
   const initialView = { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 };
@@ -2149,10 +2096,10 @@ function downloadDefaultText(){ return t().download; }
 
       if(wIn && !hIn){
         targetW = Math.max(1, wIn);
-        targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
+        targetH = keep ? Math.max(1, Math.round(targetW * (cleanH / cleanW))) : targetH;
       } else if(!wIn && hIn){
         targetH = Math.max(1, hIn);
-        targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
+        targetW = keep ? Math.max(1, Math.round(targetH * (cleanW / cleanH))) : targetW;
       } else {
         targetW = Math.max(1, wIn || sw);
         targetH = Math.max(1, hIn || sh);
@@ -2382,53 +2329,6 @@ function downloadDefaultText(){ return t().download; }
     return { sx, sy, sw, sh };
   }
 
-
-  function trimTransparentEdges(canvas, threshold=8, maxTrim=4){
-    if(!canvas || !canvas.width || !canvas.height) return canvas;
-    const ctx = canvas.getContext("2d", { willReadFrequently:true });
-    if(!ctx) return canvas;
-    const { width, height } = canvas;
-    const data = ctx.getImageData(0, 0, width, height).data;
-
-    const colAlphaMax = (x) => {
-      let maxA = 0;
-      for(let y = 0; y < height; y++){
-        const a = data[(y * width + x) * 4 + 3];
-        if(a > maxA) maxA = a;
-        if(maxA >= threshold) break;
-      }
-      return maxA;
-    };
-
-    const rowAlphaMax = (y) => {
-      let maxA = 0;
-      const row = y * width;
-      for(let x = 0; x < width; x++){
-        const a = data[(row + x) * 4 + 3];
-        if(a > maxA) maxA = a;
-        if(maxA >= threshold) break;
-      }
-      return maxA;
-    };
-
-    let left = 0, right = 0, top = 0, bottom = 0;
-    while(left < Math.min(maxTrim, width - 1) && colAlphaMax(left) < threshold) left++;
-    while(right < Math.min(maxTrim, width - left - 1) && colAlphaMax(width - 1 - right) < threshold) right++;
-    while(top < Math.min(maxTrim, height - 1) && rowAlphaMax(top) < threshold) top++;
-    while(bottom < Math.min(maxTrim, height - top - 1) && rowAlphaMax(height - 1 - bottom) < threshold) bottom++;
-
-    if(!(left || right || top || bottom)) return canvas;
-
-    const tw = Math.max(1, width - left - right);
-    const th = Math.max(1, height - top - bottom);
-    const trimmed = document.createElement("canvas");
-    trimmed.width = tw;
-    trimmed.height = th;
-    const tctx = trimmed.getContext("2d", { alpha:true });
-    tctx.drawImage(canvas, left, top, tw, th, 0, 0, tw, th);
-    return trimmed;
-  }
-
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const stageW = Math.round(rect.width);
@@ -2457,6 +2357,61 @@ function downloadDefaultText(){ return t().download; }
     return out;
   }
 
+  function trimTransparentEdges(canvas, threshold=24, maxTrim=3){
+    if(!canvas || !canvas.width || !canvas.height) return canvas;
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    if(!ctx) return canvas;
+    const { width, height } = canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+    const colMax = (x)=>{
+      let m = 0;
+      for(let y=0; y<height; y++){
+        const a = data[(y*width + x)*4 + 3];
+        if(a > m) m = a;
+        if(m >= threshold) break;
+      }
+      return m;
+    };
+    let left=0, right=0;
+    while(left < Math.min(maxTrim, width-1) && colMax(left) < threshold) left++;
+    while(right < Math.min(maxTrim, width-left-1) && colMax(width-1-right) < threshold) right++;
+    if(!(left || right)) return canvas;
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, width-left-right);
+    out.height = height;
+    out.getContext("2d", { alpha:true }).drawImage(canvas, left, 0, out.width, height, 0, 0, out.width, height);
+    return out;
+  }
+
+  function trimLightEdgeLine(canvas, maxTrim=1){
+    if(!canvas || !canvas.width || !canvas.height) return canvas;
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    if(!ctx) return canvas;
+    const { width, height } = canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+    const brightCol = (x)=>{
+      let bright=0, opaque=0;
+      for(let y=0; y<height; y++){
+        const i=(y*width + x)*4;
+        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+        if(a > 220){
+          opaque++;
+          if(r > 230 && g > 230 && b > 230) bright++;
+        }
+      }
+      return opaque > 0 && bright / opaque > 0.85;
+    };
+    let left=0, right=0;
+    while(left < Math.min(maxTrim, width-1) && brightCol(left)) left++;
+    while(right < Math.min(maxTrim, width-left-1) && brightCol(width-1-right)) right++;
+    if(!(left || right)) return canvas;
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, width-left-right);
+    out.height = height;
+    out.getContext("2d", { alpha:true }).drawImage(canvas, left, 0, out.width, height, 0, 0, out.width, height);
+    return out;
+  }
+
   async function applyCrop(){
     if(!img) throw new Error(t().msg_need);
     if(!cropOn){
@@ -2474,13 +2429,6 @@ function downloadDefaultText(){ return t().download; }
 
     ({ sx, sy, sw, sh } = clampSrcRect(sx, sy, sw, sh, stageCanvas.width, stageCanvas.height, 0));
 
-    if(sw > 10 && sh > 10){
-      sx += 1;
-      sy += 1;
-      sw = Math.max(1, sw - 2);
-      sh = Math.max(1, sh - 2);
-    }
-
     const c = document.createElement("canvas");
     c.width = Math.max(1, sw);
     c.height = Math.max(1, sh);
@@ -2491,9 +2439,9 @@ function downloadDefaultText(){ return t().download; }
     cctx.clearRect(0,0,sw,sh);
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    const croppedCanvas = trimTransparentEdges(c, 8, 4);
-    const workingMime = (originalFormat === "webp") ? "image/webp" : ((originalFormat === "png") ? "image/png" : "image/jpeg");
-    const dataUrl = croppedCanvas.toDataURL(workingMime);
+    let croppedCanvas = trimTransparentEdges(c, 24, 3);
+    croppedCanvas = trimLightEdgeLine(croppedCanvas, 1);
+    const dataUrl = croppedCanvas.toDataURL("image/png");
     const im = new Image();
 
     await new Promise((res, rej)=>{
@@ -2505,7 +2453,9 @@ function downloadDefaultText(){ return t().download; }
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + `_crop.${originalFormat === "jpeg" ? "jpg" : originalFormat}`;
+    const extMatch = String(imgName || "image.png").match(/\.([^.]+)$/);
+    const ext = extMatch ? extMatch[1] : "png";
+    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + `_crop.${ext}`;
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2806,12 +2756,11 @@ function downloadDefaultText(){ return t().download; }
 
   resetMiniBtn.addEventListener("click", ()=> resetAllBtn.click());
 
-  function applyLoadedImage(im, name, sourceFormat){
+  function applyLoadedImage(im, name){
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
     imgName = name || "image";
-    originalFormat = detectFormatFromNameOrMime(name, sourceFormat);
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2849,7 +2798,7 @@ function downloadDefaultText(){ return t().download; }
         sessionStorage.setItem("cf24_idphoto_name", file.name || "image");
       }catch(_){}
 
-      applyLoadedImage(im, file.name || "image", file.type || "");
+      applyLoadedImage(im, file.name || "image");
     };
 
     im.onerror = ()=>{
@@ -2907,7 +2856,7 @@ function downloadDefaultText(){ return t().download; }
 
           im.onload = ()=>{
             URL.revokeObjectURL(url);
-            applyLoadedImage(im, name, blob.type || "");
+            applyLoadedImage(im, name);
           };
 
           im.onerror = ()=>{
@@ -3041,6 +2990,11 @@ function downloadDefaultText(){ return t().download; }
 
     bctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
+    let cleanBase = trimTransparentEdges(base, 24, 2);
+    cleanBase = trimLightEdgeLine(cleanBase, 1);
+    let cleanW = cleanBase.width;
+    let cleanH = cleanBase.height;
+
     let wIn = parseInt(wEl.value, 10);
     let hIn = parseInt(hEl.value, 10);
 
@@ -3052,11 +3006,11 @@ function downloadDefaultText(){ return t().download; }
     if(!wIn && !hIn){
       return new Promise((resolve, reject)=>{
         if(outMime === "image/png"){
-          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
         } else if(outMime === "image/webp"){
-          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
+          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/webp", q);
         } else {
-          base.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
+          cleanBase.toBlob((b)=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/jpeg", q);
         }
       });
     }
@@ -3068,20 +3022,20 @@ function downloadDefaultText(){ return t().download; }
 
     if(wIn && !hIn){
       targetW = Math.max(1, wIn);
-      targetH = keep ? Math.max(1, Math.round(targetW * (sh / sw))) : targetH;
+      targetH = keep ? Math.max(1, Math.round(targetW * (cleanH / cleanW))) : targetH;
     } else if(!wIn && hIn){
       targetH = Math.max(1, hIn);
-      targetW = keep ? Math.max(1, Math.round(targetH * (sw / sh))) : targetW;
+      targetW = keep ? Math.max(1, Math.round(targetH * (cleanW / cleanH))) : targetW;
     } else {
       targetW = Math.max(1, wIn);
       targetH = Math.max(1, hIn);
 
       if(keep && mode !== "stretch"){
         const s = mode === "cover"
-          ? Math.max(targetW / sw, targetH / sh)
-          : Math.min(targetW / sw, targetH / sh);
-        targetW = Math.max(1, Math.round(sw * s));
-        targetH = Math.max(1, Math.round(sh * s));
+          ? Math.max(targetW / cleanW, targetH / cleanH)
+          : Math.min(targetW / cleanW, targetH / cleanH);
+        targetW = Math.max(1, Math.round(cleanW * s));
+        targetH = Math.max(1, Math.round(cleanH * s));
       }
     }
 
@@ -3100,7 +3054,7 @@ function downloadDefaultText(){ return t().download; }
       octx.clearRect(0,0,targetW,targetH);
     }
 
-    octx.drawImage(base, 0, 0, sw, sh, 0, 0, targetW, targetH);
+    octx.drawImage(cleanBase, 0, 0, cleanW, cleanH, 0, 0, targetW, targetH);
 
     return new Promise((resolve, reject)=>{
       if(outMime === "image/png"){
@@ -3141,7 +3095,6 @@ function downloadDefaultText(){ return t().download; }
   resetAllBtn.addEventListener("click", ()=>{
     img = null;
     imgName = "image";
-    originalFormat = "png";
     imgW = imgH = 0;
 
     Object.assign(view, { scale:1, offX:0, offY:0, rot:0, flipH:1, flipV:1 });
