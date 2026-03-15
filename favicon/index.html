@@ -1,1 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Favicon Tools | ConvertFiles24</title>
+  <meta name="description" content="Create favicon and PWA icons from PNG, text, and emoji. Check favicon setup easily." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --bg2:#111827;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --accent:#2563eb;
+      --accent2:#60a5fa;
+      --radius:22px;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(37,99,235,.18), transparent 35%),
+        linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:10px 0 24px;
+    }
+    .brand{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .brand h1{
+      margin:0;font-size:24px;font-weight:800;letter-spacing:-.02em;
+    }
+    .brand p{
+      margin:0;color:var(--muted);font-size:14px;
+    }
+    .controls{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    select, .home-btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:14px;
+      font-size:14px;
+    }
+    .home-btn:hover{background:rgba(255,255,255,.08)}
+    .hero{
+      padding:32px 0 10px;
+    }
+    .hero h2{
+      margin:0 0 12px;
+      font-size:clamp(30px, 5vw, 54px);
+      line-height:1.06;
+      letter-spacing:-.03em;
+    }
+    .hero p{
+      margin:0;
+      max-width:780px;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.7;
+    }
+    .grid{
+      margin-top:34px;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+    }
+    .card{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow);
+      transition:transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(96,165,250,.5);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    }
+    .icon{
+      width:54px;height:54px;border-radius:16px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      font-size:24px;
+      margin-bottom:18px;
+      box-shadow:0 12px 24px rgba(37,99,235,.28);
+    }
+    .tag{
+      display:inline-block;
+      margin-bottom:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#dbeafe;
+      font-size:12px;
+      font-weight:700;
+    }
+    .card h3{
+      margin:0 0 10px;
+      font-size:22px;
+      letter-spacing:-.02em;
+    }
+    .card p{
+      margin:0 0 18px;
+      color:var(--muted);
+      line-height:1.65;
+      min-height:52px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:110px;
+      padding:12px 16px;
+      border-radius:14px;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:white;
+      font-weight:800;
+      font-size:14px;
+    }
+    footer{
+      margin-top:38px;
+      padding:22px 0 8px;
+      color:var(--muted);
+      border-top:1px solid var(--line);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    footer strong{color:var(--text)}
+    @media (max-width: 820px){
+      .grid{grid-template-columns:1fr}
+      .topbar{flex-direction:column;align-items:flex-start}
+      .controls{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <h1>ConvertFiles24</h1>
+        <p id="fav_brand_sub">웹사이트 아이콘 도구</p>
+      </div>
 
+      <div class="controls">
+        <select id="fav_langSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+          <option value="es">Español</option>
+        </select>
+        <a class="home-btn" href="../index.html">Home</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h2 id="fav_hero_title">아이콘 만들기</h2>
+      <p id="fav_hero_sub">
+        이미지, 텍스트, 이모지로 파비콘과 PWA 아이콘을 만들고, 사이트 파비콘 설정 여부도 확인할 수 있습니다.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="icon">🖼️</div>
+        <span class="tag" id="fav_c1_tag">이미지 • 변환</span>
+        <h3 id="fav_c1_title">PNG → ICO</h3>
+        <p id="fav_c1_desc">PNG 이미지를 파비콘 ICO 파일로 변환합니다.</p>
+        <a class="btn" id="fav_c1_btn" href="./png-to-ico/index.html">열기</a>
+      </article>
+
+      <article class="card">
+        <div class="icon">🔤</div>
+        <span class="tag" id="fav_c2_tag">텍스트 • 생성</span>
+        <h3 id="fav_c2_title">Text → ICO</h3>
+        <p id="fav_c2_desc">텍스트 글자로 파비콘 아이콘을 생성합니다.</p>
+        <a class="btn" id="fav_c2_btn" href="./text-to-ico/index.html">열기</a>
+      </article>
+
+      <article class="card">
+        <div class="icon">😊</div>
+        <span class="tag" id="fav_c3_tag">이모지 • 생성</span>
+        <h3 id="fav_c3_title">Emoji → ICO</h3>
+        <p id="fav_c3_desc">이모지로 파비콘 아이콘을 생성합니다.</p>
+        <a class="btn" id="fav_c3_btn" href="./emoji-to-ico/index.html">열기</a>
+      </article>
+
+      <article class="card">
+        <div class="icon">🔎</div>
+        <span class="tag" id="fav_c4_tag">웹 • 검사</span>
+        <h3 id="fav_c4_title">Favicon Checker</h3>
+        <p id="fav_c4_desc">웹사이트의 파비콘 설정 여부를 확인합니다.</p>
+        <a class="btn" id="fav_c4_btn" href="./checker/index.html">열기</a>
+      </article>
+    </section>
+
+    <footer>
+      <strong id="fav_footer_brand">ConvertFiles24</strong>
+      <div id="fav_footer_about">웹 프로젝트용 간단한 파비콘 도구</div>
+    </footer>
+  </div>
+
+  <script src="./i18n/strings.js"></script>
+  <script src="./i18n/i18n.js"></script>
+</body>
+</html>
