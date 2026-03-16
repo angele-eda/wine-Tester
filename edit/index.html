@@ -1392,6 +1392,8 @@
       aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
 
       h_download: "Descargar",
+      h_download_busy: "Procesando...",
+      h_download_done: "Descarga lista",
       download: "⬇️ Descargar",
       downloading: "⏳ Procesando…",
       downloaded: "✅ Listo",
@@ -1461,6 +1463,8 @@
       aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
 
       h_download: "ダウンロード",
+      h_download_busy: "処理中...",
+      h_download_done: "ダウンロード完了",
       download: "⬇️ ダウンロード",
       downloading: "⏳ 処理中…",
       downloaded: "✅ 準備OK",
@@ -1565,9 +1569,24 @@ function setDownloadIdle() {
   btn.setAttribute("aria-busy", "false");
 }
 
+function setDownloadSectionTitle(state) {
+  const title = document.getElementById("h_download");
+  if (!title) return;
+  if (state === "busy") {
+    title.textContent = (t && t().h_download_busy) ? t().h_download_busy : "저장 중...";
+    return;
+  }
+  if (state === "done") {
+    title.textContent = (t && t().h_download_done) ? t().h_download_done : "다운로드 완료";
+    return;
+  }
+  title.textContent = (t && t().h_download) ? t().h_download : "다운로드";
+}
+
 function setDownloading() {
   const btn = document.getElementById("downloadBtn");
   if (!btn) return;
+  setDownloadSectionTitle("busy");
   btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
   btn.disabled = true;
   btn.setAttribute("aria-busy", "true");
@@ -1576,6 +1595,7 @@ function setDownloading() {
 function setDownloaded() {
   const btn = document.getElementById("downloadBtn");
   if (!btn) return;
+  setDownloadSectionTitle("done");
   btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
   btn.disabled = false;
   btn.setAttribute("aria-busy", "false");
@@ -1589,16 +1609,25 @@ function downloadDefaultText(){ return t().download; }
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
+    if (downloadBusy) {
+      setDownloadSectionTitle("busy");
+      downloadBtn.textContent = t().downloading;
+    } else {
+      setDownloadSectionTitle("idle");
+      downloadBtn.textContent = downloadDefaultText();
+    }
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    downloadBtn.textContent = t().downloaded;
+    setDownloaded();
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
-      if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
+      if(!downloadBusy){
+        setDownloadSectionTitle("idle");
+        downloadBtn.textContent = downloadDefaultText();
+      }
     }, 900);
   }
 
@@ -1662,13 +1691,14 @@ function downloadDefaultText(){ return t().download; }
     $("lbl_aspectMode").textContent = t().aspect_mode;
     $("aspect_hint").textContent = t().aspect_hint;
 
-    $("h_download").textContent = t().h_download;
+    setDownloadSectionTitle("idle");
 
     if(downloadBtn.dataset.busy === "1"){
       setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
-      downloadBtn.textContent = t().downloaded;
+      setDownloaded();
     } else {
+      setDownloadSectionTitle("idle");
       downloadBtn.textContent = t().download;
     }
 
