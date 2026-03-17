@@ -957,24 +957,24 @@
       --btn-border:rgba(47,109,246,.55);
     }
     html[data-theme="light"]{
-      --page-bg:#f6f7fb;
-      --page-text:#111827;
-      --title-text:#0f172a;
-      --sub-text:#475569;
+      --page-bg:#f7f8fb;
+      --page-text:#1f2937;
+      --title-text:#111827;
+      --sub-text:#6b7280;
       --card-bg:#ffffff;
-      --card-border:1px solid rgba(15,23,42,.08);
+      --card-border:1px solid rgba(31,41,55,.10);
       --input-bg:#ffffff;
-      --input-text:#0f172a;
-      --pill-bg:#f3f5fb;
-      --pill-border:rgba(15,23,42,.08);
-      --pill-text:#0f172a;
-      --btn-bg:#eef2ff;
-      --btn-border:rgba(79,124,255,.18);
+      --input-text:#1f2937;
+      --pill-bg:#f1f3f7;
+      --pill-border:rgba(31,41,55,.10);
+      --pill-text:#1f2937;
+      --btn-bg:#f1f3f7;
+      --btn-border:rgba(31,41,55,.10);
     }
     body{ background:var(--page-bg); color:var(--page-text); }
     .title{ color:var(--title-text); }
     .sub,.langLabel,.card h2,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote,label,.emptySub{ color:var(--sub-text) !important; }
-    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); }
+    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); box-shadow:0 10px 24px rgba(15,23,42,.10); }
     .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); }
     .card, .langSelect, .presetMenu, .adv, .controlBar, .sizeChip, .outCard, .dropZone, .cropInfo, .statCard, .formatCard, .downloadCard, .inlinePanel, .bgCard, .zoomCard, .qualityCard, .tipBox{
       background:var(--card-bg) !important; border:var(--card-border) !important;
@@ -982,7 +982,7 @@
     input, select, textarea, button.selectBtn, .langSelect, .numInput, .textInput, .sizeInput, .qualityInput, .adv input, .adv select{
       background:var(--input-bg) !important; color:var(--input-text) !important;
     }
-    html[data-theme="light"] option{ background:#ffffff; color:#0f172a; }
+    html[data-theme="light"] option{ background:#ffffff; color:#1f2937; }
     html[data-theme="light"] .title,
     html[data-theme="light"] .card h2,
     html[data-theme="light"] .stageHead h2,
@@ -1014,54 +1014,15 @@
     html[data-theme="light"] .langLabel,
     html[data-theme="light"] .chip,
     html[data-theme="light"] .top strong,
-    html[data-theme="light"] .top span,
-    html[data-theme="light"] .iconBtn,
-    html[data-theme="light"] .presetItem small,
-    html[data-theme="light"] .emptyTitle{ color:#0f172a !important; }
-    html[data-theme="light"] .emptyState{ background:#fbfcfe !important; border:1px dashed rgba(15,23,42,.12) !important; }
-    html[data-theme="light"] .stage{ border:1px solid rgba(15,23,42,.08); }
-    html[data-theme="light"] .canvasClip{ background:rgba(15,23,42,.025); }
-    html[data-theme="light"] .emptyPill{ background:#f1f5f9; border-color:rgba(15,23,42,.08); color:#1e293b; }
-    html[data-theme="light"] .btn.secondary{ color:#0f172a; background:#f1f5f9; border:1px solid rgba(15,23,42,.08); }
-    html[data-theme="light"] .btn:disabled{ opacity:.62; }
-    html[data-theme="light"] .iconBtn:disabled{ opacity:.58; }
-
-    html[data-theme="light"] .presetBtn{ background:#f8fafc; border-color:rgba(15,23,42,.08); color:#0f172a; }
-    html[data-theme="light"] .presetBtn:hover{ background:#f1f5f9; border-color:rgba(15,23,42,.12); }
-    html[data-theme="light"] .presetBtn.isActive{ background:#eaf0ff; border-color:rgba(79,124,255,.28); color:#0f172a; box-shadow:0 0 0 2px rgba(79,124,255,.10); }
-    html[data-theme="light"] .homeBtn:hover{ background:#e8eeff; }
-    html[data-theme="light"] .langSelect{ box-shadow:none; }
-    html[data-theme="light"] .iconBtn:hover{ background:rgba(15,23,42,.04); }
-    html[data-theme="light"] .cropActionBtn,
-    html[data-theme="light"] .toolBtn,
-    html[data-theme="light"] .ghostBtn,
-    html[data-theme="light"] .secondaryBtn,
-    html[data-theme="light"] .miniBtn{ background:#f3f5fb !important; border:1px solid rgba(15,23,42,.08) !important; color:#0f172a !important; }
-    html[data-theme="light"] .primaryBtn,
-    html[data-theme="light"] .downloadBtn{ background:#4f7cff !important; border:1px solid rgba(79,124,255,.22) !important; color:#ffffff !important; box-shadow:none !important; }
-    html[data-theme="light"] .dropZone,
-    html[data-theme="light"] .cropInfo,
-    html[data-theme="light"] .inlinePanel,
-    html[data-theme="light"] .bgCard,
-    html[data-theme="light"] .zoomCard,
-    html[data-theme="light"] .qualityCard,
-    html[data-theme="light"] .tipBox,
-    html[data-theme="light"] .outCard,
-    html[data-theme="light"] .statCard,
-    html[data-theme="light"] .formatCard,
-    html[data-theme="light"] .downloadCard{ box-shadow:none !important; }
-    .topHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .themeSwitch{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+    html[data-theme="light"] .top span{ color:#1f2937 !important; }
     .themeToggle{
-      width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;
+      width:36px;height:36px;border-radius:12px;border:var(--card-border);background:transparent;
       color:var(--page-text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-      font-size:16px;box-shadow:none;transition:transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), opacity .12s var(--ease);
-      opacity:.72;
+      font-size:18px;box-shadow:none;transition:transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
     }
-    .themeToggle.isActive{background:rgba(var(--blue),.08);border-color:rgba(15,23,42,.08);opacity:1}
-    .themeToggle:hover{ transform:translateY(-1px); opacity:1; }
+    .themeToggle:hover{ transform:translateY(-1px); }
     .themeToggle:active{ transform:scale(.98); }
-    .themeToggle:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(var(--blue),.20); opacity:1; }
+    .themeToggle:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(var(--blue),.18); }
 
   </style>
 </head>
@@ -1070,13 +1031,7 @@
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
-        <div class="topHead">
-          <h1 class="title" id="page_title">Edit</h1>
-          <div class="themeSwitch" aria-label="Theme switch">
-            <button class="themeToggle" id="lightModeBtn" type="button" aria-label="Light mode" title="Light mode">☀️</button>
-            <button class="themeToggle" id="darkModeBtn" type="button" aria-label="Dark mode" title="Dark mode">🌙</button>
-          </div>
-        </div>
+        <h1 class="title" id="page_title">Edit</h1>
         <p class="sub" id="page_sub">Move/zoom/rotate/flip → crop → resize → download. 100% local processing.</p>
 
         <div style="margin-top:10px;">
@@ -1089,6 +1044,7 @@
       </div>
 
       <div class="langRow">
+        <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle theme" title="Toggle theme">☀️</button>
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
           <option value="en">Global (English)</option>
@@ -3326,23 +3282,6 @@ function downloadDefaultText(){ return t().download; }
   hEl.addEventListener("input", updateCropInfo);
   aspectLockEl.addEventListener("change", updateCropInfo);
 
-  const lightModeBtn = $("lightModeBtn");
-  const darkModeBtn = $("darkModeBtn");
-
-  function applyTheme(mode){
-    const finalMode = mode === "dark" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", finalMode);
-    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
-    lightModeBtn?.classList.toggle("isActive", finalMode === "light");
-    darkModeBtn?.classList.toggle("isActive", finalMode === "dark");
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if(metaTheme) metaTheme.setAttribute("content", finalMode === "light" ? "#f5f7fb" : "#0b0f17");
-  }
-
-  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
-  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
-
-  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
   setLang(LANG);
   syncHiResUI();
   updateMeta();
