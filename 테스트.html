@@ -11,6 +11,14 @@
 
   <script>
     document.documentElement.classList.add("js");
+    (function(){
+      try {
+        var savedTheme = localStorage.getItem("cf24-theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          document.documentElement.setAttribute("data-theme", savedTheme);
+        }
+      } catch(e) {}
+    })();
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -207,6 +215,39 @@
       color:#dbe7ff;
       letter-spacing:-0.2px;
       line-height:1.2;
+    }
+
+    .card.isCustomActive{
+      border-color:rgba(47,109,246,.42);
+      background:rgba(47,109,246,.05);
+      box-shadow:0 0 0 3px rgba(47,109,246,.10), inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .card.isCustomActive #h_output,
+    .card.isCustomActive #h_aspect{
+      color:#ffffff;
+    }
+    .card.isCustomActive .adv{
+      border-color:rgba(47,109,246,.40);
+      background:rgba(47,109,246,.08);
+      box-shadow:0 0 0 2px rgba(47,109,246,.10), inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .card.isCustomActive .customHint{
+      display:block;
+    }
+
+    .customHint{
+      display:none;
+      margin-top:8px;
+      margin-bottom:2px;
+      color:#cfe0ff;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.45;
+      padding:9px 11px;
+      border-radius:12px;
+      border:1px solid rgba(47,109,246,.26);
+      background:rgba(47,109,246,.10);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
     }
 
     .stageWrap{
@@ -597,8 +638,8 @@
 
     .handle{
       position:absolute;
-      width:48px;
-      height:48px;
+      width:40px;
+      height:40px;
       border-radius:999px;
       background:transparent;
       transform:translate(-50%,-50%);
@@ -610,8 +651,8 @@
     }
 
     .handleDot{
-      width:18px;
-      height:18px;
+      width:14px;
+      height:14px;
       border-radius:999px;
       background:rgba(235,245,255,.95);
       box-shadow:0 6px 14px rgba(0,0,0,.35);
@@ -629,8 +670,9 @@
 
     .cropSizeBadge{
       position:absolute;
-      right:8px;
+      left:50%;
       top:8px;
+      transform:translateX(-50%);
       padding:7px 10px;
       border-radius:999px;
       background:rgba(11,15,23,.58);
@@ -642,6 +684,9 @@
       pointer-events:none;
       user-select:none;
       white-space:nowrap;
+      max-width:calc(100% - 20px);
+      overflow:hidden;
+      text-overflow:ellipsis;
       box-shadow:0 10px 18px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.04);
       backdrop-filter:blur(6px);
       -webkit-backdrop-filter:blur(6px);
@@ -651,8 +696,8 @@
       .cropSizeBadge{
         font-size:10.5px;
         padding:7px 9px;
-        right:6px;
         top:6px;
+        max-width:calc(100% - 14px);
       }
     }
 
@@ -809,17 +854,19 @@
     .msg.ok{ color:#b8ffcc; }
 
     .cropInfo{
-      flex:0 0 auto;
+      flex:0 1 auto;
       font-size:12px;
       font-weight:700;
       color:#bcd0ff;
       opacity:.95;
       padding:8px 10px;
-      border-radius:999px;
+      border-radius:16px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.04);
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
-      white-space:nowrap;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      line-height:1.4;
       user-select:none;
       max-width:100%;
     }
@@ -892,6 +939,91 @@
     @media (max-width:860px){
       #resetAllBtn{ display:none; }
     }
+  
+
+    :root{
+      --page-bg:#0b0f17;
+      --page-text:#e9eef7;
+      --title-text:#ffffff;
+      --sub-text:#a7b3c7;
+      --card-bg:rgba(255,255,255,.03);
+      --card-border:1px solid rgba(255,255,255,.12);
+      --input-bg:rgba(255,255,255,.06);
+      --input-text:#e9eef7;
+      --pill-bg:rgba(120,200,255,.06);
+      --pill-border:rgba(120,200,255,.22);
+      --pill-text:#cfe6ff;
+      --btn-bg:rgba(47,109,246,.18);
+      --btn-border:rgba(47,109,246,.55);
+    }
+    html[data-theme="light"]{
+      --page-bg:#f4f7fc;
+      --page-text:#0f172a;
+      --title-text:#0b1220;
+      --sub-text:#475569;
+      --card-bg:#ffffff;
+      --card-border:1px solid rgba(15,23,42,.08);
+      --input-bg:#ffffff;
+      --input-text:#0f172a;
+      --pill-bg:rgba(47,109,246,.06);
+      --pill-border:rgba(47,109,246,.16);
+      --pill-text:#1e3a8a;
+      --btn-bg:rgba(47,109,246,.10);
+      --btn-border:rgba(47,109,246,.28);
+    }
+    body{ background:var(--page-bg); color:var(--page-text); }
+    .title{ color:var(--title-text); }
+    .sub,.langLabel,.card h2,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote{ color:var(--sub-text) !important; }
+    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); }
+    .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); }
+    .card, .langSelect, .presetMenu, .adv, .controlBar, .sizeChip, .outCard, .dropZone, .cropInfo, .statCard, .formatCard, .downloadCard, .inlinePanel, .bgCard, .zoomCard, .qualityCard, .tipBox{
+      background:var(--card-bg) !important; border:var(--card-border) !important;
+    }
+    input, select, textarea, button.selectBtn, .langSelect, .numInput, .textInput, .sizeInput, .qualityInput, .adv input, .adv select{
+      background:var(--input-bg) !important; color:var(--input-text) !important;
+    }
+    html[data-theme="light"] option{ background:#ffffff; color:#0f172a; }
+    html[data-theme="light"] .title,
+    html[data-theme="light"] .card h2,
+    html[data-theme="light"] .stageHead h2,
+    html[data-theme="light"] .label,
+    html[data-theme="light"] .sectionTitle,
+    html[data-theme="light"] .fileName,
+    html[data-theme="light"] .downloadTitle,
+    html[data-theme="light"] .statValue,
+    html[data-theme="light"] .sizeValue,
+    html[data-theme="light"] .qualityValue,
+    html[data-theme="light"] .resultValue,
+    html[data-theme="light"] .resultLabel,
+    html[data-theme="light"] .homeBtn,
+    html[data-theme="light"] .presetBtn,
+    html[data-theme="light"] .presetItem,
+    html[data-theme="light"] .langSelect,
+    html[data-theme="light"] .pill,
+    html[data-theme="light"] .cropActionBtn,
+    html[data-theme="light"] .primaryBtn,
+    html[data-theme="light"] .secondaryBtn,
+    html[data-theme="light"] .ghostBtn,
+    html[data-theme="light"] .miniBtn,
+    html[data-theme="light"] .toolBtn,
+    html[data-theme="light"] .downloadBtn,
+    html[data-theme="light"] .adv label,
+    html[data-theme="light"] .adv,
+    html[data-theme="light"] .card,
+    html[data-theme="light"] .dropText,
+    html[data-theme="light"] .langLabel,
+    html[data-theme="light"] .chip,
+    html[data-theme="light"] .top strong,
+    html[data-theme="light"] .top span{ color:#0f172a !important; }
+    .themeToggle{
+      width:42px;height:42px;border-radius:999px;border:var(--card-border);background:var(--card-bg);
+      color:var(--page-text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+      font-size:18px;box-shadow:0 8px 20px rgba(0,0,0,.12);transition:transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
+    }
+    .themeToggle:hover{ transform:translateY(-1px); }
+    .themeToggle:active{ transform:scale(.98); }
+    .themeToggle:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(var(--blue),.25), 0 8px 20px rgba(0,0,0,.12); }
+
   </style>
 </head>
 
@@ -912,6 +1044,7 @@
       </div>
 
       <div class="langRow">
+        <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle theme" title="Toggle theme">☀️</button>
         <div class="langLabel">🌐 <span id="lang_label">Language</span></div>
         <select class="langSelect" id="langSelect" aria-label="Language">
           <option value="en">Global (English)</option>
@@ -939,7 +1072,7 @@
 
             <button class="presetBtn" id="presetXBtn" type="button">🐦 X</button>
             <button class="presetBtn" id="presetOGBtn" type="button">🌐 OG</button>
-            <button class="presetBtn" id="presetFreeBtn" type="button">🔓 Free</button>
+            <button class="presetBtn" id="presetFreeBtn" type="button">🔓 Custom</button>
           </div>
         </div>
 
@@ -986,7 +1119,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="controlCard">
         <div class="cardHead">
           <h2 id="h_controls">Controls</h2>
 
@@ -1059,6 +1192,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_output">Output</h2>
+        <div class="customHint" id="customHint">Custom mode: output size is editable.</div>
 
         <div class="row">
           <div>
@@ -1132,7 +1266,7 @@
         <div style="height:12px;"></div>
 
         <h2 id="h_download">Download</h2>
-        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">⬇️ Download</button>
+        <button class="btn" id="downloadBtn" type="button" disabled aria-busy="false">편집 이미지 다운로드</button>
 
         <div style="height:10px;"></div>
         <button class="btn secondary" id="resetAllBtn" type="button" disabled>Reset (remove image)</button>
@@ -1198,6 +1332,8 @@
       reset: "Reset (remove image)",
 
       h_output: "Output",
+      custom_btn: "🔓 Custom",
+      custom_hint: "Custom mode: output size is editable.",
       format: "Format",
       quality: "Quality",
       w: "Width (px)",
@@ -1211,10 +1347,10 @@
       aspect_mode: "Mode",
       aspect_hint: "Contain = may add margins • Cover = fills and may crop • Stretch = distorts",
 
-      h_download: "Download",
+      h_download: "편집 이미지 다운로드",
       download: "⬇️ Download",
-      downloading: "⏳ Processing…",
-      downloaded: "✅ Ready",
+      downloading: "다운로드 준비 중...",
+      downloaded: "다운로드 완료",
 
       reset_all: "Reset (remove image)",
 
@@ -1222,11 +1358,11 @@
       msg_ready: "Ready. Drag to move. Pinch / mouse wheel / buttons to zoom.",
       msg_crop_on: "Crop ON: Drag handles to resize. Press Crop to apply.",
       msg_crop_applied: "✅ Cropped",
-      msg_ok: "✅ Downloaded",
+      msg_ok: "다운로드가 시작되었습니다.",
       msg_idb_fail: "Could not load from local storage. Please load again.",
 
       meta_idle: "<b>Preview</b><br/>Use the drop box to load an image.",
-      meta_info: (name, w, h) => `<b>Image</b><br/>Name: ${name}<br/>Resolution: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Result</b><br/>File name: ${getOutputFileName(name, format)}<br/>Format change: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolution: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Crop box: ${cw}×${ch} (stage px) · Output: ${ow}×${oh} (image px)`
     },
     ko: {
@@ -1265,6 +1401,8 @@
       reset: "초기화(이미지 제거)",
 
       h_output: "출력",
+      custom_btn: "🔓 Custom",
+      custom_hint: "Custom 모드: 출력 크기를 직접 설정할 수 있어요.",
       format: "형식",
       quality: "품질",
       w: "가로(px)",
@@ -1293,7 +1431,7 @@
       msg_idb_fail: "로컬 저장소에서 이미지를 불러오지 못했어요. 다시 불러와 주세요.",
 
       meta_idle: "<b>미리보기</b><br/>위 드롭박스에서 이미지를 불러와 주세요.",
-      meta_info: (name, w, h) => `<b>이미지</b><br/>파일명: ${name}<br/>해상도: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>결과 정보</b><br/>파일명: ${getOutputFileName(name, format)}<br/>형식 변경: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>해상도: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `크롭박스: ${cw}×${ch} (stage px) · 출력: ${ow}×${oh} (image px)`
     },
     es: {
@@ -1332,6 +1470,8 @@
       reset: "Reiniciar (quitar imagen)",
 
       h_output: "Salida",
+      custom_btn: "🔓 Custom",
+      custom_hint: "Modo Custom: puedes editar el tamaño de salida.",
       format: "Formato",
       quality: "Calidad",
       w: "Ancho (px)",
@@ -1346,6 +1486,8 @@
       aspect_hint: "Contain = puede dejar márgenes • Cover = rellena y puede recortar • Stretch = deforma",
 
       h_download: "Descargar",
+      h_download_busy: "Procesando...",
+      h_download_done: "Descarga lista",
       download: "⬇️ Descargar",
       downloading: "⏳ Procesando…",
       downloaded: "✅ Listo",
@@ -1360,7 +1502,7 @@
       msg_idb_fail: "No se pudo cargar desde almacenamiento local. Carga de nuevo.",
 
       meta_idle: "<b>Vista previa</b><br/>Usa el cuadro de arriba para cargar una imagen.",
-      meta_info: (name, w, h) => `<b>Imagen</b><br/>Nombre: ${name}<br/>Resolución: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>Resultado</b><br/>Archivo: ${getOutputFileName(name, format)}<br/>Cambio de formato: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>Resolución: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `Caja: ${cw}×${ch} (px) · Salida: ${ow}×${oh} (px)`
     },
     ja: {
@@ -1399,6 +1541,8 @@
       reset: "リセット(画像削除)",
 
       h_output: "出力",
+      custom_btn: "🔓 Custom",
+      custom_hint: "Customモードでは出力サイズを直接設定できます。",
       format: "形式",
       quality: "品質",
       w: "幅(px)",
@@ -1413,6 +1557,8 @@
       aspect_hint: "Contain=余白あり • Cover=全面表示(一部切れる) • Stretch=変形",
 
       h_download: "ダウンロード",
+      h_download_busy: "処理中...",
+      h_download_done: "ダウンロード完了",
       download: "⬇️ ダウンロード",
       downloading: "⏳ 処理中…",
       downloaded: "✅ 準備OK",
@@ -1427,10 +1573,31 @@
       msg_idb_fail: "ローカル保存から読み込めませんでした。読み込み直してください。",
 
       meta_idle: "<b>プレビュー</b><br/>上のドロップボックスから画像を読み込んでください。",
-      meta_info: (name, w, h) => `<b>画像</b><br/>名前: ${name}<br/>解像度: ${w}×${h}px`,
+      meta_info: (name, format, w, h) => `<b>結果情報</b><br/>ファイル名: ${getOutputFileName(name, format)}<br/>形式変更: ${getOriginalFormatLabel(name)} → ${getFormatLabel(format)}<br/>解像度: ${w}×${h}px`,
       crop_info: (cw,ch,ow,oh)=> `枠: ${cw}×${ch} · 出力: ${ow}×${oh}`
     }
   };
+
+
+  function getFormatLabel(formatOrMime){
+    const v = String(formatOrMime || "").toLowerCase().trim();
+    if (v === "jpg" || v === "jpeg" || v === "image/jpeg") return "JPG";
+    if (v === "png" || v === "image/png") return "PNG";
+    if (v === "webp" || v === "image/webp") return "WEBP";
+    return (v.replace(/^image\//, "") || "PNG").toUpperCase();
+  }
+
+  function getOutputFileName(name, formatOrMime){
+    const base = String(name || "image").replace(/\.[^.]+$/, "");
+    const extMap = { JPG: "jpg", PNG: "png", WEBP: "webp" };
+    const label = getFormatLabel(formatOrMime);
+    return `${base}.${extMap[label] || label.toLowerCase()}`;
+  }
+
+  function getOriginalFormatLabel(name){
+    const m = String(name || "").match(/\.([^.]+)$/);
+    return getFormatLabel(m ? m[1] : "png");
+  }
 
   function getQueryLang(){
     try{
@@ -1487,7 +1654,48 @@
   let downloadBusy = false;
   let downloadDoneTimer = null;
 
-  function downloadDefaultText(){ return t().download; }
+  
+function setDownloadIdle() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  btn.textContent = (t && t().download) ? t().download : "편집 이미지 다운로드";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
+function setDownloadSectionTitle(state) {
+  const title = document.getElementById("h_download");
+  if (!title) return;
+  if (state === "busy") {
+    title.textContent = (t && t().h_download_busy) ? t().h_download_busy : "저장 중...";
+    return;
+  }
+  if (state === "done") {
+    title.textContent = (t && t().h_download_done) ? t().h_download_done : "다운로드 완료";
+    return;
+  }
+  title.textContent = (t && t().h_download) ? t().h_download : "다운로드";
+}
+
+function setDownloading() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  setDownloadSectionTitle("busy");
+  btn.textContent = (t && t().downloading) ? t().downloading : "다운로드 준비 중...";
+  btn.disabled = true;
+  btn.setAttribute("aria-busy", "true");
+}
+
+function setDownloaded() {
+  const btn = document.getElementById("downloadBtn");
+  if (!btn) return;
+  setDownloadSectionTitle("done");
+  btn.textContent = (t && t().downloaded) ? t().downloaded : "다운로드 완료";
+  btn.disabled = false;
+  btn.setAttribute("aria-busy", "false");
+}
+
+function downloadDefaultText(){ return t().download; }
 
   function setDownloadBusy(on){
     downloadBusy = !!on;
@@ -1495,16 +1703,25 @@
     downloadBtn.setAttribute("aria-busy", downloadBusy ? "true" : "false");
     downloadBtn.classList.toggle("isBusy", downloadBusy);
     downloadBtn.disabled = downloadBusy || !img;
-    downloadBtn.textContent = downloadBusy ? t().downloading : downloadDefaultText();
+    if (downloadBusy) {
+      setDownloadSectionTitle("busy");
+      downloadBtn.textContent = t().downloading;
+    } else {
+      setDownloadSectionTitle("idle");
+      downloadBtn.textContent = downloadDefaultText();
+    }
   }
 
   function flashDownloadDone(){
     downloadBtn.dataset.justdone = "1";
-    downloadBtn.textContent = t().downloaded;
+    setDownloaded();
     if(downloadDoneTimer) clearTimeout(downloadDoneTimer);
     downloadDoneTimer = setTimeout(()=>{
       downloadBtn.dataset.justdone = "0";
-      if(!downloadBusy) downloadBtn.textContent = downloadDefaultText();
+      if(!downloadBusy){
+        setDownloadSectionTitle("idle");
+        downloadBtn.textContent = downloadDefaultText();
+      }
     }, 900);
   }
 
@@ -1553,6 +1770,8 @@
     $("resetMiniBtn").setAttribute("title", t().reset);
 
     $("h_output").textContent = t().h_output;
+    $("customHint").textContent = t().custom_hint;
+    $("presetFreeBtn").textContent = t().custom_btn;
     $("lbl_format").textContent = t().format;
     $("lbl_quality").textContent = t().quality;
     $("lbl_w").textContent = t().w;
@@ -1566,13 +1785,14 @@
     $("lbl_aspectMode").textContent = t().aspect_mode;
     $("aspect_hint").textContent = t().aspect_hint;
 
-    $("h_download").textContent = t().h_download;
+    setDownloadSectionTitle("idle");
 
     if(downloadBtn.dataset.busy === "1"){
-      downloadBtn.textContent = t().downloading;
+      setDownloading();
     } else if(downloadBtn.dataset.justdone === "1"){
-      downloadBtn.textContent = t().downloaded;
+      setDownloaded();
     } else {
+      setDownloadSectionTitle("idle");
       downloadBtn.textContent = t().download;
     }
 
@@ -1665,6 +1885,7 @@
   const aspectModeEl = $("aspectMode");
   const resetAllBtn = $("resetAllBtn");
   const advBox = $("advBox");
+  const controlCard = $("controlCard");
 
   const presetIGBtn = $("presetIGBtn");
   const presetXBtn = $("presetXBtn");
@@ -1687,6 +1908,10 @@
   let presetOutW = 1200;
   let presetOutH = 630;
   let cropAspect = presetOutW / presetOutH;
+
+  function syncCustomOutputActive(){
+    controlCard.classList.toggle("isCustomActive", presetName === "free");
+  }
 
   function setActivePresetButtons(){
     [presetIGBtn, presetXBtn, presetOGBtn, presetFreeBtn].forEach(b=>b.classList.remove("isActive"));
@@ -1732,6 +1957,13 @@
   presetOGBtn.addEventListener("click", ()=> applyPreset("og"));
   presetFreeBtn.addEventListener("click", ()=> applyPreset("free"));
 
+  function revealAdvancedBox(){
+    advBox.open = true;
+    requestAnimationFrame(()=>{
+      try{ advBox.scrollIntoView({ behavior:"smooth", block:"nearest" }); }catch(_){}
+    });
+  }
+
   function applyPreset(name){
     presetName = name;
 
@@ -1767,10 +1999,11 @@
       presetOutW = 0;
       presetOutH = 0;
       cropAspect = null;
-      advBox.open = true;
+      revealAdvancedBox();
     }
 
     setActivePresetButtons();
+    syncCustomOutputActive();
 
     if(img && cropOn){
       ensureCropDefault(true);
@@ -1812,6 +2045,27 @@
     crop.y = Math.round(cy - crop.h/2);
     clampCropToStage();
     enforceCropAspect(ratio, null);
+  }
+
+  function fitCropToImageBounds(){
+    const rect = stageRect();
+    if(!img || !rect.width || !rect.height) return;
+
+    const drawW = imgW * Math.abs(view.scale);
+    const drawH = imgH * Math.abs(view.scale);
+    const left = rect.width / 2 + view.offX - drawW / 2;
+    const top = rect.height / 2 + view.offY - drawH / 2;
+    const right = rect.width / 2 + view.offX + drawW / 2;
+    const bottom = rect.height / 2 + view.offY + drawH / 2;
+
+    crop.x = Math.round(clamp(left, 0, rect.width));
+    crop.y = Math.round(clamp(top, 0, rect.height));
+    crop.w = Math.round(clamp(right, 0, rect.width) - crop.x);
+    crop.h = Math.round(clamp(bottom, 0, rect.height) - crop.y);
+
+    crop.w = Math.max(CROP_MIN, crop.w);
+    crop.h = Math.max(CROP_MIN, crop.h);
+    clampCropToStage();
   }
 
   function enforceCropAspect(ratio, handle){
@@ -1946,6 +2200,7 @@
       presetOutH = s.presetOutH || 0;
       cropAspect = (typeof s.cropAspect === "number") ? s.cropAspect : null;
       setActivePresetButtons();
+      syncAdvancedState();
     }
     syncCropUI();
     redraw();
@@ -2094,7 +2349,7 @@
     if(!img){
       $("meta").innerHTML = t().meta_idle;
       setDownloadBusy(false);
-      downloadBtn.disabled = true;
+      
       resetAllBtn.disabled = true;
       resetMiniBtn.disabled = true;
       cropToggleBtn.disabled = true;
@@ -2104,7 +2359,7 @@
       return;
     }
 
-    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), imgW, imgH);
+    $("meta").innerHTML = t().meta_info(escapeHtml(imgName), outFormatEl.value, imgW, imgH);
 
     resetAllBtn.disabled = false;
     resetMiniBtn.disabled = false;
@@ -2218,6 +2473,65 @@
     return { sx, sy, sw, sh };
   }
 
+
+  function trimLightEdgeBorder(canvas, maxTrim=2){
+    if(!canvas || !canvas.width || !canvas.height) return canvas;
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    if(!ctx) return canvas;
+    const { width, height } = canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+
+    const isBrightPixel = (i)=>{
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+      if(a < 180) return false;
+      const lum = (r + g + b) / 3;
+      return lum > 225 || (r > 232 && g > 232 && b > 232);
+    };
+
+    const brightCol = (x)=>{
+      let bright = 0, solid = 0;
+      for(let y = 0; y < height; y++){
+        const i = (y * width + x) * 4;
+        if(data[i+3] > 180){
+          solid++;
+          if(isBrightPixel(i)) bright++;
+        }
+      }
+      return solid > 0 && (bright / solid) > 0.6;
+    };
+
+    const brightRow = (y)=>{
+      let bright = 0, solid = 0;
+      const row = y * width;
+      for(let x = 0; x < width; x++){
+        const i = (row + x) * 4;
+        if(data[i+3] > 180){
+          solid++;
+          if(isBrightPixel(i)) bright++;
+        }
+      }
+      return solid > 0 && (bright / solid) > 0.6;
+    };
+
+    let left = 0, right = 0, top = 0, bottom = 0;
+    while(left < Math.min(maxTrim, width - 1) && brightCol(left)) left++;
+    while(right < Math.min(maxTrim, width - left - 1) && brightCol(width - 1 - right)) right++;
+    while(top < Math.min(maxTrim, height - 1) && brightRow(top)) top++;
+    while(bottom < Math.min(maxTrim, height - top - 1) && brightRow(height - 1 - bottom)) bottom++;
+
+    if(!(left || right || top || bottom)) return canvas;
+
+    const out = document.createElement("canvas");
+    out.width = Math.max(1, width - left - right);
+    out.height = Math.max(1, height - top - bottom);
+    out.getContext("2d", { alpha:true }).drawImage(
+      canvas,
+      left, top, out.width, out.height,
+      0, 0, out.width, out.height
+    );
+    return out;
+  }
+
   function renderStageToCanvas(mult, alpha=true){
     const rect = stageRect();
     const stageW = Math.round(rect.width);
@@ -2273,7 +2587,11 @@
     cctx.clearRect(0,0,sw,sh);
     cctx.drawImage(stageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-    const dataUrl = c.toDataURL("image/png");
+    const cleaned = trimLightEdgeBorder(c, 2);
+    const extMatch = String(imgName || "image.jpg").match(/\.([^.]+)$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "jpg";
+    const mime = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+    const dataUrl = cleaned.toDataURL(mime, 0.98);
     const im = new Image();
 
     await new Promise((res, rej)=>{
@@ -2285,7 +2603,7 @@
     img = im;
     imgW = im.naturalWidth || 1;
     imgH = im.naturalHeight || 1;
-    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + "_crop.png";
+    imgName = (imgName || "image").replace(/\.[^.]+$/, "") + `_crop.${ext}`;
 
     const rect = stageRect();
     const s = Math.min(rect.width / imgW, rect.height / imgH);
@@ -2294,6 +2612,10 @@
 
     cropOn = true;
     ensureCropDefault(true);
+    fitCropToImageBounds();
+    if(cropAspect){
+      fitCropToAspectCenter(cropAspect);
+    }
 
     clearHistory();
     redraw();
@@ -2568,7 +2890,11 @@
   loadImgBtn.addEventListener("click", ()=>{
     pickInput.value = "";
     pickInput.click();
-  });
+  
+  setDownloaded();
+  try { if (typeof toast === "function") toast((t && t().msg_ok) ? t().msg_ok : "다운로드가 시작되었습니다."); } catch (e) {}
+  setTimeout(() => { try { setDownloadIdle(); } catch (e) {} }, 1600);
+});
 
   emptyPickBtn.addEventListener("click", ()=>{
     pickInput.value = "";
@@ -2931,6 +3257,12 @@
 
     clearHistory();
     clearSessionKeys();
+    presetName = "og";
+    presetOutW = 1200;
+    presetOutH = 630;
+    cropAspect = presetOutW / presetOutH;
+    setActivePresetButtons();
+    syncCustomOutputActive();
 
     setMsgKey(null, "");
     downloadBtn.dataset.justdone = "0";
