@@ -957,23 +957,23 @@
       --btn-border:rgba(47,109,246,.55);
     }
     html[data-theme="light"]{
-      --page-bg:#f4f7fc;
+      --page-bg:#f5f7fb;
       --page-text:#0f172a;
       --title-text:#0b1220;
-      --sub-text:#475569;
+      --sub-text:#334155;
       --card-bg:#ffffff;
-      --card-border:1px solid rgba(15,23,42,.08);
+      --card-border:1px solid rgba(15,23,42,.09);
       --input-bg:#ffffff;
       --input-text:#0f172a;
-      --pill-bg:rgba(47,109,246,.06);
-      --pill-border:rgba(47,109,246,.16);
-      --pill-text:#1e3a8a;
-      --btn-bg:rgba(47,109,246,.10);
-      --btn-border:rgba(47,109,246,.28);
+      --pill-bg:#eef3ff;
+      --pill-border:rgba(47,109,246,.18);
+      --pill-text:#0f172a;
+      --btn-bg:#edf3ff;
+      --btn-border:rgba(47,109,246,.22);
     }
     body{ background:var(--page-bg); color:var(--page-text); }
     .title{ color:var(--title-text); }
-    .sub,.langLabel,.card h2,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote{ color:var(--sub-text) !important; }
+    .sub,.langLabel,.card h2,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote,label,.emptySub{ color:var(--sub-text) !important; }
     .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); }
     .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); }
     .card, .langSelect, .presetMenu, .adv, .controlBar, .sizeChip, .outCard, .dropZone, .cropInfo, .statCard, .formatCard, .downloadCard, .inlinePanel, .bgCard, .zoomCard, .qualityCard, .tipBox{
@@ -1014,19 +1014,29 @@
     html[data-theme="light"] .langLabel,
     html[data-theme="light"] .chip,
     html[data-theme="light"] .top strong,
-    html[data-theme="light"] .top span{ color:#0f172a !important; }
-    .titleBar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .themeSwitch{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+    html[data-theme="light"] .top span,
+    html[data-theme="light"] .iconBtn,
+    html[data-theme="light"] .presetItem small,
+    html[data-theme="light"] .emptyTitle{ color:#0f172a !important; }
+    html[data-theme="light"] .emptyState{ background:#f8fafc !important; border:1px dashed rgba(15,23,42,.14) !important; }
+    html[data-theme="light"] .stage{ border:1px solid rgba(15,23,42,.10); }
+    html[data-theme="light"] .canvasClip{ background:rgba(15,23,42,.03); }
+    html[data-theme="light"] .emptyPill{ background:#eef3ff; border-color:rgba(47,109,246,.18); color:#1e3a8a; }
+    html[data-theme="light"] .btn.secondary{ color:#0f172a; background:#eef3ff; border:1px solid rgba(47,109,246,.18); }
+    html[data-theme="light"] .btn:disabled{ opacity:.62; }
+    html[data-theme="light"] .iconBtn:disabled{ opacity:.58; }
+    .topHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .themeSwitch{display:flex;align-items:center;gap:6px;flex:0 0 auto}
     .themeToggle{
-      width:42px;height:42px;border-radius:999px;border:var(--card-border);background:var(--card-bg);
+      width:34px;height:34px;border-radius:10px;border:1px solid transparent;background:transparent;
       color:var(--page-text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-      font-size:18px;box-shadow:0 8px 20px rgba(0,0,0,.12);transition:transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), opacity .12s var(--ease);
-      position:relative;z-index:30;opacity:.72;
+      font-size:17px;box-shadow:none;transition:transform .08s var(--ease), background .12s var(--ease), border-color .12s var(--ease), opacity .12s var(--ease);
+      opacity:.78;
     }
-    .themeToggle.isActive{opacity:1;box-shadow:0 0 0 3px rgba(var(--blue),.22), 0 8px 20px rgba(0,0,0,.12)}
+    .themeToggle.isActive{background:rgba(var(--blue),.12);border-color:rgba(var(--blue),.20);opacity:1}
     .themeToggle:hover{ transform:translateY(-1px); opacity:1; }
     .themeToggle:active{ transform:scale(.98); }
-    .themeToggle:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(var(--blue),.25), 0 8px 20px rgba(0,0,0,.12); opacity:1; }
+    .themeToggle:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(var(--blue),.20); opacity:1; }
 
   </style>
 </head>
@@ -1035,7 +1045,7 @@
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
-        <div class="titleBar">
+        <div class="topHead">
           <h1 class="title" id="page_title">Edit</h1>
           <div class="themeSwitch" aria-label="Theme switch">
             <button class="themeToggle" id="lightModeBtn" type="button" aria-label="Light mode" title="Light mode">☀️</button>
@@ -1303,21 +1313,6 @@
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
-  const lightModeBtn = $("lightModeBtn");
-  const darkModeBtn = $("darkModeBtn");
-
-  function applyTheme(mode){
-    const finalMode = mode === "light" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", finalMode);
-    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
-    lightModeBtn?.classList.toggle("isActive", finalMode === "light");
-    darkModeBtn?.classList.toggle("isActive", finalMode === "dark");
-  }
-
-  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
-  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
-  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
 
   const STR = {
     en: {
@@ -3306,6 +3301,23 @@ function downloadDefaultText(){ return t().download; }
   hEl.addEventListener("input", updateCropInfo);
   aspectLockEl.addEventListener("change", updateCropInfo);
 
+  const lightModeBtn = $("lightModeBtn");
+  const darkModeBtn = $("darkModeBtn");
+
+  function applyTheme(mode){
+    const finalMode = mode === "dark" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", finalMode);
+    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
+    lightModeBtn?.classList.toggle("isActive", finalMode === "light");
+    darkModeBtn?.classList.toggle("isActive", finalMode === "dark");
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if(metaTheme) metaTheme.setAttribute("content", finalMode === "light" ? "#f5f7fb" : "#0b0f17");
+  }
+
+  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
+  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
+
+  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
   setLang(LANG);
   syncHiResUI();
   updateMeta();
