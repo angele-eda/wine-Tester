@@ -11,16 +11,7 @@
 
   <script>
     document.documentElement.classList.add("js");
-    (function(){
-      try {
-        var savedTheme = localStorage.getItem("cf24-theme");
-        if (savedTheme === "light" || savedTheme === "dark") {
-          document.documentElement.setAttribute("data-theme", savedTheme);
-        } else {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
-      } catch(e) {}
-    })();
+    document.documentElement.setAttribute("data-theme", "dark");
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -943,74 +934,72 @@
     }
   
 
+    
     :root{
-      --page-bg:#0b0f17;
-      --page-text:#e9eef7;
+      --page-bg:#0d1320;
+      --page-text:#edf3ff;
       --title-text:#ffffff;
-      --sub-text:#a7b3c7;
-      --card-bg:rgba(255,255,255,.03);
-      --card-border:1px solid rgba(255,255,255,.12);
-      --input-bg:rgba(255,255,255,.06);
-      --input-text:#e9eef7;
-      --pill-bg:rgba(120,200,255,.06);
-      --pill-border:rgba(120,200,255,.22);
-      --pill-text:#cfe6ff;
-      --btn-bg:rgba(47,109,246,.18);
-      --btn-border:rgba(47,109,246,.55);
+      --sub-text:#a8b4c8;
+      --card-bg:linear-gradient(180deg, rgba(22,30,48,.96), rgba(17,24,38,.96));
+      --card-border:1px solid rgba(255,255,255,.08);
+      --input-bg:rgba(255,255,255,.05);
+      --input-text:#edf3ff;
+      --pill-bg:rgba(79,124,255,.10);
+      --pill-border:rgba(111,151,255,.26);
+      --pill-text:#dbe8ff;
+      --btn-bg:linear-gradient(180deg, rgba(79,124,255,.24), rgba(79,124,255,.16));
+      --btn-border:rgba(111,151,255,.34);
+      --shadow-md:0 10px 28px rgba(0,0,0,.28);
+      --surface-shadow:0 14px 34px rgba(0,0,0,.22);
     }
-    html[data-theme="light"]{
-      --page-bg:#f6f7fb;
-      --page-text:#111827;
-      --title-text:#0f172a;
-      --sub-text:#6b7280;
-      --card-bg:#ffffff;
-      --card-border:1px solid rgba(17,24,39,.08);
-      --input-bg:#ffffff;
-      --input-text:#111827;
-      --pill-bg:#ffffff;
-      --pill-border:rgba(17,24,39,.08);
-      --pill-text:#111827;
-      --btn-bg:#ffffff;
-      --btn-border:rgba(17,24,39,.08);
-    }
-    body{ background:var(--page-bg); color:var(--page-text); }
+    body{ background:radial-gradient(circle at top, #121a2a 0%, var(--page-bg) 42%); color:var(--page-text); }
     .title{ color:var(--title-text); }
     .sub,.langLabel,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote,.emptySub,label{ color:var(--sub-text) !important; }
-    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); box-shadow:var(--shadow-md); }
-    .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); box-shadow:var(--shadow-md); }
+    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.05); }
+    .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
     .card, .langSelect, .presetMenu, .adv, .controlBar, .sizeChip, .outCard, .dropZone, .cropInfo, .statCard, .formatCard, .downloadCard, .inlinePanel, .bgCard, .zoomCard, .qualityCard, .tipBox{
-      background:var(--card-bg) !important; border:var(--card-border) !important;
+      background:var(--card-bg) !important; border:var(--card-border) !important; box-shadow:var(--surface-shadow);
     }
     input, select, textarea, button.selectBtn, .langSelect, .numInput, .textInput, .sizeInput, .qualityInput, .adv input, .adv select{
       background:var(--input-bg) !important; color:var(--input-text) !important;
+      border-color:rgba(255,255,255,.08) !important;
     }
-    html[data-theme="light"] option{ background:#ffffff; color:#111827; }
-    html[data-theme="light"] .title,
-    html[data-theme="light"] .card h2,
-    html[data-theme="light"] .stageHead h2,
-    html[data-theme="light"] .label,
-    html[data-theme="light"] .sectionTitle,
-    html[data-theme="light"] .fileName,
-    html[data-theme="light"] .downloadTitle,
-    html[data-theme="light"] .statValue,
-    html[data-theme="light"] .sizeValue,
-    html[data-theme="light"] .qualityValue,
-    html[data-theme="light"] .resultValue,
-    html[data-theme="light"] .resultLabel,
-    html[data-theme="light"] .dropText,
-    html[data-theme="light"] .chip,
-    html[data-theme="light"] .top strong,
-    html[data-theme="light"] .top span,
-    html[data-theme="light"] .presetBtn,
-    html[data-theme="light"] .presetItem,
-    html[data-theme="light"] .cropActionBtn,
-    html[data-theme="light"] .secondaryBtn,
-    html[data-theme="light"] .ghostBtn,
-    html[data-theme="light"] .miniBtn,
-    html[data-theme="light"] .toolBtn,
-    html[data-theme="light"] .downloadBtn,
-    html[data-theme="light"] .adv label{ color:#111827 !important; }
+    option{ background:#121826; color:#edf3ff; }
+    .card h2,
+    .stageHead h2,
+    .label,
+    .sectionTitle,
+    .fileName,
+    .downloadTitle,
+    .statValue,
+    .sizeValue,
+    .qualityValue,
+    .resultValue,
+    .resultLabel,
+    .dropText,
+    .chip,
+    .top strong,
+    .top span,
+    .presetBtn,
+    .presetItem,
+    .cropActionBtn,
+    .secondaryBtn,
+    .ghostBtn,
+    .miniBtn,
+    .toolBtn,
+    .downloadBtn,
+    .adv label{ color:#edf3ff !important; }
+    .secondaryBtn, .ghostBtn, .miniBtn, .toolBtn, .cropActionBtn, .presetBtn, .presetItem{
+      background:rgba(255,255,255,.04) !important;
+      border:1px solid rgba(255,255,255,.08) !important;
+      box-shadow:none !important;
+    }
+    .secondaryBtn:hover, .ghostBtn:hover, .miniBtn:hover, .toolBtn:hover, .cropActionBtn:hover, .presetBtn:hover, .presetItem:hover{
+      background:rgba(255,255,255,.07) !important;
+      border-color:rgba(255,255,255,.12) !important;
+    }
     .topHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%}
+
 </style>
 </head>
 
@@ -3270,23 +3259,8 @@ function downloadDefaultText(){ return t().download; }
   hEl.addEventListener("input", updateCropInfo);
   aspectLockEl.addEventListener("change", updateCropInfo);
 
-  const lightModeBtn = $("lightModeBtn");
-  const darkModeBtn = $("darkModeBtn");
-
-  function applyTheme(mode){
-    const finalMode = mode === "dark" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", finalMode);
-    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
-    if (lightModeBtn) lightModeBtn.classList.toggle("isActive", finalMode === "light");
-    if (darkModeBtn) darkModeBtn.classList.toggle("isActive", finalMode === "dark");
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if(metaTheme) metaTheme.setAttribute("content", finalMode === "light" ? "#f6f7fb" : "#0b0f17");
-  }
-
-  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
-  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
-
-  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
+  // single premium dark theme only
+  document.documentElement.setAttribute("data-theme", "dark");
 
   setLang(LANG);
   syncHiResUI();
