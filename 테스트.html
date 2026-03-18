@@ -16,6 +16,8 @@
         var savedTheme = localStorage.getItem("cf24-theme");
         if (savedTheme === "light" || savedTheme === "dark") {
           document.documentElement.setAttribute("data-theme", savedTheme);
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
         }
       } catch(e) {}
     })();
@@ -957,40 +959,32 @@
       --btn-border:rgba(47,109,246,.55);
     }
     html[data-theme="light"]{
-      --page-bg:#f5f6fa;
+      --page-bg:#f6f7fb;
       --page-text:#111827;
       --title-text:#0f172a;
-      --sub-text:#4b5563;
+      --sub-text:#6b7280;
       --card-bg:#ffffff;
       --card-border:1px solid rgba(17,24,39,.08);
       --input-bg:#ffffff;
       --input-text:#111827;
-      --pill-bg:#f6f8fc;
+      --pill-bg:#ffffff;
       --pill-border:rgba(17,24,39,.08);
       --pill-text:#111827;
-      --btn-bg:#f4f6fb;
+      --btn-bg:#ffffff;
       --btn-border:rgba(17,24,39,.08);
     }
     body{ background:var(--page-bg); color:var(--page-text); }
     .title{ color:var(--title-text); }
-    .sub,.langLabel,.card h2,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote,label,.emptySub{ color:var(--sub-text) !important; }
-
-    .homeBtn{ background:#f7f9fd; border:1px solid rgba(17,24,39,.08); color:var(--page-text); box-shadow:0 10px 24px rgba(15,23,42,.05); }
-    .homeBtn:hover{ background:#f2f6ff; border-color:rgba(79,124,255,.18); }
-
-    .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); }
-
+    .sub,.langLabel,.muted,.fileMeta,.helpText,.resultNote,.hint,.advHint,.controlHint,.toggleLabel,.customHint,.statLabel,.downloadMeta,.badgeNote,.sizeHint,.cropLegend,.miniNote,.emptySub,label{ color:var(--sub-text) !important; }
+    .homeBtn{ background:var(--btn-bg); border-color:var(--btn-border); color:var(--page-text); box-shadow:var(--shadow-md); }
+    .pill{ background:var(--pill-bg); border-color:var(--pill-border); color:var(--pill-text); box-shadow:var(--shadow-md); }
     .card, .langSelect, .presetMenu, .adv, .controlBar, .sizeChip, .outCard, .dropZone, .cropInfo, .statCard, .formatCard, .downloadCard, .inlinePanel, .bgCard, .zoomCard, .qualityCard, .tipBox{
-      background:var(--card-bg) !important;
-      border:var(--card-border) !important;
-      box-shadow:0 8px 24px rgba(15,23,42,.04) !important;
+      background:var(--card-bg) !important; border:var(--card-border) !important;
     }
-
     input, select, textarea, button.selectBtn, .langSelect, .numInput, .textInput, .sizeInput, .qualityInput, .adv input, .adv select{
       background:var(--input-bg) !important; color:var(--input-text) !important;
     }
     html[data-theme="light"] option{ background:#ffffff; color:#111827; }
-
     html[data-theme="light"] .title,
     html[data-theme="light"] .card h2,
     html[data-theme="light"] .stageHead h2,
@@ -1003,106 +997,30 @@
     html[data-theme="light"] .qualityValue,
     html[data-theme="light"] .resultValue,
     html[data-theme="light"] .resultLabel,
-    html[data-theme="light"] .homeBtn,
+    html[data-theme="light"] .dropText,
+    html[data-theme="light"] .chip,
+    html[data-theme="light"] .top strong,
+    html[data-theme="light"] .top span,
     html[data-theme="light"] .presetBtn,
     html[data-theme="light"] .presetItem,
-    html[data-theme="light"] .langSelect,
-    html[data-theme="light"] .pill,
     html[data-theme="light"] .cropActionBtn,
-    html[data-theme="light"] .primaryBtn,
     html[data-theme="light"] .secondaryBtn,
     html[data-theme="light"] .ghostBtn,
     html[data-theme="light"] .miniBtn,
     html[data-theme="light"] .toolBtn,
     html[data-theme="light"] .downloadBtn,
-    html[data-theme="light"] .adv label,
-    html[data-theme="light"] .adv,
-    html[data-theme="light"] .card,
-    html[data-theme="light"] .dropText,
-    html[data-theme="light"] .langLabel,
-    html[data-theme="light"] .chip,
-    html[data-theme="light"] .top strong,
-    html[data-theme="light"] .top span,
-    html[data-theme="light"] .iconBtn,
-    html[data-theme="light"] .presetItem small,
-    html[data-theme="light"] .emptyTitle{ color:#111827 !important; }
-
-    html[data-theme="light"] .emptyState{
-      background:#fbfcfe !important;
-      border:1px dashed rgba(17,24,39,.10) !important;
-      box-shadow:none !important;
-    }
-    html[data-theme="light"] .stage{ border:1px solid rgba(17,24,39,.08); background:#fafbfe; }
-    html[data-theme="light"] .canvasClip{ background:rgba(17,24,39,.02); }
-    html[data-theme="light"] .emptyPill{ background:#f3f5f9; border-color:rgba(17,24,39,.08); color:#111827; }
-
-    html[data-theme="light"] .btn.secondary{ color:#111827; background:#f3f5f9; border:1px solid rgba(17,24,39,.08); }
-    html[data-theme="light"] .btn:disabled{ opacity:.82; }
-    html[data-theme="light"] .iconBtn:disabled{ opacity:.68; }
-
-    html[data-theme="light"] .presetBtn{
-      background:#ffffff;
-      border-color:rgba(17,24,39,.08);
-      color:#111827;
-      box-shadow:0 2px 8px rgba(15,23,42,.03);
-    }
-    html[data-theme="light"] .presetBtn:hover{ background:#f8fafc; border-color:rgba(17,24,39,.12); }
-    html[data-theme="light"] .presetBtn.isActive{
-      background:#eef4ff;
-      border-color:rgba(79,124,255,.24);
-      color:#111827;
-      box-shadow:0 0 0 2px rgba(79,124,255,.10);
-    }
-
-    html[data-theme="light"] .langSelect{ box-shadow:0 4px 12px rgba(15,23,42,.03); }
-    html[data-theme="light"] .iconBtn:hover{ background:rgba(17,24,39,.04); }
-
-    html[data-theme="light"] .cropActionBtn,
-    html[data-theme="light"] .toolBtn,
-    html[data-theme="light"] .ghostBtn,
-    html[data-theme="light"] .secondaryBtn,
-    html[data-theme="light"] .miniBtn{
-      background:#f5f7fb !important;
-      border:1px solid rgba(17,24,39,.08) !important;
-      color:#111827 !important;
-      box-shadow:0 2px 8px rgba(15,23,42,.02) !important;
-    }
-
-    html[data-theme="light"] .primaryBtn,
-    html[data-theme="light"] .downloadBtn{
-      background:#4f7cff !important;
-      border:1px solid rgba(79,124,255,.22) !important;
-      color:#ffffff !important;
-      box-shadow:0 10px 22px rgba(79,124,255,.18) !important;
-    }
-
-    html[data-theme="light"] .topHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    html[data-theme="light"] .themeSwitch{display:flex;align-items:center;gap:6px;flex:0 0 auto}
-    html[data-theme="light"] .themeToggle{
-      width:24px;height:24px;border:none;background:transparent;
-      color:var(--page-text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-      font-size:16px;box-shadow:none;transition:transform .08s var(--ease), opacity .12s var(--ease);
-      opacity:.66;padding:0;
-    }
-    html[data-theme="light"] .themeToggle.isActive{opacity:1}
-    html[data-theme="light"] .themeToggle:hover{ transform:translateY(-1px); opacity:1; }
-    html[data-theme="light"] .themeToggle:active{ transform:scale(.98); }
-    html[data-theme="light"] .themeToggle:focus-visible{ outline:none; opacity:1; }
-
-  </style>
+    html[data-theme="light"] .adv label{ color:#111827 !important; }
+    .topHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%}
+</style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="top">
       <div style="flex:1; min-width:240px;">
-        <div class="titleBar">
+        <div class="topHead">
           <h1 class="title" id="page_title">Edit</h1>
-          <div class="themeSwitch" aria-label="Theme switch">
-            <button class="themeToggle" id="lightModeBtn" type="button" aria-label="Light mode" title="Light mode">☀️</button>
-            <button class="themeToggle" id="darkModeBtn" type="button" aria-label="Dark mode" title="Dark mode">🌙</button>
-          </div>
-        </div>
+</div>
         <p class="sub" id="page_sub">Move/zoom/rotate/flip → crop → resize → download. 100% local processing.</p>
 
         <div style="margin-top:10px;">
@@ -1364,21 +1282,6 @@
   const $ = (id)=>document.getElementById(id);
   $("year").textContent = new Date().getFullYear();
   requestAnimationFrame(()=> document.body.classList.add("loaded"));
-
-  const lightModeBtn = $("lightModeBtn");
-  const darkModeBtn = $("darkModeBtn");
-
-  function applyTheme(mode){
-    const finalMode = mode === "light" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", finalMode);
-    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
-    lightModeBtn?.classList.toggle("isActive", finalMode === "light");
-    darkModeBtn?.classList.toggle("isActive", finalMode === "dark");
-  }
-
-  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
-  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
-  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
 
   const STR = {
     en: {
@@ -3366,6 +3269,24 @@ function downloadDefaultText(){ return t().download; }
   wEl.addEventListener("input", updateCropInfo);
   hEl.addEventListener("input", updateCropInfo);
   aspectLockEl.addEventListener("change", updateCropInfo);
+
+  const lightModeBtn = $("lightModeBtn");
+  const darkModeBtn = $("darkModeBtn");
+
+  function applyTheme(mode){
+    const finalMode = mode === "dark" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", finalMode);
+    try { localStorage.setItem("cf24-theme", finalMode); } catch(e) {}
+    if (lightModeBtn) lightModeBtn.classList.toggle("isActive", finalMode === "light");
+    if (darkModeBtn) darkModeBtn.classList.toggle("isActive", finalMode === "dark");
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if(metaTheme) metaTheme.setAttribute("content", finalMode === "light" ? "#f6f7fb" : "#0b0f17");
+  }
+
+  lightModeBtn?.addEventListener("click", ()=> applyTheme("light"));
+  darkModeBtn?.addEventListener("click", ()=> applyTheme("dark"));
+
+  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
 
   setLang(LANG);
   syncHiResUI();
