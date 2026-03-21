@@ -39,11 +39,8 @@
     const t = STR[lang];
 
     document.documentElement.lang = lang;
-
     localStorage.setItem(LS_LANG, lang);
-    if (isManual) {
-      localStorage.setItem(LS_MANUAL, "1");
-    }
+    if (isManual) localStorage.setItem(LS_MANUAL, "1");
 
     const sel = byId("fav_langSelect");
     if (sel) sel.value = lang;
@@ -51,26 +48,29 @@
     setText("fav_brand_sub", t.brandSub);
     setText("fav_hero_title", t.heroTitle);
     setText("fav_hero_sub", t.heroSub);
+    setText("fav_home_btn", t.homeBtn);
+    setText("fav_local_pill", t.localPill);
+    setText("fav_lang_label", t.langLabel);
 
     setText("fav_c1_title", t.c1?.title || "");
     setText("fav_c1_desc", t.c1?.desc || "");
     setText("fav_c1_tag", t.c1?.tag || "");
-    setText("fav_c1_btn", t.start);
+    setText("fav_c1_btn", t.c1?.btn || "");
 
     setText("fav_c2_title", t.c2?.title || "");
     setText("fav_c2_desc", t.c2?.desc || "");
     setText("fav_c2_tag", t.c2?.tag || "");
-    setText("fav_c2_btn", t.start);
+    setText("fav_c2_btn", t.c2?.btn || "");
 
     setText("fav_c3_title", t.c3?.title || "");
     setText("fav_c3_desc", t.c3?.desc || "");
     setText("fav_c3_tag", t.c3?.tag || "");
-    setText("fav_c3_btn", t.start);
+    setText("fav_c3_btn", t.c3?.btn || "");
 
     setText("fav_c4_title", t.c4?.title || "");
     setText("fav_c4_desc", t.c4?.desc || "");
     setText("fav_c4_tag", t.c4?.tag || "");
-    setText("fav_c4_btn", t.start);
+    setText("fav_c4_btn", t.c4?.btn || "");
 
     setText("fav_footer_brand", t.footerBrand);
     setText("fav_footer_about", t.footerAbout);
