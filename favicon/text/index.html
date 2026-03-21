@@ -458,7 +458,6 @@
         <p id="page_sub">텍스트로 파비콘 아이콘을 생성합니다. 100% 로컬 처리로 브라우저 안에서 바로 저장됩니다.</p>
 
         <div class="navBtns">
-          <a class="pillBtn" href="/favicon/" id="btn_back_favicon">🔙 파비콘으로</a>
           <a class="pillBtn secondary" href="/" id="btn_home">🏠 홈으로</a>
           <div class="localPill" id="local_pill">🔒 로컬 처리 — 서버 업로드 없음</div>
         </div>
@@ -482,7 +481,7 @@
 
           <div class="field">
             <div class="label" id="label_text">아이콘 글자</div>
-            <input id="textInput" class="textInput" type="text" maxlength="3" value="CF" spellcheck="false" />
+            <input id="textInput" class="textInput" type="text" maxlength="3" value="" spellcheck="false" placeholder="CF" />
             <div class="hint" id="hint_text">1~3자 권장. 너무 길면 작아 보일 수 있어요.</div>
           </div>
 
@@ -576,7 +575,6 @@
       en: {
         page_title: "Text → ICO",
         page_sub: "Create favicon icons from text. Everything runs locally in your browser.",
-        btn_back_favicon: "🔙 Back to Favicon",
         btn_home: "🏠 Home",
         local_pill: "🔒 Local processing — no server upload",
         lang_label: "Language",
@@ -596,7 +594,6 @@
       ko: {
         page_title: "Text → ICO",
         page_sub: "텍스트로 파비콘 아이콘을 생성합니다. 100% 로컬 처리로 브라우저 안에서 바로 저장됩니다.",
-        btn_back_favicon: "🔙 파비콘으로",
         btn_home: "🏠 홈으로",
         local_pill: "🔒 로컬 처리 — 서버 업로드 없음",
         lang_label: "언어",
@@ -616,7 +613,6 @@
       ja: {
         page_title: "Text → ICO",
         page_sub: "テキストから favicon アイコンを作成します。すべてブラウザ内でローカル処理されます。",
-        btn_back_favicon: "🔙 Faviconへ",
         btn_home: "🏠 ホームへ",
         local_pill: "🔒 ローカル処理 — サーバーアップロードなし",
         lang_label: "言語",
@@ -636,7 +632,6 @@
       es: {
         page_title: "Text → ICO",
         page_sub: "Crea iconos favicon desde texto. Todo se procesa localmente en tu navegador.",
-        btn_back_favicon: "🔙 Volver a Favicon",
         btn_home: "🏠 Inicio",
         local_pill: "🔒 Procesamiento local — sin subir al servidor",
         lang_label: "Idioma",
@@ -677,7 +672,7 @@
       localStorage.setItem("cf24_favicon_lang", lang);
 
       [
-        "page_title","page_sub","btn_back_favicon","btn_home","local_pill","lang_label",
+        "page_title","page_sub","btn_home","local_pill","lang_label",
         "card_input_title","label_text","hint_text","label_style","label_bg","label_fg",
         "toggle_round_label","card_download_title","card_preview_title","footer_about"
       ].forEach(id => {
@@ -693,7 +688,7 @@
     }
 
     function clampText(v){
-      return (v || "").toUpperCase().replace(/\s+/g, "").slice(0,3) || "CF";
+      return (v || "").toUpperCase().replace(/\s+/g, "").slice(0,3);
     }
 
     function roundRect(ctx, x, y, w, h, r){
@@ -727,6 +722,8 @@
         ctx.fillRect(0, 0, size, size);
       }
 
+      if (!text) return;
+
       const fontSize = text.length === 1
         ? size * 0.56
         : text.length === 2
@@ -741,7 +738,6 @@
     }
 
     function renderAll(){
-      els.textInput.value = clampText(els.textInput.value);
       els.bgValue.textContent = els.bgColor.value.toUpperCase();
       els.fgValue.textContent = els.fgColor.value.toUpperCase();
 
