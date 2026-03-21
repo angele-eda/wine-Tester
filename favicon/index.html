@@ -5,23 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Favicon Tools | ConvertFiles24</title>
   <meta name="description" content="Create favicon and PWA icons from image, text, and emoji. Check favicon setup easily. 100% local processing." />
-  <meta name="theme-color" content="#0b1220" />
+  <meta name="theme-color" content="#101827" />
   <meta name="robots" content="index,follow" />
   <style>
     :root{
-      --bg:#0b1220;
-      --bg2:#111827;
-      --card:rgba(255,255,255,.05);
-      --card2:rgba(255,255,255,.035);
-      --line:rgba(255,255,255,.10);
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --accent:#2563eb;
-      --accent2:#60a5fa;
-      --pill:rgba(120,200,255,.06);
-      --pillLine:rgba(120,200,255,.22);
+      --bg:#101827;
+      --bgSoft:#162033;
+      --card:#182235;
+      --card2:#1d2940;
+      --line:rgba(255,255,255,.09);
+      --text:#f3f6fb;
+      --muted:#c3cede;
+      --accent:#3f6fe0;
+      --accent2:#6c95ef;
+      --pill:rgba(120,160,220,.08);
+      --pillLine:rgba(140,180,230,.18);
       --radius:24px;
-      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --shadow:0 18px 40px rgba(0,0,0,.24);
       --max:1180px;
     }
 
@@ -30,8 +30,8 @@
     body{
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
       background:
-        radial-gradient(circle at top, rgba(37,99,235,.16), transparent 34%),
-        linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+        radial-gradient(circle at top, rgba(73,112,201,.10), transparent 34%),
+        linear-gradient(180deg, #101827 0%, #121b2c 100%);
       color:var(--text);
       min-height:100vh;
       -webkit-font-smoothing:antialiased;
@@ -86,15 +86,15 @@
       min-height:56px;
       padding:12px 16px;
       border-radius:999px;
-      color:#fff;
+      color:#eef4ff;
       font-weight:900;
       font-size:15px;
-      border:1px solid rgba(96,165,250,.45);
-      background:rgba(37,99,235,.20);
-      box-shadow:var(--shadow);
+      border:1px solid rgba(108,149,239,.28);
+      background:rgba(63,111,224,.18);
+      box-shadow:0 12px 26px rgba(0,0,0,.18);
     }
     .homeBtn:hover{
-      background:rgba(37,99,235,.25);
+      background:rgba(63,111,224,.22);
     }
 
     .localPill{
@@ -107,12 +107,12 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      color:#dbeafe;
+      color:#dbe7fb;
       font-weight:900;
       font-size:14px;
       border:1px solid var(--pillLine);
       background:var(--pill);
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
     }
 
     .langRow{
@@ -140,7 +140,7 @@
       min-height:50px;
       border-radius:999px;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
+      background:rgba(255,255,255,.045);
       color:var(--text);
       padding:12px 14px;
       font-size:14px;
@@ -159,7 +159,7 @@
       position:relative;
       overflow:hidden;
       border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
       border-radius:var(--radius);
       padding:22px 22px 20px;
       box-shadow:var(--shadow);
@@ -167,9 +167,9 @@
     }
 
     .card:hover{
-      transform:translateY(-3px);
-      border-color:rgba(96,165,250,.42);
-      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      transform:translateY(-2px);
+      border-color:rgba(108,149,239,.24);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
     }
 
     .card::after{
@@ -178,7 +178,7 @@
       inset:auto -40px -70px auto;
       width:180px;
       height:180px;
-      background:radial-gradient(circle, rgba(37,99,235,.16), transparent 68%);
+      background:radial-gradient(circle, rgba(63,111,224,.10), transparent 68%);
       pointer-events:none;
     }
 
@@ -189,8 +189,8 @@
       display:grid;
       place-items:center;
       font-size:34px;
-      background:linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow:0 18px 32px rgba(37,99,235,.28);
+      background:linear-gradient(135deg, #4b76dc, #7398eb);
+      box-shadow:0 14px 26px rgba(63,111,224,.18);
       margin-bottom:16px;
     }
 
@@ -200,9 +200,9 @@
       min-height:38px;
       padding:7px 12px;
       border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.035);
-      color:#dbeafe;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:#d9e5f8;
       font-size:12px;
       font-weight:800;
       margin-bottom:14px;
@@ -234,15 +234,15 @@
       min-height:52px;
       padding:12px 18px;
       border-radius:18px;
-      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      background:linear-gradient(135deg, #4a78df, #7096eb);
       color:#fff;
       font-weight:900;
       font-size:15px;
-      box-shadow:0 14px 28px rgba(37,99,235,.26);
+      box-shadow:0 10px 20px rgba(63,111,224,.18);
     }
 
     .btn:hover{
-      filter:brightness(1.05);
+      filter:brightness(1.04);
     }
 
     footer{
