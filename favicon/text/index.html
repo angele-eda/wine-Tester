@@ -1,1 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text → ICO | ConvertFiles24</title>
+  <meta name="description" content="텍스트로 favicon.ico와 PWA 아이콘을 생성합니다. 100% 로컬 처리." />
+  <meta name="theme-color" content="#101827" />
+  <meta name="robots" content="index,follow" />
+  <style>
+    :root{
+      --bg:#101827;
+      --line:rgba(255,255,255,.09);
+      --text:#f3f6fb;
+      --muted:#c3cede;
+      --pill:rgba(120,160,220,.08);
+      --pillLine:rgba(140,180,230,.18);
+      --radius:24px;
+      --shadow:0 18px 40px rgba(0,0,0,.24);
+      --max:1180px;
+      --cardBg:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
+      --btn:linear-gradient(135deg, #4a78df, #7096eb);
+    }
 
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(73,112,201,.10), transparent 34%),
+        linear-gradient(180deg, #101827 0%, #121b2c 100%);
+      color:var(--text);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:geometricPrecision;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input,select{font:inherit}
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:22px 14px 38px;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .heroBox{
+      flex:1;
+      min-width:240px;
+    }
+
+    .heroBox h1{
+      margin:0;
+      font-size:clamp(28px, 5vw, 52px);
+      line-height:1.05;
+      letter-spacing:-.03em;
+      font-weight:900;
+    }
+
+    .heroBox p{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.68;
+      max-width:860px;
+    }
+
+    .navBtns{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:16px;
+      width:min(420px,100%);
+    }
+
+    .pillBtn,.localPill{
+      min-height:54px;
+      padding:12px 16px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:900;
+      font-size:15px;
+      border:1px solid rgba(108,149,239,.28);
+      background:rgba(63,111,224,.18);
+      box-shadow:0 12px 26px rgba(0,0,0,.18);
+      color:#eef4ff;
+    }
+
+    .pillBtn.secondary{
+      background:rgba(255,255,255,.045);
+      border:1px solid var(--line);
+    }
+
+    .localPill{
+      min-height:50px;
+      font-size:14px;
+      color:#dbe7fb;
+      border:1px solid var(--pillLine);
+      background:var(--pill);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .langRow{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+      min-width:220px;
+      margin-left:auto;
+      padding-top:2px;
+    }
+
+    .langLabel{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .langSelect{
+      width:220px;
+      max-width:100%;
+      min-height:50px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.045);
+      color:var(--text);
+      padding:12px 14px;
+      font-size:14px;
+      font-weight:800;
+      outline:none;
+    }
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:16px;
+    }
+
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      min-width:0;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      background:var(--cardBg);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      min-width:0;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -70px auto;
+      width:180px;
+      height:180px;
+      background:radial-gradient(circle, rgba(63,111,224,.10), transparent 68%);
+      pointer-events:none;
+    }
+
+    .card h2{
+      margin:0 0 14px;
+      font-size:22px;
+      line-height:1.2;
+      letter-spacing:-.02em;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .field:last-child{margin-bottom:0}
+
+    .label{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .textInput,
+    .colorInputWrap,
+    .toggleRow{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+      border-radius:18px;
+    }
+
+    .textInput{
+      width:100%;
+      min-height:58px;
+      padding:14px 16px;
+      color:var(--text);
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.02em;
+      outline:none;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .twoCols{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .colorInputWrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-height:58px;
+      padding:10px 12px;
+    }
+
+    .colorInputWrap input[type="color"]{
+      width:42px;
+      height:42px;
+      border:none;
+      background:none;
+      padding:0;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+
+    .colorValue{
+      font-weight:800;
+      color:var(--text);
+      font-size:14px;
+      letter-spacing:.02em;
+    }
+
+    .toggleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height:58px;
+      padding:10px 14px;
+    }
+
+    .toggleText{
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .switch{
+      position:relative;
+      width:56px;
+      height:32px;
+      flex:0 0 auto;
+    }
+
+    .switch input{
+      opacity:0;
+      width:0;
+      height:0;
+    }
+
+    .slider{
+      position:absolute;
+      inset:0;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      transition:.2s ease;
+    }
+
+    .slider::before{
+      content:"";
+      position:absolute;
+      width:24px;
+      height:24px;
+      left:3px;
+      top:3px;
+      border-radius:999px;
+      background:#fff;
+      transition:.2s ease;
+    }
+
+    .switch input:checked + .slider{
+      background:rgba(74,120,223,.55);
+    }
+
+    .switch input:checked + .slider::before{
+      transform:translateX(24px);
+    }
+
+    .previewMain{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:280px;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.015));
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    .previewMain canvas{
+      width:min(220px, 60vw);
+      height:min(220px, 60vw);
+      border-radius:22px;
+      box-shadow:0 16px 30px rgba(0,0,0,.22);
+      background:transparent;
+    }
+
+    .miniGrid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .miniBox{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:10px 8px;
+      text-align:center;
+    }
+
+    .miniBox canvas{
+      display:block;
+      margin:0 auto 8px;
+      image-rendering:pixelated;
+      background:transparent;
+    }
+
+    .miniBox strong{
+      display:block;
+      font-size:12px;
+      color:var(--text);
+    }
+
+    .downloadBtns{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .dlBtn{
+      border:none;
+      min-height:56px;
+      padding:12px 16px;
+      border-radius:18px;
+      background:var(--btn);
+      color:#fff;
+      font-weight:900;
+      font-size:15px;
+      box-shadow:0 10px 20px rgba(63,111,224,.18);
+      cursor:pointer;
+    }
+
+    .dlBtn.secondary{
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      box-shadow:none;
+      color:var(--text);
+    }
+
+    .status{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      min-height:22px;
+    }
+
+    footer{
+      margin-top:34px;
+      padding:22px 0 8px;
+      border-top:1px solid var(--line);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      color:var(--muted);
+      text-align:center;
+      align-items:center;
+    }
+
+    footer strong{
+      color:var(--text);
+      font-size:16px;
+    }
+
+    .footerMeta{
+      font-size:14px;
+      line-height:1.7;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .footerMeta a{
+      color:inherit;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    @media (max-width:920px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:860px){
+      .top{flex-direction:column}
+      .langRow{
+        width:100%;
+        align-items:flex-end;
+        padding-top:0;
+      }
+    }
+
+    @media (max-width:520px){
+      .wrap{padding:18px 14px 34px}
+      .heroBox p{font-size:16px}
+      .card{padding:16px}
+      .twoCols,.downloadBtns{grid-template-columns:1fr}
+      .miniGrid{grid-template-columns:repeat(2,1fr)}
+      .previewMain{min-height:240px}
+      .textInput{font-size:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="heroBox">
+        <h1 id="page_title">Text → ICO</h1>
+        <p id="page_sub">텍스트로 파비콘 아이콘을 생성합니다. 100% 로컬 처리로 브라우저 안에서 바로 저장됩니다.</p>
+
+        <div class="navBtns">
+          <a class="pillBtn" href="/favicon/" id="btn_back_favicon">🔙 파비콘으로</a>
+          <a class="pillBtn secondary" href="/" id="btn_home">🏠 홈으로</a>
+          <div class="localPill" id="local_pill">🔒 로컬 처리 — 서버 업로드 없음</div>
+        </div>
+      </div>
+
+      <div class="langRow">
+        <div class="langLabel">🌐 <span id="lang_label">언어</span></div>
+        <select id="langSelect" class="langSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+          <option value="es">Español</option>
+        </select>
+      </div>
+    </div>
+
+    <section class="grid">
+      <div class="stack">
+        <div class="card">
+          <h2 id="card_input_title">텍스트 입력</h2>
+
+          <div class="field">
+            <div class="label" id="label_text">아이콘 글자</div>
+            <input id="textInput" class="textInput" type="text" maxlength="3" value="CF" spellcheck="false" />
+            <div class="hint" id="hint_text">1~3자 권장. 너무 길면 작아 보일 수 있어요.</div>
+          </div>
+
+          <div class="field">
+            <div class="label" id="label_style">스타일</div>
+            <div class="twoCols">
+              <div class="colorInputWrap">
+                <input id="bgColor" type="color" value="#4a78df" />
+                <div>
+                  <div class="label" id="label_bg">배경색</div>
+                  <div class="colorValue" id="bgValue">#4A78DF</div>
+                </div>
+              </div>
+
+              <div class="colorInputWrap">
+                <input id="fgColor" type="color" value="#ffffff" />
+                <div>
+                  <div class="label" id="label_fg">글자색</div>
+                  <div class="colorValue" id="fgValue">#FFFFFF</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="toggleRow">
+              <div class="toggleText" id="toggle_round_label">둥근 모서리</div>
+              <label class="switch">
+                <input id="roundToggle" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 id="card_download_title">다운로드</h2>
+          <div class="downloadBtns">
+            <button class="dlBtn" id="downloadIco">favicon.ico</button>
+            <button class="dlBtn secondary" id="download32">favicon-32x32.png</button>
+            <button class="dlBtn secondary" id="downloadApple">apple-touch-icon.png</button>
+            <button class="dlBtn secondary" id="download192">android-chrome-192x192.png</button>
+          </div>
+          <div class="status" id="statusText"></div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h2 id="card_preview_title">미리보기</h2>
+
+          <div class="previewMain">
+            <canvas id="mainCanvas" width="512" height="512"></canvas>
+          </div>
+
+          <div class="miniGrid">
+            <div class="miniBox">
+              <canvas id="mini16" width="16" height="16"></canvas>
+              <strong>16×16</strong>
+            </div>
+            <div class="miniBox">
+              <canvas id="mini32" width="32" height="32"></canvas>
+              <strong>32×32</strong>
+            </div>
+            <div class="miniBox">
+              <canvas id="mini64" width="64" height="64"></canvas>
+              <strong>64×64</strong>
+            </div>
+            <div class="miniBox">
+              <canvas id="mini180" width="180" height="180"></canvas>
+              <strong>180×180</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <strong>ConvertFiles24</strong>
+      <div id="footer_about">텍스트 기반 파비콘 생성 도구</div>
+      <div class="footerMeta">
+        © 2026 ConvertFiles24 ·
+        <a href="/privacy/">Privacy</a> ·
+        <a href="/terms/">Terms</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const I18N = {
+      en: {
+        page_title: "Text → ICO",
+        page_sub: "Create favicon icons from text. Everything runs locally in your browser.",
+        btn_back_favicon: "🔙 Back to Favicon",
+        btn_home: "🏠 Home",
+        local_pill: "🔒 Local processing — no server upload",
+        lang_label: "Language",
+        card_input_title: "Text Input",
+        label_text: "Icon text",
+        hint_text: "1–3 characters recommended. Longer text may look too small.",
+        label_style: "Style",
+        label_bg: "Background",
+        label_fg: "Text color",
+        toggle_round_label: "Rounded corners",
+        card_download_title: "Download",
+        card_preview_title: "Preview",
+        footer_about: "Text-based favicon generator",
+        ico_ready: "ICO file is ready.",
+        png_ready: "PNG file is ready."
+      },
+      ko: {
+        page_title: "Text → ICO",
+        page_sub: "텍스트로 파비콘 아이콘을 생성합니다. 100% 로컬 처리로 브라우저 안에서 바로 저장됩니다.",
+        btn_back_favicon: "🔙 파비콘으로",
+        btn_home: "🏠 홈으로",
+        local_pill: "🔒 로컬 처리 — 서버 업로드 없음",
+        lang_label: "언어",
+        card_input_title: "텍스트 입력",
+        label_text: "아이콘 글자",
+        hint_text: "1~3자 권장. 너무 길면 작아 보일 수 있어요.",
+        label_style: "스타일",
+        label_bg: "배경색",
+        label_fg: "글자색",
+        toggle_round_label: "둥근 모서리",
+        card_download_title: "다운로드",
+        card_preview_title: "미리보기",
+        footer_about: "텍스트 기반 파비콘 생성 도구",
+        ico_ready: "ICO 파일 저장 준비가 완료됐습니다.",
+        png_ready: "PNG 파일 저장 준비가 완료됐습니다."
+      },
+      ja: {
+        page_title: "Text → ICO",
+        page_sub: "テキストから favicon アイコンを作成します。すべてブラウザ内でローカル処理されます。",
+        btn_back_favicon: "🔙 Faviconへ",
+        btn_home: "🏠 ホームへ",
+        local_pill: "🔒 ローカル処理 — サーバーアップロードなし",
+        lang_label: "言語",
+        card_input_title: "テキスト入力",
+        label_text: "アイコン文字",
+        hint_text: "1〜3文字がおすすめです。長すぎると小さく見えます。",
+        label_style: "スタイル",
+        label_bg: "背景色",
+        label_fg: "文字色",
+        toggle_round_label: "角丸",
+        card_download_title: "ダウンロード",
+        card_preview_title: "プレビュー",
+        footer_about: "テキストベースの favicon 生成ツール",
+        ico_ready: "ICOファイルの準備ができました。",
+        png_ready: "PNGファイルの準備ができました。"
+      },
+      es: {
+        page_title: "Text → ICO",
+        page_sub: "Crea iconos favicon desde texto. Todo se procesa localmente en tu navegador.",
+        btn_back_favicon: "🔙 Volver a Favicon",
+        btn_home: "🏠 Inicio",
+        local_pill: "🔒 Procesamiento local — sin subir al servidor",
+        lang_label: "Idioma",
+        card_input_title: "Texto",
+        label_text: "Texto del icono",
+        hint_text: "Se recomiendan 1–3 caracteres. Si es más largo, puede verse pequeño.",
+        label_style: "Estilo",
+        label_bg: "Color de fondo",
+        label_fg: "Color del texto",
+        toggle_round_label: "Esquinas redondeadas",
+        card_download_title: "Descargar",
+        card_preview_title: "Vista previa",
+        footer_about: "Generador de favicon basado en texto",
+        ico_ready: "El archivo ICO está listo.",
+        png_ready: "El archivo PNG está listo."
+      }
+    };
+
+    const els = {
+      textInput: document.getElementById("textInput"),
+      bgColor: document.getElementById("bgColor"),
+      fgColor: document.getElementById("fgColor"),
+      roundToggle: document.getElementById("roundToggle"),
+      mainCanvas: document.getElementById("mainCanvas"),
+      mini16: document.getElementById("mini16"),
+      mini32: document.getElementById("mini32"),
+      mini64: document.getElementById("mini64"),
+      mini180: document.getElementById("mini180"),
+      bgValue: document.getElementById("bgValue"),
+      fgValue: document.getElementById("fgValue"),
+      langSelect: document.getElementById("langSelect"),
+      statusText: document.getElementById("statusText")
+    };
+
+    function applyLang(lang){
+      const t = I18N[lang] || I18N.en;
+      document.documentElement.lang = lang;
+      localStorage.setItem("cf24_favicon_lang", lang);
+
+      [
+        "page_title","page_sub","btn_back_favicon","btn_home","local_pill","lang_label",
+        "card_input_title","label_text","hint_text","label_style","label_bg","label_fg",
+        "toggle_round_label","card_download_title","card_preview_title","footer_about"
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if(el && t[id]) el.textContent = t[id];
+      });
+    }
+
+    function currentLang(){
+      const q = new URL(location.href).searchParams.get("lang");
+      const saved = q || localStorage.getItem("cf24_favicon_lang") || "en";
+      return I18N[saved] ? saved : "en";
+    }
+
+    function clampText(v){
+      return (v || "").toUpperCase().replace(/\s+/g, "").slice(0,3) || "CF";
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    }
+
+    function drawIcon(canvas, size){
+      const ctx = canvas.getContext("2d");
+      const text = clampText(els.textInput.value);
+      const bg = els.bgColor.value;
+      const fg = els.fgColor.value;
+      const rounded = els.roundToggle.checked;
+
+      canvas.width = size;
+      canvas.height = size;
+      ctx.clearRect(0,0,size,size);
+
+      if (rounded) {
+        roundRect(ctx, 0, 0, size, size, Math.round(size * 0.18));
+        ctx.fillStyle = bg;
+        ctx.fill();
+      } else {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, size, size);
+      }
+
+      const fontSize = text.length === 1
+        ? size * 0.56
+        : text.length === 2
+        ? size * 0.42
+        : size * 0.30;
+
+      ctx.fillStyle = fg;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `900 ${fontSize}px Inter, system-ui, sans-serif`;
+      ctx.fillText(text, size / 2, size / 2 + size * 0.02);
+    }
+
+    function renderAll(){
+      els.textInput.value = clampText(els.textInput.value);
+      els.bgValue.textContent = els.bgColor.value.toUpperCase();
+      els.fgValue.textContent = els.fgColor.value.toUpperCase();
+
+      drawIcon(els.mainCanvas, 512);
+      drawIcon(els.mini16, 16);
+      drawIcon(els.mini32, 32);
+      drawIcon(els.mini64, 64);
+      drawIcon(els.mini180, 180);
+    }
+
+    function downloadBlob(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function canvasToPngBlob(size){
+      const c = document.createElement("canvas");
+      drawIcon(c, size);
+      return await new Promise(resolve => c.toBlob(resolve, "image/png"));
+    }
+
+    async function buildIcoBlob(){
+      const sizes = [16, 32, 48];
+      const pngBuffers = [];
+
+      for (const size of sizes) {
+        const blob = await canvasToPngBlob(size);
+        const buf = new Uint8Array(await blob.arrayBuffer());
+        pngBuffers.push({ size, buf });
+      }
+
+      const headerSize = 6 + (16 * pngBuffers.length);
+      let totalSize = headerSize;
+      pngBuffers.forEach(p => totalSize += p.buf.length);
+
+      const out = new Uint8Array(totalSize);
+      const view = new DataView(out.buffer);
+
+      view.setUint16(0, 0, true);
+      view.setUint16(2, 1, true);
+      view.setUint16(4, pngBuffers.length, true);
+
+      let offset = headerSize;
+
+      pngBuffers.forEach((p, i) => {
+        const entry = 6 + i * 16;
+        out[entry + 0] = p.size === 256 ? 0 : p.size;
+        out[entry + 1] = p.size === 256 ? 0 : p.size;
+        out[entry + 2] = 0;
+        out[entry + 3] = 0;
+        view.setUint16(entry + 4, 1, true);
+        view.setUint16(entry + 6, 32, true);
+        view.setUint32(entry + 8, p.buf.length, true);
+        view.setUint32(entry + 12, offset, true);
+        out.set(p.buf, offset);
+        offset += p.buf.length;
+      });
+
+      return new Blob([out], { type: "image/x-icon" });
+    }
+
+    function setStatus(msg){
+      els.statusText.textContent = msg || "";
+    }
+
+    document.getElementById("downloadIco").addEventListener("click", async () => {
+      const lang = currentLang();
+      setStatus("...");
+      const blob = await buildIcoBlob();
+      downloadBlob(blob, "favicon.ico");
+      setStatus((I18N[lang] || I18N.en).ico_ready);
+    });
+
+    document.getElementById("download32").addEventListener("click", async () => {
+      const lang = currentLang();
+      const blob = await canvasToPngBlob(32);
+      downloadBlob(blob, "favicon-32x32.png");
+      setStatus((I18N[lang] || I18N.en).png_ready);
+    });
+
+    document.getElementById("downloadApple").addEventListener("click", async () => {
+      const lang = currentLang();
+      const blob = await canvasToPngBlob(180);
+      downloadBlob(blob, "apple-touch-icon.png");
+      setStatus((I18N[lang] || I18N.en).png_ready);
+    });
+
+    document.getElementById("download192").addEventListener("click", async () => {
+      const lang = currentLang();
+      const blob = await canvasToPngBlob(192);
+      downloadBlob(blob, "android-chrome-192x192.png");
+      setStatus((I18N[lang] || I18N.en).png_ready);
+    });
+
+    ["input","change"].forEach(evt => {
+      els.textInput.addEventListener(evt, renderAll);
+      els.bgColor.addEventListener(evt, renderAll);
+      els.fgColor.addEventListener(evt, renderAll);
+      els.roundToggle.addEventListener(evt, renderAll);
+    });
+
+    els.langSelect.addEventListener("change", e => {
+      applyLang(e.target.value);
+      renderAll();
+    });
+
+    const lang = currentLang();
+    els.langSelect.value = lang;
+    applyLang(lang);
+    renderAll();
+  </script>
+</body>
+</html>
