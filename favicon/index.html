@@ -10,14 +10,11 @@
   <style>
     :root{
       --bg:#101827;
-      --bgSoft:#162033;
-      --card:#182235;
-      --card2:#1d2940;
       --line:rgba(255,255,255,.09);
       --text:#f3f6fb;
       --muted:#c3cede;
-      --accent:#3f6fe0;
-      --accent2:#6c95ef;
+      --accent:#4a78df;
+      --accent2:#7096eb;
       --pill:rgba(120,160,220,.08);
       --pillLine:rgba(140,180,230,.18);
       --radius:24px;
@@ -152,7 +149,11 @@
       margin-top:16px;
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:18px;
+      gap:16px;
+    }
+
+    .cardLink{
+      display:block;
     }
 
     .card{
@@ -161,12 +162,14 @@
       border:1px solid var(--line);
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
       border-radius:var(--radius);
-      padding:22px 22px 20px;
+      padding:18px 18px 16px;
       box-shadow:var(--shadow);
       transition:transform .18s ease, border-color .18s ease, background .18s ease;
+      min-height:220px;
     }
 
-    .card:hover{
+    .cardLink:hover .card,
+    .cardLink:focus-visible .card{
       transform:translateY(-2px);
       border-color:rgba(108,149,239,.24);
       background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
@@ -182,34 +185,52 @@
       pointer-events:none;
     }
 
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:12px;
+    }
+
+    .cardHead{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:8px;
+      padding-top:2px;
+    }
+
     .icon{
-      width:78px;
-      height:78px;
-      border-radius:22px;
+      width:72px;
+      height:72px;
+      border-radius:20px;
       display:grid;
       place-items:center;
-      font-size:34px;
-      background:linear-gradient(135deg, #5578cc, #7794d9);
-      box-shadow:0 12px 22px rgba(63,111,224,.12);
-      margin-bottom:16px;
+      font-size:32px;
+      background:linear-gradient(135deg, #667fb8, #8499c8);
+      box-shadow:0 8px 16px rgba(63,111,224,.06);
+      flex:0 0 auto;
     }
 
     .tag{
       display:inline-flex;
       align-items:center;
-      min-height:38px;
-      padding:7px 12px;
+      min-height:34px;
+      width:max-content;
+      max-width:100%;
+      padding:6px 11px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.03);
       color:#d9e5f8;
       font-size:12px;
       font-weight:800;
-      margin-bottom:14px;
     }
 
     .card h3{
-      margin:0 0 10px;
+      margin:0;
       font-size:21px;
       line-height:1.2;
       letter-spacing:-.02em;
@@ -220,29 +241,26 @@
       margin:0;
       color:var(--muted);
       font-size:15px;
-      line-height:1.68;
-      min-height:58px;
-      max-width:92%;
+      line-height:1.62;
+      max-width:100%;
+      padding-right:28px;
     }
 
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      margin-top:22px;
-      min-width:118px;
-      min-height:52px;
-      padding:12px 18px;
-      border-radius:18px;
-      background:linear-gradient(135deg, #4a78df, #7096eb);
-      color:#fff;
+    .arrow{
+      position:absolute;
+      right:16px;
+      bottom:14px;
+      width:38px;
+      height:38px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      color:#eaf1ff;
+      font-size:18px;
       font-weight:900;
-      font-size:15px;
-      box-shadow:0 10px 20px rgba(63,111,224,.18);
-    }
-
-    .btn:hover{
-      filter:brightness(1.04);
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      box-shadow:0 6px 14px rgba(0,0,0,.14);
     }
 
     footer{
@@ -273,19 +291,32 @@
     @media (max-width:520px){
       .wrap{padding:18px 14px 34px}
       .heroBox p{font-size:16px}
-      .card{padding:20px 18px 18px}
+      .card{
+        padding:16px 16px 14px;
+        min-height:205px;
+      }
+      .cardTop{
+        gap:13px;
+        margin-bottom:10px;
+      }
       .icon{
-        width:74px;
-        height:74px;
-        border-radius:20px;
-        font-size:32px;
+        width:68px;
+        height:68px;
+        border-radius:18px;
+        font-size:30px;
+      }
+      .card h3{
+        font-size:20px;
       }
       .card p{
-        max-width:100%;
-        min-height:auto;
+        padding-right:22px;
       }
-      .btn{
-        min-width:112px;
+      .arrow{
+        right:14px;
+        bottom:12px;
+        width:34px;
+        height:34px;
+        font-size:17px;
       }
     }
   </style>
@@ -294,17 +325,17 @@
   <div class="wrap">
     <div class="top">
       <div class="heroBox">
-        <h1 id="fav_hero_title" data-i18n="fav_hero_title">아이콘 만들기</h1>
-        <p id="fav_hero_sub" data-i18n="fav_hero_sub">
+        <h1 id="fav_hero_title">아이콘 만들기</h1>
+        <p id="fav_hero_sub">
           이미지, 텍스트, 이모지로 파비콘과 PWA 아이콘을 만들고, 사이트 파비콘 설정 여부도 확인할 수 있습니다.
         </p>
 
-        <a class="homeBtn" href="/" id="fav_home_btn" data-i18n="fav_home_btn">🏠 홈으로</a>
-        <div class="localPill" id="fav_local_pill" data-i18n="fav_local_pill">🔒 로컬 처리 — 서버 업로드 없음</div>
+        <a class="homeBtn" href="/" id="fav_home_btn">🏠 홈으로</a>
+        <div class="localPill" id="fav_local_pill">🔒 로컬 처리 — 서버 업로드 없음</div>
       </div>
 
       <div class="langRow">
-        <div class="langLabel">🌐 <span id="fav_lang_label" data-i18n="fav_lang_label">언어</span></div>
+        <div class="langLabel">🌐 <span id="fav_lang_label">언어</span></div>
         <select id="fav_langSelect" class="langSelect" aria-label="Language">
           <option value="en">English</option>
           <option value="ko">한국어</option>
@@ -315,42 +346,66 @@
     </div>
 
     <section class="grid">
-      <article class="card">
-        <div class="icon">🖼️</div>
-        <span class="tag" id="fav_c1_tag" data-i18n="fav_c1_tag">이미지 • 변환</span>
-        <h3 id="fav_c1_title" data-i18n="fav_c1_title">PNG → ICO</h3>
-        <p id="fav_c1_desc" data-i18n="fav_c1_desc">PNG 이미지를 파비콘 ICO 파일로 변환합니다.</p>
-        <a class="btn" id="fav_c1_btn" href="./image/" data-i18n="fav_c1_btn">변환 시작</a>
-      </article>
+      <a class="cardLink" href="./image/">
+        <article class="card">
+          <div class="cardTop">
+            <div class="icon">🖼️</div>
+            <div class="cardHead">
+              <span class="tag" id="fav_c1_tag">이미지 • 변환</span>
+              <h3 id="fav_c1_title">PNG → ICO</h3>
+            </div>
+          </div>
+          <p id="fav_c1_desc">PNG 이미지를 파비콘 ICO 파일로 변환합니다.</p>
+          <div class="arrow" aria-hidden="true">→</div>
+        </article>
+      </a>
 
-      <article class="card">
-        <div class="icon">🔤</div>
-        <span class="tag" id="fav_c2_tag" data-i18n="fav_c2_tag">텍스트 • 생성</span>
-        <h3 id="fav_c2_title" data-i18n="fav_c2_title">Text → ICO</h3>
-        <p id="fav_c2_desc" data-i18n="fav_c2_desc">텍스트 글자로 파비콘 아이콘을 생성합니다.</p>
-        <a class="btn" id="fav_c2_btn" href="./text/" data-i18n="fav_c2_btn">아이콘 만들기</a>
-      </article>
+      <a class="cardLink" href="./text/">
+        <article class="card">
+          <div class="cardTop">
+            <div class="icon">🔤</div>
+            <div class="cardHead">
+              <span class="tag" id="fav_c2_tag">텍스트 • 생성</span>
+              <h3 id="fav_c2_title">Text → ICO</h3>
+            </div>
+          </div>
+          <p id="fav_c2_desc">텍스트 글자로 파비콘 아이콘을 생성합니다.</p>
+          <div class="arrow" aria-hidden="true">→</div>
+        </article>
+      </a>
 
-      <article class="card">
-        <div class="icon">😊</div>
-        <span class="tag" id="fav_c3_tag" data-i18n="fav_c3_tag">이모지 • 생성</span>
-        <h3 id="fav_c3_title" data-i18n="fav_c3_title">Emoji → ICO</h3>
-        <p id="fav_c3_desc" data-i18n="fav_c3_desc">이모지로 파비콘 아이콘을 생성합니다.</p>
-        <a class="btn" id="fav_c3_btn" href="./emoji/" data-i18n="fav_c3_btn">이모지 선택</a>
-      </article>
+      <a class="cardLink" href="./emoji/">
+        <article class="card">
+          <div class="cardTop">
+            <div class="icon">😊</div>
+            <div class="cardHead">
+              <span class="tag" id="fav_c3_tag">이모지 • 생성</span>
+              <h3 id="fav_c3_title">Emoji → ICO</h3>
+            </div>
+          </div>
+          <p id="fav_c3_desc">이모지로 파비콘 아이콘을 생성합니다.</p>
+          <div class="arrow" aria-hidden="true">→</div>
+        </article>
+      </a>
 
-      <article class="card">
-        <div class="icon">🔎</div>
-        <span class="tag" id="fav_c4_tag" data-i18n="fav_c4_tag">웹 • 검사</span>
-        <h3 id="fav_c4_title" data-i18n="fav_c4_title">Favicon Checker</h3>
-        <p id="fav_c4_desc" data-i18n="fav_c4_desc">웹사이트의 파비콘 설정 여부를 확인합니다.</p>
-        <a class="btn" id="fav_c4_btn" href="./checker/" data-i18n="fav_c4_btn">사이트 검사</a>
-      </article>
+      <a class="cardLink" href="./checker/">
+        <article class="card">
+          <div class="cardTop">
+            <div class="icon">🔎</div>
+            <div class="cardHead">
+              <span class="tag" id="fav_c4_tag">웹 • 검사</span>
+              <h3 id="fav_c4_title">Favicon Checker</h3>
+            </div>
+          </div>
+          <p id="fav_c4_desc">웹사이트의 파비콘 설정 여부를 확인합니다.</p>
+          <div class="arrow" aria-hidden="true">→</div>
+        </article>
+      </a>
     </section>
 
     <footer>
-      <strong id="fav_footer_brand" data-i18n="fav_footer_brand">ConvertFiles24</strong>
-      <div id="fav_footer_about" data-i18n="fav_footer_about">웹 프로젝트용 간단한 파비콘 도구</div>
+      <strong id="fav_footer_brand">ConvertFiles24</strong>
+      <div id="fav_footer_about">웹 프로젝트용 간단한 파비콘 도구</div>
     </footer>
   </div>
 
