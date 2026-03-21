@@ -20,6 +20,9 @@
       --max:1180px;
       --cardBg:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
       --btn:linear-gradient(135deg, #4a78df, #7096eb);
+      --done:linear-gradient(135deg, #22c55e, #4ade80);
+      --checker-a:#2c3446;
+      --checker-b:#212838;
     }
 
     *{box-sizing:border-box}
@@ -251,6 +254,12 @@
       flex:0 0 auto;
     }
 
+    .colorInputWrap.is-disabled{
+      opacity:.45;
+      pointer-events:none;
+      filter:grayscale(.15);
+    }
+
     .colorValue{
       font-weight:800;
       color:var(--text);
@@ -314,6 +323,15 @@
       transform:translateX(24px);
     }
 
+    .checkerBg{
+      background:
+        linear-gradient(45deg, var(--checker-a) 25%, transparent 25%, transparent 75%, var(--checker-a) 75%, var(--checker-a)),
+        linear-gradient(45deg, var(--checker-a) 25%, transparent 25%, transparent 75%, var(--checker-a) 75%, var(--checker-a));
+      background-color:var(--checker-b);
+      background-position:0 0, 10px 10px;
+      background-size:20px 20px;
+    }
+
     .previewMain{
       display:flex;
       align-items:center;
@@ -321,8 +339,6 @@
       min-height:280px;
       border:1px solid var(--line);
       border-radius:22px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.015));
       padding:18px;
       margin-bottom:14px;
     }
@@ -343,7 +359,6 @@
 
     .miniBox{
       border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
       border-radius:18px;
       padding:10px 8px;
       text-align:center;
@@ -359,6 +374,17 @@
     .miniBox strong{
       display:block;
       font-size:12px;
+      color:var(--text);
+    }
+
+    .downloadNote{
+      margin:-4px 0 14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    .downloadNote b{
       color:var(--text);
     }
 
@@ -379,6 +405,11 @@
       font-size:15px;
       box-shadow:0 10px 20px rgba(63,111,224,.18);
       cursor:pointer;
+      transition:transform .12s ease, filter .12s ease, background .12s ease, border-color .12s ease;
+    }
+
+    .dlBtn:active{
+      transform:scale(.985);
     }
 
     .dlBtn.secondary{
@@ -386,6 +417,13 @@
       border:1px solid var(--line);
       box-shadow:none;
       color:var(--text);
+    }
+
+    .dlBtn.is-done{
+      background:var(--done) !important;
+      color:#fff !important;
+      border:none !important;
+      box-shadow:0 10px 20px rgba(34,197,94,.18) !important;
     }
 
     .status{
@@ -488,7 +526,7 @@
           <div class="field">
             <div class="label" id="label_style">스타일</div>
             <div class="twoCols">
-              <div class="colorInputWrap">
+              <div class="colorInputWrap" id="bgWrap">
                 <input id="bgColor" type="color" value="#4a78df" />
                 <div>
                   <div class="label" id="label_bg">배경색</div>
@@ -508,6 +546,16 @@
 
           <div class="field">
             <div class="toggleRow">
+              <div class="toggleText" id="toggle_transparent_label">투명 배경</div>
+              <label class="switch">
+                <input id="transparentToggle" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="toggleRow">
               <div class="toggleText" id="toggle_round_label">둥근 모서리</div>
               <label class="switch">
                 <input id="roundToggle" type="checkbox" checked />
@@ -519,6 +567,12 @@
 
         <div class="card">
           <h2 id="card_download_title">다운로드</h2>
+
+          <div class="downloadNote" id="download_note">
+            <b>ICO</b>: 기본 브라우저 파비콘용<br />
+            <b>PNG</b>: Apple · Android · PWA 아이콘용
+          </div>
+
           <div class="downloadBtns">
             <button class="dlBtn" id="downloadIco">favicon.ico</button>
             <button class="dlBtn secondary" id="download32">favicon-32x32.png</button>
@@ -533,24 +587,24 @@
         <div class="card">
           <h2 id="card_preview_title">미리보기</h2>
 
-          <div class="previewMain">
+          <div class="previewMain checkerBg" id="previewMain">
             <canvas id="mainCanvas" width="512" height="512"></canvas>
           </div>
 
           <div class="miniGrid">
-            <div class="miniBox">
+            <div class="miniBox checkerBg">
               <canvas id="mini16" width="16" height="16"></canvas>
               <strong>16×16</strong>
             </div>
-            <div class="miniBox">
+            <div class="miniBox checkerBg">
               <canvas id="mini32" width="32" height="32"></canvas>
               <strong>32×32</strong>
             </div>
-            <div class="miniBox">
+            <div class="miniBox checkerBg">
               <canvas id="mini64" width="64" height="64"></canvas>
               <strong>64×64</strong>
             </div>
-            <div class="miniBox">
+            <div class="miniBox checkerBg">
               <canvas id="mini180" width="180" height="180"></canvas>
               <strong>180×180</strong>
             </div>
@@ -584,12 +638,15 @@
         label_style: "Style",
         label_bg: "Background",
         label_fg: "Text color",
+        toggle_transparent_label: "Transparent background",
         toggle_round_label: "Rounded corners",
         card_download_title: "Download",
         card_preview_title: "Preview",
         footer_about: "Text-based favicon generator",
+        download_note: "<b>ICO</b>: for default browser favicon<br /><b>PNG</b>: for Apple · Android · PWA icons",
         ico_ready: "ICO file is ready.",
-        png_ready: "PNG file is ready."
+        png_ready: "PNG file is ready.",
+        done_label: "Done"
       },
       ko: {
         page_title: "Text → ICO",
@@ -603,12 +660,15 @@
         label_style: "스타일",
         label_bg: "배경색",
         label_fg: "글자색",
+        toggle_transparent_label: "투명 배경",
         toggle_round_label: "둥근 모서리",
         card_download_title: "다운로드",
         card_preview_title: "미리보기",
         footer_about: "텍스트 기반 파비콘 생성 도구",
+        download_note: "<b>ICO</b>: 기본 브라우저 파비콘용<br /><b>PNG</b>: Apple · Android · PWA 아이콘용",
         ico_ready: "ICO 파일 저장 준비가 완료됐습니다.",
-        png_ready: "PNG 파일 저장 준비가 완료됐습니다."
+        png_ready: "PNG 파일 저장 준비가 완료됐습니다.",
+        done_label: "완료"
       },
       ja: {
         page_title: "Text → ICO",
@@ -622,12 +682,15 @@
         label_style: "スタイル",
         label_bg: "背景色",
         label_fg: "文字色",
+        toggle_transparent_label: "透明背景",
         toggle_round_label: "角丸",
         card_download_title: "ダウンロード",
         card_preview_title: "プレビュー",
         footer_about: "テキストベースの favicon 生成ツール",
+        download_note: "<b>ICO</b>: 基本ブラウザ favicon 用<br /><b>PNG</b>: Apple · Android · PWA アイコン用",
         ico_ready: "ICOファイルの準備ができました。",
-        png_ready: "PNGファイルの準備ができました。"
+        png_ready: "PNGファイルの準備ができました。",
+        done_label: "完了"
       },
       es: {
         page_title: "Text → ICO",
@@ -641,12 +704,15 @@
         label_style: "Estilo",
         label_bg: "Color de fondo",
         label_fg: "Color del texto",
+        toggle_transparent_label: "Fondo transparente",
         toggle_round_label: "Esquinas redondeadas",
         card_download_title: "Descargar",
         card_preview_title: "Vista previa",
         footer_about: "Generador de favicon basado en texto",
+        download_note: "<b>ICO</b>: para favicon básico del navegador<br /><b>PNG</b>: para iconos Apple · Android · PWA",
         ico_ready: "El archivo ICO está listo.",
-        png_ready: "El archivo PNG está listo."
+        png_ready: "El archivo PNG está listo.",
+        done_label: "Listo"
       }
     };
 
@@ -655,6 +721,8 @@
       bgColor: document.getElementById("bgColor"),
       fgColor: document.getElementById("fgColor"),
       roundToggle: document.getElementById("roundToggle"),
+      transparentToggle: document.getElementById("transparentToggle"),
+      bgWrap: document.getElementById("bgWrap"),
       mainCanvas: document.getElementById("mainCanvas"),
       mini16: document.getElementById("mini16"),
       mini32: document.getElementById("mini32"),
@@ -663,7 +731,8 @@
       bgValue: document.getElementById("bgValue"),
       fgValue: document.getElementById("fgValue"),
       langSelect: document.getElementById("langSelect"),
-      statusText: document.getElementById("statusText")
+      statusText: document.getElementById("statusText"),
+      downloadNote: document.getElementById("download_note")
     };
 
     function applyLang(lang){
@@ -674,11 +743,13 @@
       [
         "page_title","page_sub","btn_home","local_pill","lang_label",
         "card_input_title","label_text","hint_text","label_style","label_bg","label_fg",
-        "toggle_round_label","card_download_title","card_preview_title","footer_about"
+        "toggle_transparent_label","toggle_round_label","card_download_title","card_preview_title","footer_about"
       ].forEach(id => {
         const el = document.getElementById(id);
         if(el && t[id]) el.textContent = t[id];
       });
+
+      if (els.downloadNote) els.downloadNote.innerHTML = t.download_note;
     }
 
     function currentLang(){
@@ -708,18 +779,21 @@
       const bg = els.bgColor.value;
       const fg = els.fgColor.value;
       const rounded = els.roundToggle.checked;
+      const transparent = els.transparentToggle.checked;
 
       canvas.width = size;
       canvas.height = size;
       ctx.clearRect(0,0,size,size);
 
-      if (rounded) {
-        roundRect(ctx, 0, 0, size, size, Math.round(size * 0.18));
-        ctx.fillStyle = bg;
-        ctx.fill();
-      } else {
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, size, size);
+      if (!transparent) {
+        if (rounded) {
+          roundRect(ctx, 0, 0, size, size, Math.round(size * 0.18));
+          ctx.fillStyle = bg;
+          ctx.fill();
+        } else {
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, size, size);
+        }
       }
 
       if (!text) return;
@@ -737,7 +811,17 @@
       ctx.fillText(text, size / 2, size / 2 + size * 0.02);
     }
 
+    function syncTransparentUI(){
+      const on = els.transparentToggle.checked;
+      els.bgWrap.classList.toggle("is-disabled", on);
+      els.roundToggle.disabled = on;
+      if (on) {
+        els.roundToggle.checked = false;
+      }
+    }
+
     function renderAll(){
+      syncTransparentUI();
       els.bgValue.textContent = els.bgColor.value.toUpperCase();
       els.fgValue.textContent = els.fgColor.value.toUpperCase();
 
@@ -809,33 +893,51 @@
       els.statusText.textContent = msg || "";
     }
 
-    document.getElementById("downloadIco").addEventListener("click", async () => {
+    function flashDone(button){
+      const lang = currentLang();
+      const oldText = button.dataset.label || button.textContent;
+      button.dataset.label = oldText;
+      button.classList.add("is-done");
+      button.textContent = (I18N[lang] || I18N.en).done_label;
+
+      clearTimeout(button._doneTimer);
+      button._doneTimer = setTimeout(() => {
+        button.classList.remove("is-done");
+        button.textContent = oldText;
+      }, 1200);
+    }
+
+    document.getElementById("downloadIco").addEventListener("click", async (e) => {
       const lang = currentLang();
       setStatus("...");
       const blob = await buildIcoBlob();
       downloadBlob(blob, "favicon.ico");
       setStatus((I18N[lang] || I18N.en).ico_ready);
+      flashDone(e.currentTarget);
     });
 
-    document.getElementById("download32").addEventListener("click", async () => {
+    document.getElementById("download32").addEventListener("click", async (e) => {
       const lang = currentLang();
       const blob = await canvasToPngBlob(32);
       downloadBlob(blob, "favicon-32x32.png");
       setStatus((I18N[lang] || I18N.en).png_ready);
+      flashDone(e.currentTarget);
     });
 
-    document.getElementById("downloadApple").addEventListener("click", async () => {
+    document.getElementById("downloadApple").addEventListener("click", async (e) => {
       const lang = currentLang();
       const blob = await canvasToPngBlob(180);
       downloadBlob(blob, "apple-touch-icon.png");
       setStatus((I18N[lang] || I18N.en).png_ready);
+      flashDone(e.currentTarget);
     });
 
-    document.getElementById("download192").addEventListener("click", async () => {
+    document.getElementById("download192").addEventListener("click", async (e) => {
       const lang = currentLang();
       const blob = await canvasToPngBlob(192);
       downloadBlob(blob, "android-chrome-192x192.png");
       setStatus((I18N[lang] || I18N.en).png_ready);
+      flashDone(e.currentTarget);
     });
 
     ["input","change"].forEach(evt => {
@@ -843,6 +945,7 @@
       els.bgColor.addEventListener(evt, renderAll);
       els.fgColor.addEventListener(evt, renderAll);
       els.roundToggle.addEventListener(evt, renderAll);
+      els.transparentToggle.addEventListener(evt, renderAll);
     });
 
     els.langSelect.addEventListener("change", e => {
