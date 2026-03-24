@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FaceFit24 Auto | 자동 얼굴분석 안경 추천</title>
-  <meta name="description" content="사진 업로드 후 자동 얼굴분석으로 안경 스타일을 추천하는 FaceFit24 자동 분석 MVP" />
+  <title>FaceFit24 Auto | 자동 얼굴분석 + 벡터 안경 오버레이</title>
+  <meta name="description" content="사진 업로드 후 자동 얼굴분석으로 안경 스타일을 추천하고 벡터 안경을 얼굴 위에 오버레이하는 테스트 페이지" />
   <meta name="robots" content="noindex,follow" />
   <meta name="theme-color" content="#0b0f17" />
   <style>
@@ -164,7 +164,7 @@
         <div class="logo">F</div>
         <div class="brand-text">
           <h1>FaceFit24 Auto</h1>
-          <p>자동 얼굴분석 + 안경 추천 MVP</p>
+          <p>자동 얼굴분석 + 벡터 안경 오버레이</p>
         </div>
       </div>
       <div class="pill-row">
@@ -175,27 +175,27 @@
 
     <section class="hero">
       <div class="card hero-main">
-        <h2>사진에서 자동으로 얼굴 비율을 읽고<br>안경 스타일을 추천합니다</h2>
-        <p>얼굴 랜드마크를 이용해 얼굴 폭·길이, 턱선, 광대 느낌을 간단 추정하고 추천 결과를 보여주는 테스트 버전입니다.</p>
+        <h2>사진에서 자동으로 얼굴을 분석하고<br>벡터 안경을 얼굴 위에 입혀봅니다</h2>
+        <p>얼굴 랜드마크를 이용해 얼굴형을 간단 추정하고, 추천 결과와 함께 라운드·스퀘어·보스턴·브로우라인 안경을 얼굴 위에 오버레이하는 테스트 버전입니다.</p>
         <div class="hero-badges">
           <div class="badge">자동 얼굴형 추정</div>
-          <div class="badge green">안경 추천 중심</div>
+          <div class="badge green">벡터 안경 오버레이</div>
         </div>
       </div>
       <div class="card hero-side">
-        <div class="mini"><b>현재 방식</b><span>랜드마크 기반 비율 계산 + 규칙 추천</span></div>
-        <div class="mini"><b>테스트 목적</b><span>실제 업로드, 분석, 추천 흐름이 네 환경에서 잘 도는지 확인</span></div>
+        <div class="mini"><b>현재 방식</b><span>랜드마크 기반 비율 계산 + 규칙 추천 + 캔버스 벡터 오버레이</span></div>
+        <div class="mini"><b>테스트 목적</b><span>실제 업로드, 분석, 추천, 안경 가상착용 흐름이 네 환경에서 잘 도는지 확인</span></div>
       </div>
     </section>
 
     <section class="grid">
       <div class="card section">
         <h3>1. 사진 업로드</h3>
-        <p class="sub">정면 셀카가 가장 정확합니다. 한 명만 나오고, 얼굴 윤곽이 잘 보이는 사진이 좋습니다.</p>
+        <p class="sub">정면 셀카가 가장 정확합니다. 한 명만 나오고 얼굴 윤곽이 잘 보이는 사진이 좋습니다.</p>
 
         <div class="upload-box">
           <div class="upload-top">
-            <div class="upload-note">JPG, PNG, WebP 지원<br>업로드 후 자동 분석을 누르면 얼굴 비율을 계산합니다.</div>
+            <div class="upload-note">JPG, PNG, WebP 지원<br>업로드 후 자동 분석을 누르면 얼굴 비율과 안경 위치를 계산합니다.</div>
             <div class="btn-row">
               <label class="btn secondary" for="imageInput">사진 선택</label>
               <button class="btn ghost" type="button" id="clearImageBtn">초기화</button>
@@ -203,7 +203,7 @@
           </div>
           <input id="imageInput" type="file" accept="image/*" hidden />
           <div id="stage" class="stage empty">
-            사진을 선택하면 여기에 미리보기가 표시됩니다.
+            <div id="stageText">사진을 선택하면 여기에 미리보기가 표시됩니다.</div>
             <img id="previewImage" alt="" style="display:none;">
             <canvas id="overlay" class="overlay"></canvas>
           </div>
@@ -212,7 +212,7 @@
 
       <div class="card section">
         <h3>2. 추천 옵션</h3>
-        <p class="sub">얼굴형은 자동 추정하고, 원하는 분위기만 선택합니다.</p>
+        <p class="sub">얼굴형은 자동 추정하고, 원하는 분위기와 안경 스타일만 선택합니다.</p>
 
         <div class="form-grid">
           <div class="field">
@@ -229,6 +229,16 @@
             <select id="drawMesh">
               <option value="yes">표시</option>
               <option value="no">숨김</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="glassesStyle">가상 안경 스타일</label>
+            <select id="glassesStyle">
+              <option value="none">없음</option>
+              <option value="round">라운드</option>
+              <option value="square">스퀘어</option>
+              <option value="boston">보스턴</option>
+              <option value="browline">브로우라인</option>
             </select>
           </div>
         </div>
@@ -303,6 +313,7 @@
 
     const imageInput = $('#imageInput');
     const stage = $('#stage');
+    const stageText = $('#stageText');
     const previewImage = $('#previewImage');
     const overlay = $('#overlay');
     const ctx = overlay.getContext('2d');
@@ -314,6 +325,7 @@
 
     const styleTone = $('#styleTone');
     const drawMesh = $('#drawMesh');
+    const glassesStyle = $('#glassesStyle');
     const statusText = $('#statusText');
 
     const resultHeading = $('#resultHeading');
@@ -333,6 +345,8 @@
     let faceLandmarker = null;
     let currentSummaryText = '';
     let imageReady = false;
+    let latestLandmarks = null;
+    let latestMetrics = null;
 
     const toneLabel = {
       classic: '클래식',
@@ -487,6 +501,178 @@
       };
     }
 
+    function getEyeData(landmarks) {
+      const w = overlay.width;
+      const h = overlay.height;
+      const px = landmarks.map(p => toPx(p, w, h));
+
+      const leftEyeOuter = px[33];
+      const leftEyeInner = px[133];
+      const rightEyeInner = px[362];
+      const rightEyeOuter = px[263];
+
+      const leftEyeCenter = {
+        x: (leftEyeOuter.x + leftEyeInner.x) / 2,
+        y: (leftEyeOuter.y + leftEyeInner.y) / 2
+      };
+
+      const rightEyeCenter = {
+        x: (rightEyeOuter.x + rightEyeInner.x) / 2,
+        y: (rightEyeOuter.y + rightEyeInner.y) / 2
+      };
+
+      const eyeDistance = distance(leftEyeCenter, rightEyeCenter);
+      const angle = Math.atan2(
+        rightEyeCenter.y - leftEyeCenter.y,
+        rightEyeCenter.x - leftEyeCenter.x
+      );
+
+      const faceLeft = px[234];
+      const faceRight = px[454];
+      const faceWidth = distance(faceLeft, faceRight);
+
+      return {
+        leftEyeCenter,
+        rightEyeCenter,
+        eyeDistance,
+        angle,
+        faceWidth
+      };
+    }
+
+    function drawRoundedRectPath(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    }
+
+    function drawGlassesOverlay(style, landmarks) {
+      if (!landmarks || style === 'none') return;
+
+      const eye = getEyeData(landmarks);
+
+      const cx = (eye.leftEyeCenter.x + eye.rightEyeCenter.x) / 2;
+      const cy = (eye.leftEyeCenter.y + eye.rightEyeCenter.y) / 2;
+
+      const lensW = eye.eyeDistance * 0.62;
+      const lensH =
+        style === 'round' ? lensW * 0.92 :
+        style === 'boston' ? lensW * 0.82 :
+        style === 'square' ? lensW * 0.72 :
+        lensW * 0.68;
+
+      const gap = eye.eyeDistance * 0.18;
+      const frameY = cy - lensH * 0.52;
+      const leftX = cx - gap / 2 - lensW;
+      const rightX = cx + gap / 2;
+      const bridgeY = cy;
+      const templeLen = eye.faceWidth * 0.18;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(eye.angle);
+      ctx.translate(-cx, -cy);
+
+      ctx.lineWidth = Math.max(2.5, eye.faceWidth * 0.012);
+      ctx.strokeStyle = 'rgba(30,30,35,0.95)';
+      ctx.fillStyle = 'rgba(160,190,220,0.10)';
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      if (style === 'round') {
+        const r = lensW * 0.42;
+
+        ctx.beginPath();
+        ctx.arc(leftX + lensW / 2, frameY + lensH / 2, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(rightX + lensW / 2, frameY + lensH / 2, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fill();
+      }
+
+      if (style === 'square') {
+        drawRoundedRectPath(ctx, leftX, frameY, lensW, lensH, lensW * 0.12);
+        ctx.stroke();
+        ctx.fill();
+
+        drawRoundedRectPath(ctx, rightX, frameY, lensW, lensH, lensW * 0.12);
+        ctx.stroke();
+        ctx.fill();
+      }
+
+      if (style === 'boston') {
+        drawRoundedRectPath(ctx, leftX, frameY, lensW, lensH, lensW * 0.28);
+        ctx.stroke();
+        ctx.fill();
+
+        drawRoundedRectPath(ctx, rightX, frameY, lensW, lensH, lensW * 0.28);
+        ctx.stroke();
+        ctx.fill();
+      }
+
+      if (style === 'browline') {
+        drawRoundedRectPath(ctx, leftX, frameY, lensW, lensH, lensW * 0.14);
+        ctx.stroke();
+        ctx.fill();
+
+        drawRoundedRectPath(ctx, rightX, frameY, lensW, lensH, lensW * 0.14);
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.lineWidth = Math.max(4, eye.faceWidth * 0.02);
+        ctx.beginPath();
+        ctx.moveTo(leftX + lensW * 0.02, frameY + lensH * 0.08);
+        ctx.lineTo(leftX + lensW * 0.98, frameY + lensH * 0.08);
+        ctx.moveTo(rightX + lensW * 0.02, frameY + lensH * 0.08);
+        ctx.lineTo(rightX + lensW * 0.98, frameY + lensH * 0.08);
+        ctx.stroke();
+      }
+
+      ctx.lineWidth = Math.max(2, eye.faceWidth * 0.01);
+
+      ctx.beginPath();
+      ctx.moveTo(leftX + lensW, bridgeY);
+      ctx.quadraticCurveTo(cx, bridgeY - lensH * 0.12, rightX, bridgeY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(leftX, frameY + lensH * 0.42);
+      ctx.lineTo(leftX - templeLen, frameY + lensH * 0.30);
+      ctx.moveTo(rightX + lensW, frameY + lensH * 0.42);
+      ctx.lineTo(rightX + lensW + templeLen, frameY + lensH * 0.30);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function redrawOverlay() {
+      if (!previewImage.src) return;
+
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      if (latestLandmarks && drawMesh.value === 'yes') {
+        const pts = latestLandmarks.map(p => toPx(p, overlay.width, overlay.height));
+        ctx.fillStyle = '#8b5cf6';
+        for (const p of pts) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      if (latestLandmarks) {
+        drawGlassesOverlay(glassesStyle.value, latestLandmarks);
+      }
+    }
+
     imageInput.addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -494,6 +680,7 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         stage.classList.remove('empty');
+        stageText.style.display = 'none';
         previewImage.style.display = 'block';
         previewImage.src = ev.target.result;
         imageReady = true;
@@ -504,6 +691,7 @@
 
     previewImage.addEventListener('load', () => {
       resetOverlay();
+      redrawOverlay();
     });
 
     clearImageBtn.addEventListener('click', () => {
@@ -511,9 +699,13 @@
       previewImage.removeAttribute('src');
       previewImage.style.display = 'none';
       stage.classList.add('empty');
-      stage.firstChild.textContent = '사진을 선택하면 여기에 미리보기가 표시됩니다.';
+      stageText.style.display = 'block';
       resetOverlay();
       imageReady = false;
+      latestLandmarks = null;
+      latestMetrics = null;
+      currentSummaryText = '';
+      statusText.textContent = '모델 준비 완료';
     });
 
     analyzeBtn.addEventListener('click', async () => {
@@ -538,17 +730,12 @@
         }
 
         const landmarks = result.faceLandmarks[0];
-        if (drawMesh.value === 'yes') {
-          const pts = landmarks.map(p => toPx(p, overlay.width, overlay.height));
-          ctx.fillStyle = '#8b5cf6';
-          for (const p of pts) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
+        latestLandmarks = landmarks;
+        redrawOverlay();
 
         const metrics = analyzeLandmarks(landmarks);
+        latestMetrics = metrics;
+
         const classified = classifyFace(metrics);
         const base = baseMap[classified.shape];
         const tone = styleTone.value;
@@ -576,6 +763,7 @@
 턱선: ${classified.jawText}
 광대: ${classified.cheekText}
 스타일톤: ${toneLabel[tone]}
+가상 안경 스타일: ${glassesStyle.value}
 잘 어울리는 프레임: ${base.good.join(', ')}
 피하면 좋은 프레임: ${base.bad.join(', ')}
 추천 이유: ${base.reason}`;
@@ -586,6 +774,14 @@
         statusText.textContent = '분석 실패';
         alert('분석 중 오류가 발생했습니다.');
       }
+    });
+
+    drawMesh.addEventListener('change', () => {
+      redrawOverlay();
+    });
+
+    glassesStyle.addEventListener('change', () => {
+      redrawOverlay();
     });
 
     copySummaryBtn.addEventListener('click', async () => {
