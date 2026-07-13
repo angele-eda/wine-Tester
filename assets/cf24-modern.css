@@ -15,7 +15,8 @@ body{font-family:Arial,"Noto Sans KR",sans-serif!important;padding:0!important}
 .langLabel{color:#3f4d63!important;font-weight:700!important}.langSelect,select,input,textarea{background:#fff!important;color:#1f2937!important;border:1px solid #c8d0dc!important;box-shadow:none!important;font-weight:650!important}
 .langSelect{min-width:185px!important;border-radius:9px!important}
 .homeBtn{display:none!important}
-.securePill,.pill{background:#e9f7f0!important;color:#237b59!important;border:1px solid #ccebdd!important;box-shadow:none!important}
+.tools{align-items:flex-start!important}
+.securePill,.pill{display:inline-flex!important;width:auto!important;max-width:max-content!important;min-width:0!important;align-self:flex-start!important;align-items:center!important;gap:6px!important;padding:7px 11px!important;background:#e9f7f0!important;color:#237b59!important;border:1px solid #ccebdd!important;border-radius:999px!important;box-shadow:none!important;font-size:12px!important;font-weight:750!important}
 .grid,.stageWrap{gap:18px!important}
 .card{background:#fff!important;color:#1e293b!important;border:1px solid var(--cf-line)!important;border-radius:14px!important;box-shadow:0 8px 30px #24324b0b!important}
 .card h2{color:#111827!important;font-weight:800!important}.card label{color:#334155!important;font-weight:750!important}.hint,.note,.meta,.msg{color:#46566e!important;font-weight:550!important;line-height:1.6!important}
