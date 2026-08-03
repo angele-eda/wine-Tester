@@ -78,7 +78,7 @@ a { color: inherit; text-decoration: none; }
 .benefit h2 { margin: 2px 0 4px; font: 700 14px/1.4 Plus Jakarta Sans, sans-serif; }
 .benefit p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
 
-.tools-section { padding-block: 72px 72px; scroll-margin-top: 70px; }
+.tools-section { padding-block: 34px 72px; scroll-margin-top: 70px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 36px; }
 .section-heading h2 { margin: 0 0 4px; font: 700 32px/1.25 Plus Jakarta Sans, sans-serif; }
 .section-heading p { margin: 0; color: var(--muted); font-size: 16px; }
