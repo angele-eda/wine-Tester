@@ -30,6 +30,7 @@ const convertLabel = document.querySelector("#convertLabel");
 const formatSelect = document.querySelector("#formatSelect");
 const qualityRange = document.querySelector("#qualityRange");
 const qualityOutput = document.querySelector("#qualityOutput");
+const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
 
@@ -194,6 +195,14 @@ function resetWorkspace() {
 }
 
 async function processFiles() {
+  if (currentTool.name === "File Converter") {
+    const imageFile = firstImageFile();
+    const format = formatSelect.value;
+    const mime = imageMimeFromFormat(format);
+    const blob = await createImageBlob(imageFile, mime, Number(qualityRange.value) / 100);
+    return { blob, name: buildOutputName(imageFile.name, format) };
+  }
+
   if (currentTool.name === "Image to ICO") {
     const imageFile = firstImageFile();
     const icoBlob = await createIcoBlob(imageFile, [16, 32, 48, 64, 128, 256]);
@@ -293,6 +302,30 @@ async function createPngBlob(file, size) {
   });
 }
 
+async function createImageBlob(file, mime, quality) {
+  const image = await loadImage(file);
+  const canvas = document.createElement("canvas");
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  const context = canvas.getContext("2d");
+
+  if (mime === "image/jpeg") {
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  } else {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  context.drawImage(image, 0, 0);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Could not create image output."));
+    }, mime, quality);
+  });
+}
+
 function loadImage(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -322,6 +355,22 @@ function downloadBlob(blob, name) {
 
 function baseName(name) {
   return String(name).replace(/\.[^.]+$/, "") || "convertfiles24";
+}
+
+function imageMimeFromFormat(format) {
+  if (format === "PNG") return "image/png";
+  if (format === "JPG") return "image/jpeg";
+  if (format === "WebP") return "image/webp";
+  throw new Error("Choose PNG, JPG, or WebP for image conversion.");
+}
+
+function extensionFromFormat(format) {
+  return format === "JPG" ? "jpg" : format.toLowerCase();
+}
+
+function buildOutputName(inputName, format) {
+  const name = keepNames.checked ? baseName(inputName) : "convertfiles24";
+  return `${name}.${extensionFromFormat(format)}`;
 }
 
 function renderFiles() {
