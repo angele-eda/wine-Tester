@@ -101,6 +101,17 @@ document.querySelectorAll(".tool-card").forEach((card) => {
   card.addEventListener("click", () => openWorkspace(card.dataset.tool, card.dataset.accept));
 });
 
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const targetId = link.getAttribute("href");
+    const target = targetId === "#top" ? document.querySelector("#top") : document.querySelector(targetId);
+    if (!target) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    history.replaceState(null, "", `${location.pathname}${location.search}`);
+  });
+});
+
 function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
   document.querySelector("#workspaceTitle").textContent = currentTool.name;
