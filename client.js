@@ -6,7 +6,7 @@ const tools = {
   "pdf-jpg": { name: "PDF to JPG", icon: "image", formats: ["JPG", "PNG"] },
   "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"] },
   "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"] },
-  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["ICO", "PNG", "SVG"] }
+  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["Favicon files (.zip)"] }
 };
 
 const root = document.documentElement;
@@ -211,7 +211,7 @@ async function processFiles() {
       ]
     }, null, 2));
     const zipBlob = await zip.generateAsync({ type: "blob" });
-    return { blob: zipBlob, name: `${baseName(imageFile.name)}-favicon.zip` };
+    return { blob: zipBlob, name: `${baseName(imageFile.name)}-favicon-files.zip` };
   }
 
   await new Promise((resolve) => window.setTimeout(resolve, 600));
