@@ -31,6 +31,11 @@ const qualityOutput = document.querySelector("#qualityOutput");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
 
+document.querySelectorAll(".material-symbols-outlined").forEach((icon) => {
+  icon.classList.add("notranslate");
+  icon.setAttribute("translate", "no");
+});
+
 let selectedFiles = [];
 let currentTool = tools.converter;
 let toastTimer;
