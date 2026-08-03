@@ -99,7 +99,13 @@ mobileNav.addEventListener("click", () => {
 });
 
 document.querySelectorAll(".tool-card").forEach((card) => {
-  card.addEventListener("click", () => openWorkspace(card.dataset.tool, card.dataset.accept));
+  card.addEventListener("click", () => {
+    if (card.dataset.url) {
+      window.location.href = card.dataset.url;
+      return;
+    }
+    openWorkspace(card.dataset.tool, card.dataset.accept);
+  });
 });
 
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
