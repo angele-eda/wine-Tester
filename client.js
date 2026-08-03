@@ -126,8 +126,11 @@ function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
   document.querySelector("#workspaceTitle").textContent = currentTool.name;
   document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
+  dialog.classList.remove("is-framed-tool");
   workspaceBody.hidden = false;
+  workspaceBody.style.display = "";
   toolFrameWrap.hidden = true;
+  toolFrameWrap.style.display = "";
   toolFrame.removeAttribute("src");
   successPanel.hidden = true;
   fileInput.accept = accept || "";
@@ -140,9 +143,12 @@ function openToolFrame(toolKey, url) {
   currentTool = tools[toolKey] || tools.converter;
   document.querySelector("#workspaceTitle").textContent = currentTool.name;
   document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
+  dialog.classList.add("is-framed-tool");
   workspaceBody.hidden = true;
+  workspaceBody.style.display = "none";
   successPanel.hidden = true;
   toolFrameWrap.hidden = false;
+  toolFrameWrap.style.display = "block";
   toolFrame.src = withLanguage(url);
   dialog.showModal();
 }
@@ -156,6 +162,10 @@ function withLanguage(url) {
 }
 
 document.querySelector("#closeDialogButton").addEventListener("click", () => dialog.close());
+dialog.addEventListener("close", () => {
+  dialog.classList.remove("is-framed-tool");
+  toolFrame.removeAttribute("src");
+});
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
