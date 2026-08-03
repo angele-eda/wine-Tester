@@ -146,7 +146,7 @@
       <div class="dialog-title-wrap"><span class="dialog-tool-icon material-symbols-outlined" id="dialogToolIcon">sync_alt</span><div><span class="eyebrow">Local workspace</span><h2 id="workspaceTitle">File Converter</h2></div></div>
       <button class="icon-button" id="closeDialogButton" type="button" aria-label="Close workspace"><span class="material-symbols-outlined">close</span></button>
     </div>
-    <div class="dialog-body">
+    <div class="dialog-body" id="workspaceBody">
       <section class="upload-workspace">
         <input id="fileInput" type="file" multiple hidden>
         <button class="drop-zone" id="dropZone" type="button">
@@ -167,11 +167,14 @@
         <button class="convert-button" id="convertButton" type="button" disabled><span id="convertLabel">Convert files</span><span class="material-symbols-outlined">arrow_forward</span></button>
       </aside>
     </div>
+    <div class="tool-frame-wrap" id="toolFrameWrap" hidden>
+      <iframe id="toolFrame" title="ConvertFiles24 tool workspace"></iframe>
+    </div>
     <div class="success-panel" id="successPanel" hidden><span class="material-symbols-outlined">task_alt</span><div><strong>Processing complete</strong><p>Your files are ready. This prototype keeps all processing on-device.</p></div><button type="button" id="downloadButton"><span class="material-symbols-outlined">download</span>Download</button></div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <script src="assets/jszip/jszip.min.js?v=20260804-cleanurl"></script>
-  <script src="client.js?v=20260804-cleanurl"></script>
+  <script src="client.js?v=20260804-modal-tools"></script>
 </body>
 </html>

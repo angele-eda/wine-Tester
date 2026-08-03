@@ -1,6 +1,9 @@
 (function(){
   var current = new URL(window.location.href);
   var lang = current.searchParams.get("lang") || document.documentElement.lang || "en";
+  var embedded = current.searchParams.get("embed") === "1";
+  if (embedded) document.body.classList.add("cf24-embed");
+  if (embedded) return;
   var isKo = String(lang).toLowerCase().startsWith("ko");
   var bar = document.createElement("header");
   bar.className = "cf24-bar";

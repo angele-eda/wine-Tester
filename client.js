@@ -21,6 +21,9 @@ const languageLabel = document.querySelector("#languageLabel");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
 const dialog = document.querySelector("#workspaceDialog");
+const workspaceBody = document.querySelector("#workspaceBody");
+const toolFrameWrap = document.querySelector("#toolFrameWrap");
+const toolFrame = document.querySelector("#toolFrame");
 const fileInput = document.querySelector("#fileInput");
 const dropZone = document.querySelector("#dropZone");
 const fileList = document.querySelector("#fileList");
@@ -101,7 +104,7 @@ mobileNav.addEventListener("click", () => {
 document.querySelectorAll(".tool-card").forEach((card) => {
   card.addEventListener("click", () => {
     if (card.dataset.url) {
-      window.location.href = card.dataset.url;
+      openToolFrame(card.dataset.tool, card.dataset.url);
       return;
     }
     openWorkspace(card.dataset.tool, card.dataset.accept);
@@ -123,10 +126,33 @@ function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
   document.querySelector("#workspaceTitle").textContent = currentTool.name;
   document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
+  workspaceBody.hidden = false;
+  toolFrameWrap.hidden = true;
+  toolFrame.removeAttribute("src");
+  successPanel.hidden = true;
   fileInput.accept = accept || "";
   formatSelect.innerHTML = currentTool.formats.map((format) => `<option>${format}</option>`).join("");
   resetWorkspace();
   dialog.showModal();
+}
+
+function openToolFrame(toolKey, url) {
+  currentTool = tools[toolKey] || tools.converter;
+  document.querySelector("#workspaceTitle").textContent = currentTool.name;
+  document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
+  workspaceBody.hidden = true;
+  successPanel.hidden = true;
+  toolFrameWrap.hidden = false;
+  toolFrame.src = withLanguage(url);
+  dialog.showModal();
+}
+
+function withLanguage(url) {
+  const language = languageLabel.textContent === "한국어" ? "ko" : "en";
+  const next = new URL(url, window.location.origin);
+  next.searchParams.set("lang", language);
+  next.searchParams.set("embed", "1");
+  return `${next.pathname}${next.search}`;
 }
 
 document.querySelector("#closeDialogButton").addEventListener("click", () => dialog.close());

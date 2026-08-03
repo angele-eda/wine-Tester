@@ -141,6 +141,11 @@ button:disabled,.btn:disabled{opacity:.72!important;color:#9aa8bd!important;back
 .footer{color:#8fa0b8!important;border-color:#253048!important}
 .footer a{color:#b9c8ff!important}
 .privacyBox,.infoBox{background:rgba(94,230,181,.08)!important;border-color:rgba(94,230,181,.2)!important;color:#cdeee2!important}
+body.cf24-embed .wrap{padding:24px 24px 34px!important}
+body.cf24-embed .top{margin-bottom:14px!important}
+body.cf24-embed .top h1,body.cf24-embed .site-title,body.cf24-embed .title{font-size:28px!important}
+body.cf24-embed .sub{font-size:14px!important}
+body.cf24-embed .card{box-shadow:none!important}
 @media(max-width:700px){
   .cf24-bar{height:66px;padding:0 16px}
   .cf24-nav a:first-child{display:none}
