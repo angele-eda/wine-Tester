@@ -4,7 +4,9 @@ const tools = {
   split: { name: "Split PDF", icon: "content_cut", formats: ["PDF"] },
   compress: { name: "Compress PDF", icon: "compress", formats: ["PDF"] },
   "pdf-jpg": { name: "PDF to JPG", icon: "image", formats: ["JPG", "PNG"] },
-  "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"] }
+  "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"] },
+  "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"] },
+  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["ICO", "PNG", "SVG"] }
 };
 
 const root = document.documentElement;
