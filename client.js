@@ -3,8 +3,8 @@ const tools = {
   merge: { name: "Merge PDF", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false },
   split: { name: "Split PDF", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false },
   compress: { name: "Compress PDF", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true },
-  "pdf-jpg": { name: "PDF to JPG", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
-  "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
+  "pdf-jpg": { name: "PDF to JPG / PNG", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
+  "jpg-pdf": { name: "JPG / PNG to PDF", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
   "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
   favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true }
 };
