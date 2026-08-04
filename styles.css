@@ -131,7 +131,7 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .footer-shell nav { display: flex; gap: 8px; color: var(--muted); font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 12px; font-weight: 400; }
 .footer-shell nav a { transition: color .18s ease; }
 .footer-shell nav a + a { display: inline-flex; align-items: center; gap: 8px; }
-.footer-shell nav a + a::before { content: ""; width: 1px; height: 12px; background: var(--line); }
+.footer-shell nav a + a::before { content: ""; width: 1px; height: 10px; background: color-mix(in srgb, var(--line), transparent 35%); }
 .footer-shell a:hover { color: var(--primary); }
 
 .workspace-dialog { width: min(980px, calc(100vw - 40px)); max-height: calc(100vh - 40px); padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); overflow: auto; }
