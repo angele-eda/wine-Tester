@@ -169,6 +169,8 @@ mobileLanguageSelect.addEventListener("change", () => {
 
 document.querySelectorAll(".tool-card").forEach((card) => {
   card.addEventListener("click", () => {
+    document.querySelectorAll(".tool-card.is-selected").forEach((selectedCard) => selectedCard.classList.remove("is-selected"));
+    card.classList.add("is-selected");
     openWorkspace(card.dataset.tool, card.dataset.accept);
   });
 });

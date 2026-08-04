@@ -98,7 +98,7 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .tool-card { position: relative; min-height: 188px; padding: 24px 26px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); text-align: left; cursor: pointer; transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease; }
 .tool-card:hover, .tool-card:focus-visible { transform: translateY(-4px); border-color: var(--primary-strong); background: var(--surface-2); box-shadow: 0 14px 34px rgba(0, 0, 0, .12); outline: none; }
-.tool-card.featured { border: 2px solid var(--primary-strong); }
+.tool-card.is-selected { border: 2px solid var(--primary-strong); }
 .popular-label { position: absolute; top: -12px; left: 16px; padding: 5px 12px; border-radius: 999px; background: var(--primary-strong); color: #fff; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tool-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
 .tool-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 11px; background: var(--surface-3); color: var(--primary); font-size: 29px; }
