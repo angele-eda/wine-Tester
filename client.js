@@ -47,7 +47,7 @@ let toastTimer;
 let downloadResult = null;
 
 const savedTheme = localStorage.getItem("convertfiles24-theme");
-setTheme(savedTheme === "light" ? "light" : "dark");
+setTheme(savedTheme === "dark" ? "dark" : "light");
 
 themeButton.addEventListener("click", toggleTheme);
 mobileThemeButton.addEventListener("click", toggleTheme);
