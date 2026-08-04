@@ -32,6 +32,9 @@ const languageMenu = document.querySelector("#languageMenu");
 const languageLabel = document.querySelector("#languageLabel");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
+const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
+const toolsSection = document.querySelector("#tools");
+const privacySection = document.querySelector("#privacy");
 const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
 const fileInput = document.querySelector("#fileInput");
@@ -57,6 +60,31 @@ let selectedFiles = [];
 let currentTool = tools.converter;
 let toastTimer;
 let downloadResult = null;
+let navSelectionLockedUntil = 0;
+let navScrollFrame = null;
+
+function setActiveNav(targetId) {
+  desktopNavLinks.forEach((link) => {
+    const active = link.getAttribute("href") === targetId;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "true");
+    else link.removeAttribute("aria-current");
+  });
+}
+
+function updateActiveNav() {
+  navScrollFrame = null;
+  if (Date.now() < navSelectionLockedUntil) return;
+  const headerOffset = 96;
+  const atPrivacy = privacySection.getBoundingClientRect().top <= headerOffset
+    || window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8;
+  setActiveNav(atPrivacy ? "#privacy" : "#tools");
+}
+
+window.addEventListener("scroll", () => {
+  if (navScrollFrame !== null) return;
+  navScrollFrame = requestAnimationFrame(updateActiveNav);
+}, { passive: true });
 
 const savedTheme = localStorage.getItem("convertfiles24-theme");
 setTheme(savedTheme === "dark" ? "dark" : "light");
@@ -137,10 +165,17 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const target = targetId === "#top" ? document.querySelector("#top") : document.querySelector(targetId);
     if (!target) return;
     event.preventDefault();
+    if (targetId === "#tools" || targetId === "#privacy") {
+      setActiveNav(targetId);
+      navSelectionLockedUntil = Date.now() + 800;
+      window.setTimeout(updateActiveNav, 850);
+    }
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     history.replaceState(null, "", `${location.pathname}${location.search}`);
   });
 });
+
+updateActiveNav();
 
 function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;

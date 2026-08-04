@@ -45,3 +45,15 @@ No actionable P0, P1, or P2 differences remain. The full source lockup is intent
 ## Final result
 
 final result: passed
+
+## Navigation update — 2026-08-04
+
+- Source visual truth: `C:\Users\원대\AppData\Local\Temp\codex-clipboard-a6faa3d7-0d65-47f2-ba79-9ca9f3292f4c.png`
+- Implementation screenshot: `qa/nav-active-final.png`
+- Viewport: default desktop browser viewport, light theme
+- Full-view comparison: menu typography is reduced to 13 px, spacing is tightened, the active underline is 3 px, the divider is shortened, and the theme control uses the reference's circular treatment.
+- Focused-region comparison: `모든 도구` and `개인정보 보호` were clicked in both directions; `aria-current` and the visible underline moved to the selected item each time. Scroll-position synchronization and the browser console were also checked.
+- Findings: no actionable P0/P1/P2 issues remain.
+- Comparison history: the initial implementation kept a single fixed underline; this was replaced with click- and scroll-synchronized active navigation. The source's smaller typography and tighter spacing were also applied.
+
+final result: passed
