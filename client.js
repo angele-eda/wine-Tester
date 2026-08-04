@@ -1,12 +1,12 @@
 const tools = {
-  converter: { name: "File Converter", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"] },
-  merge: { name: "Merge PDF", icon: "call_merge", formats: ["PDF"] },
-  split: { name: "Split PDF", icon: "content_cut", formats: ["PDF"] },
-  compress: { name: "Compress PDF", icon: "compress", formats: ["PDF"] },
-  "pdf-jpg": { name: "PDF to JPG", icon: "image", formats: ["JPG", "PNG"] },
-  "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"] },
-  "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"] },
-  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["Favicon files (.zip)"] }
+  converter: { name: "File Converter", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"], accept: "image/*,application/pdf", multiple: true, quality: true },
+  merge: { name: "Merge PDF", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false },
+  split: { name: "Split PDF", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false },
+  compress: { name: "Compress PDF", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true },
+  "pdf-jpg": { name: "PDF to JPG", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
+  "jpg-pdf": { name: "JPG to PDF", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
+  "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
+  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true }
 };
 
 const root = document.documentElement;
@@ -22,8 +22,6 @@ const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
 const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
-const toolFrameWrap = document.querySelector("#toolFrameWrap");
-const toolFrame = document.querySelector("#toolFrame");
 const fileInput = document.querySelector("#fileInput");
 const dropZone = document.querySelector("#dropZone");
 const fileList = document.querySelector("#fileList");
@@ -33,6 +31,7 @@ const convertLabel = document.querySelector("#convertLabel");
 const formatSelect = document.querySelector("#formatSelect");
 const qualityRange = document.querySelector("#qualityRange");
 const qualityOutput = document.querySelector("#qualityOutput");
+const qualitySetting = document.querySelector("#qualitySetting");
 const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
@@ -103,10 +102,6 @@ mobileNav.addEventListener("click", () => {
 
 document.querySelectorAll(".tool-card").forEach((card) => {
   card.addEventListener("click", () => {
-    if (card.dataset.url) {
-      openToolFrame(card.dataset.tool, card.dataset.url);
-      return;
-    }
     openWorkspace(card.dataset.tool, card.dataset.accept);
   });
 });
@@ -126,45 +121,19 @@ function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
   document.querySelector("#workspaceTitle").textContent = currentTool.name;
   document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
-  dialog.classList.remove("is-framed-tool");
   workspaceBody.hidden = false;
-  workspaceBody.style.display = "";
-  toolFrameWrap.hidden = true;
-  toolFrameWrap.style.display = "";
-  toolFrame.removeAttribute("src");
   successPanel.hidden = true;
-  fileInput.accept = accept || "";
+  fileInput.accept = accept || currentTool.accept || "";
+  fileInput.multiple = currentTool.multiple !== false;
   formatSelect.innerHTML = currentTool.formats.map((format) => `<option>${format}</option>`).join("");
+  qualitySetting.hidden = !currentTool.quality;
   resetWorkspace();
   dialog.showModal();
 }
 
-function openToolFrame(toolKey, url) {
-  currentTool = tools[toolKey] || tools.converter;
-  document.querySelector("#workspaceTitle").textContent = currentTool.name;
-  document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
-  dialog.classList.add("is-framed-tool");
-  workspaceBody.hidden = true;
-  workspaceBody.style.display = "none";
-  successPanel.hidden = true;
-  toolFrameWrap.hidden = false;
-  toolFrameWrap.style.display = "block";
-  toolFrame.src = withLanguage(url);
-  dialog.showModal();
-}
-
-function withLanguage(url) {
-  const language = languageLabel.textContent === "한국어" ? "ko" : "en";
-  const next = new URL(url, window.location.origin);
-  next.searchParams.set("lang", language);
-  next.searchParams.set("embed", "1");
-  return `${next.pathname}${next.search}`;
-}
-
 document.querySelector("#closeDialogButton").addEventListener("click", () => dialog.close());
 dialog.addEventListener("close", () => {
-  dialog.classList.remove("is-framed-tool");
-  toolFrame.removeAttribute("src");
+  resetWorkspace();
 });
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
@@ -221,7 +190,7 @@ document.querySelector("#downloadButton").addEventListener("click", () => {
 });
 
 function setFiles(files) {
-  selectedFiles = files;
+  selectedFiles = currentTool.multiple === false ? files.slice(0, 1) : files;
   downloadResult = null;
   successPanel.hidden = true;
   renderFiles();
@@ -237,21 +206,35 @@ function resetWorkspace() {
 }
 
 async function processFiles() {
-  if (currentTool.name === "File Converter") {
-    const imageFile = firstImageFile();
+  const quality = Number(qualityRange.value) / 100;
+
+  if (currentTool === tools.converter) {
     const format = formatSelect.value;
+    const hasPdf = selectedFiles.some((file) => file.type === "application/pdf" || /\.pdf$/i.test(file.name));
+    if (format === "PDF") {
+      if (hasPdf) return selectedFiles.length > 1 ? mergePdfFiles(selectedFiles) : passthroughPdf(selectedFiles[0]);
+      return createPdfFromImages(selectedFiles);
+    }
+    if (hasPdf) return pdfToImages(selectedFiles[0], format === "WebP" ? "PNG" : format, quality);
+    const imageFile = firstImageFile();
     const mime = imageMimeFromFormat(format);
-    const blob = await createImageBlob(imageFile, mime, Number(qualityRange.value) / 100);
+    const blob = await createImageBlob(imageFile, mime, quality);
     return { blob, name: buildOutputName(imageFile.name, format) };
   }
 
-  if (currentTool.name === "Image to ICO") {
+  if (currentTool === tools.merge) return mergePdfFiles(selectedFiles);
+  if (currentTool === tools.split) return splitPdfFile(selectedFiles[0]);
+  if (currentTool === tools.compress) return compressPdfFile(selectedFiles[0], quality);
+  if (currentTool === tools["pdf-jpg"]) return pdfToImages(selectedFiles[0], formatSelect.value, quality);
+  if (currentTool === tools["jpg-pdf"]) return createPdfFromImages(selectedFiles);
+
+  if (currentTool === tools["image-ico"]) {
     const imageFile = firstImageFile();
     const icoBlob = await createIcoBlob(imageFile, [16, 32, 48, 64, 128, 256]);
     return { blob: icoBlob, name: `${baseName(imageFile.name)}.ico` };
   }
 
-  if (currentTool.name === "Favicon Generator") {
+  if (currentTool === tools.favicon) {
     const imageFile = firstImageFile();
     const sizes = [16, 32, 48, 180, 192, 512];
     const icoBlob = await createIcoBlob(imageFile, [16, 32, 48, 64, 128, 256]);
@@ -276,8 +259,127 @@ async function processFiles() {
     return { blob: zipBlob, name: `${baseName(imageFile.name)}-favicon-files.zip` };
   }
 
-  await new Promise((resolve) => window.setTimeout(resolve, 600));
-  return { blob: new Blob(["ConvertFiles24 local processing preview."], { type: "text/plain" }), name: "convertfiles24-preview.txt" };
+  throw new Error("This conversion is not available.");
+}
+
+async function passthroughPdf(file) {
+  const input = pdfFiles([file])[0];
+  return { blob: new Blob([await input.arrayBuffer()], { type: "application/pdf" }), name: `${baseName(input.name)}.pdf` };
+}
+
+function requirePdfLib() {
+  if (!window.PDFLib) throw new Error("PDF tools are still loading. Please try again.");
+  return window.PDFLib;
+}
+
+function requirePdfJs() {
+  if (!window.pdfjsLib) throw new Error("PDF preview tools are still loading. Please try again.");
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = "assets/pdfjs/pdf.worker.min.js";
+  return window.pdfjsLib;
+}
+
+function pdfFiles(files) {
+  const list = files.filter((file) => file.type === "application/pdf" || /\.pdf$/i.test(file.name));
+  if (!list.length) throw new Error("Choose a PDF file first.");
+  return list;
+}
+
+async function createPdfFromImages(files) {
+  const images = files.filter((file) => file.type.startsWith("image/"));
+  if (!images.length) throw new Error("Choose a JPG, PNG or WebP image first.");
+  const { PDFDocument } = requirePdfLib();
+  const pdf = await PDFDocument.create();
+  for (const file of images) {
+    const png = await createImageBlob(file, "image/png", 1);
+    const embedded = await pdf.embedPng(await png.arrayBuffer());
+    const page = pdf.addPage([embedded.width, embedded.height]);
+    page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+  }
+  const bytes = await pdf.save({ useObjectStreams: true });
+  return { blob: new Blob([bytes], { type: "application/pdf" }), name: `${baseName(images[0].name)}.pdf` };
+}
+
+async function mergePdfFiles(files) {
+  const inputs = pdfFiles(files);
+  if (inputs.length < 2) throw new Error("Choose at least two PDF files to merge.");
+  const { PDFDocument } = requirePdfLib();
+  const output = await PDFDocument.create();
+  for (const file of inputs) {
+    const source = await PDFDocument.load(await file.arrayBuffer());
+    const pages = await output.copyPages(source, source.getPageIndices());
+    pages.forEach((page) => output.addPage(page));
+  }
+  const bytes = await output.save({ useObjectStreams: true });
+  return { blob: new Blob([bytes], { type: "application/pdf" }), name: "merged.pdf" };
+}
+
+async function splitPdfFile(file) {
+  const input = pdfFiles([file])[0];
+  const { PDFDocument } = requirePdfLib();
+  if (!window.JSZip) throw new Error("ZIP tools are still loading. Please try again.");
+  const source = await PDFDocument.load(await input.arrayBuffer());
+  const zip = new JSZip();
+  for (let index = 0; index < source.getPageCount(); index += 1) {
+    const output = await PDFDocument.create();
+    const [page] = await output.copyPages(source, [index]);
+    output.addPage(page);
+    zip.file(`${baseName(input.name)}-page-${index + 1}.pdf`, await output.save({ useObjectStreams: true }));
+  }
+  const blob = await zip.generateAsync({ type: "blob" });
+  return { blob, name: `${baseName(input.name)}-pages.zip` };
+}
+
+async function renderPdfPage(page, scale, mime, quality) {
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.floor(viewport.width));
+  canvas.height = Math.max(1, Math.floor(viewport.height));
+  const context = canvas.getContext("2d", { alpha: mime !== "image/jpeg" });
+  if (mime === "image/jpeg") {
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  await page.render({ canvasContext: context, viewport }).promise;
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Could not render this PDF page.")), mime, quality));
+}
+
+async function pdfToImages(file, format, quality) {
+  const input = pdfFiles([file])[0];
+  const pdfjs = requirePdfJs();
+  const documentTask = pdfjs.getDocument({ data: await input.arrayBuffer() });
+  const pdf = await documentTask.promise;
+  const mime = format === "PNG" ? "image/png" : "image/jpeg";
+  const extension = format === "PNG" ? "png" : "jpg";
+  if (pdf.numPages === 1) {
+    const blob = await renderPdfPage(await pdf.getPage(1), 1.7, mime, quality);
+    return { blob, name: `${baseName(input.name)}-page-1.${extension}` };
+  }
+  if (!window.JSZip) throw new Error("ZIP tools are still loading. Please try again.");
+  const zip = new JSZip();
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const blob = await renderPdfPage(await pdf.getPage(pageNumber), 1.7, mime, quality);
+    zip.file(`${baseName(input.name)}-page-${pageNumber}.${extension}`, blob);
+  }
+  return { blob: await zip.generateAsync({ type: "blob" }), name: `${baseName(input.name)}-${extension}.zip` };
+}
+
+async function compressPdfFile(file, quality) {
+  const input = pdfFiles([file])[0];
+  const pdfjs = requirePdfJs();
+  const { PDFDocument } = requirePdfLib();
+  const source = await pdfjs.getDocument({ data: await input.arrayBuffer() }).promise;
+  const output = await PDFDocument.create();
+  const renderQuality = Math.min(.86, Math.max(.48, quality));
+  for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
+    const page = await source.getPage(pageNumber);
+    const original = page.getViewport({ scale: 1 });
+    const jpeg = await renderPdfPage(page, 1.35, "image/jpeg", renderQuality);
+    const embedded = await output.embedJpg(await jpeg.arrayBuffer());
+    const outPage = output.addPage([original.width, original.height]);
+    outPage.drawImage(embedded, { x: 0, y: 0, width: original.width, height: original.height });
+  }
+  const bytes = await output.save({ useObjectStreams: true });
+  return { blob: new Blob([bytes], { type: "application/pdf" }), name: `${baseName(input.name)}-compressed.pdf` };
 }
 
 function firstImageFile() {

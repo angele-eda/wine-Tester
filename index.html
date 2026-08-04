@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260804-modal-frame-fix">
+  <link rel="stylesheet" href="styles.css?v=20260804-unified-tools">
 </head>
 <body>
   <header class="site-header">
@@ -81,28 +81,28 @@
       </div>
 
       <div class="tool-grid">
-        <button class="tool-card featured" type="button" data-tool="converter" data-url="/convert/">
+        <button class="tool-card featured" type="button" data-tool="converter" data-accept="image/*,application/pdf">
           <span class="popular-label">Most popular</span>
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">sync_alt</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>File Converter</strong><span>Convert JPG, PNG, WebP and PDF formats instantly with local processing.</span>
         </button>
-        <button class="tool-card" type="button" data-tool="merge" data-url="/pdf-merge/">
+        <button class="tool-card" type="button" data-tool="merge" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">call_merge</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>Merge PDF</strong><span>Combine multiple PDF documents into a single professional file.</span>
         </button>
-        <button class="tool-card" type="button" data-tool="split" data-url="/split-pdf/">
+        <button class="tool-card" type="button" data-tool="split" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">content_cut</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>Split PDF</strong><span>Separate PDF pages in seconds. Extract specific ranges or individual pages.</span>
         </button>
-        <button class="tool-card" type="button" data-tool="compress" data-url="/compress-pdf/">
+        <button class="tool-card" type="button" data-tool="compress" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">compress</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>Compress PDF</strong><span>Reduce file size while keeping high visual quality for sharing.</span>
         </button>
-        <button class="tool-card" type="button" data-tool="pdf-jpg" data-url="/pdf-jpg/">
+        <button class="tool-card" type="button" data-tool="pdf-jpg" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">image</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>PDF to JPG</strong><span>Turn every PDF page into a high-quality image file effortlessly.</span>
         </button>
-        <button class="tool-card" type="button" data-tool="jpg-pdf" data-url="/jpg-pdf/">
+        <button class="tool-card" type="button" data-tool="jpg-pdf" data-accept="image/jpeg,image/png,image/webp">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">picture_as_pdf</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong>JPG to PDF</strong><span>Create one PDF from your image sequence. Perfect for scanning documents.</span>
         </button>
@@ -161,20 +161,19 @@
       <aside class="settings-panel">
         <h3>Output settings</h3>
         <label><span>Output format</span><select id="formatSelect"><option>PNG</option><option>JPG</option><option>WebP</option><option>PDF</option></select></label>
-        <label><span>Quality <output id="qualityOutput">92%</output></span><input id="qualityRange" type="range" min="40" max="100" value="92"></label>
+        <label id="qualitySetting"><span>Quality <output id="qualityOutput">92%</output></span><input id="qualityRange" type="range" min="40" max="100" value="92"></label>
         <label class="checkbox-row"><input id="keepNames" type="checkbox" checked><span>Keep original file names</span></label>
         <div class="local-note"><span class="material-symbols-outlined">lock</span><p><strong>Private processing</strong><br>Your files stay on this device.</p></div>
         <button class="convert-button" id="convertButton" type="button" disabled><span id="convertLabel">Convert files</span><span class="material-symbols-outlined">arrow_forward</span></button>
       </aside>
     </div>
-    <div class="tool-frame-wrap" id="toolFrameWrap" hidden>
-      <iframe id="toolFrame" title="ConvertFiles24 tool workspace"></iframe>
-    </div>
     <div class="success-panel" id="successPanel" hidden><span class="material-symbols-outlined">task_alt</span><div><strong>Processing complete</strong><p>Your files are ready. This prototype keeps all processing on-device.</p></div><button type="button" id="downloadButton"><span class="material-symbols-outlined">download</span>Download</button></div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-  <script src="assets/jszip/jszip.min.js?v=20260804-cleanurl"></script>
-  <script src="client.js?v=20260804-modal-frame-fix"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="assets/pdfjs/pdf.min.js?v=20260804-unified-tools"></script>
+  <script src="assets/jszip/jszip.min.js?v=20260804-unified-tools"></script>
+  <script src="client.js?v=20260804-unified-tools"></script>
 </body>
 </html>
