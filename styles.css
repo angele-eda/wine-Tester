@@ -128,7 +128,7 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .footer-brand { font-size: 21px; }
 .footer-brand .brand-mark { width: 30px; height: 30px; flex-basis: 30px; }
 .footer-shell p { margin: 7px 0 0; color: var(--muted); font-size: 12px; font-weight: 600; }
-.footer-shell nav { display: flex; gap: 32px; color: var(--muted); font-size: 13px; font-weight: 500; }
+.footer-shell nav { display: flex; gap: 32px; color: var(--muted); font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 13px; font-weight: 400; }
 .footer-shell nav a { transition: color .18s ease; }
 .footer-shell a:hover { color: var(--primary); }
 
