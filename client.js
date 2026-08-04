@@ -165,12 +165,17 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const target = targetId === "#top" ? document.querySelector("#top") : document.querySelector(targetId);
     if (!target) return;
     event.preventDefault();
-    if (targetId === "#tools" || targetId === "#privacy") {
+    if (targetId === "#top") {
+      setActiveNav("#tools");
+      navSelectionLockedUntil = Date.now() + 800;
+      window.setTimeout(updateActiveNav, 850);
+    } else if (targetId === "#tools" || targetId === "#privacy") {
       setActiveNav(targetId);
       navSelectionLockedUntil = Date.now() + 800;
       window.setTimeout(updateActiveNav, 850);
     }
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (targetId === "#top") window.scrollTo({ top: 0, behavior: "smooth" });
+    else target.scrollIntoView({ behavior: "smooth", block: "start" });
     history.replaceState(null, "", `${location.pathname}${location.search}`);
   });
 });
