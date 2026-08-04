@@ -61,9 +61,13 @@ a { color: inherit; text-decoration: none; }
 .icon-button, .icon-text-button { border: 0; background: transparent; cursor: pointer; }
 .icon-button { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; color: var(--muted); }
 .icon-button:hover, .icon-button:focus-visible, .icon-text-button:hover { color: var(--primary); background: var(--surface-3); }
-.desktop-nav #themeButton { border: 1px solid var(--line); border-radius: 50%; background: var(--surface); }
+.desktop-nav #themeButton { width: 35px; height: 35px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); }
 .desktop-nav #themeButton:hover, .desktop-nav #themeButton:focus-visible { background: var(--surface-3); }
 .icon-text-button { height: 40px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border-radius: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
+#languageButton .material-symbols-outlined { color: var(--primary); font-size: 22px; }
+#themeIcon { font-size: 22px; }
+html[data-theme="light"] #themeIcon { color: #f59e0b; }
+html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .language-wrap { position: relative; }
 .language-menu { position: absolute; top: 44px; right: 0; width: 150px; padding: 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }
 .language-menu button { display: block; width: 100%; padding: 10px 12px; border: 0; border-radius: 6px; background: transparent; text-align: left; cursor: pointer; }
