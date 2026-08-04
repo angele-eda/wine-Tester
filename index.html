@@ -1,9 +1,8 @@
 <!doctype html>
-<html lang="en" class="notranslate" translate="no" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="google" content="notranslate">
   <meta name="description" content="Private, client-side tools for everyday file work.">
   <title>ConvertFiles24 | Private File Tools</title>
   <script>
@@ -27,17 +26,19 @@
       </a>
 
       <div class="desktop-nav">
-        <a class="nav-link active" href="#tools">All Tools</a>
-        <a class="nav-link" href="#privacy">Privacy</a>
+        <a class="nav-link active" href="#tools" data-i18n="navTools">All Tools</a>
+        <a class="nav-link" href="#privacy" data-i18n="navPrivacy">Privacy</a>
         <span class="nav-divider" aria-hidden="true"></span>
         <div class="language-wrap">
           <button class="icon-text-button" id="languageButton" type="button" aria-expanded="false" aria-controls="languageMenu">
             <span class="material-symbols-outlined" aria-hidden="true">language</span>
-            <span id="languageLabel">Language</span>
+            <span id="languageLabel">English</span>
           </button>
           <div class="language-menu" id="languageMenu" role="menu" hidden>
-            <button type="button" role="menuitem" data-language="English">English</button>
-            <button type="button" role="menuitem" data-language="&#54620;&#44397;&#50612;">&#54620;&#44397;&#50612;</button>
+            <button type="button" role="menuitem" data-lang="en" data-language="English">English</button>
+            <button type="button" role="menuitem" data-lang="ko" data-language="한국어">한국어</button>
+            <button type="button" role="menuitem" data-lang="ja" data-language="日本語">日本語</button>
+            <button type="button" role="menuitem" data-lang="es" data-language="Español">Español</button>
           </div>
         </div>
         <button class="icon-button" id="themeButton" type="button" aria-label="Switch to light mode" title="Switch theme">
@@ -50,8 +51,8 @@
       </button>
     </nav>
     <div class="mobile-nav" id="mobileNav" hidden>
-      <a href="#tools">All Tools</a>
-      <a href="#privacy">Privacy</a>
+      <a href="#tools" data-i18n="navTools">All Tools</a>
+      <a href="#privacy" data-i18n="navPrivacy">Privacy</a>
       <button type="button" id="mobileThemeButton">Switch theme</button>
     </div>
   </header>
@@ -60,66 +61,66 @@
     <section class="hero section-shell">
       <div class="trust-pill">
         <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-        Private by design
+        <span data-i18n="trustPill">Private by design</span>
       </div>
-      <h1>Fast, private file tools.</h1>
-      <p class="hero-copy">Image and PDF tools, right in your browser.</p>
+      <h1 data-i18n="heroTitle">Fast, private file tools.</h1>
+      <p class="hero-copy" data-i18n="heroCopy">Image and PDF tools, right in your browser.</p>
 
       <div class="benefit-grid" aria-label="Key benefits">
         <article class="benefit">
           <span class="benefit-icon material-symbols-outlined" aria-hidden="true">shield_person</span>
-          <div><h2>100% local processing</h2><p>Your files never leave your device. Privacy guaranteed.</p></div>
+          <div><h2 data-i18n="benefitLocalTitle">100% local processing</h2><p data-i18n="benefitLocalCopy">Your files never leave your device. Privacy guaranteed.</p></div>
         </article>
         <article class="benefit">
           <span class="benefit-icon material-symbols-outlined" aria-hidden="true">bolt</span>
-          <div><h2>Fast and easy</h2><p>No installation or sign-up. Start converting instantly.</p></div>
+          <div><h2 data-i18n="benefitFastTitle">Fast and easy</h2><p data-i18n="benefitFastCopy">No installation or sign-up. Start converting instantly.</p></div>
         </article>
         <article class="benefit">
           <span class="benefit-icon material-symbols-outlined" aria-hidden="true">check_circle</span>
-          <div><h2>Free to use</h2><p>Unlimited tools for desktop and mobile web users.</p></div>
+          <div><h2 data-i18n="benefitFreeTitle">Free to use</h2><p data-i18n="benefitFreeCopy">Unlimited tools for desktop and mobile web users.</p></div>
         </article>
       </div>
     </section>
 
     <section class="tools-section section-shell" id="tools">
       <div class="section-heading">
-        <div><h2>Choose a tool</h2><p>Simple tools for everyday file work</p></div>
-        <span class="count-pill">8 tools available</span>
+        <div><h2 data-i18n="chooseTitle">Choose a tool</h2><p data-i18n="chooseCopy">Simple tools for everyday file work</p></div>
+        <span class="count-pill" data-i18n="toolCount">8 tools available</span>
       </div>
 
       <div class="tool-grid">
         <button class="tool-card featured" type="button" data-tool="converter" data-accept="image/*,application/pdf">
-          <span class="popular-label">Most popular</span>
+          <span class="popular-label" data-i18n="popular">Most popular</span>
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">sync_alt</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>File Converter</strong><span>Convert JPG, PNG, WebP and PDF formats instantly with local processing.</span>
+          <strong data-i18n="converterName">File Converter</strong><span data-i18n="converterCopy">Convert JPG, PNG, WebP and PDF formats instantly with local processing.</span>
         </button>
         <button class="tool-card" type="button" data-tool="merge" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">call_merge</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>Merge PDF</strong><span>Combine multiple PDF documents into a single professional file.</span>
+          <strong data-i18n="mergeName">Merge PDF</strong><span data-i18n="mergeCopy">Combine multiple PDF documents into a single professional file.</span>
         </button>
         <button class="tool-card" type="button" data-tool="split" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">content_cut</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>Split PDF</strong><span>Separate PDF pages in seconds. Extract specific ranges or individual pages.</span>
+          <strong data-i18n="splitName">Split PDF</strong><span data-i18n="splitCopy">Separate PDF pages into individual files.</span>
         </button>
         <button class="tool-card" type="button" data-tool="compress" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">compress</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>Compress PDF</strong><span>Reduce file size while keeping high visual quality for sharing.</span>
+          <strong data-i18n="compressName">Compress PDF</strong><span data-i18n="compressCopy">Reduce file size while keeping high visual quality for sharing.</span>
         </button>
         <button class="tool-card" type="button" data-tool="pdf-jpg" data-accept="application/pdf">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">image</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>PDF to JPG / PNG</strong><span>Turn every PDF page into a high-quality JPG or PNG image.</span>
+          <strong data-i18n="pdfImageName">PDF to JPG / PNG</strong><span data-i18n="pdfImageCopy">Turn every PDF page into a high-quality JPG or PNG image.</span>
         </button>
         <button class="tool-card" type="button" data-tool="jpg-pdf" data-accept="image/jpeg,image/png,image/webp">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">picture_as_pdf</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>JPG / PNG to PDF</strong><span>Create one PDF from your JPG or PNG image sequence.</span>
+          <strong data-i18n="imagePdfName">JPG / PNG to PDF</strong><span data-i18n="imagePdfCopy">Create one PDF from your JPG or PNG image sequence.</span>
         </button>
         <button class="tool-card" type="button" data-tool="image-ico" data-accept="image/jpeg,image/png">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">web_asset</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>Image to ICO</strong><span>Convert JPG or PNG images into favicon-ready ICO files.</span>
+          <strong data-i18n="icoName">Image to ICO</strong><span data-i18n="icoCopy">Convert JPG or PNG images into favicon-ready ICO files.</span>
         </button>
         <button class="tool-card" type="button" data-tool="favicon" data-accept="image/*">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">app_shortcut</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
-          <strong>Favicon Generator</strong><span>Create website favicons from a JPG or PNG image.</span>
+          <strong data-i18n="faviconName">Favicon Generator</strong><span data-i18n="faviconCopy">Create website favicons from a JPG or PNG image.</span>
         </button>
       </div>
     </section>
@@ -128,8 +129,8 @@
       <div class="privacy-panel">
         <div class="privacy-copy">
           <span class="privacy-shield material-symbols-outlined" aria-hidden="true">verified_user</span>
-          <div><h2>Your files stay private</h2><p>Files are processed entirely in your browser and are never uploaded to our servers. We never see your data.</p>
-            <span class="secure-badge"><span></span>Client-side secure</span>
+          <div><h2 data-i18n="privacyTitle">Your files stay private</h2><p data-i18n="privacyCopy">Files are processed entirely in your browser and are never uploaded to our servers. We never see your data.</p>
+            <span class="secure-badge"><span class="secure-dot"></span><b data-i18n="privacyBadge">Client-side secure</b></span>
           </div>
         </div>
         <picture class="security-picture">
@@ -142,15 +143,15 @@
 
   <footer class="site-footer">
     <div class="footer-shell">
-      <div><a class="brand footer-brand" href="#top"><span class="brand-mark">C</span><span>ConvertFiles24</span></a><p>&copy; 2026 ConvertFiles24. Client-side excellence.</p></div>
-      <p class="footer-tagline">Fast, private file tools for everyone.</p>
-      <nav aria-label="Footer navigation"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav>
+      <div><a class="brand footer-brand" href="#top"><span class="brand-mark">C</span><span>ConvertFiles24</span></a><p data-i18n="footerCopyright">© 2026 ConvertFiles24. Client-side excellence.</p></div>
+      <p class="footer-tagline" data-i18n="footerTagline">Fast, private file tools for everyone.</p>
+      <nav aria-label="Footer navigation"><a href="/privacy/" data-i18n="privacyPolicy">Privacy Policy</a><a href="/terms/" data-i18n="terms">Terms of Service</a></nav>
     </div>
   </footer>
 
   <dialog class="workspace-dialog" id="workspaceDialog" aria-labelledby="workspaceTitle">
     <div class="dialog-header">
-      <div class="dialog-title-wrap"><span class="dialog-tool-icon material-symbols-outlined" id="dialogToolIcon">sync_alt</span><div><span class="eyebrow">Local workspace</span><h2 id="workspaceTitle">File Converter</h2></div></div>
+      <div class="dialog-title-wrap"><span class="dialog-tool-icon material-symbols-outlined" id="dialogToolIcon">sync_alt</span><div><span class="eyebrow" data-i18n="workspaceEyebrow">Local workspace</span><h2 id="workspaceTitle">File Converter</h2></div></div>
       <button class="icon-button" id="closeDialogButton" type="button" aria-label="Close workspace"><span class="material-symbols-outlined">close</span></button>
     </div>
     <div class="dialog-body" id="workspaceBody">
@@ -158,29 +159,30 @@
         <input id="fileInput" type="file" multiple hidden>
         <button class="drop-zone" id="dropZone" type="button">
           <span class="drop-icon material-symbols-outlined">upload_file</span>
-          <strong>Drop files here</strong>
-          <span>or choose files from this PC</span>
-          <span class="choose-files">Choose files</span>
+          <strong data-i18n="dropTitle">Drop files here</strong>
+          <span data-i18n="dropCopy">or choose files from this PC</span>
+          <span class="choose-files" data-i18n="chooseFiles">Choose files</span>
         </button>
-        <div class="queue-heading"><h3>Selected files</h3><button id="clearButton" type="button">Clear all</button></div>
-        <div class="file-list" id="fileList"><p class="empty-state">No files selected yet.</p></div>
+        <div class="queue-heading"><h3 data-i18n="selectedFiles">Selected files</h3><button id="clearButton" type="button" data-i18n="clearAll">Clear all</button></div>
+        <div class="file-list" id="fileList"><p class="empty-state" data-i18n="emptyFiles">No files selected yet.</p></div>
       </section>
       <aside class="settings-panel">
-        <h3>Output settings</h3>
-        <label><span>Output format</span><select id="formatSelect"><option>PNG</option><option>JPG</option><option>WebP</option><option>PDF</option></select></label>
-        <label id="qualitySetting"><span>Quality <output id="qualityOutput">92%</output></span><input id="qualityRange" type="range" min="40" max="100" value="92"></label>
-        <label class="checkbox-row"><input id="keepNames" type="checkbox" checked><span>Keep original file names</span></label>
-        <div class="local-note"><span class="material-symbols-outlined">lock</span><p><strong>Private processing</strong><br>Your files stay on this device.</p></div>
+        <h3 data-i18n="outputSettings">Output settings</h3>
+        <label><span data-i18n="outputFormat">Output format</span><select id="formatSelect"><option>PNG</option><option>JPG</option><option>WebP</option><option>PDF</option></select></label>
+        <label id="qualitySetting"><span><span data-i18n="quality">Quality</span> <output id="qualityOutput">92%</output></span><input id="qualityRange" type="range" min="40" max="100" value="92"></label>
+        <label class="checkbox-row"><input id="keepNames" type="checkbox" checked><span data-i18n="keepNames">Keep original file names</span></label>
+        <div class="local-note"><span class="material-symbols-outlined">lock</span><p><strong data-i18n="privateProcessing">Private processing</strong><br><span data-i18n="privateCopy">Your files stay on this device.</span></p></div>
         <button class="convert-button" id="convertButton" type="button" disabled><span id="convertLabel">Convert files</span><span class="material-symbols-outlined">arrow_forward</span></button>
       </aside>
     </div>
-    <div class="success-panel" id="successPanel" hidden><span class="material-symbols-outlined">task_alt</span><div><strong>Processing complete</strong><p>Your files are ready. This prototype keeps all processing on-device.</p></div><button type="button" id="downloadButton"><span class="material-symbols-outlined">download</span>Download</button></div>
+    <div class="success-panel" id="successPanel" hidden><span class="material-symbols-outlined">task_alt</span><div><strong data-i18n="complete">Processing complete</strong><p data-i18n="completeCopy">Your files are ready. All processing stayed on this device.</p></div><button type="button" id="downloadButton"><span class="material-symbols-outlined">download</span><span data-i18n="download">Download</span></button></div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="assets/pdfjs/pdf.min.js?v=20260804-unified-tools"></script>
   <script src="assets/jszip/jszip.min.js?v=20260804-unified-tools"></script>
-  <script src="client.js?v=20260804-light-default"></script>
+  <script src="assets/i18n.js?v=20260804-home-i18n"></script>
+  <script src="client.js?v=20260804-home-i18n"></script>
 </body>
 </html>

@@ -1,13 +1,25 @@
 const tools = {
-  converter: { name: "File Converter", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"], accept: "image/*,application/pdf", multiple: true, quality: true },
-  merge: { name: "Merge PDF", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false },
-  split: { name: "Split PDF", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false },
-  compress: { name: "Compress PDF", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true },
-  "pdf-jpg": { name: "PDF to JPG / PNG", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
-  "jpg-pdf": { name: "JPG / PNG to PDF", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
-  "image-ico": { name: "Image to ICO", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
-  favicon: { name: "Favicon Generator", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true }
+  converter: { nameKey: "converterName", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"], accept: "image/*,application/pdf", multiple: true, quality: true },
+  merge: { nameKey: "mergeName", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false },
+  split: { nameKey: "splitName", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false },
+  compress: { nameKey: "compressName", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true },
+  "pdf-jpg": { nameKey: "pdfImageName", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
+  "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
+  "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
+  favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true }
 };
+
+const translations = window.CF24_I18N || {};
+let currentLanguage = localStorage.getItem("convertfiles24-language");
+if (!translations[currentLanguage]) currentLanguage = "en";
+
+function tr(key, variables = {}) {
+  let value = translations[currentLanguage]?.[key] || translations.en?.[key] || key;
+  Object.entries(variables).forEach(([name, replacement]) => {
+    value = value.replaceAll(`{${name}}`, String(replacement));
+  });
+  return value;
+}
 
 const root = document.documentElement;
 const themeButton = document.querySelector("#themeButton");
@@ -61,8 +73,8 @@ function setTheme(theme) {
   localStorage.setItem("convertfiles24-theme", theme);
   const dark = theme === "dark";
   themeIcon.textContent = dark ? "dark_mode" : "light_mode";
-  themeButton.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
-  mobileThemeButton.textContent = dark ? "Switch to light mode" : "Switch to dark mode";
+  themeButton.setAttribute("aria-label", dark ? tr("switchLight") : tr("switchDark"));
+  mobileThemeButton.textContent = dark ? tr("switchLight") : tr("switchDark");
   securityImage.src = dark ? "assets/security-dark.png" : "assets/security-light.png";
   securitySource.srcset = securityImage.src;
 }
@@ -76,11 +88,24 @@ languageButton.addEventListener("click", () => {
 languageMenu.addEventListener("click", (event) => {
   const option = event.target.closest("[data-language]");
   if (!option) return;
-  languageLabel.textContent = option.dataset.language;
+  applyLanguage(option.dataset.lang || "en", true);
   languageMenu.hidden = true;
   languageButton.setAttribute("aria-expanded", "false");
-  showToast(option.dataset.language === "한국어" ? "한국어 번역은 다음 단계에서 연결됩니다." : "Language set to English.");
 });
+
+function applyLanguage(language, remember = false) {
+  currentLanguage = translations[language] ? language : "en";
+  document.documentElement.lang = currentLanguage;
+  if (remember) localStorage.setItem("convertfiles24-language", currentLanguage);
+  languageLabel.textContent = tr("languageName");
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = tr(element.dataset.i18n);
+  });
+  if (dialog.open) document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
+  document.querySelector("#closeDialogButton").setAttribute("aria-label", tr("closeWorkspace"));
+  setTheme(root.dataset.theme === "dark" ? "dark" : "light");
+  renderFiles();
+}
 
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".language-wrap")) {
@@ -119,7 +144,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 
 function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
-  document.querySelector("#workspaceTitle").textContent = currentTool.name;
+  document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
   document.querySelector("#dialogToolIcon").textContent = currentTool.icon;
   workspaceBody.hidden = false;
   successPanel.hidden = true;
@@ -163,27 +188,27 @@ convertButton.addEventListener("click", async () => {
   if (!selectedFiles.length || convertButton.classList.contains("processing")) return;
   convertButton.classList.add("processing");
   convertButton.disabled = true;
-  convertLabel.textContent = "Processing locally...";
+  convertLabel.textContent = tr("processing");
   successPanel.hidden = true;
   downloadResult = null;
   try {
     downloadResult = await processFiles();
     convertButton.classList.remove("processing");
     convertButton.disabled = false;
-    convertLabel.textContent = `Convert ${selectedFiles.length} ${selectedFiles.length === 1 ? "file" : "files"}`;
+    convertLabel.textContent = selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length });
     successPanel.hidden = false;
-    document.querySelectorAll(".file-status").forEach((status) => { status.textContent = "READY"; });
+    document.querySelectorAll(".file-status").forEach((status) => { status.textContent = tr("ready"); });
   } catch (error) {
     convertButton.classList.remove("processing");
     convertButton.disabled = false;
-    convertLabel.textContent = `Convert ${selectedFiles.length} ${selectedFiles.length === 1 ? "file" : "files"}`;
+    convertLabel.textContent = selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length });
     showToast(error.message || "Could not process this file.");
   }
 });
 
 document.querySelector("#downloadButton").addEventListener("click", () => {
   if (!downloadResult) {
-    showToast("Convert files first.");
+    showToast(tr("convertFiles"));
     return;
   }
   downloadBlob(downloadResult.blob, downloadResult.name);
@@ -268,25 +293,25 @@ async function passthroughPdf(file) {
 }
 
 function requirePdfLib() {
-  if (!window.PDFLib) throw new Error("PDF tools are still loading. Please try again.");
+  if (!window.PDFLib) throw new Error(`PDF tools are still loading. ${tr("tryAgain")}`);
   return window.PDFLib;
 }
 
 function requirePdfJs() {
-  if (!window.pdfjsLib) throw new Error("PDF preview tools are still loading. Please try again.");
+  if (!window.pdfjsLib) throw new Error(`PDF preview tools are still loading. ${tr("tryAgain")}`);
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = "assets/pdfjs/pdf.worker.min.js";
   return window.pdfjsLib;
 }
 
 function pdfFiles(files) {
   const list = files.filter((file) => file.type === "application/pdf" || /\.pdf$/i.test(file.name));
-  if (!list.length) throw new Error("Choose a PDF file first.");
+  if (!list.length) throw new Error(tr("choosePdf"));
   return list;
 }
 
 async function createPdfFromImages(files) {
   const images = files.filter((file) => file.type.startsWith("image/"));
-  if (!images.length) throw new Error("Choose a JPG, PNG or WebP image first.");
+  if (!images.length) throw new Error(tr("chooseImage"));
   const { PDFDocument } = requirePdfLib();
   const pdf = await PDFDocument.create();
   for (const file of images) {
@@ -301,7 +326,7 @@ async function createPdfFromImages(files) {
 
 async function mergePdfFiles(files) {
   const inputs = pdfFiles(files);
-  if (inputs.length < 2) throw new Error("Choose at least two PDF files to merge.");
+  if (inputs.length < 2) throw new Error(tr("mergeTwo"));
   const { PDFDocument } = requirePdfLib();
   const output = await PDFDocument.create();
   for (const file of inputs) {
@@ -316,7 +341,7 @@ async function mergePdfFiles(files) {
 async function splitPdfFile(file) {
   const input = pdfFiles([file])[0];
   const { PDFDocument } = requirePdfLib();
-  if (!window.JSZip) throw new Error("ZIP tools are still loading. Please try again.");
+  if (!window.JSZip) throw new Error(`ZIP tools are still loading. ${tr("tryAgain")}`);
   const source = await PDFDocument.load(await input.arrayBuffer());
   const zip = new JSZip();
   for (let index = 0; index < source.getPageCount(); index += 1) {
@@ -354,7 +379,7 @@ async function pdfToImages(file, format, quality) {
     const blob = await renderPdfPage(await pdf.getPage(1), 1.7, mime, quality);
     return { blob, name: `${baseName(input.name)}-page-1.${extension}` };
   }
-  if (!window.JSZip) throw new Error("ZIP tools are still loading. Please try again.");
+  if (!window.JSZip) throw new Error(`ZIP tools are still loading. ${tr("tryAgain")}`);
   const zip = new JSZip();
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const blob = await renderPdfPage(await pdf.getPage(pageNumber), 1.7, mime, quality);
@@ -384,7 +409,7 @@ async function compressPdfFile(file, quality) {
 
 function firstImageFile() {
   const imageFile = selectedFiles.find((file) => file.type.startsWith("image/"));
-  if (!imageFile) throw new Error("Choose a JPG or PNG image first.");
+  if (!imageFile) throw new Error(tr("chooseImage"));
   return imageFile;
 }
 
@@ -519,16 +544,16 @@ function buildOutputName(inputName, format) {
 
 function renderFiles() {
   convertButton.disabled = selectedFiles.length === 0;
-  convertLabel.textContent = selectedFiles.length ? `Convert ${selectedFiles.length} ${selectedFiles.length === 1 ? "file" : "files"}` : "Convert files";
+  convertLabel.textContent = selectedFiles.length ? (selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length })) : tr("convertFiles");
   if (!selectedFiles.length) {
-    fileList.innerHTML = '<p class="empty-state">No files selected yet.</p>';
+    fileList.innerHTML = `<p class="empty-state">${escapeHtml(tr("emptyFiles"))}</p>`;
     return;
   }
   fileList.innerHTML = selectedFiles.map((file) => `
     <div class="file-row">
       <span class="file-type">${escapeHtml(extension(file.name))}</span>
-      <span><strong title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</strong><small>${formatBytes(file.size)} · processed locally</small></span>
-      <span class="file-status">QUEUED</span>
+      <span><strong title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</strong><small>${formatBytes(file.size)} · ${escapeHtml(tr("localFile"))}</small></span>
+      <span class="file-status">${escapeHtml(tr("queued"))}</span>
     </div>`).join("");
 }
 
@@ -554,3 +579,5 @@ function showToast(message) {
   toast.hidden = false;
   toastTimer = window.setTimeout(() => { toast.hidden = true; }, 2600);
 }
+
+applyLanguage(currentLanguage, false);
