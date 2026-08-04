@@ -25,7 +25,7 @@
       quality: "Quality", keepNames: "Keep original file names", privateProcessing: "Private processing", privateCopy: "Your files stay on this device.",
       complete: "Processing complete", completeCopy: "Your files are ready. All processing stayed on this device.", download: "Download",
       convertFiles: "Convert files", convertOne: "Convert 1 file", convertMany: "Convert {count} files", processing: "Processing locally...", ready: "READY", queued: "QUEUED",
-      localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", closeWorkspace: "Close workspace"
+      localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", mobileLightMode: "Light mode", mobileDarkMode: "Dark mode", closeWorkspace: "Close workspace"
     },
     ko: {
       mobileLanguageLabel: "언어",
@@ -50,7 +50,7 @@
       quality: "품질", keepNames: "원본 파일명 유지", privateProcessing: "안전한 로컬 처리", privateCopy: "파일은 이 기기에서만 처리됩니다.",
       complete: "처리 완료", completeCopy: "파일이 준비되었습니다. 모든 처리는 이 기기에서 완료되었습니다.", download: "다운로드",
       convertFiles: "파일 변환", convertOne: "파일 1개 변환", convertMany: "파일 {count}개 변환", processing: "기기에서 처리 중...", ready: "완료", queued: "대기",
-      localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", closeWorkspace: "작업창 닫기"
+      localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", mobileLightMode: "라이트 모드", mobileDarkMode: "다크 모드", closeWorkspace: "작업창 닫기"
     },
     ja: {
       mobileLanguageLabel: "言語",
@@ -75,7 +75,7 @@
       quality: "品質", keepNames: "元のファイル名を保持", privateProcessing: "安全なローカル処理", privateCopy: "ファイルはこの端末内だけで処理されます。",
       complete: "処理完了", completeCopy: "ファイルの準備ができました。処理はすべて端末内で完了しました。", download: "ダウンロード",
       convertFiles: "ファイルを変換", convertOne: "1ファイルを変換", convertMany: "{count}ファイルを変換", processing: "端末内で処理中...", ready: "完了", queued: "待機",
-      localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", closeWorkspace: "作業画面を閉じる"
+      localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", mobileLightMode: "ライトモード", mobileDarkMode: "ダークモード", closeWorkspace: "作業画面を閉じる"
     },
     es: {
       mobileLanguageLabel: "Idioma",
@@ -100,7 +100,7 @@
       quality: "Calidad", keepNames: "Conservar nombres originales", privateProcessing: "Procesamiento privado", privateCopy: "Tus archivos permanecen en este dispositivo.",
       complete: "Proceso completado", completeCopy: "Tus archivos están listos. Todo se procesó en este dispositivo.", download: "Descargar",
       convertFiles: "Convertir archivos", convertOne: "Convertir 1 archivo", convertMany: "Convertir {count} archivos", processing: "Procesando localmente...", ready: "LISTO", queued: "EN COLA",
-      localFile: "procesado localmente", choosePdf: "Elige primero un archivo PDF.", chooseImage: "Elige primero una imagen JPG o PNG.", mergeTwo: "Elige al menos dos archivos PDF para unir.", tryAgain: "Inténtalo de nuevo.", switchLight: "Cambiar al modo claro", switchDark: "Cambiar al modo oscuro", closeWorkspace: "Cerrar espacio de trabajo"
+      localFile: "procesado localmente", choosePdf: "Elige primero un archivo PDF.", chooseImage: "Elige primero una imagen JPG o PNG.", mergeTwo: "Elige al menos dos archivos PDF para unir.", tryAgain: "Inténtalo de nuevo.", switchLight: "Cambiar al modo claro", switchDark: "Cambiar al modo oscuro", mobileLightMode: "Modo claro", mobileDarkMode: "Modo oscuro", closeWorkspace: "Cerrar espacio de trabajo"
     }
   };
 })();

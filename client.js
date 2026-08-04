@@ -104,7 +104,7 @@ function setTheme(theme) {
   const dark = theme === "dark";
   themeIcon.textContent = dark ? "dark_mode" : "light_mode";
   themeButton.setAttribute("aria-label", dark ? tr("switchLight") : tr("switchDark"));
-  mobileThemeButton.textContent = dark ? tr("switchLight") : tr("switchDark");
+  mobileThemeButton.textContent = dark ? tr("mobileLightMode") : tr("mobileDarkMode");
   securityImage.src = dark ? "assets/security-dark.png" : "assets/security-light.png";
   securitySource.srcset = securityImage.src;
 }
