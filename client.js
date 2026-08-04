@@ -32,6 +32,7 @@ const languageMenu = document.querySelector("#languageMenu");
 const languageLabel = document.querySelector("#languageLabel");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
+const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
 const privacySection = document.querySelector("#privacy");
@@ -126,6 +127,7 @@ function applyLanguage(language, remember = false) {
   document.documentElement.lang = currentLanguage;
   if (remember) localStorage.setItem("convertfiles24-language", currentLanguage);
   languageLabel.textContent = tr("languageName");
+  mobileLanguageSelect.value = currentLanguage;
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = tr(element.dataset.i18n);
   });
@@ -148,7 +150,14 @@ mobileMenuButton.addEventListener("click", () => {
   mobileNav.hidden = open;
 });
 
-mobileNav.addEventListener("click", () => {
+mobileNav.addEventListener("click", (event) => {
+  if (!event.target.closest('a, #mobileThemeButton')) return;
+  mobileNav.hidden = true;
+  mobileMenuButton.setAttribute("aria-expanded", "false");
+});
+
+mobileLanguageSelect.addEventListener("change", () => {
+  applyLanguage(mobileLanguageSelect.value, true);
   mobileNav.hidden = true;
   mobileMenuButton.setAttribute("aria-expanded", "false");
 });

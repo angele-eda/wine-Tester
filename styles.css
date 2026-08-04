@@ -192,6 +192,10 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
   .mobile-nav { position: absolute; top: 64px; left: 0; right: 0; padding: 12px 24px 18px; border-bottom: 1px solid var(--line); background: var(--header); }
   .mobile-nav:not([hidden]) { display: grid; gap: 4px; }
   .mobile-nav a, .mobile-nav button { padding: 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); text-align: left; font-weight: 700; }
+  .mobile-language-control { padding: 12px; display: grid; gap: 9px; color: var(--muted); font-size: 14px; font-weight: 700; }
+  .mobile-language-heading { display: flex; align-items: center; gap: 8px; }
+  .mobile-language-heading .material-symbols-outlined { color: var(--primary); font-size: 20px; }
+  .mobile-language-control select { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font: 500 14px/1 var(--font-ui); }
   .benefit-grid, .tool-grid { grid-template-columns: 1fr 1fr; }
   .privacy-panel { grid-template-columns: 1fr 280px; gap: 30px; }
   .privacy-copy { padding-left: 0; }

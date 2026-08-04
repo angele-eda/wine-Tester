@@ -3,6 +3,7 @@
 
   window.CF24_I18N = {
     en: {
+      mobileLanguageLabel: "Language",
       languageName: "English", navTools: "All Tools", navPrivacy: "Privacy", trustPill: "Private by design",
       heroTitle: "Fast, private file tools.", heroCopy: "Image and PDF tools, right in your browser.",
       benefitLocalTitle: "100% local processing", benefitLocalCopy: "Your files never leave your device. Privacy guaranteed.",
@@ -27,6 +28,7 @@
       localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", closeWorkspace: "Close workspace"
     },
     ko: {
+      mobileLanguageLabel: "언어",
       languageName: "한국어", navTools: "모든 도구", navPrivacy: "개인정보 보호", trustPill: "개인정보 보호 설계",
       heroTitle: "빠르고 안전한 파일 도구", heroCopy: "이미지와 PDF를 브라우저에서 바로 처리하세요.",
       benefitLocalTitle: "100% 로컬 처리", benefitLocalCopy: "파일은 기기를 떠나지 않으며 서버에 업로드되지 않습니다.",
@@ -51,6 +53,7 @@
       localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", closeWorkspace: "작업창 닫기"
     },
     ja: {
+      mobileLanguageLabel: "言語",
       languageName: "日本語", navTools: "すべてのツール", navPrivacy: "プライバシー", trustPill: "プライバシー重視",
       heroTitle: "高速で安全なファイルツール", heroCopy: "画像とPDFをブラウザですぐに処理できます。",
       benefitLocalTitle: "100% ローカル処理", benefitLocalCopy: "ファイルは端末から外に出ず、サーバーへ送信されません。",
@@ -75,6 +78,7 @@
       localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", closeWorkspace: "作業画面を閉じる"
     },
     es: {
+      mobileLanguageLabel: "Idioma",
       languageName: "Español", navTools: "Todas las herramientas", navPrivacy: "Privacidad", trustPill: "Privacidad desde el diseño",
       heroTitle: "Herramientas rápidas y privadas", heroCopy: "Trabaja con imágenes y PDF directamente en tu navegador.",
       benefitLocalTitle: "Procesamiento 100% local", benefitLocalCopy: "Tus archivos nunca salen de tu dispositivo ni se suben al servidor.",
