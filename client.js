@@ -32,6 +32,7 @@ const languageMenu = document.querySelector("#languageMenu");
 const languageLabel = document.querySelector("#languageLabel");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
+const mobileNavDismiss = document.querySelector("#mobileNavDismiss");
 const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
@@ -144,22 +145,26 @@ document.addEventListener("click", (event) => {
   }
 });
 
+function setMobileMenu(open) {
+  mobileMenuButton.setAttribute("aria-expanded", String(open));
+  mobileNav.hidden = !open;
+  mobileNavDismiss.hidden = !open;
+}
+
 mobileMenuButton.addEventListener("click", () => {
-  const open = mobileMenuButton.getAttribute("aria-expanded") === "true";
-  mobileMenuButton.setAttribute("aria-expanded", String(!open));
-  mobileNav.hidden = open;
+  setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") !== "true");
 });
+
+mobileNavDismiss.addEventListener("click", () => setMobileMenu(false));
 
 mobileNav.addEventListener("click", (event) => {
   if (!event.target.closest('a, #mobileThemeButton')) return;
-  mobileNav.hidden = true;
-  mobileMenuButton.setAttribute("aria-expanded", "false");
+  setMobileMenu(false);
 });
 
 mobileLanguageSelect.addEventListener("change", () => {
   applyLanguage(mobileLanguageSelect.value, true);
-  mobileNav.hidden = true;
-  mobileMenuButton.setAttribute("aria-expanded", "false");
+  setMobileMenu(false);
 });
 
 document.querySelectorAll(".tool-card").forEach((card) => {
