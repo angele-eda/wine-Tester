@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="ConvertFiles24">
+  <circle cx="64" cy="64" r="56" fill="#0b5cff"/>
+  <g fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 58c5-19 22-31 42-27 11 2 20 9 25 18"/>
+    <path d="M98 36v15H83"/>
+    <path d="M97 70c-5 19-22 31-42 27-11-2-20-9-25-18"/>
+    <path d="M30 92V77h15"/>
+  </g>
+</svg>
