@@ -65,7 +65,7 @@ a { color: inherit; text-decoration: none; }
 .desktop-nav #themeButton:hover, .desktop-nav #themeButton:focus-visible { background: var(--surface-3); }
 .icon-text-button { height: 40px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border-radius: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
 #languageButton .material-symbols-outlined { color: var(--primary); font-size: 22px; }
-#themeIcon { font-size: 22px; }
+#themeIcon { font-size: 18px; }
 html[data-theme="light"] #themeIcon { color: #f59e0b; }
 html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .language-wrap { position: relative; }
