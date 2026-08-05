@@ -9,17 +9,17 @@
 
 ## Full-view comparison evidence
 
-The reference and implementation were opened together. The right-side menu remains an opaque panel while the page behind it is visibly darkened and softly blurred. The existing panel width, top offset, navigation order, language control, typography, and page layout are preserved.
+The reference and implementation were opened together. The right-side menu remains an opaque panel while the page behind it is lightly darkened and softened with a minimal blur. The existing panel width, top offset, navigation order, language control, typography, and page layout are preserved.
 
 ## Focused region comparison evidence
 
-The open menu occupies 240px at a 360px viewport, matching the existing two-thirds mobile rule. Computed styles confirm a full-viewport overlay, `rgba(15, 23, 42, 0.48)` in light mode, `rgba(0, 0, 0, 0.62)` in dark mode, and `blur(2px)` in both modes. The panel computes to opaque white in light mode and `rgb(15, 23, 42)` in dark mode.
+The open menu occupies 240px at a 360px viewport, matching the existing two-thirds mobile rule. Computed styles confirm a full-viewport `rgba(0, 0, 0, 0.35)` overlay and `blur(1px)` in both themes. The panel computes to opaque white in light mode and `rgb(15, 23, 42)` in dark mode.
 
 ## Required fidelity surfaces
 
 - Fonts and typography: existing menu typography, wrapping, sizes, weights, and hierarchy are unchanged.
 - Spacing and layout rhythm: existing panel dimensions, padding, top offset, border radius, and navigation spacing are unchanged.
-- Colors and visual tokens: requested overlay alpha values and panel colors are exact; the shadow is `-12px 0 32px rgba(15, 23, 42, .18)`.
+- Colors and visual tokens: the revised 35% overlay, 1px blur, and panel colors are exact; the shadow is `-12px 0 32px rgba(15, 23, 42, .18)`.
 - Image quality and asset fidelity: the existing brand logo and Material Symbols icons are unchanged; no new raster or substitute assets were introduced.
 - Copy and content: all existing localized menu labels and controls are unchanged.
 
