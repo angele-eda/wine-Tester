@@ -56,6 +56,7 @@ const toast = document.querySelector("#toast");
 document.querySelectorAll(".material-symbols-outlined").forEach((icon) => {
   icon.classList.add("notranslate");
   icon.setAttribute("translate", "no");
+  icon.setAttribute("aria-hidden", "true");
 });
 
 let selectedFiles = [];
@@ -135,6 +136,7 @@ function applyLanguage(language, remember = false) {
   if (dialog.open) document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
   document.querySelector("#closeDialogButton").setAttribute("aria-label", tr("closeWorkspace"));
   setTheme(root.dataset.theme === "dark" ? "dark" : "light");
+  setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") === "true");
   renderFiles();
 }
 
@@ -147,6 +149,7 @@ document.addEventListener("click", (event) => {
 
 function setMobileMenu(open) {
   mobileMenuButton.setAttribute("aria-expanded", String(open));
+  mobileMenuButton.setAttribute("aria-label", tr(open ? "closeNavigation" : "openNavigation"));
   mobileNav.hidden = !open;
   mobileNavDismiss.hidden = !open;
 }
@@ -165,6 +168,19 @@ mobileNav.addEventListener("click", (event) => {
 mobileLanguageSelect.addEventListener("change", () => {
   applyLanguage(mobileLanguageSelect.value, true);
   setMobileMenu(false);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (!languageMenu.hidden) {
+    languageMenu.hidden = true;
+    languageButton.setAttribute("aria-expanded", "false");
+    languageButton.focus();
+  }
+  if (mobileMenuButton.getAttribute("aria-expanded") === "true") {
+    setMobileMenu(false);
+    mobileMenuButton.focus();
+  }
 });
 
 document.querySelectorAll(".tool-card").forEach((card) => {
