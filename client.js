@@ -28,8 +28,6 @@ const root = document.documentElement;
 const themeButton = document.querySelector("#themeButton");
 const mobileThemeButton = document.querySelector("#mobileThemeButton");
 const themeIcon = document.querySelector("#themeIcon");
-const securityImage = document.querySelector("#securityImage");
-const securitySource = document.querySelector("#securitySource");
 const languageButton = document.querySelector("#languageButton");
 const languageMenu = document.querySelector("#languageMenu");
 const languageLabel = document.querySelector("#languageLabel");
@@ -109,8 +107,6 @@ function setTheme(theme) {
   themeIcon.textContent = dark ? "dark_mode" : "light_mode";
   themeButton.setAttribute("aria-label", dark ? tr("switchLight") : tr("switchDark"));
   mobileThemeButton.textContent = dark ? tr("mobileLightMode") : tr("mobileDarkMode");
-  securityImage.src = dark ? "assets/security-dark.png" : "assets/security-light.png";
-  securitySource.srcset = securityImage.src;
 }
 
 languageButton.addEventListener("click", () => {
