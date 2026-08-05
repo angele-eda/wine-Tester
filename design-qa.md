@@ -1,4 +1,4 @@
-# Design QA — Mobile Menu Overlay
+# Design QA — Mobile Menu Overlay and Header
 
 - Source visual truth: `C:\Users\원대\Downloads\Screenshot_20260805_175035_Chrome.jpg`
 - Implementation screenshots: `qa/mobile-menu-overlay-light.png`, `qa/mobile-menu-overlay-dark.png`
@@ -9,11 +9,13 @@
 
 ## Full-view comparison evidence
 
-The reference and implementation were opened together. The right-side menu remains an opaque panel while the page behind it is lightly darkened and softened with a minimal blur. The existing panel width, top offset, navigation order, language control, typography, and page layout are preserved.
+The right-side menu remains an opaque panel while the page behind it is lightly darkened and softened with a minimal blur. A dedicated 72px menu header removes the empty upper area without changing the panel width, top offset, navigation order, language control, or page layout.
 
 ## Focused region comparison evidence
 
 The open menu occupies 240px at a 360px viewport, matching the existing two-thirds mobile rule. Computed styles confirm a full-viewport `rgba(0, 0, 0, 0.35)` overlay and `blur(1px)` in both themes. The panel computes to opaque white in light mode and `rgb(15, 23, 42)` in dark mode.
+
+The new header computes to 72px high with `rgb(243, 247, 255)` and `rgb(220, 230, 245)` as its light background and lower border. Dark mode uses `rgb(24, 36, 59)`, visibly lighter than the `rgb(15, 23, 42)` panel. Menu content begins 24px below the header.
 
 ## Required fidelity surfaces
 
@@ -26,6 +28,7 @@ The open menu occupies 240px at a 360px viewport, matching the existing two-thir
 ## Interaction verification
 
 - Tapping the overlay closes the menu.
+- Tapping the header X closes the menu and returns keyboard focus to the hamburger button.
 - Opening the menu adds the `mobile-menu-open` state and sets HTML/body overflow to hidden.
 - Closing the menu removes the state and restores body overflow to visible.
 - Escape, navigation-link, theme, and language close behavior remain connected through the existing menu state function.

@@ -238,9 +238,15 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
   .mobile-menu-button { display: grid; }
   .mobile-nav-dismiss:not([hidden]) { position: fixed; inset: 0; z-index: 18; display: block; border: 0; background: rgba(0, 0, 0, .35); backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px); cursor: default; }
   html[data-theme="dark"] .mobile-nav-dismiss:not([hidden]) { background: rgba(0, 0, 0, .35); }
-  .mobile-nav { position: fixed; top: 64px; right: 0; z-index: 19; width: min(66.666vw, 320px); max-height: calc(100dvh - 64px); padding: 18px 16px; overflow-y: auto; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: 0 0 0 12px; background: #fff; box-shadow: -12px 0 32px rgba(15, 23, 42, .18); }
+  .mobile-nav { position: fixed; top: 64px; right: 0; z-index: 19; width: min(66.666vw, 320px); max-height: calc(100dvh - 64px); padding: 0; overflow-y: auto; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: 0 0 0 12px; background: #fff; box-shadow: -12px 0 32px rgba(15, 23, 42, .18); }
   html[data-theme="dark"] .mobile-nav { background: #0f172a; }
-  .mobile-nav:not([hidden]) { display: grid; grid-auto-rows: max-content; align-content: start; gap: 4px; }
+  .mobile-nav:not([hidden]) { display: block; }
+  .mobile-menu-header { height: 72px; padding: 0 14px 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dce6f5; background: #f3f7ff; }
+  .mobile-menu-header strong { font-size: 16px; font-weight: 750; }
+  .mobile-menu-header .mobile-menu-close { width: 42px; height: 42px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+  .mobile-menu-header .mobile-menu-close:hover, .mobile-menu-header .mobile-menu-close:focus-visible { background: rgba(53, 106, 230, .1); color: var(--primary); outline: none; }
+  html[data-theme="dark"] .mobile-menu-header { border-bottom-color: rgba(173, 190, 220, .18); background: #18243b; }
+  .mobile-menu-content { padding: 24px 16px 18px; display: grid; grid-auto-rows: max-content; align-content: start; gap: 4px; }
   .mobile-nav a, .mobile-nav button { padding: 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); text-align: left; font-weight: 700; }
   .mobile-language-control { padding: 12px; display: grid; gap: 9px; color: var(--muted); font-size: 14px; font-weight: 700; }
   .mobile-language-heading { display: flex; align-items: center; gap: 8px; }

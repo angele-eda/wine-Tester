@@ -35,6 +35,7 @@ const languageLabel = document.querySelector("#languageLabel");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
 const mobileNavDismiss = document.querySelector("#mobileNavDismiss");
+const mobileMenuClose = document.querySelector("#mobileMenuClose");
 const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
@@ -151,6 +152,7 @@ document.addEventListener("click", (event) => {
 function setMobileMenu(open) {
   mobileMenuButton.setAttribute("aria-expanded", String(open));
   mobileMenuButton.setAttribute("aria-label", tr(open ? "closeNavigation" : "openNavigation"));
+  mobileMenuClose.setAttribute("aria-label", tr("closeNavigation"));
   mobileNav.hidden = !open;
   mobileNavDismiss.hidden = !open;
   root.classList.toggle("mobile-menu-open", open);
@@ -161,6 +163,10 @@ mobileMenuButton.addEventListener("click", () => {
 });
 
 mobileNavDismiss.addEventListener("click", () => setMobileMenu(false));
+mobileMenuClose.addEventListener("click", () => {
+  setMobileMenu(false);
+  mobileMenuButton.focus();
+});
 
 mobileNav.addEventListener("click", (event) => {
   if (!event.target.closest('a, #mobileThemeButton')) return;
