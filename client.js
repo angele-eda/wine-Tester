@@ -11,7 +11,10 @@ const tools = {
 
 const translations = window.CF24_I18N || {};
 let currentLanguage = localStorage.getItem("convertfiles24-language");
-if (!translations[currentLanguage]) currentLanguage = "en";
+if (!translations[currentLanguage]) {
+  const browserLanguage = (navigator.language || "en").split("-")[0].toLowerCase();
+  currentLanguage = translations[browserLanguage] ? browserLanguage : "en";
+}
 
 function tr(key, variables = {}) {
   let value = translations[currentLanguage]?.[key] || translations.en?.[key] || key;

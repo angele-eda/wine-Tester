@@ -46,6 +46,38 @@ No actionable P0, P1, or P2 differences remain. The full source lockup is intent
 
 final result: passed
 
+## Mobile Korean title wrapping update — 2026-08-05
+
+- Source visual truth: `G:\내 드라이브\Screenshot_20260805_143219_Chrome.jpg`
+- Implementation screenshot: `qa/mobile-language-wrap-final.png`
+- Source pixels: 1048 px wide smartphone Chrome capture; implementation pixels: 360 × 800 px
+- CSS viewport: 360 × 800 px, density 1 for the implementation capture
+- State: dark theme, Korean browser locale, mobile navigation closed
+
+### Full-view comparison evidence
+
+The source capture showed Chrome-generated Korean rather than the site's curated Korean strings: `빠르고 안전한 파일 관리 도구` wrapped with `도구` split across lines, while supporting copy included machine-translated phrases such as `100% 현지 처리`. The revised implementation selects the built-in Korean locale on Korean devices and renders the intended `빠르고 안전한 파일 도구` in two balanced lines.
+
+### Focused-region comparison evidence
+
+At 360 CSS px, the hero heading measures 313 px wide and 78.06 px high with a 39.04 px line height. Computed styles report `word-break: keep-all` and `overflow-wrap: normal`; `도구` remains intact on the second line. The page reports `lang="ko"` and includes Google's `notranslate` directive, preventing a second machine-translation pass.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing mobile type scale and weight retained; only Korean word-boundary behavior changed.
+- Spacing and layout rhythm: existing hero width, padding, and section rhythm retained.
+- Colors and visual tokens: unchanged.
+- Image quality and asset fidelity: logo and icons remain sharp and unchanged.
+- Copy and content: curated Korean strings now render by default for Korean browser locales instead of Chrome-generated translations.
+
+### Findings and comparison history
+
+- Earlier P2: machine translation lengthened the title and split `도구` across lines.
+- Fix: choose a supported browser locale when no preference is stored, advertise that locale before first paint, disable Google auto-translation, and keep Korean words intact at the mobile breakpoint.
+- Post-fix evidence: `qa/mobile-language-wrap-final.png`; the heading is `빠르고 안전한 파일 도구`, `도구` stays together, and no browser console warnings or errors were detected.
+
+final result: passed
+
 ## Navigation update — 2026-08-04
 
 - Source visual truth: `C:\Users\원대\AppData\Local\Temp\codex-clipboard-a6faa3d7-0d65-47f2-ba79-9ca9f3292f4c.png`

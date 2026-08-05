@@ -214,7 +214,7 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
   .brand { font-size: 18px; }
   .brand-mark { width: 30px; height: 30px; flex-basis: 30px; }
   .hero { padding-block: 56px 44px; }
-  .hero h1 { font-size: 32px; line-height: 1.22; }
+  .hero h1 { font-size: 32px; line-height: 1.22; word-break: keep-all; overflow-wrap: normal; }
   .hero-copy { font-size: 16px; }
   .benefit-grid { grid-template-columns: 1fr; margin-top: 48px; }
   .benefit { min-height: 104px; padding: 24px; }
