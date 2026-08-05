@@ -143,7 +143,7 @@ html[data-theme="light"] .privacy-section::before {
   0%, 100% { background: #10b981; box-shadow: 0 0 5px rgba(16, 185, 129, .28); }
   50% { background: #34d399; box-shadow: 0 0 11px rgba(52, 211, 153, .58); }
 }
-.security-picture { justify-self: end; width: 260px; }
+.security-picture { justify-self: end; width: 260px; transform: translateX(-30px); }
 .security-picture img { display: block; width: 100%; height: auto; object-fit: contain; }
 html[data-theme="light"] .security-picture img { filter: drop-shadow(0 12px 24px rgba(15, 23, 42, .14)); }
 html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px rgba(37, 99, 235, .12)); }
@@ -231,7 +231,7 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
   .benefit-grid, .tool-grid { grid-template-columns: 1fr 1fr; }
   .privacy-panel { grid-template-columns: 1fr 280px; gap: 30px; }
   .privacy-copy { padding-left: 0; }
-  .security-picture { width: 250px; }
+  .security-picture { width: 250px; transform: none; }
   .footer-shell { grid-template-columns: 1fr auto; }
   .footer-tagline { display: none; }
 }
