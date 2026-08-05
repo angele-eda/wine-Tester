@@ -60,7 +60,7 @@ The source capture showed Chrome-generated Korean rather than the site's curated
 
 ### Focused-region comparison evidence
 
-At 360 CSS px, the hero heading measures 313 px wide and 78.06 px high with a 39.04 px line height. Computed styles report `word-break: keep-all` and `overflow-wrap: normal`; `도구` remains intact on the second line. The page reports `lang="ko"` and includes Google's `notranslate` directive, preventing a second machine-translation pass.
+At 360 CSS px, the hero heading measures 313 px wide and 78.06 px high with a 39.04 px line height. Computed styles report `word-break: keep-all` and `overflow-wrap: normal`; `도구` remains intact on the second line. The page reports `lang="ko"`, so Korean devices receive the curated Korean copy without requiring browser translation.
 
 ### Required fidelity surfaces
 
@@ -73,7 +73,7 @@ At 360 CSS px, the hero heading measures 313 px wide and 78.06 px high with a 39
 ### Findings and comparison history
 
 - Earlier P2: machine translation lengthened the title and split `도구` across lines.
-- Fix: choose a supported browser locale when no preference is stored, advertise that locale before first paint, disable Google auto-translation, and keep Korean words intact at the mobile breakpoint.
+- Fix: choose a supported browser locale when no preference is stored, advertise that locale before first paint, and keep Korean words intact at the mobile breakpoint. Browser translation remains available for locales the site does not provide directly.
 - Post-fix evidence: `qa/mobile-language-wrap-final.png`; the heading is `빠르고 안전한 파일 도구`, `도구` stays together, and no browser console warnings or errors were detected.
 
 final result: passed
