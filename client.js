@@ -6,7 +6,8 @@ const tools = {
   "pdf-jpg": { nameKey: "pdfImageName", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
   "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
   "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
-  favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true }
+  favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true },
+  "heic-jpg": { nameKey: "heicJpgName", icon: "image_sync", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true }
 };
 
 const translations = window.CF24_I18N || {};
@@ -323,6 +324,7 @@ async function processFiles() {
   if (currentTool === tools.compress) return compressPdfFile(selectedFiles[0], quality);
   if (currentTool === tools["pdf-jpg"]) return pdfToImages(selectedFiles[0], formatSelect.value, quality);
   if (currentTool === tools["jpg-pdf"]) return createPdfFromImages(selectedFiles);
+  if (currentTool === tools["heic-jpg"]) return convertHeicToJpg(selectedFiles, quality);
 
   if (currentTool === tools["image-ico"]) {
     const imageFile = firstImageFile();
@@ -482,6 +484,40 @@ function firstImageFile() {
   const imageFile = selectedFiles.find((file) => file.type.startsWith("image/"));
   if (!imageFile) throw new Error(tr("chooseImage"));
   return imageFile;
+}
+
+function heicFiles(files) {
+  const list = files.filter((file) => /\.(heic|heif)$/i.test(file.name) || /image\/hei[cf]/i.test(file.type));
+  if (!list.length) throw new Error(tr("chooseHeic"));
+  return list;
+}
+
+async function convertHeicToJpg(files, quality) {
+  if (typeof window.heic2any !== "function") throw new Error(`HEIC tools are still loading. ${tr("tryAgain")}`);
+  const inputs = heicFiles(files);
+  const outputs = [];
+
+  try {
+    for (let fileIndex = 0; fileIndex < inputs.length; fileIndex += 1) {
+      const file = inputs[fileIndex];
+      const converted = await window.heic2any({ blob: file, toType: "image/jpeg", quality });
+      const blobs = Array.isArray(converted) ? converted : [converted];
+      for (let imageIndex = 0; imageIndex < blobs.length; imageIndex += 1) {
+        const fileSuffix = inputs.length > 1 ? `-${fileIndex + 1}` : "";
+        const imageSuffix = blobs.length > 1 ? `-${imageIndex + 1}` : "";
+        const outputBase = keepNames.checked ? baseName(file.name) : "convertfiles24";
+        outputs.push({ blob: blobs[imageIndex], name: `${outputBase}${fileSuffix}${imageSuffix}.jpg` });
+      }
+    }
+  } catch (error) {
+    throw new Error(tr("heicConvertError"));
+  }
+
+  if (outputs.length === 1) return outputs[0];
+  if (!window.JSZip) throw new Error(`ZIP tools are still loading. ${tr("tryAgain")}`);
+  const zip = new JSZip();
+  outputs.forEach((output) => zip.file(output.name, output.blob));
+  return { blob: await zip.generateAsync({ type: "blob" }), name: "convertfiles24-heic-jpg.zip" };
 }
 
 async function createIcoBlob(file, sizes) {

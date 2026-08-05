@@ -9,7 +9,7 @@
       benefitLocalTitle: "100% local processing", benefitLocalCopy: "Processed on your device.",
       benefitFastTitle: "Fast and easy", benefitFastCopy: "No installation or sign-up. Start converting instantly.",
       benefitFreeTitle: "Free to use", benefitFreeCopy: "Unlimited tools for desktop and mobile web users.",
-      chooseTitle: "Choose a tool", chooseCopy: "Simple tools for everyday file work", toolCount: "8 tools available", popular: "Most popular",
+      chooseTitle: "Choose a tool", chooseCopy: "Simple tools for everyday file work", toolCount: "9 tools available", popular: "Most popular",
       converterName: "File Converter", converterCopy: "Convert JPG, PNG, WebP and PDF formats instantly with local processing.",
       mergeName: "Merge PDF", mergeCopy: "Combine multiple PDF documents into a single professional file.",
       splitName: "Split PDF", splitCopy: "Separate PDF pages into individual files.",
@@ -18,6 +18,7 @@
       imagePdfName: "JPG / PNG to PDF", imagePdfCopy: "Create one PDF from your JPG or PNG image sequence.",
       icoName: "Image to ICO", icoCopy: "Convert JPG or PNG images into favicon-ready ICO files.",
       faviconName: "Favicon Generator", faviconCopy: "Create website favicons from a JPG or PNG image.",
+      heicJpgName: "HEIC to JPG", heicJpgCopy: "Convert iPhone HEIC photos into widely compatible JPG images.",
       privacyTitle: "Your files never leave your device", privacyCopy: "Every task is processed securely on your device.",
       privacyBadge: "Secure on-device processing", footerCopyright: "© 2026 ConvertFiles24. Client-side excellence.", footerTagline: "Fast, private file tools for everyone.", privacyPolicy: "Privacy Policy", terms: "Terms of Service",
       workspaceEyebrow: "Local workspace", dropTitle: "Drop files here", dropCopy: "or choose files from this PC", chooseFiles: "Choose files",
@@ -25,7 +26,7 @@
       quality: "Quality", keepNames: "Keep original file names", privateProcessing: "Private processing", privateCopy: "Your files stay on this device.",
       complete: "Processing complete", completeCopy: "Your files are ready. All processing stayed on this device.", download: "Download",
       convertFiles: "Convert files", convertOne: "Convert 1 file", convertMany: "Convert {count} files", processing: "Processing locally...", ready: "READY", queued: "QUEUED",
-      localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", mobileLightMode: "Light mode", mobileDarkMode: "Dark mode", openNavigation: "Open navigation", closeNavigation: "Close navigation", closeWorkspace: "Close workspace"
+      localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", chooseHeic: "Choose a HEIC or HEIF file first.", heicConvertError: "This HEIC file could not be converted.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", mobileLightMode: "Light mode", mobileDarkMode: "Dark mode", openNavigation: "Open navigation", closeNavigation: "Close navigation", closeWorkspace: "Close workspace"
     },
     ko: {
       mobileLanguageLabel: "언어",
@@ -34,7 +35,7 @@
       benefitLocalTitle: "100% 로컬 처리", benefitLocalCopy: "기기에서 처리됩니다.",
       benefitFastTitle: "빠르고 간편하게", benefitFastCopy: "설치나 가입 없이 바로 변환할 수 있습니다.",
       benefitFreeTitle: "무료 사용", benefitFreeCopy: "데스크톱과 모바일에서 자유롭게 사용할 수 있습니다.",
-      chooseTitle: "도구 선택", chooseCopy: "일상적인 파일 작업을 위한 간단한 도구", toolCount: "8개 도구", popular: "가장 인기",
+      chooseTitle: "도구 선택", chooseCopy: "일상적인 파일 작업을 위한 간단한 도구", toolCount: "9개 도구", popular: "가장 인기",
       converterName: "파일 변환기", converterCopy: "JPG, PNG, WebP, PDF를 기기에서 빠르게 변환합니다.",
       mergeName: "PDF 합치기", mergeCopy: "여러 PDF 문서를 하나의 파일로 합칩니다.",
       splitName: "PDF 나누기", splitCopy: "PDF 페이지를 각각의 파일로 분리합니다.",
@@ -43,6 +44,7 @@
       imagePdfName: "JPG / PNG를 PDF로", imagePdfCopy: "JPG 또는 PNG 이미지 여러 장을 하나의 PDF로 만듭니다.",
       icoName: "이미지를 ICO로", icoCopy: "JPG 또는 PNG 이미지를 ICO 파일로 변환합니다.",
       faviconName: "파비콘 생성기", faviconCopy: "JPG 또는 PNG 이미지로 웹사이트 파비콘을 만듭니다.",
+      heicJpgName: "HEIC를 JPG로", heicJpgCopy: "아이폰 HEIC 사진을 호환성이 높은 JPG 이미지로 변환합니다.",
       privacyTitle: "파일은 외부로 전송되지 않습니다", privacyCopy: "모든 작업은 사용자의 기기에서 안전하게 처리됩니다.",
       privacyBadge: "기기 내 안전 처리", footerCopyright: "© 2026 ConvertFiles24. 안전한 로컬 파일 도구.", footerTagline: "누구나 사용하는 빠르고 안전한 파일 도구", privacyPolicy: "개인정보처리방침", terms: "이용약관",
       workspaceEyebrow: "로컬 작업공간", dropTitle: "파일을 여기에 놓으세요", dropCopy: "또는 PC에서 파일을 선택하세요", chooseFiles: "파일 선택",
@@ -50,7 +52,7 @@
       quality: "품질", keepNames: "원본 파일명 유지", privateProcessing: "안전한 로컬 처리", privateCopy: "파일은 이 기기에서만 처리됩니다.",
       complete: "처리 완료", completeCopy: "파일이 준비되었습니다. 모든 처리는 이 기기에서 완료되었습니다.", download: "다운로드",
       convertFiles: "파일 변환", convertOne: "파일 1개 변환", convertMany: "파일 {count}개 변환", processing: "기기에서 처리 중...", ready: "완료", queued: "대기",
-      localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", mobileLightMode: "라이트 모드", mobileDarkMode: "다크 모드", openNavigation: "메뉴 열기", closeNavigation: "메뉴 닫기", closeWorkspace: "작업창 닫기"
+      localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", chooseHeic: "먼저 HEIC 또는 HEIF 파일을 선택하세요.", heicConvertError: "이 HEIC 파일을 변환하지 못했습니다.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", mobileLightMode: "라이트 모드", mobileDarkMode: "다크 모드", openNavigation: "메뉴 열기", closeNavigation: "메뉴 닫기", closeWorkspace: "작업창 닫기"
     },
     ja: {
       mobileLanguageLabel: "言語",
@@ -59,7 +61,7 @@
       benefitLocalTitle: "100% ローカル処理", benefitLocalCopy: "端末上で処理されます。",
       benefitFastTitle: "速くて簡単", benefitFastCopy: "インストールや登録なしですぐに変換できます。",
       benefitFreeTitle: "無料で利用", benefitFreeCopy: "デスクトップとモバイルで自由に利用できます。",
-      chooseTitle: "ツールを選択", chooseCopy: "日常のファイル作業に使えるシンプルなツール", toolCount: "8個のツール", popular: "人気",
+      chooseTitle: "ツールを選択", chooseCopy: "日常のファイル作業に使えるシンプルなツール", toolCount: "9個のツール", popular: "人気",
       converterName: "ファイル変換", converterCopy: "JPG、PNG、WebP、PDFを端末上ですばやく変換します。",
       mergeName: "PDF結合", mergeCopy: "複数のPDF文書を1つのファイルに結合します。",
       splitName: "PDF分割", splitCopy: "PDFのページを個別のファイルに分割します。",
@@ -68,6 +70,7 @@
       imagePdfName: "JPG / PNGからPDF", imagePdfCopy: "JPGまたはPNG画像を1つのPDFにまとめます。",
       icoName: "画像からICO", icoCopy: "JPGまたはPNG画像をICOファイルに変換します。",
       faviconName: "ファビコン生成", faviconCopy: "JPGまたはPNG画像からWebサイト用ファビコンを作成します。",
+      heicJpgName: "HEICからJPGへ", heicJpgCopy: "iPhoneのHEIC写真を互換性の高いJPG画像に変換します。",
       privacyTitle: "ファイルが外部に送信されることはありません", privacyCopy: "すべての処理はお使いの端末内で安全に行われます。",
       privacyBadge: "端末内で安全に処理", footerCopyright: "© 2026 ConvertFiles24. 安全なローカルファイルツール。", footerTagline: "誰でも使える高速で安全なファイルツール", privacyPolicy: "プライバシーポリシー", terms: "利用規約",
       workspaceEyebrow: "ローカル作業領域", dropTitle: "ファイルをここにドロップ", dropCopy: "またはPCからファイルを選択", chooseFiles: "ファイルを選択",
@@ -75,7 +78,7 @@
       quality: "品質", keepNames: "元のファイル名を保持", privateProcessing: "安全なローカル処理", privateCopy: "ファイルはこの端末内だけで処理されます。",
       complete: "処理完了", completeCopy: "ファイルの準備ができました。処理はすべて端末内で完了しました。", download: "ダウンロード",
       convertFiles: "ファイルを変換", convertOne: "1ファイルを変換", convertMany: "{count}ファイルを変換", processing: "端末内で処理中...", ready: "完了", queued: "待機",
-      localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", mobileLightMode: "ライトモード", mobileDarkMode: "ダークモード", openNavigation: "ナビゲーションを開く", closeNavigation: "ナビゲーションを閉じる", closeWorkspace: "作業画面を閉じる"
+      localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", chooseHeic: "最初にHEICまたはHEIFファイルを選択してください。", heicConvertError: "このHEICファイルを変換できませんでした。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", mobileLightMode: "ライトモード", mobileDarkMode: "ダークモード", openNavigation: "ナビゲーションを開く", closeNavigation: "ナビゲーションを閉じる", closeWorkspace: "作業画面を閉じる"
     },
     es: {
       mobileLanguageLabel: "Idioma",
@@ -84,7 +87,7 @@
       benefitLocalTitle: "Procesamiento 100% local", benefitLocalCopy: "Se procesa en tu dispositivo.",
       benefitFastTitle: "Rápido y sencillo", benefitFastCopy: "Sin instalar ni registrarte. Convierte al instante.",
       benefitFreeTitle: "Uso gratuito", benefitFreeCopy: "Herramientas disponibles en ordenador y móvil.",
-      chooseTitle: "Elige una herramienta", chooseCopy: "Herramientas sencillas para tus archivos", toolCount: "8 herramientas", popular: "Más popular",
+      chooseTitle: "Elige una herramienta", chooseCopy: "Herramientas sencillas para tus archivos", toolCount: "9 herramientas", popular: "Más popular",
       converterName: "Convertidor de archivos", converterCopy: "Convierte JPG, PNG, WebP y PDF localmente y al instante.",
       mergeName: "Unir PDF", mergeCopy: "Combina varios documentos PDF en un solo archivo.",
       splitName: "Dividir PDF", splitCopy: "Separa las páginas de un PDF en archivos individuales.",
@@ -93,6 +96,7 @@
       imagePdfName: "JPG / PNG a PDF", imagePdfCopy: "Crea un PDF con tus imágenes JPG o PNG.",
       icoName: "Imagen a ICO", icoCopy: "Convierte imágenes JPG o PNG en archivos ICO.",
       faviconName: "Generador de favicon", faviconCopy: "Crea favicons para tu web desde una imagen JPG o PNG.",
+      heicJpgName: "HEIC a JPG", heicJpgCopy: "Convierte fotos HEIC del iPhone en imágenes JPG ampliamente compatibles.",
       privacyTitle: "Tus archivos nunca salen de tu dispositivo", privacyCopy: "Todas las tareas se procesan de forma segura en tu dispositivo.",
       privacyBadge: "Procesamiento seguro en el dispositivo", footerCopyright: "© 2026 ConvertFiles24. Herramientas locales y privadas.", footerTagline: "Herramientas rápidas y privadas para todos", privacyPolicy: "Política de privacidad", terms: "Términos de servicio",
       workspaceEyebrow: "Espacio de trabajo local", dropTitle: "Suelta los archivos aquí", dropCopy: "o elige archivos de tu PC", chooseFiles: "Elegir archivos",
@@ -100,7 +104,7 @@
       quality: "Calidad", keepNames: "Conservar nombres originales", privateProcessing: "Procesamiento privado", privateCopy: "Tus archivos permanecen en este dispositivo.",
       complete: "Proceso completado", completeCopy: "Tus archivos están listos. Todo se procesó en este dispositivo.", download: "Descargar",
       convertFiles: "Convertir archivos", convertOne: "Convertir 1 archivo", convertMany: "Convertir {count} archivos", processing: "Procesando localmente...", ready: "LISTO", queued: "EN COLA",
-      localFile: "procesado localmente", choosePdf: "Elige primero un archivo PDF.", chooseImage: "Elige primero una imagen JPG o PNG.", mergeTwo: "Elige al menos dos archivos PDF para unir.", tryAgain: "Inténtalo de nuevo.", switchLight: "Cambiar al modo claro", switchDark: "Cambiar al modo oscuro", mobileLightMode: "Modo claro", mobileDarkMode: "Modo oscuro", openNavigation: "Abrir navegación", closeNavigation: "Cerrar navegación", closeWorkspace: "Cerrar espacio de trabajo"
+      localFile: "procesado localmente", choosePdf: "Elige primero un archivo PDF.", chooseImage: "Elige primero una imagen JPG o PNG.", chooseHeic: "Elige primero un archivo HEIC o HEIF.", heicConvertError: "No se pudo convertir este archivo HEIC.", mergeTwo: "Elige al menos dos archivos PDF para unir.", tryAgain: "Inténtalo de nuevo.", switchLight: "Cambiar al modo claro", switchDark: "Cambiar al modo oscuro", mobileLightMode: "Modo claro", mobileDarkMode: "Modo oscuro", openNavigation: "Abrir navegación", closeNavigation: "Cerrar navegación", closeWorkspace: "Cerrar espacio de trabajo"
     }
   };
 })();
