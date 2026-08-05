@@ -7,7 +7,7 @@ const tools = {
   "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
   "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
   favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true },
-  "heic-jpg": { nameKey: "heicJpgName", icon: "image", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true }
+  "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true }
 };
 
 const translations = window.CF24_I18N || {};
