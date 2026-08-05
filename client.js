@@ -153,6 +153,7 @@ function setMobileMenu(open) {
   mobileMenuButton.setAttribute("aria-label", tr(open ? "closeNavigation" : "openNavigation"));
   mobileNav.hidden = !open;
   mobileNavDismiss.hidden = !open;
+  root.classList.toggle("mobile-menu-open", open);
 }
 
 mobileMenuButton.addEventListener("click", () => {
