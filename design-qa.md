@@ -9,11 +9,11 @@
 
 ## Full-view comparison evidence
 
-The right-side menu remains an opaque panel while the page behind it is lightly darkened and softened with a minimal blur. A dedicated 72px menu header removes the empty upper area without changing the panel width, top offset, navigation order, language control, or page layout.
+The right-side menu remains an opaque panel while the page behind it is lightly darkened without blur. A dedicated 72px menu header removes the empty upper area without changing the panel width, top offset, navigation order, language control, or page layout.
 
 ## Focused region comparison evidence
 
-The open menu occupies 240px at a 360px viewport, matching the existing two-thirds mobile rule. Computed styles confirm a full-viewport `rgba(0, 0, 0, 0.35)` overlay and `blur(1px)` in both themes. The panel computes to opaque white in light mode and `rgb(15, 23, 42)` in dark mode.
+The open menu occupies 240px at a 360px viewport, matching the existing two-thirds mobile rule. Computed styles confirm a full-viewport `rgba(0, 0, 0, 0.35)` overlay and no backdrop blur in both themes. The panel computes to opaque white in light mode and `rgb(15, 23, 42)` in dark mode.
 
 The new header computes to 72px high with `rgb(243, 247, 255)` and `rgb(220, 230, 245)` as its light background and lower border. Dark mode uses `rgb(24, 36, 59)`, visibly lighter than the `rgb(15, 23, 42)` panel. Menu content begins 24px below the header.
 
@@ -21,7 +21,7 @@ The new header computes to 72px high with `rgb(243, 247, 255)` and `rgb(220, 230
 
 - Fonts and typography: existing menu typography, wrapping, sizes, weights, and hierarchy are unchanged.
 - Spacing and layout rhythm: existing panel dimensions, padding, top offset, border radius, and navigation spacing are unchanged.
-- Colors and visual tokens: the revised 35% overlay, 1px blur, and panel colors are exact; the shadow is `-12px 0 32px rgba(15, 23, 42, .18)`.
+- Colors and visual tokens: the revised 35% overlay, removed blur, and panel colors are exact; the shadow is `-12px 0 32px rgba(15, 23, 42, .18)`.
 - Image quality and asset fidelity: the existing brand logo and Material Symbols icons are unchanged; no new raster or substitute assets were introduced.
 - Copy and content: all existing localized menu labels and controls are unchanged.
 
@@ -29,6 +29,8 @@ The new header computes to 72px high with `rgb(243, 247, 255)` and `rgb(220, 230
 
 - Tapping the overlay closes the menu.
 - Tapping the header X closes the menu and returns keyboard focus to the hamburger button.
+- Korean privacy navigation renders as `개인정보 보호` with `notranslate` and `translate="no"` to prevent Chrome mistranslation.
+- Navigation and language-control vertical padding is reduced from 12px to 10px (about 16.7%).
 - Opening the menu adds the `mobile-menu-open` state and sets HTML/body overflow to hidden.
 - Closing the menu removes the state and restores body overflow to visible.
 - Escape, navigation-link, theme, and language close behavior remain connected through the existing menu state function.
