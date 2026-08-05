@@ -83,7 +83,10 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .hero h1 { max-width: 800px; margin: 0 auto 14px; font: 650 42px/1.16 var(--font-ui); letter-spacing: 0; }
 .hero-copy { max-width: 660px; margin: 0 auto; color: var(--muted); font-size: 17px; line-height: 1.55; }
 .benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 64px; }
-.benefit { min-height: 116px; padding: 26px 28px; display: flex; align-items: flex-start; gap: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; }
+.benefit { position: relative; min-height: 116px; padding: 26px 52px 26px 28px; display: flex; align-items: flex-start; gap: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); text-align: left; cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.benefit:hover, .benefit:focus-visible { transform: translateY(-3px); border-color: var(--primary-strong); box-shadow: 0 10px 26px rgba(20, 42, 94, .1); outline: none; }
+.benefit-arrow { position: absolute; right: 18px; bottom: 16px; color: var(--muted); font-size: 18px; transition: color .18s ease, transform .18s ease; }
+.benefit:hover .benefit-arrow, .benefit:focus-visible .benefit-arrow { color: var(--primary); transform: translateX(3px); }
 .benefit-icon { flex: 0 0 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; background: rgba(108, 99, 255, .16); color: #9da7ff; font-size: 19px; }
 .benefit:nth-child(2) .benefit-icon { background: rgba(120, 228, 183, .14); color: #5de1b0; }
 .benefit:nth-child(3) .benefit-icon { background: rgba(255, 159, 92, .14); color: #ffb06d; }
@@ -106,6 +109,11 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .tool-card:hover .tool-icon { font-variation-settings: "FILL" 1, "wght" 500; }
 .arrow { color: var(--muted); font-size: 24px; transition: transform .2s ease; }
 .tool-card:hover .arrow { color: var(--primary); transform: translateX(4px); }
+.tool-card.benefit-highlight { animation: benefit-card-highlight 1.6s ease; }
+@keyframes benefit-card-highlight {
+  0%, 100% { box-shadow: none; }
+  25%, 70% { border-color: var(--primary-strong); box-shadow: 0 0 0 3px rgba(53, 106, 230, .18), 0 14px 34px rgba(0, 0, 0, .12); transform: translateY(-4px); }
+}
 .tool-card strong { display: block; margin-bottom: 8px; font: 600 20px/1.35 var(--font-ui); }
 .tool-card > span:last-child { display: block; color: var(--muted); font-size: 15px; line-height: 1.48; }
 
@@ -163,6 +171,13 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 .workspace-dialog { width: min(980px, calc(100vw - 40px)); max-height: calc(100vh - 40px); padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); overflow: hidden; }
 .workspace-dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .workspace-dialog::backdrop { background: rgba(4, 9, 20, .76); backdrop-filter: blur(5px); }
+.info-dialog { position: relative; width: min(420px, calc(100vw - 32px)); padding: 34px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); text-align: center; }
+.info-dialog::backdrop { background: rgba(4, 9, 20, .66); backdrop-filter: blur(4px); }
+.info-dialog-close { position: absolute; top: 12px; right: 12px; }
+.info-dialog-icon { width: 48px; height: 48px; margin: 0 auto 16px; display: grid; place-items: center; border-radius: 50%; background: rgba(53, 106, 230, .14); color: var(--primary); font-size: 28px; font-variation-settings: "FILL" 1; }
+.info-dialog h2 { margin: 0 0 14px; font: 700 20px/1.35 var(--font-ui); }
+.info-dialog p { margin: 8px 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.info-dialog-confirm { min-width: 110px; height: 42px; margin-top: 22px; padding: 0 20px; border: 0; border-radius: 8px; background: var(--primary-strong); color: #fff; font-weight: 700; cursor: pointer; }
 .dialog-header { position: sticky; top: 0; z-index: 2; min-height: 84px; padding: 16px 20px 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: var(--surface); }
 .dialog-title-wrap { display: flex; align-items: center; gap: 14px; }
 .dialog-tool-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 8px; background: var(--primary-strong); color: #fff; }
@@ -244,7 +259,7 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
   .hero h1 { font-size: 32px; line-height: 1.22; word-break: keep-all; overflow-wrap: normal; }
   .hero-copy { font-size: 16px; }
   .benefit-grid { grid-template-columns: 1fr; margin-top: 48px; }
-  .benefit { min-height: 104px; padding: 24px; }
+  .benefit { min-height: 104px; padding: 24px 50px 24px 24px; }
   .tools-section { padding-block: 56px; }
   .section-heading { align-items: flex-start; gap: 20px; }
   .section-heading h2 { font-size: 26px; }

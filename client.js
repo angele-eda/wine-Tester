@@ -54,6 +54,7 @@ const qualitySetting = document.querySelector("#qualitySetting");
 const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
+const freeInfoDialog = document.querySelector("#freeInfoDialog");
 
 document.querySelectorAll(".material-symbols-outlined").forEach((icon) => {
   icon.classList.add("notranslate");
@@ -213,6 +214,31 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 });
 
 updateActiveNav();
+
+document.querySelectorAll("[data-benefit-action]").forEach((card) => {
+  card.addEventListener("click", () => {
+    const action = card.dataset.benefitAction;
+    if (action === "privacy") {
+      document.querySelector("#privacy")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (action === "tools") {
+      const featuredCard = document.querySelector('[data-tool="converter"]');
+      document.querySelector("#tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      featuredCard?.classList.remove("benefit-highlight");
+      window.requestAnimationFrame(() => featuredCard?.classList.add("benefit-highlight"));
+      window.setTimeout(() => featuredCard?.classList.remove("benefit-highlight"), 1700);
+      return;
+    }
+    if (action === "free") freeInfoDialog?.showModal();
+  });
+});
+
+document.querySelector("#closeFreeInfoButton")?.addEventListener("click", () => freeInfoDialog.close());
+document.querySelector("#confirmFreeInfoButton")?.addEventListener("click", () => freeInfoDialog.close());
+freeInfoDialog?.addEventListener("click", (event) => {
+  if (event.target === freeInfoDialog) freeInfoDialog.close();
+});
 
 function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
