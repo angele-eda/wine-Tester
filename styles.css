@@ -110,7 +110,7 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 .tool-card > span:last-child { display: block; color: var(--muted); font-size: 15px; line-height: 1.48; }
 
 .privacy-section { padding-block: 0 32px; scroll-margin-top: 96px; }
-.privacy-panel { min-height: 372px; padding: 32px; display: grid; grid-template-columns: 1fr 330px; align-items: center; gap: 48px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.privacy-panel { min-height: 310px; padding: 32px; display: grid; grid-template-columns: 1fr 330px; align-items: center; gap: 48px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
 .privacy-copy { display: flex; align-items: center; gap: 24px; padding-left: 20px; }
 .privacy-shield { flex: 0 0 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--primary-strong); color: #fff; font-size: 30px; font-variation-settings: "FILL" 1; }
 .privacy-copy h2 { margin: 0 0 8px; font: 600 16px/1.4 var(--font-ui); }
@@ -226,7 +226,7 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
   .count-pill { margin-top: 6px; white-space: nowrap; }
   .tool-grid { grid-template-columns: 1fr; }
   .tool-card { min-height: 184px; padding: 24px; }
-  .privacy-panel { grid-template-columns: 1fr; padding: 26px; }
+  .privacy-panel { min-height: 0; grid-template-columns: 1fr; padding: 26px; }
   .privacy-copy { align-items: flex-start; }
   .security-picture { justify-self: center; width: min(100%, 240px); }
   .footer-shell { padding-block: 28px; grid-template-columns: 1fr; }
