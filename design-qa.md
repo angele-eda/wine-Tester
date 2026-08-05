@@ -1,4 +1,4 @@
-# Design QA — Mobile Menu Overlay and Header
+# Design QA — Mobile Menu and Back-to-Top Control
 
 - Source visual truth: `C:\Users\원대\Downloads\Screenshot_20260805_175035_Chrome.jpg`
 - Implementation screenshots: `qa/mobile-menu-overlay-light.png`, `qa/mobile-menu-overlay-dark.png`
@@ -36,6 +36,10 @@ The new header computes to 72px high with `rgb(243, 247, 255)` and `rgb(220, 230
 - Escape, navigation-link, theme, and language close behavior remain connected through the existing menu state function.
 - No horizontal overflow at 360px.
 - Browser console errors: none.
+- The mobile-only back-to-top control stays hidden before 500px, appears as a 44 × 44px circle after the threshold, and sits 18px from the visual right/bottom edges.
+- Opening the menu or a dialog hides the control; closing the overlay restores it when the page remains beyond the threshold.
+- Activating the control smoothly returns the document to `scrollY: 0`, then hides it again.
+- The localized accessible label is available in English, Korean, Japanese, and Spanish.
 
 ## Findings
 

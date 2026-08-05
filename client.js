@@ -56,6 +56,7 @@ const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
 const freeInfoDialog = document.querySelector("#freeInfoDialog");
+const backToTopButton = document.querySelector("#backToTopButton");
 
 document.querySelectorAll(".material-symbols-outlined").forEach((icon) => {
   icon.classList.add("notranslate");
@@ -137,6 +138,7 @@ function applyLanguage(language, remember = false) {
   });
   if (dialog.open) document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
   document.querySelector("#closeDialogButton").setAttribute("aria-label", tr("closeWorkspace"));
+  backToTopButton.setAttribute("aria-label", tr("backToTop"));
   setTheme(root.dataset.theme === "dark" ? "dark" : "light");
   setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") === "true");
   renderFiles();
@@ -156,6 +158,7 @@ function setMobileMenu(open) {
   mobileNav.hidden = !open;
   mobileNavDismiss.hidden = !open;
   root.classList.toggle("mobile-menu-open", open);
+  updateBackToTop();
 }
 
 mobileMenuButton.addEventListener("click", () => {
@@ -237,7 +240,10 @@ document.querySelectorAll("[data-benefit-action]").forEach((card) => {
       window.setTimeout(() => featuredCard?.classList.remove("benefit-highlight"), 1700);
       return;
     }
-    if (action === "free") freeInfoDialog?.showModal();
+    if (action === "free") {
+      freeInfoDialog?.showModal();
+      updateBackToTop();
+    }
   });
 });
 
@@ -246,6 +252,16 @@ document.querySelector("#confirmFreeInfoButton")?.addEventListener("click", () =
 freeInfoDialog?.addEventListener("click", (event) => {
   if (event.target === freeInfoDialog) freeInfoDialog.close();
 });
+freeInfoDialog?.addEventListener("close", updateBackToTop);
+
+function updateBackToTop() {
+  const overlayOpen = mobileMenuButton.getAttribute("aria-expanded") === "true" || dialog.open || freeInfoDialog?.open;
+  backToTopButton.hidden = window.innerWidth > 680 || window.scrollY < 500 || overlayOpen;
+}
+
+backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+window.addEventListener("scroll", updateBackToTop, { passive: true });
+window.addEventListener("resize", updateBackToTop);
 
 function openWorkspace(toolKey, accept) {
   currentTool = tools[toolKey] || tools.converter;
@@ -259,11 +275,13 @@ function openWorkspace(toolKey, accept) {
   qualitySetting.hidden = !currentTool.quality;
   resetWorkspace();
   dialog.showModal();
+  updateBackToTop();
 }
 
 document.querySelector("#closeDialogButton").addEventListener("click", () => dialog.close());
 dialog.addEventListener("close", () => {
   resetWorkspace();
+  updateBackToTop();
 });
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();

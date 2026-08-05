@@ -3,7 +3,7 @@
 
   window.CF24_I18N = {
     en: {
-      mobileLanguageLabel: "Language", mobileMenuTitle: "Menu",
+      mobileLanguageLabel: "Language", mobileMenuTitle: "Menu", backToTop: "Back to top",
       languageName: "English", navTools: "All Tools", navPrivacy: "Privacy", trustPill: "Private by design",
       heroTitle: "Fast, private file tools.", heroCopy: "Image and PDF tools, right in your browser.",
       benefitLocalTitle: "100% local processing", benefitLocalCopy: "Processed on your device.",
@@ -30,7 +30,7 @@
       localFile: "processed locally", choosePdf: "Choose a PDF file first.", chooseImage: "Choose a JPG or PNG image first.", chooseHeic: "Choose a HEIC or HEIF file first.", heicConvertError: "This HEIC file could not be converted.", mergeTwo: "Choose at least two PDF files to merge.", tryAgain: "Please try again.", switchLight: "Switch to light mode", switchDark: "Switch to dark mode", mobileLightMode: "Light mode", mobileDarkMode: "Dark mode", openNavigation: "Open navigation", closeNavigation: "Close navigation", closeWorkspace: "Close workspace"
     },
     ko: {
-      mobileLanguageLabel: "언어", mobileMenuTitle: "메뉴",
+      mobileLanguageLabel: "언어", mobileMenuTitle: "메뉴", backToTop: "맨 위로",
       languageName: "한국어", navTools: "모든 도구", navPrivacy: "개인정보 보호", trustPill: "개인정보 보호 설계",
       heroTitle: "빠르고 안전한 파일 도구", heroCopy: "이미지와 PDF를 브라우저에서 바로 처리하세요.",
       benefitLocalTitle: "100% 로컬 처리", benefitLocalCopy: "기기에서 처리됩니다.",
@@ -57,7 +57,7 @@
       localFile: "기기에서 처리", choosePdf: "먼저 PDF 파일을 선택하세요.", chooseImage: "먼저 JPG 또는 PNG 이미지를 선택하세요.", chooseHeic: "먼저 HEIC 또는 HEIF 파일을 선택하세요.", heicConvertError: "이 HEIC 파일을 변환하지 못했습니다.", mergeTwo: "합칠 PDF 파일을 2개 이상 선택하세요.", tryAgain: "다시 시도해 주세요.", switchLight: "라이트 모드로 전환", switchDark: "다크 모드로 전환", mobileLightMode: "라이트 모드", mobileDarkMode: "다크 모드", openNavigation: "메뉴 열기", closeNavigation: "메뉴 닫기", closeWorkspace: "작업창 닫기"
     },
     ja: {
-      mobileLanguageLabel: "言語", mobileMenuTitle: "メニュー",
+      mobileLanguageLabel: "言語", mobileMenuTitle: "メニュー", backToTop: "ページ上部へ",
       languageName: "日本語", navTools: "すべてのツール", navPrivacy: "プライバシー", trustPill: "プライバシー重視",
       heroTitle: "高速で安全なファイルツール", heroCopy: "画像とPDFをブラウザですぐに処理できます。",
       benefitLocalTitle: "100% ローカル処理", benefitLocalCopy: "端末上で処理されます。",
@@ -84,7 +84,7 @@
       localFile: "端末内で処理", choosePdf: "最初にPDFファイルを選択してください。", chooseImage: "最初にJPGまたはPNG画像を選択してください。", chooseHeic: "最初にHEICまたはHEIFファイルを選択してください。", heicConvertError: "このHEICファイルを変換できませんでした。", mergeTwo: "結合するPDFを2つ以上選択してください。", tryAgain: "もう一度お試しください。", switchLight: "ライトモードに切り替え", switchDark: "ダークモードに切り替え", mobileLightMode: "ライトモード", mobileDarkMode: "ダークモード", openNavigation: "ナビゲーションを開く", closeNavigation: "ナビゲーションを閉じる", closeWorkspace: "作業画面を閉じる"
     },
     es: {
-      mobileLanguageLabel: "Idioma", mobileMenuTitle: "Menú",
+      mobileLanguageLabel: "Idioma", mobileMenuTitle: "Menú", backToTop: "Volver arriba",
       languageName: "Español", navTools: "Todas las herramientas", navPrivacy: "Privacidad", trustPill: "Privacidad desde el diseño",
       heroTitle: "Herramientas rápidas y privadas", heroCopy: "Trabaja con imágenes y PDF directamente en tu navegador.",
       benefitLocalTitle: "Procesamiento 100% local", benefitLocalCopy: "Se procesa en tu dispositivo.",
