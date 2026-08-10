@@ -96,7 +96,10 @@ html[data-theme="dark"] #themeIcon { color: #8b9dff; }
 
 .tools-section { padding-block: 34px 72px; scroll-margin-top: 70px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 28px; }
+.section-heading-title { margin-bottom: 4px; display: flex; align-items: center; gap: 9px; }
+.section-heading-icon { flex: 0 0 auto; color: var(--primary); font-size: 26px; font-variation-settings: "FILL" 0, "wght" 550, "GRAD" 0, "opsz" 24; }
 .section-heading h2 { margin: 0 0 4px; font: 650 28px/1.25 var(--font-ui); }
+.section-heading-title h2 { margin: 0; }
 .section-heading p { margin: 0; color: var(--muted); font-size: 16px; }
 .count-pill { padding: 5px 13px; background: var(--surface-3); color: var(--primary); font-size: 11px; font-weight: 600; text-transform: none; }
 .tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
