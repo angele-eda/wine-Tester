@@ -44,7 +44,9 @@ const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
 const fileInput = document.querySelector("#fileInput");
 const dropZone = document.querySelector("#dropZone");
+const dropTitle = document.querySelector("#dropTitle");
 const dropCopy = document.querySelector("#dropCopy");
+const chooseFilesLabel = document.querySelector("#chooseFilesLabel");
 const fileList = document.querySelector("#fileList");
 const clearButton = document.querySelector("#clearButton");
 const convertButton = document.querySelector("#convertButton");
@@ -719,7 +721,10 @@ function renderFiles() {
 }
 
 function updateResponsiveWorkspaceCopy() {
-  dropCopy.textContent = tr(window.innerWidth <= 600 ? "mobileDropCopy" : "dropCopy");
+  const isPhone = window.innerWidth <= 600;
+  dropTitle.textContent = tr(isPhone ? "mobileDropTitle" : "dropTitle");
+  dropCopy.textContent = tr(isPhone ? "mobileDropCopy" : "dropCopy");
+  chooseFilesLabel.textContent = tr(isPhone ? "mobileChooseFiles" : "chooseFiles");
 }
 
 window.addEventListener("resize", updateResponsiveWorkspaceCopy);

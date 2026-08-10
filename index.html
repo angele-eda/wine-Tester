@@ -203,9 +203,9 @@
         <input id="fileInput" type="file" multiple hidden>
         <button class="drop-zone" id="dropZone" type="button">
           <span class="drop-icon material-symbols-outlined">upload_file</span>
-          <strong data-i18n="dropTitle">Drop files here</strong>
+          <strong id="dropTitle" data-i18n="dropTitle">Drop files here</strong>
           <span id="dropCopy" data-i18n="dropCopy">or choose files from this PC</span>
-          <span class="choose-files" data-i18n="chooseFiles">Choose files</span>
+          <span class="choose-files" id="chooseFilesLabel" data-i18n="chooseFiles">Choose files</span>
         </button>
         <div class="queue-heading"><h3 data-i18n="selectedFiles">Selected files</h3><button id="clearButton" type="button" data-i18n="clearAll">Clear all</button></div>
         <div class="file-list" id="fileList"><p class="empty-state" data-i18n="emptyFiles">No files selected yet.</p></div>
@@ -237,7 +237,7 @@
   <script src="assets/pdfjs/pdf.min.js?v=20260804-unified-tools"></script>
   <script src="assets/jszip/jszip.min.js?v=20260804-unified-tools"></script>
   <script src="assets/heic2any/heic2any.min.js?v=0.0.4"></script>
-  <script src="assets/i18n.js?v=20260810-mobile-workspace"></script>
-  <script src="client.js?v=20260810-mobile-workspace"></script>
+  <script src="assets/i18n.js?v=20260810-mobile-file-copy"></script>
+  <script src="client.js?v=20260810-mobile-file-copy"></script>
 </body>
 </html>
