@@ -44,6 +44,7 @@ const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
 const fileInput = document.querySelector("#fileInput");
 const dropZone = document.querySelector("#dropZone");
+const dropCopy = document.querySelector("#dropCopy");
 const fileList = document.querySelector("#fileList");
 const clearButton = document.querySelector("#clearButton");
 const convertButton = document.querySelector("#convertButton");
@@ -136,6 +137,7 @@ function applyLanguage(language, remember = false) {
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = tr(element.dataset.i18n);
   });
+  updateResponsiveWorkspaceCopy();
   if (dialog.open) document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
   document.querySelector("#closeDialogButton").setAttribute("aria-label", tr("closeWorkspace"));
   backToTopButton.setAttribute("aria-label", tr("backToTop"));
@@ -701,6 +703,7 @@ function buildOutputName(inputName, format) {
 }
 
 function renderFiles() {
+  dialog.classList.toggle("has-files", selectedFiles.length > 0);
   convertButton.disabled = selectedFiles.length === 0;
   convertLabel.textContent = selectedFiles.length ? (selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length })) : tr("convertFiles");
   if (!selectedFiles.length) {
@@ -714,6 +717,12 @@ function renderFiles() {
       <span class="file-status">${escapeHtml(tr("queued"))}</span>
     </div>`).join("");
 }
+
+function updateResponsiveWorkspaceCopy() {
+  dropCopy.textContent = tr(window.innerWidth <= 600 ? "mobileDropCopy" : "dropCopy");
+}
+
+window.addEventListener("resize", updateResponsiveWorkspaceCopy);
 
 function extension(name) {
   const part = String(name).split(".").pop();
