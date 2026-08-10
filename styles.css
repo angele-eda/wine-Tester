@@ -295,8 +295,8 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 
 /* Phone-only density adjustments. Keep tablet and desktop layouts unchanged. */
 @media (max-width: 600px) {
-  .hero { padding: 30px 0 18px; }
-  .trust-pill { margin-bottom: 24px; }
+  .hero { padding: 18px 0 18px; }
+  .trust-pill { margin-bottom: 16px; }
   .tools-section { padding: 22px 0 56px; }
 
   .tool-card { min-height: 0; padding: 15px 20px; }
