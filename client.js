@@ -40,6 +40,8 @@ const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
 const privacySection = document.querySelector("#privacy");
+const toolGrid = document.querySelector(".tool-grid");
+const defaultToolOrder = [...toolGrid.children];
 const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
 const fileInput = document.querySelector("#fileInput");
@@ -73,6 +75,7 @@ let toastTimer;
 let downloadResult = null;
 let navSelectionLockedUntil = 0;
 let navScrollFrame = null;
+let toolsOrderedForPhone = null;
 
 function setActiveNav(targetId) {
   desktopNavLinks.forEach((link) => {
@@ -729,6 +732,20 @@ function updateResponsiveWorkspaceCopy() {
 
 window.addEventListener("resize", updateResponsiveWorkspaceCopy);
 
+function updateResponsiveToolOrder() {
+  const isPhone = window.innerWidth <= 600;
+  if (toolsOrderedForPhone === isPhone) return;
+  toolsOrderedForPhone = isPhone;
+  if (isPhone) {
+    const heicCard = toolGrid.querySelector('[data-tool="heic-jpg"]');
+    if (heicCard) toolGrid.prepend(heicCard);
+    return;
+  }
+  defaultToolOrder.forEach((card) => toolGrid.append(card));
+}
+
+window.addEventListener("resize", updateResponsiveToolOrder);
+
 function extension(name) {
   const part = String(name).split(".").pop();
   return (part || "FILE").slice(0, 4).toUpperCase();
@@ -752,4 +769,5 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => { toast.hidden = true; }, 2600);
 }
 
+updateResponsiveToolOrder();
 applyLanguage(currentLanguage, false);
