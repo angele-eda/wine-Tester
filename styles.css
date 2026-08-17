@@ -195,6 +195,7 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 .drop-icon { margin-bottom: 16px; color: var(--primary); font-size: 46px; }
 .drop-zone strong { margin-bottom: 6px; font: 650 20px/1.3 var(--font-ui); }
 .drop-zone > span:not(.drop-icon):not(.choose-files) { color: var(--muted); font-size: 14px; }
+.file-limit { margin-top: 12px; color: var(--muted); font-size: 12px; font-weight: 500; }
 .choose-files { margin-top: 20px; padding: 11px 18px; border-radius: 8px; background: var(--primary-strong); color: #fff; font-size: 13px; font-weight: 700; }
 .queue-heading { margin: 24px 0 12px; display: flex; justify-content: space-between; align-items: center; }
 .queue-heading h3, .settings-panel h3 { margin: 0; font: 700 15px/1.4 var(--font-ui); }

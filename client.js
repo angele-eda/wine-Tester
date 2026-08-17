@@ -1,13 +1,13 @@
 const tools = {
-  converter: { nameKey: "converterName", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"], accept: "image/*,application/pdf", multiple: true, quality: true },
-  merge: { nameKey: "mergeName", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false },
-  split: { nameKey: "splitName", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false },
-  compress: { nameKey: "compressName", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true },
-  "pdf-jpg": { nameKey: "pdfImageName", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true },
-  "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false },
-  "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true },
-  favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true },
-  "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true }
+  converter: { nameKey: "converterName", icon: "sync_alt", formats: ["PNG", "JPG", "WebP", "PDF"], accept: "image/*,application/pdf", multiple: true, quality: true, maxFiles: 30, maxFileMB: 25, maxTotalMB: 250 },
+  merge: { nameKey: "mergeName", icon: "call_merge", formats: ["PDF"], accept: "application/pdf", multiple: true, quality: false, maxFiles: 100, maxFileMB: 50, maxTotalMB: 500, mobileTotalMB: 200 },
+  split: { nameKey: "splitName", icon: "content_cut", formats: ["PDF pages (.zip)"], accept: "application/pdf", multiple: false, quality: false, maxFiles: 1, maxFileMB: 200, maxTotalMB: 200 },
+  compress: { nameKey: "compressName", icon: "compress", formats: ["PDF"], accept: "application/pdf", multiple: false, quality: true, maxFiles: 1, maxFileMB: 200, maxTotalMB: 200 },
+  "pdf-jpg": { nameKey: "pdfImageName", icon: "image", formats: ["JPG", "PNG"], accept: "application/pdf", multiple: false, quality: true, maxFiles: 1, maxFileMB: 200, maxTotalMB: 200 },
+  "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false, maxFiles: 100, maxFileMB: 25, maxTotalMB: 300, mobileTotalMB: 200 },
+  "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
+  favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
+  "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true, maxFiles: 20, maxFileMB: 25, maxTotalMB: 200 }
 };
 
 const translations = window.CF24_I18N || {};
@@ -49,6 +49,7 @@ const dropZone = document.querySelector("#dropZone");
 const dropTitle = document.querySelector("#dropTitle");
 const dropCopy = document.querySelector("#dropCopy");
 const chooseFilesLabel = document.querySelector("#chooseFilesLabel");
+const fileLimitText = document.querySelector("#fileLimitText");
 const fileList = document.querySelector("#fileList");
 const clearButton = document.querySelector("#clearButton");
 const convertButton = document.querySelector("#convertButton");
@@ -280,6 +281,7 @@ function openWorkspace(toolKey, accept) {
   fileInput.multiple = currentTool.multiple !== false;
   formatSelect.innerHTML = currentTool.formats.map((format) => `<option>${format}</option>`).join("");
   qualitySetting.hidden = !currentTool.quality;
+  updateFileLimitText();
   resetWorkspace();
   dialog.showModal();
   updateBackToTop();
@@ -345,7 +347,25 @@ document.querySelector("#downloadButton").addEventListener("click", () => {
 });
 
 function setFiles(files) {
-  selectedFiles = currentTool.multiple === false ? files.slice(0, 1) : files;
+  const limits = currentLimits();
+  if (files.length > limits.maxFiles) {
+    showToast(tr("tooManyFiles", { count: limits.maxFiles }));
+    fileInput.value = "";
+    return;
+  }
+  const oversized = files.find((file) => file.size > limits.maxFileBytes);
+  if (oversized) {
+    showToast(tr("fileTooLarge", { size: limits.maxFileMB }));
+    fileInput.value = "";
+    return;
+  }
+  const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+  if (totalBytes > limits.maxTotalBytes) {
+    showToast(tr("totalTooLarge", { size: limits.maxTotalMB }));
+    fileInput.value = "";
+    return;
+  }
+  selectedFiles = files;
   downloadResult = null;
   successPanel.hidden = true;
   renderFiles();
@@ -728,6 +748,26 @@ function updateResponsiveWorkspaceCopy() {
   dropTitle.textContent = tr(isPhone ? "mobileDropTitle" : "dropTitle");
   dropCopy.textContent = tr(isPhone ? "mobileDropCopy" : "dropCopy");
   chooseFilesLabel.textContent = tr(isPhone ? "mobileChooseFiles" : "chooseFiles");
+  updateFileLimitText();
+}
+
+function currentLimits() {
+  const mobile = window.innerWidth <= 600;
+  const maxTotalMB = mobile && currentTool.mobileTotalMB ? currentTool.mobileTotalMB : currentTool.maxTotalMB;
+  return {
+    maxFiles: currentTool.maxFiles,
+    maxFileMB: currentTool.maxFileMB,
+    maxTotalMB,
+    maxFileBytes: currentTool.maxFileMB * 1024 * 1024,
+    maxTotalBytes: maxTotalMB * 1024 * 1024
+  };
+}
+
+function updateFileLimitText() {
+  const limits = currentLimits();
+  fileLimitText.textContent = limits.maxFiles === 1
+    ? tr("singleFileLimit", { size: limits.maxFileMB })
+    : tr("multipleFileLimit", { count: limits.maxFiles, fileSize: limits.maxFileMB, totalSize: limits.maxTotalMB });
 }
 
 window.addEventListener("resize", updateResponsiveWorkspaceCopy);
