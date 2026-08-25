@@ -235,7 +235,15 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 .back-to-top { display: none; }
 
 @media (min-width: 901px) {
+  main, .footer-shell {
+    font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", "Segoe UI", sans-serif;
+  }
+  .section-shell, .footer-shell { width: min(100% - 64px, 1040px); }
   .section-heading-icon { color: #60a5fa; }
+  .hero h1 { font-size: 40px; font-weight: 600; letter-spacing: -.018em; }
+  .section-heading h2 { font-size: 27px; font-weight: 600; letter-spacing: -.012em; }
+  .tool-card strong { font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+  .tool-card > span:last-child { max-width: 31ch; line-height: 1.52; }
 }
 
 @media (max-width: 1232px) {
