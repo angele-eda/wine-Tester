@@ -7,7 +7,8 @@ const tools = {
   "jpg-pdf": { nameKey: "imagePdfName", icon: "picture_as_pdf", formats: ["PDF"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: false, maxFiles: 100, maxFileMB: 25, maxTotalMB: 300, mobileTotalMB: 200 },
   "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
   favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
-  "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true, maxFiles: 20, maxFileMB: 25, maxTotalMB: 200 }
+  "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true, maxFiles: 20, maxFileMB: 25, maxTotalMB: 200 },
+  "image-compress": { nameKey: "imageCompressName", icon: "photo_size_select_small", formats: ["JPG / PNG / WebP"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: true, defaultQuality: 82, maxFiles: 30, maxFileMB: 25, maxTotalMB: 250 }
 };
 
 const translations = window.CF24_I18N || {};
@@ -281,6 +282,8 @@ function openWorkspace(toolKey, accept) {
   fileInput.multiple = currentTool.multiple !== false;
   formatSelect.innerHTML = currentTool.formats.map((format) => `<option>${format}</option>`).join("");
   qualitySetting.hidden = !currentTool.quality;
+  qualityRange.value = String(currentTool.defaultQuality || 92);
+  qualityOutput.value = `${qualityRange.value}%`;
   updateFileLimitText();
   resetWorkspace();
   dialog.showModal();
@@ -403,6 +406,7 @@ async function processFiles() {
   if (currentTool === tools["pdf-jpg"]) return pdfToImages(selectedFiles[0], formatSelect.value, quality);
   if (currentTool === tools["jpg-pdf"]) return createPdfFromImages(selectedFiles);
   if (currentTool === tools["heic-jpg"]) return convertHeicToJpg(selectedFiles, quality);
+  if (currentTool === tools["image-compress"]) return compressImageFiles(selectedFiles, quality);
 
   if (currentTool === tools["image-ico"]) {
     const imageFile = firstImageFile();
@@ -678,6 +682,37 @@ async function createImageBlob(file, mime, quality) {
       else reject(new Error("Could not create image output."));
     }, mime, quality);
   });
+}
+
+async function compressImageFiles(files, quality) {
+  const images = files.filter((file) => /image\/(jpeg|png|webp)/i.test(file.type) || /\.(jpe?g|png|webp)$/i.test(file.name));
+  if (!images.length) throw new Error(tr("chooseCompressImage"));
+
+  const outputs = [];
+  for (const file of images) {
+    const mime = compressedImageMime(file);
+    const encoded = await createImageBlob(file, mime, quality);
+    const blob = encoded.size < file.size ? encoded : file;
+    outputs.push({ blob, name: `${baseName(file.name)}-compressed.${extensionFromMime(mime)}` });
+  }
+
+  if (outputs.length === 1) return outputs[0];
+  if (!window.JSZip) throw new Error(`ZIP tools are still loading. ${tr("tryAgain")}`);
+  const zip = new JSZip();
+  outputs.forEach((output) => zip.file(output.name, output.blob));
+  return { blob: await zip.generateAsync({ type: "blob" }), name: "convertfiles24-compressed-images.zip" };
+}
+
+function compressedImageMime(file) {
+  if (/png/i.test(file.type) || /\.png$/i.test(file.name)) return "image/png";
+  if (/webp/i.test(file.type) || /\.webp$/i.test(file.name)) return "image/webp";
+  return "image/jpeg";
+}
+
+function extensionFromMime(mime) {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/webp") return "webp";
+  return "png";
 }
 
 function loadImage(file) {
