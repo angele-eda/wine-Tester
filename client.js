@@ -809,12 +809,32 @@ function startCropInteraction(event) {
   if (!cropImage || !cropSelection) return;
   event.preventDefault();
   const point = cropPointerPosition(event);
+  const rect = cropCanvas.getBoundingClientRect();
+  const hitRadius = 18 * cropCanvas.width / Math.max(1, rect.width);
+  const corners = {
+    nw: { x: cropSelection.x, y: cropSelection.y },
+    ne: { x: cropSelection.x + cropSelection.width, y: cropSelection.y },
+    se: { x: cropSelection.x + cropSelection.width, y: cropSelection.y + cropSelection.height },
+    sw: { x: cropSelection.x, y: cropSelection.y + cropSelection.height }
+  };
+  const resizeCorner = Object.entries(corners).find(([, corner]) => Math.hypot(point.x - corner.x, point.y - corner.y) <= hitRadius)?.[0];
   const inside = point.x >= cropSelection.x && point.x <= cropSelection.x + cropSelection.width
     && point.y >= cropSelection.y && point.y <= cropSelection.y + cropSelection.height;
-  cropInteraction = inside
-    ? { mode: "move", offsetX: point.x - cropSelection.x, offsetY: point.y - cropSelection.y }
-    : { mode: "create", startX: point.x, startY: point.y };
-  if (!inside) cropSelection = { x: point.x, y: point.y, width: 1, height: 1 };
+  if (resizeCorner) {
+    cropInteraction = {
+      mode: "resize",
+      corner: resizeCorner,
+      left: cropSelection.x,
+      top: cropSelection.y,
+      right: cropSelection.x + cropSelection.width,
+      bottom: cropSelection.y + cropSelection.height
+    };
+  } else if (inside) {
+    cropInteraction = { mode: "move", offsetX: point.x - cropSelection.x, offsetY: point.y - cropSelection.y };
+  } else {
+    cropInteraction = { mode: "create", startX: point.x, startY: point.y };
+    cropSelection = { x: point.x, y: point.y, width: 1, height: 1 };
+  }
   cropCanvas.setPointerCapture?.(event.pointerId);
 }
 
@@ -825,6 +845,17 @@ function moveCropInteraction(event) {
   if (cropInteraction.mode === "move") {
     cropSelection.x = Math.max(0, Math.min(cropCanvas.width - cropSelection.width, point.x - cropInteraction.offsetX));
     cropSelection.y = Math.max(0, Math.min(cropCanvas.height - cropSelection.height, point.y - cropInteraction.offsetY));
+  } else if (cropInteraction.mode === "resize") {
+    const minimum = 8;
+    let { left, top, right, bottom } = cropInteraction;
+    if (cropInteraction.corner.includes("n")) top = Math.min(point.y, bottom - minimum);
+    if (cropInteraction.corner.includes("s")) bottom = Math.max(point.y, top + minimum);
+    if (cropInteraction.corner.includes("w")) left = Math.min(point.x, right - minimum);
+    if (cropInteraction.corner.includes("e")) right = Math.max(point.x, left + minimum);
+    cropSelection.x = Math.max(0, left);
+    cropSelection.y = Math.max(0, top);
+    cropSelection.width = Math.max(minimum, Math.min(cropCanvas.width, right) - cropSelection.x);
+    cropSelection.height = Math.max(minimum, Math.min(cropCanvas.height, bottom) - cropSelection.y);
   } else {
     cropSelection.x = Math.min(cropInteraction.startX, point.x);
     cropSelection.y = Math.min(cropInteraction.startY, point.y);
@@ -861,6 +892,21 @@ function drawCropCanvas() {
   context.setLineDash([6, 4]);
   context.strokeRect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
   context.setLineDash([]);
+  const handleRadius = Math.max(5, Math.min(9, cropCanvas.width / 55));
+  context.fillStyle = "#ffffff";
+  context.strokeStyle = "#2563eb";
+  context.lineWidth = 2;
+  [
+    [cropSelection.x, cropSelection.y],
+    [cropSelection.x + cropSelection.width, cropSelection.y],
+    [cropSelection.x + cropSelection.width, cropSelection.y + cropSelection.height],
+    [cropSelection.x, cropSelection.y + cropSelection.height]
+  ].forEach(([x, y]) => {
+    context.beginPath();
+    context.arc(x, y, handleRadius, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+  });
 }
 
 async function resizeImageFile(file, quality) {

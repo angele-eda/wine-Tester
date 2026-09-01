@@ -198,7 +198,7 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 .file-limit { margin-top: 12px; color: var(--muted); font-size: 12px; font-weight: 500; }
 .crop-editor { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .crop-editor[hidden], .resize-settings[hidden] { display: none !important; }
-.crop-editor canvas { display: block; width: 100%; max-height: 330px; border-radius: 7px; background: #111827; cursor: crosshair; touch-action: none; }
+.crop-editor canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 330px; margin: 0 auto; border-radius: 7px; background: #111827; cursor: crosshair; touch-action: none; }
 .crop-editor p { margin: 10px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.45; text-align: center; }
 .choose-files { margin-top: 20px; padding: 11px 18px; border-radius: 8px; background: var(--primary-strong); color: #fff; font-size: 13px; font-weight: 700; }
 .queue-heading { margin: 24px 0 12px; display: flex; justify-content: space-between; align-items: center; }
