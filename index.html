@@ -37,7 +37,7 @@
       window.addEventListener("load", () => document.documentElement.classList.add("material-symbols-ready"));
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260825-desktop-refine">
+  <link rel="stylesheet" href="styles.css?v=20260901-resize-crop">
 </head>
 <body>
   <header class="site-header">
@@ -126,7 +126,7 @@
     <section class="tools-section section-shell" id="tools">
       <div class="section-heading">
         <div><div class="section-heading-title"><span class="section-heading-icon material-symbols-outlined" aria-hidden="true">construction</span><h2 data-i18n="chooseTitle">Choose a tool</h2></div><p data-i18n="chooseCopy">Simple tools for everyday file work</p></div>
-        <span class="count-pill" data-i18n="toolCount">10 tools available</span>
+        <span class="count-pill" data-i18n="toolCount">12 tools available</span>
       </div>
 
       <div class="tool-grid">
@@ -171,6 +171,14 @@
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">photo_size_select_small</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong data-i18n="imageCompressName">Compress Images</strong><span data-i18n="imageCompressCopy">Reduce JPG, PNG and WebP file sizes while keeping images clear.</span>
         </button>
+        <button class="tool-card" type="button" data-tool="image-resize" data-accept="image/jpeg,image/png,image/webp">
+          <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">aspect_ratio</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
+          <strong data-i18n="imageResizeName">Resize Images</strong><span data-i18n="imageResizeCopy">Change image width and height while keeping the proportions you need.</span>
+        </button>
+        <button class="tool-card" type="button" data-tool="image-crop" data-accept="image/jpeg,image/png,image/webp">
+          <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">crop</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
+          <strong data-i18n="imageCropName">Crop Images</strong><span data-i18n="imageCropCopy">Select and crop the exact area you want from an image.</span>
+        </button>
       </div>
     </section>
 
@@ -212,12 +220,23 @@
           <span class="choose-files" id="chooseFilesLabel" data-i18n="chooseFiles">Choose files</span>
           <small class="file-limit" id="fileLimitText"></small>
         </button>
+        <div class="crop-editor" id="cropEditor" hidden>
+          <canvas id="cropCanvas"></canvas>
+          <p data-i18n="cropHint">Drag to select a crop area. Drag inside the selection to move it.</p>
+        </div>
         <div class="queue-heading"><h3 data-i18n="selectedFiles">Selected files</h3><button id="clearButton" type="button" data-i18n="clearAll">Clear all</button></div>
         <div class="file-list" id="fileList"><p class="empty-state" data-i18n="emptyFiles">No files selected yet.</p></div>
       </section>
       <aside class="settings-panel">
         <h3 data-i18n="outputSettings">Output settings</h3>
         <label><span data-i18n="outputFormat">Output format</span><select id="formatSelect"><option>PNG</option><option>JPG</option><option>WebP</option><option>PDF</option></select></label>
+        <div class="resize-settings" id="resizeSettings" hidden>
+          <div class="dimension-grid">
+            <label><span data-i18n="imageWidth">Width</span><input id="resizeWidth" type="number" min="1" max="12000" inputmode="numeric"></label>
+            <label><span data-i18n="imageHeight">Height</span><input id="resizeHeight" type="number" min="1" max="12000" inputmode="numeric"></label>
+          </div>
+          <label class="checkbox-row"><input id="maintainAspect" type="checkbox" checked><span data-i18n="maintainAspect">Keep aspect ratio</span></label>
+        </div>
         <label id="qualitySetting"><span><span data-i18n="quality">Quality</span> <output id="qualityOutput">92%</output></span><input id="qualityRange" type="range" min="40" max="100" value="92"></label>
         <label class="checkbox-row"><input id="keepNames" type="checkbox" checked><span data-i18n="keepNames">Keep original file names</span></label>
         <div class="local-note"><span class="material-symbols-outlined">lock</span><p><strong data-i18n="privateProcessing">Private processing</strong><br><span data-i18n="privateCopy">Your files stay on this device.</span></p></div>
@@ -242,7 +261,7 @@
   <script src="assets/pdfjs/pdf.min.js?v=20260804-unified-tools"></script>
   <script src="assets/jszip/jszip.min.js?v=20260804-unified-tools"></script>
   <script src="assets/heic2any/heic2any.min.js?v=0.0.4"></script>
-  <script src="assets/i18n.js?v=20260825-image-compress"></script>
-  <script src="client.js?v=20260825-image-compress"></script>
+  <script src="assets/i18n.js?v=20260901-resize-crop"></script>
+  <script src="client.js?v=20260901-resize-crop"></script>
 </body>
 </html>

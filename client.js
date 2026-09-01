@@ -8,7 +8,9 @@ const tools = {
   "image-ico": { nameKey: "icoName", icon: "web_asset", formats: ["ICO"], accept: "image/jpeg,image/png", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
   favicon: { nameKey: "faviconName", icon: "app_shortcut", formats: ["Favicon files (.zip)"], accept: "image/*", multiple: false, quality: true, maxFiles: 1, maxFileMB: 20, maxTotalMB: 20 },
   "heic-jpg": { nameKey: "heicJpgName", icon: "photo_camera", formats: ["JPG"], accept: ".heic,.heif,image/heic,image/heif", multiple: true, quality: true, maxFiles: 20, maxFileMB: 25, maxTotalMB: 200 },
-  "image-compress": { nameKey: "imageCompressName", icon: "photo_size_select_small", formats: ["JPG / PNG / WebP"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: true, defaultQuality: 82, maxFiles: 30, maxFileMB: 25, maxTotalMB: 250 }
+  "image-compress": { nameKey: "imageCompressName", icon: "photo_size_select_small", formats: ["JPG / PNG / WebP"], accept: "image/jpeg,image/png,image/webp", multiple: true, quality: true, defaultQuality: 82, maxFiles: 30, maxFileMB: 25, maxTotalMB: 250 },
+  "image-resize": { nameKey: "imageResizeName", icon: "aspect_ratio", formats: ["JPG", "PNG", "WebP"], accept: "image/jpeg,image/png,image/webp", multiple: false, quality: true, maxFiles: 1, maxFileMB: 25, maxTotalMB: 25 },
+  "image-crop": { nameKey: "imageCropName", icon: "crop", formats: ["JPG", "PNG", "WebP"], accept: "image/jpeg,image/png,image/webp", multiple: false, quality: true, maxFiles: 1, maxFileMB: 25, maxTotalMB: 25 }
 };
 
 const translations = window.CF24_I18N || {};
@@ -59,6 +61,12 @@ const formatSelect = document.querySelector("#formatSelect");
 const qualityRange = document.querySelector("#qualityRange");
 const qualityOutput = document.querySelector("#qualityOutput");
 const qualitySetting = document.querySelector("#qualitySetting");
+const resizeSettings = document.querySelector("#resizeSettings");
+const resizeWidth = document.querySelector("#resizeWidth");
+const resizeHeight = document.querySelector("#resizeHeight");
+const maintainAspect = document.querySelector("#maintainAspect");
+const cropEditor = document.querySelector("#cropEditor");
+const cropCanvas = document.querySelector("#cropCanvas");
 const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
@@ -78,6 +86,10 @@ let downloadResult = null;
 let navSelectionLockedUntil = 0;
 let navScrollFrame = null;
 let toolsOrderedForPhone = null;
+let resizeSourceSize = null;
+let cropImage = null;
+let cropSelection = null;
+let cropInteraction = null;
 
 function setActiveNav(targetId) {
   desktopNavLinks.forEach((link) => {
@@ -282,6 +294,7 @@ function openWorkspace(toolKey, accept) {
   fileInput.multiple = currentTool.multiple !== false;
   formatSelect.innerHTML = currentTool.formats.map((format) => `<option>${format}</option>`).join("");
   qualitySetting.hidden = !currentTool.quality;
+  resizeSettings.hidden = currentTool !== tools["image-resize"];
   qualityRange.value = String(currentTool.defaultQuality || 92);
   qualityOutput.value = `${qualityRange.value}%`;
   updateFileLimitText();
@@ -318,6 +331,21 @@ clearButton.addEventListener("click", resetWorkspace);
 qualityRange.addEventListener("input", () => {
   qualityOutput.value = `${qualityRange.value}%`;
 });
+
+resizeWidth.addEventListener("input", () => {
+  if (!maintainAspect.checked || !resizeSourceSize || !resizeWidth.value) return;
+  resizeHeight.value = String(Math.max(1, Math.round(Number(resizeWidth.value) / resizeSourceSize.ratio)));
+});
+
+resizeHeight.addEventListener("input", () => {
+  if (!maintainAspect.checked || !resizeSourceSize || !resizeHeight.value) return;
+  resizeWidth.value = String(Math.max(1, Math.round(Number(resizeHeight.value) * resizeSourceSize.ratio)));
+});
+
+cropCanvas.addEventListener("pointerdown", startCropInteraction);
+cropCanvas.addEventListener("pointermove", moveCropInteraction);
+cropCanvas.addEventListener("pointerup", endCropInteraction);
+cropCanvas.addEventListener("pointercancel", endCropInteraction);
 
 convertButton.addEventListener("click", async () => {
   if (!selectedFiles.length || convertButton.classList.contains("processing")) return;
@@ -372,6 +400,10 @@ function setFiles(files) {
   downloadResult = null;
   successPanel.hidden = true;
   renderFiles();
+  prepareSpecialImageTool().catch((error) => {
+    showToast(error.message || tr("tryAgain"));
+    resetWorkspace();
+  });
 }
 
 function resetWorkspace() {
@@ -380,6 +412,14 @@ function resetWorkspace() {
   fileInput.value = "";
   successPanel.hidden = true;
   convertButton.classList.remove("processing");
+  resizeSourceSize = null;
+  cropImage = null;
+  cropSelection = null;
+  cropInteraction = null;
+  resizeWidth.value = "";
+  resizeHeight.value = "";
+  cropEditor.hidden = true;
+  dropZone.hidden = false;
   renderFiles();
 }
 
@@ -407,6 +447,8 @@ async function processFiles() {
   if (currentTool === tools["jpg-pdf"]) return createPdfFromImages(selectedFiles);
   if (currentTool === tools["heic-jpg"]) return convertHeicToJpg(selectedFiles, quality);
   if (currentTool === tools["image-compress"]) return compressImageFiles(selectedFiles, quality);
+  if (currentTool === tools["image-resize"]) return resizeImageFile(selectedFiles[0], quality);
+  if (currentTool === tools["image-crop"]) return cropImageFile(selectedFiles[0], quality);
 
   if (currentTool === tools["image-ico"]) {
     const imageFile = firstImageFile();
@@ -713,6 +755,150 @@ function extensionFromMime(mime) {
   if (mime === "image/jpeg") return "jpg";
   if (mime === "image/webp") return "webp";
   return "png";
+}
+
+async function prepareSpecialImageTool() {
+  if (!selectedFiles.length || (currentTool !== tools["image-resize"] && currentTool !== tools["image-crop"])) return;
+  const image = await loadImage(selectedFiles[0]);
+  selectImageOutputFormat(selectedFiles[0]);
+
+  if (currentTool === tools["image-resize"]) {
+    resizeSourceSize = { width: image.naturalWidth, height: image.naturalHeight, ratio: image.naturalWidth / image.naturalHeight };
+    resizeWidth.value = String(image.naturalWidth);
+    resizeHeight.value = String(image.naturalHeight);
+    return;
+  }
+
+  cropImage = image;
+  dropZone.hidden = true;
+  cropEditor.hidden = false;
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  setupCropCanvas();
+}
+
+function selectImageOutputFormat(file) {
+  const mime = compressedImageMime(file);
+  const format = mime === "image/jpeg" ? "JPG" : mime === "image/webp" ? "WebP" : "PNG";
+  formatSelect.value = format;
+}
+
+function setupCropCanvas() {
+  if (!cropImage) return;
+  const availableWidth = Math.max(240, cropEditor.clientWidth - 28);
+  const scale = Math.min(1, availableWidth / cropImage.naturalWidth, 330 / cropImage.naturalHeight);
+  cropCanvas.width = Math.max(1, Math.round(cropImage.naturalWidth * scale));
+  cropCanvas.height = Math.max(1, Math.round(cropImage.naturalHeight * scale));
+  cropSelection = {
+    x: cropCanvas.width * .1,
+    y: cropCanvas.height * .1,
+    width: cropCanvas.width * .8,
+    height: cropCanvas.height * .8
+  };
+  drawCropCanvas();
+}
+
+function cropPointerPosition(event) {
+  const rect = cropCanvas.getBoundingClientRect();
+  return {
+    x: Math.max(0, Math.min(cropCanvas.width, (event.clientX - rect.left) * cropCanvas.width / rect.width)),
+    y: Math.max(0, Math.min(cropCanvas.height, (event.clientY - rect.top) * cropCanvas.height / rect.height))
+  };
+}
+
+function startCropInteraction(event) {
+  if (!cropImage || !cropSelection) return;
+  event.preventDefault();
+  const point = cropPointerPosition(event);
+  const inside = point.x >= cropSelection.x && point.x <= cropSelection.x + cropSelection.width
+    && point.y >= cropSelection.y && point.y <= cropSelection.y + cropSelection.height;
+  cropInteraction = inside
+    ? { mode: "move", offsetX: point.x - cropSelection.x, offsetY: point.y - cropSelection.y }
+    : { mode: "create", startX: point.x, startY: point.y };
+  if (!inside) cropSelection = { x: point.x, y: point.y, width: 1, height: 1 };
+  cropCanvas.setPointerCapture?.(event.pointerId);
+}
+
+function moveCropInteraction(event) {
+  if (!cropInteraction || !cropSelection) return;
+  event.preventDefault();
+  const point = cropPointerPosition(event);
+  if (cropInteraction.mode === "move") {
+    cropSelection.x = Math.max(0, Math.min(cropCanvas.width - cropSelection.width, point.x - cropInteraction.offsetX));
+    cropSelection.y = Math.max(0, Math.min(cropCanvas.height - cropSelection.height, point.y - cropInteraction.offsetY));
+  } else {
+    cropSelection.x = Math.min(cropInteraction.startX, point.x);
+    cropSelection.y = Math.min(cropInteraction.startY, point.y);
+    cropSelection.width = Math.abs(point.x - cropInteraction.startX);
+    cropSelection.height = Math.abs(point.y - cropInteraction.startY);
+  }
+  drawCropCanvas();
+}
+
+function endCropInteraction(event) {
+  if (!cropInteraction) return;
+    if (cropCanvas.hasPointerCapture?.(event.pointerId)) {
+      cropCanvas.releasePointerCapture(event.pointerId);
+    }
+  cropInteraction = null;
+  drawCropCanvas();
+}
+
+function drawCropCanvas() {
+  if (!cropImage || !cropSelection) return;
+  const context = cropCanvas.getContext("2d");
+  context.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+  context.drawImage(cropImage, 0, 0, cropCanvas.width, cropCanvas.height);
+  context.fillStyle = "rgba(5, 12, 28, .58)";
+  context.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+  context.save();
+  context.beginPath();
+  context.rect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
+  context.clip();
+  context.drawImage(cropImage, 0, 0, cropCanvas.width, cropCanvas.height);
+  context.restore();
+  context.strokeStyle = "#60a5fa";
+  context.lineWidth = 2;
+  context.setLineDash([6, 4]);
+  context.strokeRect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
+  context.setLineDash([]);
+}
+
+async function resizeImageFile(file, quality) {
+  const width = Math.round(Number(resizeWidth.value));
+  const height = Math.round(Number(resizeHeight.value));
+  if (!width || !height || width < 1 || height < 1 || width > 12000 || height > 12000) throw new Error(tr("invalidDimensions"));
+  const image = await loadImage(file);
+  const mime = imageMimeFromFormat(formatSelect.value);
+  const blob = await renderImageRegion(image, 0, 0, image.naturalWidth, image.naturalHeight, width, height, mime, quality);
+  return { blob, name: `${baseName(file.name)}-${width}x${height}.${extensionFromMime(mime)}` };
+}
+
+async function cropImageFile(file, quality) {
+  if (!cropImage || !cropSelection || cropSelection.width < 4 || cropSelection.height < 4) throw new Error(tr("selectCropArea"));
+  const scaleX = cropImage.naturalWidth / cropCanvas.width;
+  const scaleY = cropImage.naturalHeight / cropCanvas.height;
+  const sourceX = Math.round(cropSelection.x * scaleX);
+  const sourceY = Math.round(cropSelection.y * scaleY);
+  const sourceWidth = Math.max(1, Math.round(cropSelection.width * scaleX));
+  const sourceHeight = Math.max(1, Math.round(cropSelection.height * scaleY));
+  const mime = imageMimeFromFormat(formatSelect.value);
+  const blob = await renderImageRegion(cropImage, sourceX, sourceY, sourceWidth, sourceHeight, sourceWidth, sourceHeight, mime, quality);
+  return { blob, name: `${baseName(file.name)}-cropped.${extensionFromMime(mime)}` };
+}
+
+function renderImageRegion(image, sourceX, sourceY, sourceWidth, sourceHeight, width, height, mime, quality) {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (mime === "image/jpeg") {
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+  }
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, width, height);
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error(tr("imageProcessError"))), mime, quality);
+  });
 }
 
 function loadImage(file) {
