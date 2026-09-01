@@ -785,9 +785,18 @@ function selectImageOutputFormat(file) {
 function setupCropCanvas() {
   if (!cropImage) return;
   const availableWidth = Math.max(240, cropEditor.clientWidth - 28);
-  const scale = Math.min(1, availableWidth / cropImage.naturalWidth, 330 / cropImage.naturalHeight);
-  cropCanvas.width = Math.max(1, Math.round(cropImage.naturalWidth * scale));
-  cropCanvas.height = Math.max(1, Math.round(cropImage.naturalHeight * scale));
+  const displayScale = Math.min(1, availableWidth / cropImage.naturalWidth, 330 / cropImage.naturalHeight);
+  const previewDensity = Math.max(2, window.devicePixelRatio || 1);
+  const renderScale = Math.min(
+    1,
+    displayScale * previewDensity,
+    4096 / cropImage.naturalWidth,
+    4096 / cropImage.naturalHeight
+  );
+  cropCanvas.width = Math.max(1, Math.round(cropImage.naturalWidth * renderScale));
+  cropCanvas.height = Math.max(1, Math.round(cropImage.naturalHeight * renderScale));
+  cropCanvas.style.width = `${Math.max(1, Math.round(cropImage.naturalWidth * displayScale))}px`;
+  cropCanvas.style.height = `${Math.max(1, Math.round(cropImage.naturalHeight * displayScale))}px`;
   cropSelection = {
     x: cropCanvas.width * .1,
     y: cropCanvas.height * .1,
@@ -877,6 +886,8 @@ function endCropInteraction(event) {
 function drawCropCanvas() {
   if (!cropImage || !cropSelection) return;
   const context = cropCanvas.getContext("2d");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
   context.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
   context.drawImage(cropImage, 0, 0, cropCanvas.width, cropCanvas.height);
   context.fillStyle = "rgba(5, 12, 28, .58)";
@@ -888,10 +899,10 @@ function drawCropCanvas() {
   context.drawImage(cropImage, 0, 0, cropCanvas.width, cropCanvas.height);
   context.restore();
   context.strokeStyle = "#60a5fa";
-  context.lineWidth = 2;
-  context.setLineDash([6, 4]);
-  context.strokeRect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
+  const displayRect = cropCanvas.getBoundingClientRect();
+  context.lineWidth = Math.max(1, cropCanvas.width / Math.max(1, displayRect.width));
   context.setLineDash([]);
+  context.strokeRect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
   const handleRadius = Math.max(5, Math.min(9, cropCanvas.width / 55));
   context.fillStyle = "#ffffff";
   context.strokeStyle = "#2563eb";
