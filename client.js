@@ -358,13 +358,13 @@ convertButton.addEventListener("click", async () => {
     downloadResult = await processFiles();
     convertButton.classList.remove("processing");
     convertButton.disabled = false;
-    convertLabel.textContent = selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length });
+    convertLabel.textContent = currentActionLabel();
     successPanel.hidden = false;
     document.querySelectorAll(".file-status").forEach((status) => { status.textContent = tr("ready"); });
   } catch (error) {
     convertButton.classList.remove("processing");
     convertButton.disabled = false;
-    convertLabel.textContent = selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length });
+    convertLabel.textContent = currentActionLabel();
     showToast(error.message || "Could not process this file.");
   }
 });
@@ -1005,10 +1005,16 @@ function buildOutputName(inputName, format) {
   return `${name}.${extensionFromFormat(format)}`;
 }
 
+function currentActionLabel() {
+  if (currentTool === tools["image-crop"] && selectedFiles.length) return tr("cropAction");
+  if (!selectedFiles.length) return tr("convertFiles");
+  return selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length });
+}
+
 function renderFiles() {
   dialog.classList.toggle("has-files", selectedFiles.length > 0);
   convertButton.disabled = selectedFiles.length === 0;
-  convertLabel.textContent = selectedFiles.length ? (selectedFiles.length === 1 ? tr("convertOne") : tr("convertMany", { count: selectedFiles.length })) : tr("convertFiles");
+  convertLabel.textContent = currentActionLabel();
   if (!selectedFiles.length) {
     fileList.innerHTML = `<p class="empty-state">${escapeHtml(tr("emptyFiles"))}</p>`;
     return;
