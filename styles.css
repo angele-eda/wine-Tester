@@ -479,6 +479,10 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
 .footer-shell nav { color:#8a8579; gap:28px; font-size:13px; }
 .footer-shell nav a + a::before { display:none; }
 
+@media (min-width:901px) {
+  .tools-section { padding-top:80px; }
+}
+
 @media (max-width:900px) {
   .section-shell,.nav-shell,.footer-shell { width:min(100% - 48px,760px); }
   .site-header { height:64px; }
