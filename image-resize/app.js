@@ -13,7 +13,7 @@ translations.es.scale = "Escala de tamaño";
 const $ = (selector) => document.querySelector(selector);
 const fileInput = $("#fileInput"), dropZone = $("#dropZone"), preview = $("#preview"), previewImage = $("#previewImage");
 const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio = $("#keepRatio"), formatSelect = $("#formatSelect");
-const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
+const scaleInput = $("#scaleInput");
 const qualityInput = $("#qualityInput"), qualityOutput = $("#qualityOutput"), resizeButton = $("#resizeButton"), result = $("#result"), message = $("#message");
 let currentFile = null, image = null, ratio = 1, resultBlob = null, resultName = "";
 let language = localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
@@ -24,6 +24,7 @@ function applyLanguage() {
   document.documentElement.lang = language;
   document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
   $("#languageSelect").value = language;
+  scaleInput.parentElement.setAttribute("aria-label", t("scale"));
   document.title = `${t("title")} | ConvertFiles24`;
 }
 function setTheme(theme) {
@@ -51,7 +52,7 @@ function loadFile(file) {
     if (previewImage.src.startsWith("blob:")) URL.revokeObjectURL(previewImage.src);
     currentFile = file; image = nextImage; ratio = image.naturalWidth / image.naturalHeight;
     scaleInput.value = "100";
-    scaleOutput.value = "100%";
+    updatePreviewScale(100);
     previewImage.src = url; widthInput.value = image.naturalWidth; heightInput.value = image.naturalHeight;
     $("#fileName").textContent = file.name; $("#fileMeta").textContent = `${image.naturalWidth} × ${image.naturalHeight} px · ${formatBytes(file.size)}`;
     formatSelect.value = file.type; if (![...formatSelect.options].some((option) => option.value === file.type)) formatSelect.value = "image/png";
@@ -65,7 +66,11 @@ function loadFile(file) {
 function syncScale(percent) {
   const clamped = Math.max(10, Math.min(200, Math.round(percent)));
   scaleInput.value = String(clamped);
-  scaleOutput.value = `${clamped}%`;
+  updatePreviewScale(clamped);
+}
+
+function updatePreviewScale(percent) {
+  previewImage.style.setProperty("--preview-scale", String(Math.max(.1, Math.min(2, Number(percent) / 100))));
 }
 
 widthInput.addEventListener("input", () => {
@@ -87,7 +92,7 @@ scaleInput.addEventListener("input", () => {
   const scale = Number(scaleInput.value) / 100;
   widthInput.value = Math.max(1, Math.round(image.naturalWidth * scale));
   heightInput.value = Math.max(1, Math.round(image.naturalHeight * scale));
-  scaleOutput.value = `${scaleInput.value}%`;
+  updatePreviewScale(scaleInput.value);
   result.hidden = true;
 });
 keepRatio.addEventListener("change", () => {
