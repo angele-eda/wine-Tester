@@ -70,7 +70,8 @@ function syncScale(percent) {
 }
 
 function updatePreviewScale(percent) {
-  previewImage.style.removeProperty("--preview-scale");
+  const value = Math.max(10, Math.min(200, Number(percent) || 100));
+  previewImage.style.setProperty("--preview-scale", String(Math.min(1, value / 100)));
 }
 
 widthInput.addEventListener("input", () => {
