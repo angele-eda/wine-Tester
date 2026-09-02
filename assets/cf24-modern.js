@@ -1,4 +1,7 @@
 (function(){
+  var storedTheme = "light";
+  try { storedTheme = localStorage.getItem("convertfiles24-theme") === "dark" ? "dark" : "light"; } catch (_) {}
+  document.documentElement.dataset.theme = storedTheme;
   var current = new URL(window.location.href);
   var lang = current.searchParams.get("lang") || document.documentElement.lang || "en";
   var embedded = current.searchParams.get("embed") === "1";
@@ -15,6 +18,14 @@
     '<nav class="cf24-nav">' +
       '<a href="/">' + (isKo ? '모든 도구' : 'All tools') + '</a>' +
       '<a href="/privacy/">' + (isKo ? '개인정보 보호' : 'Privacy') + '</a>' +
+      '<button class="cf24-theme" type="button" aria-label="Switch theme">' + (storedTheme === "dark" ? '☾' : '☀') + '</button>' +
     '</nav>';
   document.body.insertBefore(bar, document.body.firstChild);
+  var themeButton = bar.querySelector(".cf24-theme");
+  themeButton.addEventListener("click", function(){
+    var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    themeButton.textContent = next === "dark" ? "☾" : "☀";
+    try { localStorage.setItem("convertfiles24-theme", next); } catch (_) {}
+  });
 })();
