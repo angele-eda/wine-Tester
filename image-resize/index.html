@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resize Images Online | ConvertFiles24</title>
+  <meta name="description" content="Resize JPG, PNG and WebP images online. Set exact width and height with private, on-device processing.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://convertfiles24.com/image-resize/">
+  <meta property="og:title" content="Resize Images Online | ConvertFiles24">
+  <meta property="og:description" content="Change image dimensions securely in your browser. Files never leave your device.">
+  <meta property="og:url" content="https://convertfiles24.com/image-resize/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260902-resize-page">
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('convertfiles24-theme') === 'dark' ? 'dark' : 'light'; } catch (_) {}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="Main navigation">
+      <a class="brand notranslate" href="/" translate="no"><img src="/assets/brand/convertfiles24-logo-v2.png" alt=""><span>Convert<span>Files24</span></span></a>
+      <div class="nav-actions">
+        <a href="/#tools" data-t="allTools">All tools</a>
+        <label class="language"><span class="material-symbols-outlined">language</span><select id="languageSelect" aria-label="Language"><option value="en">English</option><option value="ko">한국어</option><option value="ja">日本語</option><option value="es">Español</option></select></label>
+        <button class="theme-button" id="themeButton" type="button" aria-label="Switch theme"><span class="material-symbols-outlined" id="themeIcon">light_mode</span></button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/" data-t="home">Home</a><span>/</span><span data-t="title">Resize Images</span></nav>
+      <section class="page-intro">
+        <span class="intro-icon material-symbols-outlined">aspect_ratio</span>
+        <div><p class="eyebrow" data-t="local">LOCAL IMAGE TOOL</p><h1 data-t="title">Resize Images</h1><p data-t="subtitle">Change image width and height while keeping the proportions you need.</p></div>
+      </section>
+
+      <div class="ad-slot" aria-label="Advertisement"><span data-t="ad">Advertisement</span></div>
+
+      <section class="workspace" aria-labelledby="workspaceTitle">
+        <div class="work-area">
+          <h2 id="workspaceTitle" data-t="selectTitle">Select an image</h2>
+          <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <button class="drop-zone" id="dropZone" type="button">
+            <span class="material-symbols-outlined">add_photo_alternate</span>
+            <strong data-t="dropTitle">Choose an image to resize</strong>
+            <span data-t="dropCopy">Choose a JPG, PNG or WebP image from your device</span>
+            <b data-t="choose">Choose image</b>
+            <small data-t="limit">1 file · Maximum 25 MB</small>
+          </button>
+          <div class="preview" id="preview" hidden>
+            <img id="previewImage" alt="Selected image preview">
+            <div><strong id="fileName"></strong><span id="fileMeta"></span></div>
+            <button id="replaceButton" type="button" data-t="replace">Replace</button>
+          </div>
+          <div class="result" id="result" hidden role="status">
+            <span class="material-symbols-outlined">task_alt</span><div><strong data-t="done">Image resized</strong><span id="resultMeta"></span></div>
+            <button id="downloadButton" type="button"><span class="material-symbols-outlined">download</span><span data-t="download">Download</span></button>
+          </div>
+        </div>
+
+        <aside class="settings">
+          <h2 data-t="settings">Resize settings</h2>
+          <div class="dimension-grid">
+            <label><span data-t="width">Width</span><div><input id="widthInput" type="number" min="1" max="12000" inputmode="numeric" disabled><em>px</em></div></label>
+            <label><span data-t="height">Height</span><div><input id="heightInput" type="number" min="1" max="12000" inputmode="numeric" disabled><em>px</em></div></label>
+          </div>
+          <label class="check-row"><input id="keepRatio" type="checkbox" checked disabled><span data-t="ratio">Keep aspect ratio</span></label>
+          <label class="field"><span data-t="format">Output format</span><select id="formatSelect" disabled><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
+          <label class="field quality"><span><span data-t="quality">Quality</span><output id="qualityOutput">92%</output></span><input id="qualityInput" type="range" min="40" max="100" value="92" disabled></label>
+          <div class="privacy-note"><span class="material-symbols-outlined">lock</span><div><strong data-t="privateTitle">Private on-device processing</strong><span data-t="privateCopy">Your image is never uploaded to a server.</span></div></div>
+          <button class="resize-button" id="resizeButton" type="button" disabled><span data-t="action">Resize image</span><span class="material-symbols-outlined">arrow_forward</span></button>
+          <p class="message" id="message" role="alert"></p>
+        </aside>
+      </section>
+
+      <section class="info-grid">
+        <article><span class="material-symbols-outlined">straighten</span><h2 data-t="exactTitle">Exact dimensions</h2><p data-t="exactCopy">Enter the width and height you need, up to 12,000 pixels.</p></article>
+        <article><span class="material-symbols-outlined">verified_user</span><h2 data-t="safeTitle">Files stay private</h2><p data-t="safeCopy">All resizing happens locally in your browser.</p></article>
+        <article><span class="material-symbols-outlined">devices</span><h2 data-t="deviceTitle">Works on any device</h2><p data-t="deviceCopy">Resize photos on desktop, tablet and mobile.</p></article>
+      </section>
+    </div>
+  </main>
+
+  <footer><div class="footer-shell"><a class="brand notranslate" href="/" translate="no"><img src="/assets/brand/convertfiles24-logo-v2.png" alt=""><span>Convert<span>Files24</span></span></a><p>© 2026 ConvertFiles24</p><nav><a href="/privacy/" data-t="privacy">Privacy Policy</a><a href="/terms/" data-t="terms">Terms of Service</a></nav></div></footer>
+  <script src="app.js?v=20260902-resize-page"></script>
+</body>
+</html>
