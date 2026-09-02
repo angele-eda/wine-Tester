@@ -9,8 +9,8 @@
   bar.className = "cf24-bar";
   bar.innerHTML =
     '<a class="cf24-brand" href="/">' +
-      '<span class="cf24-brand-mark">C</span>' +
-      '<span>ConvertFiles<b>24</b></span>' +
+      '<span class="cf24-brand-mark notranslate" translate="no"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9a8 8 0 0 1 14-5M18 4v5h-5M20 15a8 8 0 0 1-14 5M6 20v-5h5"/></svg></span>' +
+      '<span class="notranslate" translate="no">ConvertFiles24</span>' +
     '</a>' +
     '<nav class="cf24-nav">' +
       '<a href="/">' + (isKo ? '모든 도구' : 'All tools') + '</a>' +
