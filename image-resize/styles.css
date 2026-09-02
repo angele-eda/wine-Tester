@@ -25,7 +25,7 @@ main { min-height:calc(100vh - 150px); }
 .eyebrow { margin:0 0 5px; color:var(--blue); font-size:11px; font-weight:800; letter-spacing:.08em; }
 h1 { margin:0; font:800 32px/1.15 var(--display); letter-spacing:-.04em; }
 .page-intro div>p:last-child { margin:7px 0 0; color:var(--muted); font-size:14px; }
-.ad-slot { height:82px; margin:0 0 22px; display:grid; place-items:center; border:1px dashed var(--line); border-radius:12px; color:var(--muted); background:color-mix(in srgb,var(--surface) 35%,transparent); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+.ad-slot { height:0; margin:0; display:none; place-items:center; border:1px dashed var(--line); border-radius:12px; color:var(--muted); background:color-mix(in srgb,var(--surface) 35%,transparent); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
 .workspace { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr); border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; }
 .work-area { padding:28px; }
 .settings { padding:28px; border-left:1px solid var(--line); background:color-mix(in srgb,var(--surface-2) 55%,var(--surface)); }
