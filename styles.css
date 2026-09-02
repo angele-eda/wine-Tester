@@ -198,7 +198,20 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 .file-limit { margin-top: 12px; color: var(--muted); font-size: 12px; font-weight: 500; }
 .crop-editor { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .crop-editor[hidden], .resize-settings[hidden] { display: none !important; }
-.crop-editor canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 330px; margin: 0 auto; border-radius: 7px; background: #111827; cursor: crosshair; touch-action: none; }
+.crop-stage { width: 100%; overflow: hidden; display: block; border-radius: 7px; background: #111827; overscroll-behavior: contain; scrollbar-width: none; }
+.crop-stage::-webkit-scrollbar { display: none; }
+.crop-editor canvas { display: block; width: auto; height: auto; max-width: none; max-height: none; margin: 0 auto; background: #111827; cursor: crosshair; touch-action: none; }
+.crop-editor.is-pan-mode canvas { cursor: grab; }
+.crop-editor.is-pan-mode canvas:active { cursor: grabbing; }
+.crop-toolbar { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.crop-toolbar button, .crop-zoom-controls { min-height: 34px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font: 700 11px/1 var(--font-ui); }
+.crop-toolbar button { padding: 0 11px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
+.crop-toolbar button:hover, .crop-toolbar button:focus-visible, .crop-toolbar button[aria-pressed="true"] { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+.crop-toolbar button:disabled { opacity: .4; cursor: default; }
+.crop-toolbar .material-symbols-outlined { font-size: 17px; }
+.crop-zoom-controls { display: inline-grid; grid-template-columns: 34px 52px 34px; align-items: center; overflow: hidden; }
+.crop-zoom-controls button { min-height: 32px; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.crop-zoom-controls output { text-align: center; color: var(--text); font-size: 11px; font-weight: 800; }
 .crop-editor p { margin: 10px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.45; text-align: center; }
 .choose-files { margin-top: 20px; padding: 11px 18px; border-radius: 8px; background: var(--primary-strong); color: #fff; font-size: 13px; font-weight: 700; }
 .queue-heading { margin: 24px 0 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -345,7 +358,9 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
   .drop-icon { display: none; }
   .choose-files { margin-top: 14px; }
   .crop-editor { padding: 10px; }
-  .crop-editor canvas { max-height: 270px; }
+  .crop-toolbar { gap: 6px; }
+  .crop-toolbar button { padding-inline: 9px; }
+  .crop-zoom-controls { grid-template-columns: 32px 48px 32px; }
   .queue-heading { margin-top: 18px; }
   .settings-panel { padding: 22px 20px; }
   .settings-panel h3 { margin-bottom: 18px; }

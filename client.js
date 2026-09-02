@@ -66,7 +66,13 @@ const resizeWidth = document.querySelector("#resizeWidth");
 const resizeHeight = document.querySelector("#resizeHeight");
 const maintainAspect = document.querySelector("#maintainAspect");
 const cropEditor = document.querySelector("#cropEditor");
+const cropStage = document.querySelector("#cropStage");
 const cropCanvas = document.querySelector("#cropCanvas");
+const cropZoomOut = document.querySelector("#cropZoomOut");
+const cropZoomIn = document.querySelector("#cropZoomIn");
+const cropZoomOutput = document.querySelector("#cropZoomOutput");
+const cropFitButton = document.querySelector("#cropFitButton");
+const cropPanButton = document.querySelector("#cropPanButton");
 const keepNames = document.querySelector("#keepNames");
 const successPanel = document.querySelector("#successPanel");
 const toast = document.querySelector("#toast");
@@ -90,6 +96,11 @@ let resizeSourceSize = null;
 let cropImage = null;
 let cropSelection = null;
 let cropInteraction = null;
+let cropZoom = 1;
+let cropBaseDisplaySize = null;
+let cropPanMode = false;
+let cropPinch = null;
+const cropPointers = new Map();
 
 function setActiveNav(targetId) {
   desktopNavLinks.forEach((link) => {
@@ -346,6 +357,10 @@ cropCanvas.addEventListener("pointerdown", startCropInteraction);
 cropCanvas.addEventListener("pointermove", moveCropInteraction);
 cropCanvas.addEventListener("pointerup", endCropInteraction);
 cropCanvas.addEventListener("pointercancel", endCropInteraction);
+cropZoomOut.addEventListener("click", () => setCropZoom(cropZoom - .25));
+cropZoomIn.addEventListener("click", () => setCropZoom(cropZoom + .25));
+cropFitButton.addEventListener("click", () => setCropZoom(1));
+cropPanButton.addEventListener("click", () => setCropPanMode(!cropPanMode));
 
 convertButton.addEventListener("click", async () => {
   if (!selectedFiles.length || convertButton.classList.contains("processing")) return;
@@ -416,6 +431,11 @@ function resetWorkspace() {
   cropImage = null;
   cropSelection = null;
   cropInteraction = null;
+  cropZoom = 1;
+  cropBaseDisplaySize = null;
+  cropPinch = null;
+  cropPointers.clear();
+  setCropPanMode(false);
   resizeWidth.value = "";
   resizeHeight.value = "";
   cropEditor.hidden = true;
@@ -785,7 +805,8 @@ function selectImageOutputFormat(file) {
 function setupCropCanvas() {
   if (!cropImage) return;
   const availableWidth = Math.max(240, cropEditor.clientWidth - 28);
-  const displayScale = Math.min(1, availableWidth / cropImage.naturalWidth, 330 / cropImage.naturalHeight);
+  const previewMaxHeight = window.innerWidth <= 600 ? 270 : 330;
+  const displayScale = Math.min(1, availableWidth / cropImage.naturalWidth, previewMaxHeight / cropImage.naturalHeight);
   const previewDensity = Math.max(2, window.devicePixelRatio || 1);
   const renderScale = Math.min(
     1,
@@ -795,8 +816,16 @@ function setupCropCanvas() {
   );
   cropCanvas.width = Math.max(1, Math.round(cropImage.naturalWidth * renderScale));
   cropCanvas.height = Math.max(1, Math.round(cropImage.naturalHeight * renderScale));
-  cropCanvas.style.width = `${Math.max(1, Math.round(cropImage.naturalWidth * displayScale))}px`;
-  cropCanvas.style.height = `${Math.max(1, Math.round(cropImage.naturalHeight * displayScale))}px`;
+  cropBaseDisplaySize = {
+    width: Math.max(1, Math.round(cropImage.naturalWidth * displayScale)),
+    height: Math.max(1, Math.round(cropImage.naturalHeight * displayScale))
+  };
+  cropStage.style.height = `${cropBaseDisplaySize.height}px`;
+  cropZoom = 1;
+  applyCropZoom(false);
+  setCropPanMode(false);
+  cropPointers.clear();
+  cropPinch = null;
   cropSelection = {
     x: cropCanvas.width * .1,
     y: cropCanvas.height * .1,
@@ -804,6 +833,48 @@ function setupCropCanvas() {
     height: cropCanvas.height * .8
   };
   drawCropCanvas();
+}
+
+function setCropZoom(value) {
+  if (!cropBaseDisplaySize) return;
+  const nextZoom = Math.max(.5, Math.min(3, Math.round(value * 100) / 100));
+  if (nextZoom === cropZoom) return;
+  const oldWidth = cropBaseDisplaySize.width * cropZoom;
+  const oldHeight = cropBaseDisplaySize.height * cropZoom;
+  const centerX = cropStage.scrollLeft + cropStage.clientWidth / 2;
+  const centerY = cropStage.scrollTop + cropStage.clientHeight / 2;
+  const anchorX = oldWidth > cropStage.clientWidth ? centerX / oldWidth : .5;
+  const anchorY = oldHeight > cropStage.clientHeight ? centerY / oldHeight : .5;
+  cropZoom = nextZoom;
+  applyCropZoom(false);
+  const newWidth = cropBaseDisplaySize.width * cropZoom;
+  const newHeight = cropBaseDisplaySize.height * cropZoom;
+  cropStage.scrollLeft = Math.max(0, anchorX * newWidth - cropStage.clientWidth / 2);
+  cropStage.scrollTop = Math.max(0, anchorY * newHeight - cropStage.clientHeight / 2);
+}
+
+function applyCropZoom(center = true) {
+  if (!cropBaseDisplaySize) return;
+  cropCanvas.style.width = `${Math.round(cropBaseDisplaySize.width * cropZoom)}px`;
+  cropCanvas.style.height = `${Math.round(cropBaseDisplaySize.height * cropZoom)}px`;
+  cropZoomOutput.value = `${Math.round(cropZoom * 100)}%`;
+  cropZoomOut.disabled = cropZoom <= .5;
+  cropZoomIn.disabled = cropZoom >= 3;
+  if (center) {
+    cropStage.scrollLeft = Math.max(0, (cropCanvas.offsetWidth - cropStage.clientWidth) / 2);
+    cropStage.scrollTop = Math.max(0, (cropCanvas.offsetHeight - cropStage.clientHeight) / 2);
+  }
+}
+
+function setCropPanMode(active) {
+  cropPanMode = Boolean(active);
+  cropEditor.classList.toggle("is-pan-mode", cropPanMode);
+  cropPanButton.setAttribute("aria-pressed", String(cropPanMode));
+}
+
+function cropPointerDistance() {
+  const points = [...cropPointers.values()];
+  return points.length < 2 ? 0 : Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
 }
 
 function cropPointerPosition(event) {
@@ -817,6 +888,23 @@ function cropPointerPosition(event) {
 function startCropInteraction(event) {
   if (!cropImage || !cropSelection) return;
   event.preventDefault();
+  cropPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  cropCanvas.setPointerCapture?.(event.pointerId);
+  if (cropPointers.size === 2) {
+    cropInteraction = null;
+    cropPinch = { distance: cropPointerDistance(), zoom: cropZoom };
+    return;
+  }
+  if (cropPanMode) {
+    cropInteraction = {
+      mode: "pan",
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: cropStage.scrollLeft,
+      scrollTop: cropStage.scrollTop
+    };
+    return;
+  }
   const point = cropPointerPosition(event);
   const rect = cropCanvas.getBoundingClientRect();
   const hitRadius = 18 * cropCanvas.width / Math.max(1, rect.width);
@@ -844,12 +932,23 @@ function startCropInteraction(event) {
     cropInteraction = { mode: "create", startX: point.x, startY: point.y };
     cropSelection = { x: point.x, y: point.y, width: 1, height: 1 };
   }
-  cropCanvas.setPointerCapture?.(event.pointerId);
 }
 
 function moveCropInteraction(event) {
+  if (cropPointers.has(event.pointerId)) cropPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (cropPointers.size >= 2 && cropPinch) {
+    event.preventDefault();
+    const distance = cropPointerDistance();
+    if (cropPinch.distance > 0) setCropZoom(cropPinch.zoom * distance / cropPinch.distance);
+    return;
+  }
   if (!cropInteraction || !cropSelection) return;
   event.preventDefault();
+  if (cropInteraction.mode === "pan") {
+    cropStage.scrollLeft = cropInteraction.scrollLeft - (event.clientX - cropInteraction.startX);
+    cropStage.scrollTop = cropInteraction.scrollTop - (event.clientY - cropInteraction.startY);
+    return;
+  }
   const point = cropPointerPosition(event);
   if (cropInteraction.mode === "move") {
     cropSelection.x = Math.max(0, Math.min(cropCanvas.width - cropSelection.width, point.x - cropInteraction.offsetX));
@@ -875,10 +974,12 @@ function moveCropInteraction(event) {
 }
 
 function endCropInteraction(event) {
+  cropPointers.delete(event.pointerId);
+  if (cropCanvas.hasPointerCapture?.(event.pointerId)) {
+    cropCanvas.releasePointerCapture(event.pointerId);
+  }
+  if (cropPointers.size < 2) cropPinch = null;
   if (!cropInteraction) return;
-    if (cropCanvas.hasPointerCapture?.(event.pointerId)) {
-      cropCanvas.releasePointerCapture(event.pointerId);
-    }
   cropInteraction = null;
   drawCropCanvas();
 }
@@ -903,7 +1004,7 @@ function drawCropCanvas() {
   context.lineWidth = Math.max(1, cropCanvas.width / Math.max(1, displayRect.width));
   context.setLineDash([]);
   context.strokeRect(cropSelection.x, cropSelection.y, cropSelection.width, cropSelection.height);
-  const handleRadius = Math.max(5, Math.min(9, cropCanvas.width / 55));
+  const handleRadius = Math.max(3, 7 * cropCanvas.width / Math.max(1, displayRect.width));
   context.fillStyle = "#ffffff";
   context.strokeStyle = "#2563eb";
   context.lineWidth = 2;
