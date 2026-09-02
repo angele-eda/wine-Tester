@@ -70,6 +70,11 @@
             <label><span data-t="width">Width</span><div><input id="widthInput" type="number" min="1" max="12000" inputmode="numeric" disabled><em>px</em></div></label>
             <label><span data-t="height">Height</span><div><input id="heightInput" type="number" min="1" max="12000" inputmode="numeric" disabled><em>px</em></div></label>
           </div>
+          <label class="scale-field">
+            <span><span data-t="scale">Size scale</span><output id="scaleOutput">100%</output></span>
+            <input id="scaleInput" type="range" min="10" max="200" step="1" value="100" disabled>
+            <small><span>10%</span><span>200%</span></small>
+          </label>
           <label class="check-row"><input id="keepRatio" type="checkbox" checked disabled><span data-t="ratio">Keep aspect ratio</span></label>
           <label class="field"><span data-t="format">Output format</span><select id="formatSelect" disabled><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
           <label class="field quality"><span><span data-t="quality">Quality</span><output id="qualityOutput">92%</output></span><input id="qualityInput" type="range" min="40" max="100" value="92" disabled></label>
@@ -88,6 +93,6 @@
   </main>
 
   <footer><div class="footer-shell"><a class="brand notranslate" href="/" translate="no"><img src="/assets/brand/convertfiles24-logo-v2.png" alt=""><span>Convert<span>Files24</span></span></a><p>© 2026 ConvertFiles24</p><nav><a href="/privacy/" data-t="privacy">Privacy Policy</a><a href="/terms/" data-t="terms">Terms of Service</a></nav></div></footer>
-  <script src="app.js?v=20260902-resize-page"></script>
+  <script src="app.js?v=20260902-size-slider"></script>
 </body>
 </html>

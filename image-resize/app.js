@@ -5,9 +5,15 @@ const translations = {
   es: { allTools:"Todas las herramientas",home:"Inicio",title:"Redimensionar imágenes",local:"HERRAMIENTA LOCAL",subtitle:"Cambia el ancho y alto de la imagen manteniendo las proporciones que necesitas.",ad:"Publicidad",selectTitle:"Selecciona una imagen",dropTitle:"Elige una imagen para redimensionar",dropCopy:"Selecciona una imagen JPG, PNG o WebP de tu dispositivo",choose:"Elegir imagen",limit:"1 archivo · Máximo 25 MB",replace:"Cambiar",settings:"Ajustes de tamaño",width:"Ancho",height:"Alto",ratio:"Mantener proporción",format:"Formato de salida",quality:"Calidad",privateTitle:"Procesamiento privado",privateCopy:"La imagen nunca se sube a un servidor.",action:"Redimensionar imagen",done:"Imagen redimensionada",download:"Descargar",exactTitle:"Dimensiones exactas",exactCopy:"Introduce el ancho y alto, hasta 12.000 píxeles.",safeTitle:"Archivos privados",safeCopy:"Todo se procesa localmente en el navegador.",deviceTitle:"Funciona en cualquier dispositivo",deviceCopy:"Úsalo en ordenador, tableta y móvil.",privacy:"Política de privacidad",terms:"Términos de servicio",badFile:"Elige una imagen JPG, PNG o WebP de menos de 25 MB.",badSize:"Introduce un ancho y alto entre 1 y 12.000 píxeles.",failed:"No se pudo redimensionar la imagen."}
 };
 
+translations.en.scale = "Size scale";
+translations.ko.scale = "크기 비율";
+translations.ja.scale = "サイズ比率";
+translations.es.scale = "Escala de tamaño";
+
 const $ = (selector) => document.querySelector(selector);
 const fileInput = $("#fileInput"), dropZone = $("#dropZone"), preview = $("#preview"), previewImage = $("#previewImage");
 const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio = $("#keepRatio"), formatSelect = $("#formatSelect");
+const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
 const qualityInput = $("#qualityInput"), qualityOutput = $("#qualityOutput"), resizeButton = $("#resizeButton"), result = $("#result"), message = $("#message");
 let currentFile = null, image = null, ratio = 1, resultBlob = null, resultName = "";
 let language = localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
@@ -44,18 +50,53 @@ function loadFile(file) {
   nextImage.onload = () => {
     if (previewImage.src.startsWith("blob:")) URL.revokeObjectURL(previewImage.src);
     currentFile = file; image = nextImage; ratio = image.naturalWidth / image.naturalHeight;
+    scaleInput.value = "100";
+    scaleOutput.value = "100%";
     previewImage.src = url; widthInput.value = image.naturalWidth; heightInput.value = image.naturalHeight;
     $("#fileName").textContent = file.name; $("#fileMeta").textContent = `${image.naturalWidth} × ${image.naturalHeight} px · ${formatBytes(file.size)}`;
     formatSelect.value = file.type; if (![...formatSelect.options].some((option) => option.value === file.type)) formatSelect.value = "image/png";
     dropZone.hidden = true; preview.hidden = false; result.hidden = true; resultBlob = null;
-    [widthInput,heightInput,keepRatio,formatSelect,qualityInput,resizeButton].forEach((el) => { el.disabled = false; });
+    [widthInput,heightInput,keepRatio,formatSelect,qualityInput,scaleInput,resizeButton].forEach((el) => { el.disabled = false; });
   };
   nextImage.onerror = () => { URL.revokeObjectURL(url); message.textContent = t("badFile"); };
   nextImage.src = url;
 }
 
-widthInput.addEventListener("input", () => { if (keepRatio.checked && widthInput.value) heightInput.value = Math.max(1, Math.round(Number(widthInput.value) / ratio)); result.hidden = true; });
-heightInput.addEventListener("input", () => { if (keepRatio.checked && heightInput.value) widthInput.value = Math.max(1, Math.round(Number(heightInput.value) * ratio)); result.hidden = true; });
+function syncScale(percent) {
+  const clamped = Math.max(10, Math.min(200, Math.round(percent)));
+  scaleInput.value = String(clamped);
+  scaleOutput.value = `${clamped}%`;
+}
+
+widthInput.addEventListener("input", () => {
+  if (keepRatio.checked && image && widthInput.value) {
+    heightInput.value = Math.max(1, Math.round(Number(widthInput.value) / ratio));
+    syncScale(Number(widthInput.value) / image.naturalWidth * 100);
+  }
+  result.hidden = true;
+});
+heightInput.addEventListener("input", () => {
+  if (keepRatio.checked && image && heightInput.value) {
+    widthInput.value = Math.max(1, Math.round(Number(heightInput.value) * ratio));
+    syncScale(Number(heightInput.value) / image.naturalHeight * 100);
+  }
+  result.hidden = true;
+});
+scaleInput.addEventListener("input", () => {
+  if (!image || !keepRatio.checked) return;
+  const scale = Number(scaleInput.value) / 100;
+  widthInput.value = Math.max(1, Math.round(image.naturalWidth * scale));
+  heightInput.value = Math.max(1, Math.round(image.naturalHeight * scale));
+  scaleOutput.value = `${scaleInput.value}%`;
+  result.hidden = true;
+});
+keepRatio.addEventListener("change", () => {
+  scaleInput.disabled = !keepRatio.checked || !image;
+  if (keepRatio.checked && image) {
+    heightInput.value = Math.max(1, Math.round(Number(widthInput.value) / ratio));
+    syncScale(Number(widthInput.value) / image.naturalWidth * 100);
+  }
+});
 qualityInput.addEventListener("input", () => { qualityOutput.value = `${qualityInput.value}%`; });
 
 resizeButton.addEventListener("click", async () => {
