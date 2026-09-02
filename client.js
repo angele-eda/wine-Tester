@@ -158,7 +158,7 @@ function applyLanguage(language, remember = false) {
   currentLanguage = translations[language] ? language : "en";
   document.documentElement.lang = currentLanguage;
   if (remember) localStorage.setItem("convertfiles24-language", currentLanguage);
-  languageLabel.textContent = tr("languageName");
+  languageLabel.textContent = currentLanguage.toUpperCase();
   mobileLanguageSelect.value = currentLanguage;
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = tr(element.dataset.i18n);

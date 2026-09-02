@@ -10,10 +10,15 @@ translations.ko.scale = "크기 비율";
 translations.ja.scale = "サイズ比率";
 translations.es.scale = "Escala de tamaño";
 
+Object.assign(translations.en,{privacyNav:"Privacy",imageTools:"Image tools",whyLabel:"Why ConvertFiles24",featuresTitle:"Built for speed and privacy",fastTitle:"Fast and simple",fastCopy:"Resize images in seconds with no installation or sign-up."});
+Object.assign(translations.ko,{privacyNav:"개인정보 보호",imageTools:"이미지 도구",whyLabel:"ConvertFiles24를 선택하는 이유",featuresTitle:"빠르고 안전한 이미지 작업",fastTitle:"빠르고 간편하게",fastCopy:"설치나 회원가입 없이 몇 초 만에 이미지 크기를 조절하세요."});
+Object.assign(translations.ja,{privacyNav:"プライバシー",imageTools:"画像ツール",whyLabel:"ConvertFiles24を選ぶ理由",featuresTitle:"高速でプライベート",fastTitle:"高速で簡単",fastCopy:"インストールや登録なしで数秒で画像サイズを変更できます。"});
+Object.assign(translations.es,{privacyNav:"Privacidad",imageTools:"Herramientas de imagen",whyLabel:"Por qué ConvertFiles24",featuresTitle:"Rápido y privado",fastTitle:"Rápido y sencillo",fastCopy:"Redimensiona imágenes en segundos sin instalar nada ni registrarte."});
+
 const $ = (selector) => document.querySelector(selector);
 const fileInput = $("#fileInput"), dropZone = $("#dropZone"), preview = $("#preview"), previewImage = $("#previewImage");
 const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio = $("#keepRatio"), formatSelect = $("#formatSelect");
-const scaleInput = $("#scaleInput");
+const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
 const qualityInput = $("#qualityInput"), qualityOutput = $("#qualityOutput"), resizeButton = $("#resizeButton"), result = $("#result"), message = $("#message");
 let currentFile = null, image = null, ratio = 1, resultBlob = null, resultName = "";
 let language = localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
@@ -72,6 +77,7 @@ function syncScale(percent) {
 function updatePreviewScale(percent) {
   const value = Math.max(10, Math.min(200, Number(percent) || 100));
   previewImage.style.setProperty("--preview-scale", String(Math.min(1, value / 100)));
+  if (scaleOutput) scaleOutput.value = `${Math.round(value)}%`;
 }
 
 widthInput.addEventListener("input", () => {
