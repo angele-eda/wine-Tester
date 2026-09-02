@@ -42,7 +42,6 @@ const mobileMenuClose = document.querySelector("#mobileMenuClose");
 const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
-const privacySection = document.querySelector("#privacy");
 const toolGrid = document.querySelector(".tool-grid");
 const defaultToolOrder = [...toolGrid.children];
 const dialog = document.querySelector("#workspaceDialog");
@@ -114,10 +113,7 @@ function setActiveNav(targetId) {
 function updateActiveNav() {
   navScrollFrame = null;
   if (Date.now() < navSelectionLockedUntil) return;
-  const headerOffset = 96;
-  const atPrivacy = privacySection.getBoundingClientRect().top <= headerOffset
-    || window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8;
-  setActiveNav(atPrivacy ? "#privacy" : "#tools");
+  setActiveNav("#tools");
 }
 
 window.addEventListener("scroll", () => {
@@ -248,7 +244,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
       setActiveNav("#tools");
       navSelectionLockedUntil = Date.now() + 800;
       window.setTimeout(updateActiveNav, 850);
-    } else if (targetId === "#tools" || targetId === "#privacy") {
+    } else if (targetId === "#tools") {
       setActiveNav(targetId);
       navSelectionLockedUntil = Date.now() + 800;
       window.setTimeout(updateActiveNav, 850);
@@ -265,7 +261,7 @@ document.querySelectorAll("[data-benefit-action]").forEach((card) => {
   card.addEventListener("click", () => {
     const action = card.dataset.benefitAction;
     if (action === "privacy") {
-      document.querySelector("#privacy")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.location.href = "/privacy/";
       return;
     }
     if (action === "tools") {
