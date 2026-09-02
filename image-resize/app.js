@@ -16,6 +16,10 @@ Object.assign(translations.ja,{privacyNav:"プライバシー",imageTools:"画�
 Object.assign(translations.es,{privacyNav:"Privacidad",imageTools:"Herramientas de imagen",whyLabel:"Por qué ConvertFiles24",featuresTitle:"Rápido y privado",fastTitle:"Rápido y sencillo",fastCopy:"Redimensiona imágenes en segundos sin instalar nada ni registrarte."});
 
 const $ = (selector) => document.querySelector(selector);
+document.querySelectorAll(".material-symbols-outlined").forEach((icon) => {
+  icon.classList.add("notranslate");
+  icon.setAttribute("translate", "no");
+});
 const fileInput = $("#fileInput"), dropZone = $("#dropZone"), preview = $("#preview"), previewImage = $("#previewImage");
 const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio = $("#keepRatio"), formatSelect = $("#formatSelect");
 const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
