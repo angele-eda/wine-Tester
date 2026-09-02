@@ -88,7 +88,7 @@ heightInput.addEventListener("input", () => {
   result.hidden = true;
 });
 scaleInput.addEventListener("input", () => {
-  if (!image || !keepRatio.checked) return;
+  if (!image) return;
   const scale = Number(scaleInput.value) / 100;
   widthInput.value = Math.max(1, Math.round(image.naturalWidth * scale));
   heightInput.value = Math.max(1, Math.round(image.naturalHeight * scale));
@@ -96,7 +96,7 @@ scaleInput.addEventListener("input", () => {
   result.hidden = true;
 });
 keepRatio.addEventListener("change", () => {
-  scaleInput.disabled = !keepRatio.checked || !image;
+  scaleInput.disabled = !image;
   if (keepRatio.checked && image) {
     heightInput.value = Math.max(1, Math.round(Number(widthInput.value) / ratio));
     syncScale(Number(widthInput.value) / image.naturalWidth * 100);
