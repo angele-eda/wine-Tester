@@ -837,6 +837,7 @@
 
       drop.classList.add("active");
       rangeEl.disabled = false;
+      rangeEl.value = pageCount === 1 ? "1" : `1-${pageCount}`;
       zipModeEl.disabled = false;
       clearBtn.disabled = false;
       downloadBtn.disabled = false;
