@@ -20,14 +20,14 @@
     document.querySelectorAll("[data-i18n]").forEach(node=>{const key=node.dataset.i18n;if(copy[lang][key])node.textContent=copy[lang][key]});
   }
   function renderTheme(){ui.themeIcon.textContent=document.documentElement.dataset.theme==="dark"?"☾":"☀"}
-  function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl="";ui.download.hidden=true;ui.download.removeAttribute("href");ui.status.textContent="";ui.status.className="status"}
+  function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl="";ui.download.hidden=true;ui.download.removeAttribute("href");ui.status.textContent="";ui.status.className="status";ui.convert.classList.remove("completed")}
   function setFile(candidate){
     clearResult();
     if(!candidate)return;
     const type=candidate.type||typeFromName(candidate.name);
     if(!accepted.test(type)){return showError(copy[lang].badType)}
     if(candidate.size>25*1024*1024){return showError(copy[lang].tooLarge)}
-    file=candidate;ui.name.textContent=file.name;ui.meta.textContent=`${formatBytes(file.size)} · ${type.replace("image/","").toUpperCase()}`;ui.selected.hidden=false;ui.drop.hidden=true;ui.formats.disabled=false;ui.convert.disabled=false;
+    file=candidate;ui.name.textContent=file.name;ui.meta.textContent=`${formatBytes(file.size)} · ${type.replace("image/","").toUpperCase()}`;ui.selected.hidden=false;ui.drop.hidden=true;ui.convert.disabled=false;
   }
   function showError(message){ui.status.textContent=message;ui.status.className="status error"}
   function typeFromName(name){const ext=name.split(".").pop().toLowerCase();return ext==="pdf"?"application/pdf":ext==="jpg"||ext==="jpeg"?"image/jpeg":`image/${ext}`}
@@ -55,7 +55,8 @@
 
   ui.drop.addEventListener("click",()=>ui.input.click()); ui.replace.addEventListener("click",()=>ui.input.click()); ui.input.addEventListener("change",()=>setFile(ui.input.files[0]));
   ["dragenter","dragover"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add("dragging")}));["dragleave","drop"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.remove("dragging")}));ui.drop.addEventListener("drop",e=>setFile(e.dataTransfer.files[0]));
-  ui.convert.addEventListener("click",async()=>{if(!file)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false;ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success"}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
+  ui.formats.addEventListener("change",clearResult);
+  ui.convert.addEventListener("click",async()=>{if(!file)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false;ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
   ui.language.addEventListener("change",()=>{lang=ui.language.value;const url=new URL(location.href);url.searchParams.set("lang",lang);history.replaceState(null,"",url);renderLanguage()});
   ui.theme.addEventListener("click",()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("convertfiles24-theme",next)}catch(_){}renderTheme()});
   addEventListener("beforeunload",()=>{if(resultUrl)URL.revokeObjectURL(resultUrl)});renderLanguage();renderTheme();
