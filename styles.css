@@ -418,7 +418,7 @@ html[data-theme="light"] {
 }
 body { background:var(--bg); }
 .section-shell { width:min(100% - 128px, 1080px); }
-.site-header { height:77px; background:var(--header); border-color:var(--line); }
+.site-header { height:83px; background:var(--header); border-color:var(--line); }
 .nav-shell { width:min(100% - 128px, 1180px); }
 .brand { gap:10px; font:700 16px/1 var(--font-display); letter-spacing:-.01em; }
 .brand-name > span:last-child { color:inherit; }
