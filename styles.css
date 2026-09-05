@@ -526,5 +526,6 @@ html[data-theme="light"] .desktop-nav #themeButton { border-color:#e7e4dc; backg
 .desktop-nav #themeIcon { color:var(--text) !important; font:400 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif; }
 html[data-theme="light"] .desktop-nav #themeIcon { color:#1c1b19 !important; }
 html[data-theme="dark"] .desktop-nav #themeIcon { color:#f3f1ec !important; }
+.desktop-nav .language-symbol { color:var(--text); font:400 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif; }
 .desktop-nav #themeButton:hover,
 .desktop-nav #themeButton:focus-visible { border-color:var(--primary); background:transparent; }
