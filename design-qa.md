@@ -1,42 +1,37 @@
-# Design QA — Unified Converter Workspaces
+# Design QA — File Converter
 
-- Source visual truth: `qa/source-image-crop.png` (`/image-crop/?lang=ko`)
-- Implementation screenshots: `qa/implementation-pdf-merge.png`, `qa/implementation-file-converter.png`
-- Viewport: 1280 × 900 CSS px, device scale factor 1
-- Source and implementation pixels: 1280 × 900
-- State: Korean, light theme, empty file-selection state
+- Source visual truth: `C:\Users\원대\Downloads\convertfiles24-file-converter.html` and `C:\Users\원대\Downloads\convertfiles24-file-converter-dark.html`
+- Implementation screenshots: `qa/file-converter-light.png`, `qa/file-converter-dark.png`, `qa/file-converter-mobile.png`
+- Desktop viewport: 1440 × 1000 CSS px; mobile viewport: 390 × 844 CSS px
+- States checked: Korean light, Korean dark, mobile dark, empty and selected-file conversion states
 
-## Full-view comparison evidence
+## Visual comparison
 
-The six legacy workspaces now follow the image-crop page composition: centered tool eyebrow/title/copy, a 1040px two-column work panel, a large file-selection surface on the left, and output settings plus a private-processing note and primary action on the right. Header width, warm background, border treatment, radius, and restrained shadow follow the same tokens.
+The implementation follows the supplied editorial composition: restrained warm background, compact header, centered format diagram, single focused conversion card, three-column benefit section, and a minimal footer. The dark theme uses the supplied near-black surfaces, warm neutral borders, blue focus states, and white primary typography.
 
-## Focused region comparison evidence
-
-The file-selection region was checked at desktop and mobile widths. It uses the same blue Material icon, clear selection title, blue file-selection control, supporting copy, and dashed neutral border as the image-crop reference. The right column uses the same 390px track, compact field rhythm, green lock treatment, and full-width blue action button with a right arrow.
-
-## Required fidelity surfaces
-
-- Fonts and typography: Sora is used for primary headings and IBM Plex Sans for interface copy; heading size, weight, letter spacing, and hierarchy match the reference.
-- Spacing and layout rhythm: panel width is 1040px, right track is 390px, desktop cards use 28px padding, and mobile collapses to one column without horizontal overflow.
-- Colors and visual tokens: warm light background, white surfaces, neutral borders, brand blue actions, and green privacy icon reuse the reference tokens.
-- Image quality and asset fidelity: no raster imagery was introduced; standard Material Symbols are used for tool and action icons.
-- Copy and content: all six routes have concise Korean/English titles, descriptions, file-selection labels, output headings, and private-processing copy.
+The mobile layout preserves the same hierarchy while collapsing format controls and benefits without horizontal overflow. Navigation reduces to brand, language, and theme controls so the converter remains usable at 390px.
 
 ## Interaction verification
 
-- File Converter, Merge PDF, Split PDF, Compress PDF, PDF to JPG/PNG, and JPG/PNG to PDF all completed real-file download tests after the UI change.
-- The full 12-tool regression suite passed with valid ICO, ZIP, JPG, PNG, WebP, and PDF signatures where applicable.
-- File inputs, drag/drop targets, settings controls, disabled/enabled action states, and downloads retain their original IDs and behavior.
-- Browser console errors during the conversion suite: none.
+- Image input to JPG, PNG, WebP, and PDF produced real downloadable files with valid signatures.
+- Two-page PDF input to JPG, PNG, and WebP produced real ZIP downloads containing page images.
+- PDF input to PDF produced a real PDF download.
+- Mobile PNG to JPG conversion and download passed at 390 × 844.
+- File validation enforces one JPG, PNG, WebP, or PDF file up to 25MB.
+- Disabled, active, success, error, replacement, theme, and language states were checked.
+- Browser console errors: none.
+- Horizontal overflow: none.
+- External runtime dependencies: none; PDF libraries are served locally.
 
-## Findings and comparison history
+## Scope verification
 
-- P2 fixed: the first version retained legacy hero copy, narrower panels, and emoji-heavy drop areas. It was replaced with route-specific concise copy, a reference-width panel, Material icons, and a consistent file-selection button.
-- P2 fixed: the injected privacy note initially shared a flex row with the merge action. It now sits above the primary action as a full-width vertical block.
+Only `/convert/` and the locally vendored PDF helper were changed. The other five legacy tool pages were not modified.
+
+## Findings
+
+- P1 fixed: the initial download control could become visible before conversion because component styling overrode the native `hidden` state.
+- P2 fixed: externally hosted fonts and PDF helper could emit network errors or prevent image-to-PDF conversion offline. The font request was removed and the PDF helper is now local.
+- P3 fixed: placeholder text-glyph benefit icons were replaced with source-consistent inline SVG icons.
 - No actionable P0, P1, or P2 findings remain.
-
-## Follow-up polish
-
-- P3: secondary per-tool controls intentionally keep their functional labels, because those settings differ by converter.
 
 final result: passed
