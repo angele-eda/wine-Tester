@@ -513,3 +513,12 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
   .site-footer { margin-top:84px; }
   .footer-shell { min-height:120px; grid-template-columns:1fr; align-content:center; }
 }
+
+/* Match the main desktop navigation to the monochrome converter header. */
+.desktop-nav .nav-link,
+.desktop-nav .icon-text-button,
+.desktop-nav #languageButton .material-symbols-outlined,
+.desktop-nav #themeIcon { color:var(--text); }
+.desktop-nav #themeButton { display:grid; place-items:center; border:1px solid var(--line); border-radius:8px; background:transparent; }
+.desktop-nav #themeButton:hover,
+.desktop-nav #themeButton:focus-visible { border-color:var(--text); background:var(--surface-3); outline:none; }
