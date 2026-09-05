@@ -135,7 +135,7 @@ function setTheme(theme) {
   root.dataset.theme = theme;
   localStorage.setItem("convertfiles24-theme", theme);
   const dark = theme === "dark";
-  themeIcon.textContent = dark ? "dark_mode" : "light_mode";
+  themeIcon.textContent = dark ? "☾" : "☀";
   themeButton.setAttribute("aria-label", dark ? tr("switchLight") : tr("switchDark"));
   mobileThemeButton.textContent = dark ? tr("mobileLightMode") : tr("mobileDarkMode");
 }

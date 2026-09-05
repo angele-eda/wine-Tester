@@ -522,5 +522,7 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
 .desktop-nav #themeButton { display:grid; place-items:center; border:1px solid var(--line); border-radius:8px; background:transparent; }
 .desktop-nav #themeButton:hover,
 .desktop-nav #themeButton:focus-visible { border-color:var(--text); background:var(--surface-3); outline:none; }
-html[data-theme="light"] .desktop-nav #themeButton { border-color:#e7e4dc; background:#faf8f4; }
-html[data-theme="light"] .desktop-nav #themeIcon { color:#1c1b19; font-size:18px; font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20; }
+html[data-theme="light"] .desktop-nav #themeButton { border-color:#e7e4dc; background:transparent; }
+.desktop-nav #themeIcon { color:var(--text); font:400 18px/1 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.desktop-nav #themeButton:hover,
+.desktop-nav #themeButton:focus-visible { border-color:var(--primary); background:transparent; }
