@@ -34,4 +34,12 @@ Only `/convert/` and the locally vendored PDF helper were changed. The other fiv
 - P3 fixed: placeholder text-glyph benefit icons were replaced with source-consistent inline SVG icons.
 - No actionable P0, P1, or P2 findings remain.
 
+## Homepage header follow-up
+
+- Reference: the approved File Converter header in light and dark modes.
+- Main desktop navigation text, language icon, and theme icon now share the same monochrome theme token.
+- The theme control matches the 34px outlined rounded-square treatment.
+- Mobile navigation structure and all homepage content remain unchanged.
+- No actionable P0, P1, or P2 findings remain.
+
 final result: passed
