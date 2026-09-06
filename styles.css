@@ -529,5 +529,7 @@ html[data-theme="dark"] .desktop-nav #themeIcon { color:#f3f1ec !important; }
 .desktop-nav .language-symbol { color:var(--text); font:400 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif; }
 @media (min-width:901px) { .nav-shell { width:min(1152px,calc(100% - 64px)); } }
 @media (min-width:901px) { .brand { display:flex; align-items:center; gap:10px; font-family:Sora,sans-serif; font-size:16px; font-weight:700; line-height:normal; letter-spacing:normal; } }
+.desktop-nav .language-menu { top:calc(100% + 10px); right:auto; left:50%; width:112px; padding:4px; transform:translateX(-50%); border-radius:8px; box-shadow:0 10px 24px rgba(28,27,25,.1); }
+.desktop-nav .language-menu button { padding:8px 10px; font-size:13px; line-height:1.25; }
 .desktop-nav #themeButton:hover,
 .desktop-nav #themeButton:focus-visible { border-color:var(--primary); background:transparent; }
