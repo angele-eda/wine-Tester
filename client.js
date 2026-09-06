@@ -32,9 +32,7 @@ const root = document.documentElement;
 const themeButton = document.querySelector("#themeButton");
 const mobileThemeButton = document.querySelector("#mobileThemeButton");
 const themeIcon = document.querySelector("#themeIcon");
-const languageButton = document.querySelector("#languageButton");
-const languageMenu = document.querySelector("#languageMenu");
-const languageLabel = document.querySelector("#languageLabel");
+const languageSelect = document.querySelector("#languageSelect");
 const mobileMenuButton = document.querySelector("#mobileMenuButton");
 const mobileNav = document.querySelector("#mobileNav");
 const mobileNavDismiss = document.querySelector("#mobileNavDismiss");
@@ -140,25 +138,15 @@ function setTheme(theme) {
   mobileThemeButton.textContent = dark ? tr("mobileLightMode") : tr("mobileDarkMode");
 }
 
-languageButton.addEventListener("click", () => {
-  const isOpen = languageButton.getAttribute("aria-expanded") === "true";
-  languageButton.setAttribute("aria-expanded", String(!isOpen));
-  languageMenu.hidden = isOpen;
-});
-
-languageMenu.addEventListener("click", (event) => {
-  const option = event.target.closest("[data-language]");
-  if (!option) return;
-  applyLanguage(option.dataset.lang || "en", true);
-  languageMenu.hidden = true;
-  languageButton.setAttribute("aria-expanded", "false");
+languageSelect.addEventListener("change", () => {
+  applyLanguage(languageSelect.value, true);
 });
 
 function applyLanguage(language, remember = false) {
   currentLanguage = translations[language] ? language : "en";
   document.documentElement.lang = currentLanguage;
   if (remember) localStorage.setItem("convertfiles24-language", currentLanguage);
-  languageLabel.textContent = { en: "EN", ko: "KO", ja: "JP", es: "ES" }[currentLanguage];
+  languageSelect.value = currentLanguage;
   mobileLanguageSelect.value = currentLanguage;
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = tr(element.dataset.i18n);
@@ -171,13 +159,6 @@ function applyLanguage(language, remember = false) {
   setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") === "true");
   renderFiles();
 }
-
-document.addEventListener("click", (event) => {
-  if (!event.target.closest(".language-wrap")) {
-    languageMenu.hidden = true;
-    languageButton.setAttribute("aria-expanded", "false");
-  }
-});
 
 function setMobileMenu(open) {
   mobileMenuButton.setAttribute("aria-expanded", String(open));
@@ -211,11 +192,6 @@ mobileLanguageSelect.addEventListener("change", () => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
-  if (!languageMenu.hidden) {
-    languageMenu.hidden = true;
-    languageButton.setAttribute("aria-expanded", "false");
-    languageButton.focus();
-  }
   if (mobileMenuButton.getAttribute("aria-expanded") === "true") {
     setMobileMenu(false);
     mobileMenuButton.focus();
