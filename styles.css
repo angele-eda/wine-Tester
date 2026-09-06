@@ -532,3 +532,12 @@ html[data-theme="dark"] .desktop-nav #themeIcon { color:#f3f1ec !important; }
 .desktop-nav .desktop-language:focus-within { border-radius:7px; box-shadow:0 0 0 1px var(--primary); }
 .desktop-nav #themeButton:hover,
 .desktop-nav #themeButton:focus-visible { border-color:var(--primary); background:transparent; }
+
+/* Keep the home footer identical to the File Converter footer. */
+.converter-footer { margin-top:88px; padding:28px max(32px,calc((100% - 1152px)/2)); display:flex; align-items:center; justify-content:space-between; gap:24px; border-top:1px solid var(--line); background:var(--bg); color:#8a8579; font-size:13px; }
+.converter-footer nav { display:flex; gap:28px; }
+.converter-footer a:hover { color:var(--primary); }
+@media (max-width:700px) {
+  .converter-footer { margin-top:84px; padding:26px 20px; align-items:flex-start; flex-direction:column; }
+  .converter-footer nav { gap:20px; }
+}
