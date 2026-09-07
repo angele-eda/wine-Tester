@@ -4,7 +4,9 @@
     input: $("#fileInput"), drop: $("#dropZone"), selected: $("#selectedFile"),
     name: $("#fileName"), meta: $("#fileMeta"), replace: $("#replaceButton"),
     formats: $("#formatFieldset"), convert: $("#convertButton"), status: $("#status"),
-    download: $("#downloadButton"), language: $("#languageSelect"), theme: $("#themeButton"), themeIcon: $("#themeIcon")
+    download: $("#downloadButton"), downloadChoices: $("#downloadChoices"), downloadSeparate: $("#downloadSeparateButton"),
+    downloadSeparateLabel: $("#downloadSeparateLabel"), downloadZip: $("#downloadZipButton"), downloadZipLabel: $("#downloadZipLabel"),
+    language: $("#languageSelect"), theme: $("#themeButton"), themeIcon: $("#themeIcon")
   };
   const copy = {
     en:{allTools:"All tools",privacy:"Privacy",eyebrow:"File tools",title:"File Converter",subtitle:"Convert JPG, PNG, WebP and PDF formats instantly with local processing.",formatCaption:"Convert in any direction · JPG, PNG, WebP, PDF",selectLabel:"Select file",dropTitle:"Choose a file to convert",dropCopy:"JPG, PNG, WebP or PDF from your device",choose:"Choose file",limit:"1 file · up to 25MB",replace:"Replace",convertTo:"Convert to",localTitle:"Processed on your device",localCopy:"Files are never uploaded to a server.",convert:"Convert file",download:"Download converted file",processing:"Converting on your device…",ready:"Your converted file is ready.",badType:"Choose a JPG, PNG, WebP or PDF file.",tooLarge:"Choose a file no larger than 25MB.",failed:"This file could not be converted.",why:"Why ConvertFiles24",featureTitle:"Built for speed and privacy",privateTitle:"Private by design",privateCopy:"Your files never leave your device. All processing happens locally in your browser.",anyTitle:"Any format, either way",anyCopy:"Convert between JPG, PNG, WebP and PDF in any direction.",worksTitle:"Works everywhere",worksCopy:"Export ready for any platform, app, or website.",copyright:"© 2026 ConvertFiles24. Client-side excellence.",privacyPolicy:"Privacy Policy",terms:"Terms of Service"},
@@ -19,6 +21,7 @@
   let lang = supportedLanguages.includes(urlLanguage) ? urlLanguage : supportedLanguages.includes(savedLanguage) ? savedLanguage : supportedLanguages.includes(browserLanguage) ? browserLanguage : "en";
   let files = [];
   let resultUrl = "";
+  let separateResults = [];
   const accepted = /^(image\/(jpeg|png|webp)|application\/pdf)$/i;
 
   function renderLanguage(){
@@ -28,10 +31,12 @@
     document.querySelector('[data-i18n="dropTitle"]').textContent=multipleText.title;
     document.querySelector('[data-i18n="choose"]').textContent=multipleText.choose;
     document.querySelector('[data-i18n="limit"]').textContent=multipleText.limit;
+    const downloadText={en:{separate:"Download separately",zip:"Download ZIP"},ko:{separate:"각각 다운로드",zip:"ZIP 다운로드"},ja:{separate:"個別にダウンロード",zip:"ZIPをダウンロード"},es:{separate:"Descargar por separado",zip:"Descargar ZIP"}}[lang];
+    ui.downloadSeparateLabel.textContent=downloadText.separate;ui.downloadZipLabel.textContent=downloadText.zip;
     if(files.length>1)ui.name.textContent=fileCountLabel(files.length);
   }
   function renderTheme(){ui.themeIcon.textContent=document.documentElement.dataset.theme==="dark"?"☾":"☀"}
-  function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl="";ui.download.hidden=true;ui.download.removeAttribute("href");ui.status.textContent="";ui.status.className="status";ui.convert.classList.remove("completed")}
+  function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);separateResults.forEach(item=>URL.revokeObjectURL(item.url));resultUrl="";separateResults=[];ui.download.hidden=true;ui.download.removeAttribute("href");ui.downloadChoices.hidden=true;ui.downloadZip.removeAttribute("href");ui.status.textContent="";ui.status.className="status";ui.convert.classList.remove("completed")}
   function fileCountLabel(count){return lang==="ko"?`${count}개 파일 선택`:lang==="ja"?`${count}ファイルを選択`:lang==="es"?`${count} archivos seleccionados`:`${count} files selected`}
   function setFiles(candidates){
     clearResult();
@@ -77,14 +82,15 @@
     if(!window.JSZip)throw new Error("ZIP tools are not ready");
     const zip=new JSZip(),used=new Set();
     results.forEach((item,index)=>{let name=item.name;if(used.has(name))name=`${index+1}-${name}`;used.add(name);zip.file(name,item.blob)});
-    return{blob:await zip.generateAsync({type:"blob"}),name:"converted-files.zip"};
+    return{blob:await zip.generateAsync({type:"blob"}),name:"converted-files.zip",items:results};
   }
 
   ui.drop.addEventListener("click",()=>ui.input.click()); ui.replace.addEventListener("click",()=>ui.input.click()); ui.input.addEventListener("change",()=>setFiles(ui.input.files));
   ["dragenter","dragover"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add("dragging")}));["dragleave","drop"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.remove("dragging")}));ui.drop.addEventListener("drop",e=>setFiles(e.dataTransfer.files));
   ui.formats.addEventListener("change",clearResult);
-  ui.convert.addEventListener("click",async()=>{if(!files.length)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false;ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
+  ui.convert.addEventListener("click",async()=>{if(!files.length)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);if(result.items){separateResults=result.items.map(item=>({...item,url:URL.createObjectURL(item.blob)}));ui.downloadZip.href=resultUrl;ui.downloadZip.download=result.name;ui.downloadChoices.hidden=false}else{ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false}ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
+  ui.downloadSeparate.addEventListener("click",()=>{separateResults.forEach((item,index)=>setTimeout(()=>{const link=document.createElement("a");link.href=item.url;link.download=item.name;document.body.appendChild(link);link.click();link.remove()},index*180))});
   ui.language.addEventListener("change",()=>{lang=ui.language.value;try{localStorage.setItem("convertfiles24-language",lang)}catch(_){}const url=new URL(location.href);url.searchParams.set("lang",lang);history.replaceState(null,"",url);renderLanguage()});
   ui.theme.addEventListener("click",()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("convertfiles24-theme",next)}catch(_){}renderTheme()});
-  addEventListener("beforeunload",()=>{if(resultUrl)URL.revokeObjectURL(resultUrl)});renderLanguage();renderTheme();
+  addEventListener("beforeunload",()=>{if(resultUrl)URL.revokeObjectURL(resultUrl);separateResults.forEach(item=>URL.revokeObjectURL(item.url))});renderLanguage();renderTheme();
 })();

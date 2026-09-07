@@ -76,6 +76,10 @@
       <button class="convert-button" id="convertButton" type="button" disabled><span data-i18n="convert">Convert file</span><span aria-hidden="true">→</span></button>
       <p class="status" id="status" aria-live="polite"></p>
       <a class="download-button" id="downloadButton" hidden><span data-i18n="download">Download converted file</span><span aria-hidden="true">↓</span></a>
+      <div class="download-choices" id="downloadChoices" hidden>
+        <button class="download-button download-separate" id="downloadSeparateButton" type="button"><span id="downloadSeparateLabel">Download separately</span><span aria-hidden="true">↓</span></button>
+        <a class="download-button download-zip" id="downloadZipButton"><span id="downloadZipLabel">Download ZIP</span><span aria-hidden="true">↓</span></a>
+      </div>
     </section>
 
     <section class="features">
@@ -94,6 +98,6 @@
   <script src="/assets/pdf-lib/pdf-lib.min.js"></script>
   <script src="/assets/pdfjs/pdf.min.js"></script>
   <script src="/assets/jszip/jszip.min.js"></script>
-  <script src="/convert/app.js?v=20260907-multiple-files-v1"></script>
+  <script src="/convert/app.js?v=20260907-download-options-v1"></script>
 </body>
 </html>
