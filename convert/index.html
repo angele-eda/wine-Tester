@@ -42,13 +42,13 @@
     <section class="converter-card" aria-labelledby="selectHeading">
       <div class="field-group">
         <h2 id="selectHeading" data-i18n="selectLabel">Select file</h2>
-        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" hidden>
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" multiple hidden>
         <button class="drop-zone" id="dropZone" type="button">
           <svg class="file-icon" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7zM14 3v4h4"/></svg>
           <span class="drop-title" data-i18n="dropTitle">Choose a file to convert</span>
           <span class="drop-copy" data-i18n="dropCopy">JPG, PNG, WebP or PDF from your device</span>
           <b class="choose-button" data-i18n="choose">Choose file</b>
-          <small data-i18n="limit">1 file · up to 25MB</small>
+          <small data-i18n="limit">Up to 10 files · 25MB each</small>
         </button>
         <div class="selected-file" id="selectedFile" hidden>
           <div><strong id="fileName"></strong><small id="fileMeta"></small></div>
@@ -94,6 +94,6 @@
   <script src="/assets/pdf-lib/pdf-lib.min.js"></script>
   <script src="/assets/pdfjs/pdf.min.js"></script>
   <script src="/assets/jszip/jszip.min.js"></script>
-  <script src="/convert/app.js?v=20260906-four-languages-v1"></script>
+  <script src="/convert/app.js?v=20260907-multiple-files-v1"></script>
 </body>
 </html>

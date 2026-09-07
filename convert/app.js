@@ -17,23 +17,34 @@
   const savedLanguage = (()=>{try{return localStorage.getItem("convertfiles24-language")}catch(_){return null}})();
   const browserLanguage = (navigator.language || "en").split("-")[0].toLowerCase();
   let lang = supportedLanguages.includes(urlLanguage) ? urlLanguage : supportedLanguages.includes(savedLanguage) ? savedLanguage : supportedLanguages.includes(browserLanguage) ? browserLanguage : "en";
-  let file = null;
+  let files = [];
   let resultUrl = "";
   const accepted = /^(image\/(jpeg|png|webp)|application\/pdf)$/i;
 
   function renderLanguage(){
     document.documentElement.lang=lang; ui.language.value=lang;
     document.querySelectorAll("[data-i18n]").forEach(node=>{const key=node.dataset.i18n;if(copy[lang][key])node.textContent=copy[lang][key]});
+    const multipleText={en:{title:"Choose files to convert",choose:"Choose files",limit:"Up to 10 files · 25MB each"},ko:{title:"변환할 파일을 선택하세요",choose:"파일 선택",limit:"최대 10개 · 파일당 25MB"},ja:{title:"変換するファイルを選択してください",choose:"ファイルを選択",limit:"最大10ファイル · 1ファイル25MB"},es:{title:"Elige archivos para convertir",choose:"Elegir archivos",limit:"Hasta 10 archivos · 25 MB cada uno"}}[lang];
+    document.querySelector('[data-i18n="dropTitle"]').textContent=multipleText.title;
+    document.querySelector('[data-i18n="choose"]').textContent=multipleText.choose;
+    document.querySelector('[data-i18n="limit"]').textContent=multipleText.limit;
+    if(files.length>1)ui.name.textContent=fileCountLabel(files.length);
   }
   function renderTheme(){ui.themeIcon.textContent=document.documentElement.dataset.theme==="dark"?"☾":"☀"}
   function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl="";ui.download.hidden=true;ui.download.removeAttribute("href");ui.status.textContent="";ui.status.className="status";ui.convert.classList.remove("completed")}
-  function setFile(candidate){
+  function fileCountLabel(count){return lang==="ko"?`${count}개 파일 선택`:lang==="ja"?`${count}ファイルを選択`:lang==="es"?`${count} archivos seleccionados`:`${count} files selected`}
+  function setFiles(candidates){
     clearResult();
-    if(!candidate)return;
-    const type=candidate.type||typeFromName(candidate.name);
-    if(!accepted.test(type)){return showError(copy[lang].badType)}
-    if(candidate.size>25*1024*1024){return showError(copy[lang].tooLarge)}
-    file=candidate;ui.name.textContent=file.name;ui.meta.textContent=`${formatBytes(file.size)} · ${type.replace("image/","").toUpperCase()}`;ui.selected.hidden=false;ui.drop.hidden=true;ui.convert.disabled=false;
+    const next=[...candidates];
+    if(!next.length)return;
+    if(next.length>10)return showError(lang==="ko"?"파일은 최대 10개까지 선택할 수 있습니다.":lang==="ja"?"選択できるファイルは最大10個です。":lang==="es"?"Puedes seleccionar hasta 10 archivos.":"You can select up to 10 files.");
+    if(next.some(candidate=>!accepted.test(candidate.type||typeFromName(candidate.name))))return showError(copy[lang].badType);
+    if(next.some(candidate=>candidate.size>25*1024*1024))return showError(copy[lang].tooLarge);
+    files=next;
+    const totalSize=files.reduce((sum,item)=>sum+item.size,0);
+    const types=[...new Set(files.map(item=>(item.type||typeFromName(item.name)).replace("image/","").toUpperCase()))].join(", ");
+    ui.name.textContent=files.length===1?files[0].name:fileCountLabel(files.length);
+    ui.meta.textContent=`${formatBytes(totalSize)} · ${types}`;ui.selected.hidden=false;ui.drop.hidden=true;ui.convert.disabled=false;
   }
   function showError(message){ui.status.textContent=message;ui.status.className="status error"}
   function typeFromName(name){const ext=name.split(".").pop().toLowerCase();return ext==="pdf"?"application/pdf":ext==="jpg"||ext==="jpeg"?"image/jpeg":`image/${ext}`}
@@ -41,28 +52,38 @@
   function baseName(name){return name.replace(/\.[^.]+$/,"")}
   function canvasBlob(canvas,mime,quality=.92){return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Canvas export failed")),mime,quality))}
   function loadImage(blob){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(blob),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);resolve(image)};image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Image decode failed"))};image.src=url})}
-  async function imageToImage(target){const image=await loadImage(file),canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext("2d");if(target==="jpg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height)}ctx.drawImage(image,0,0);const mime=target==="jpg"?"image/jpeg":`image/${target}`;return{blob:await canvasBlob(canvas,mime,target==="png"?1:.92),name:`${baseName(file.name)}.${target}`}}
-  async function imageToPdf(){if(!window.PDFLib)throw new Error("PDF tools are not ready");const image=await loadImage(file),canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);const jpg=await canvasBlob(canvas,"image/jpeg",.94),pdf=await PDFLib.PDFDocument.create(),embedded=await pdf.embedJpg(await jpg.arrayBuffer()),page=pdf.addPage([image.naturalWidth,image.naturalHeight]);page.drawImage(embedded,{x:0,y:0,width:image.naturalWidth,height:image.naturalHeight});return{blob:new Blob([await pdf.save()],{type:"application/pdf"}),name:`${baseName(file.name)}.pdf`}}
-  async function pdfToImages(target){
+  async function imageToImage(source,target){const image=await loadImage(source),canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext("2d");if(target==="jpg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height)}ctx.drawImage(image,0,0);const mime=target==="jpg"?"image/jpeg":`image/${target}`;return{blob:await canvasBlob(canvas,mime,target==="png"?1:.92),name:`${baseName(source.name)}.${target}`}}
+  async function imageToPdf(source){if(!window.PDFLib)throw new Error("PDF tools are not ready");const image=await loadImage(source),canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);const jpg=await canvasBlob(canvas,"image/jpeg",.94),pdf=await PDFLib.PDFDocument.create(),embedded=await pdf.embedJpg(await jpg.arrayBuffer()),page=pdf.addPage([image.naturalWidth,image.naturalHeight]);page.drawImage(embedded,{x:0,y:0,width:image.naturalWidth,height:image.naturalHeight});return{blob:new Blob([await pdf.save()],{type:"application/pdf"}),name:`${baseName(source.name)}.pdf`}}
+  async function pdfToImages(source,target){
     if(!window.pdfjsLib)throw new Error("PDF renderer is not ready");pdfjsLib.GlobalWorkerOptions.workerSrc="/assets/pdfjs/pdf.worker.min.js";
-    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,items=[];
-    for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){const page=await pdf.getPage(pageNo),viewport=page.getViewport({scale:2}),canvas=document.createElement("canvas");canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);const ctx=canvas.getContext("2d");if(target==="jpg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height)}await page.render({canvasContext:ctx,viewport}).promise;const mime=target==="jpg"?"image/jpeg":`image/${target}`;items.push({blob:await canvasBlob(canvas,mime,target==="png"?1:.92),name:`${baseName(file.name)}-${pageNo}.${target}`})}
-    if(items.length===1)return items[0];if(!window.JSZip)throw new Error("ZIP tools are not ready");const zip=new JSZip();items.forEach(item=>zip.file(item.name,item.blob));return{blob:await zip.generateAsync({type:"blob"}),name:`${baseName(file.name)}-${target}.zip`}
+    const pdf=await pdfjsLib.getDocument({data:await source.arrayBuffer()}).promise,items=[];
+    for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){const page=await pdf.getPage(pageNo),viewport=page.getViewport({scale:2}),canvas=document.createElement("canvas");canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);const ctx=canvas.getContext("2d");if(target==="jpg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height)}await page.render({canvasContext:ctx,viewport}).promise;const mime=target==="jpg"?"image/jpeg":`image/${target}`;items.push({blob:await canvasBlob(canvas,mime,target==="png"?1:.92),name:`${baseName(source.name)}-${pageNo}.${target}`})}
+    if(items.length===1)return items[0];if(!window.JSZip)throw new Error("ZIP tools are not ready");const zip=new JSZip();items.forEach(item=>zip.file(item.name,item.blob));return{blob:await zip.generateAsync({type:"blob"}),name:`${baseName(source.name)}-${target}.zip`}
+  }
+  async function convertOne(source,target){
+    const type=source.type||typeFromName(source.name);
+    if(type==="application/pdf"){
+      if(target==="pdf")return{blob:source.slice(0,source.size,"application/pdf"),name:`${baseName(source.name)}.pdf`};
+      return pdfToImages(source,target);
+    }
+    if(target==="pdf")return imageToPdf(source);
+    return imageToImage(source,target);
   }
   async function convert(){
-    const target=document.querySelector('input[name="output"]:checked').value,type=file.type||typeFromName(file.name);
-    if(type==="application/pdf"){
-      if(target==="pdf")return{blob:file.slice(0,file.size,"application/pdf"),name:`${baseName(file.name)}.pdf`};
-      return pdfToImages(target);
-    }
-    if(target==="pdf")return imageToPdf();
-    return imageToImage(target);
+    const target=document.querySelector('input[name="output"]:checked').value;
+    const results=[];
+    for(const source of files)results.push(await convertOne(source,target));
+    if(results.length===1)return results[0];
+    if(!window.JSZip)throw new Error("ZIP tools are not ready");
+    const zip=new JSZip(),used=new Set();
+    results.forEach((item,index)=>{let name=item.name;if(used.has(name))name=`${index+1}-${name}`;used.add(name);zip.file(name,item.blob)});
+    return{blob:await zip.generateAsync({type:"blob"}),name:"converted-files.zip"};
   }
 
-  ui.drop.addEventListener("click",()=>ui.input.click()); ui.replace.addEventListener("click",()=>ui.input.click()); ui.input.addEventListener("change",()=>setFile(ui.input.files[0]));
-  ["dragenter","dragover"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add("dragging")}));["dragleave","drop"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.remove("dragging")}));ui.drop.addEventListener("drop",e=>setFile(e.dataTransfer.files[0]));
+  ui.drop.addEventListener("click",()=>ui.input.click()); ui.replace.addEventListener("click",()=>ui.input.click()); ui.input.addEventListener("change",()=>setFiles(ui.input.files));
+  ["dragenter","dragover"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add("dragging")}));["dragleave","drop"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.remove("dragging")}));ui.drop.addEventListener("drop",e=>setFiles(e.dataTransfer.files));
   ui.formats.addEventListener("change",clearResult);
-  ui.convert.addEventListener("click",async()=>{if(!file)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false;ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
+  ui.convert.addEventListener("click",async()=>{if(!files.length)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false;ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
   ui.language.addEventListener("change",()=>{lang=ui.language.value;try{localStorage.setItem("convertfiles24-language",lang)}catch(_){}const url=new URL(location.href);url.searchParams.set("lang",lang);history.replaceState(null,"",url);renderLanguage()});
   ui.theme.addEventListener("click",()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("convertfiles24-theme",next)}catch(_){}renderTheme()});
   addEventListener("beforeunload",()=>{if(resultUrl)URL.revokeObjectURL(resultUrl)});renderLanguage();renderTheme();
