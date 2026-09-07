@@ -4,7 +4,7 @@
     input: $("#fileInput"), drop: $("#dropZone"), selected: $("#selectedFile"),
     name: $("#fileName"), meta: $("#fileMeta"), replace: $("#replaceButton"),
     formats: $("#formatFieldset"), convert: $("#convertButton"), status: $("#status"),
-    download: $("#downloadButton"), downloadChoices: $("#downloadChoices"), downloadSeparate: $("#downloadSeparateButton"),
+    download: $("#downloadButton"), downloadChoices: $("#downloadChoices"), downloadCount: $("#downloadCount"), downloadSeparate: $("#downloadSeparateButton"),
     downloadSeparateLabel: $("#downloadSeparateLabel"), downloadZip: $("#downloadZipButton"), downloadZipLabel: $("#downloadZipLabel"),
     language: $("#languageSelect"), theme: $("#themeButton"), themeIcon: $("#themeIcon")
   };
@@ -34,10 +34,12 @@
     const downloadText={en:{separate:"Download separately",zip:"Download ZIP"},ko:{separate:"각각 다운로드",zip:"ZIP 다운로드"},ja:{separate:"個別にダウンロード",zip:"ZIPをダウンロード"},es:{separate:"Descargar por separado",zip:"Descargar ZIP"}}[lang];
     ui.downloadSeparateLabel.textContent=downloadText.separate;ui.downloadZipLabel.textContent=downloadText.zip;
     if(files.length>1)ui.name.textContent=fileCountLabel(files.length);
+    if(separateResults.length)ui.downloadCount.textContent=convertedCountLabel(separateResults.length);
   }
   function renderTheme(){ui.themeIcon.textContent=document.documentElement.dataset.theme==="dark"?"☾":"☀"}
   function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);separateResults.forEach(item=>URL.revokeObjectURL(item.url));resultUrl="";separateResults=[];ui.download.hidden=true;ui.download.removeAttribute("href");ui.downloadChoices.hidden=true;ui.downloadZip.removeAttribute("href");ui.status.textContent="";ui.status.className="status";ui.convert.classList.remove("completed")}
   function fileCountLabel(count){return lang==="ko"?`${count}개 파일 선택`:lang==="ja"?`${count}ファイルを選択`:lang==="es"?`${count} archivos seleccionados`:`${count} files selected`}
+  function convertedCountLabel(count){return lang==="ko"?`변환된 파일 ${count}개`:lang==="ja"?`変換済みファイル ${count}個`:lang==="es"?`${count} archivos convertidos`:`${count} converted files`}
   function setFiles(candidates){
     clearResult();
     const next=[...candidates];
@@ -88,7 +90,7 @@
   ui.drop.addEventListener("click",()=>ui.input.click()); ui.replace.addEventListener("click",()=>ui.input.click()); ui.input.addEventListener("change",()=>setFiles(ui.input.files));
   ["dragenter","dragover"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add("dragging")}));["dragleave","drop"].forEach(event=>ui.drop.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.remove("dragging")}));ui.drop.addEventListener("drop",e=>setFiles(e.dataTransfer.files));
   ui.formats.addEventListener("change",clearResult);
-  ui.convert.addEventListener("click",async()=>{if(!files.length)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);if(result.items){separateResults=result.items.map(item=>({...item,url:URL.createObjectURL(item.blob)}));ui.downloadZip.href=resultUrl;ui.downloadZip.download=result.name;ui.downloadChoices.hidden=false}else{ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false}ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
+  ui.convert.addEventListener("click",async()=>{if(!files.length)return;clearResult();ui.convert.disabled=true;ui.status.textContent=copy[lang].processing;try{const result=await convert();resultUrl=URL.createObjectURL(result.blob);if(result.items){separateResults=result.items.map(item=>({...item,url:URL.createObjectURL(item.blob)}));ui.downloadCount.textContent=convertedCountLabel(result.items.length);ui.downloadZip.href=resultUrl;ui.downloadZip.download=result.name;ui.downloadChoices.hidden=false}else{ui.download.href=resultUrl;ui.download.download=result.name;ui.download.hidden=false}ui.status.textContent=`${copy[lang].ready} · ${formatBytes(result.blob.size)}`;ui.status.className="status success";ui.convert.classList.add("completed")}catch(error){console.error(error);showError(copy[lang].failed)}finally{ui.convert.disabled=false}});
   ui.downloadSeparate.addEventListener("click",()=>{separateResults.forEach((item,index)=>setTimeout(()=>{const link=document.createElement("a");link.href=item.url;link.download=item.name;document.body.appendChild(link);link.click();link.remove()},index*180))});
   ui.language.addEventListener("change",()=>{lang=ui.language.value;try{localStorage.setItem("convertfiles24-language",lang)}catch(_){}const url=new URL(location.href);url.searchParams.set("lang",lang);history.replaceState(null,"",url);renderLanguage()});
   ui.theme.addEventListener("click",()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("convertfiles24-theme",next)}catch(_){}renderTheme()});
