@@ -31,6 +31,53 @@
 
 final result: passed
 
+## Video Tools QA — 2026-09-09
+
+- Source visual truth: https://convertfiles24.com/pdf-organize/?lang=ko (approved ConvertFiles24 conversion-page design family).
+- Implementation: http://127.0.0.1:4674/video-tools/?lang=ko
+- Source screenshot evidence: Codex in-app browser full-page inline capture, 1265 × 800 CSS viewport, 1x density, light mode.
+- Implementation screenshot evidence: Codex in-app browser full-page inline capture, 1265 × 800 CSS viewport, 1x density, light mode.
+- Mobile evidence: Codex in-app browser full-page inline capture, 390 × 844 CSS viewport, 1x density, Korean dark mode, completed MP3 state.
+
+**Full-view and focused comparison evidence**
+
+- Header, centered hero, format diagram, bordered work card, privacy notice, blue primary action, green download action, three-column feature section, and footer retain the approved PDF tool composition.
+- The Video Tools mode selector and processing details use the existing border, radius, spacing, typography, and semantic color tokens. The selected mode uses the same blue active-state treatment as existing format controls.
+- Focused comparison of the work card confirms matching label scale, dashed upload zone, button height, privacy-note styling, and card elevation. Video-only progress, warning, and size panels extend the established system without changing shared components.
+
+**Required fidelity surfaces**
+
+- Fonts/typography: existing Sora/display and body font stacks, hierarchy, weights, line heights, and wrapping retained.
+- Spacing/layout rhythm: existing hero offsets, 16px card radius, 9–12px control radii, 28px work-card gap, and responsive section spacing retained.
+- Colors/tokens: existing `--blue`, `--success`, `--line`, `--surface`, `--surface-soft`, text, muted, and dark-mode tokens reused.
+- Image/icon quality: Material Symbols used for standard video, compression, audio, warning, device, privacy, and action icons. No placeholder or hand-drawn visual assets.
+- Copy/content: all Video Tools, safety, progress, limit, warning, cache, estimate, completion, and error copy supplied in EN, KO, JA, and ES.
+
+**Functional verification**
+
+- Desktop MP4 conversion: 220.7 KB WebM → 202.1 KB MP4, completed and downloadable.
+- Desktop compression: 220.7 KB WebM → 66.9 KB MP4, completed and downloadable.
+- Desktop MP3 extraction: 2.7 MB MP4 with AAC audio → 136.7 KB MP3, completed and downloadable.
+- Progress reached 100%; cancel terminated an active conversion and reset the engine for reuse; cancel control is hidden after completion.
+- Before size, estimated time, predicted/actual after size, support formats, and 500 MB limit rendered correctly.
+- Mobile 390 × 844: MP3 extraction completed in 2.4 seconds; mobile heat/memory notice visible; `scrollWidth` equaled viewport width (390px), so no horizontal overflow.
+- Mobile large-file threshold: 102 MB test file showed the warning, blocked the action before acknowledgement, and enabled it after acknowledgement.
+- Lazy-load/cache: no FFmpeg script exists in the shared homepage HTML; Video Tools dynamically loads versioned `/assets/ffmpeg/0.12.15/` assets and registers a scope-limited cache-first service worker.
+- Regression image: Image Compress completed with a 182.3 KB PNG and exposed a download (162.1 KB output), no console errors.
+- Regression PDF: PDF Organize loaded two pages, produced a 1.1 KB PDF, and exposed a download, no console errors.
+- Regression ZIP: Split PDF produced `split-pages.zip` (1.9 KB), no console errors.
+- Fresh final desktop Video Tools run: MP4, compression, and MP3 completed with zero console errors.
+
+**Findings**
+
+- No actionable P0/P1/P2 visual, interaction, responsive, localization, or accessibility findings remain.
+
+**Follow-up polish**
+
+- The first FFmpeg core cache fill is approximately 31 MB; the UI explains the one-time engine load, and the versioned cache prevents repeat transfers where the browser permits Cache Storage.
+
+final result: passed
+
 ## PDF Organize QA — 2026-09-09
 
 - Source visual truth: approved ConvertFiles24 PDF Merge/File Converter single-card design family.
