@@ -31,6 +31,14 @@
 
 final result: passed
 
+## Compress PDF logo and arrow — 2026-09-09
+
+- Source: user-provided 1280 × 720 production screenshot in light mode.
+- Finding (P1): the header used a favicon background instead of the shared ConvertFiles24 mark; the compression arrow rendered black on blue.
+- Fix: reused the File Converter navigation SVG and forced the arrow foreground to white.
+- Verification: light and dark modes render the shared logo correctly; arrow computed color is `rgb(255, 255, 255)`.
+- Final result: passed.
+
 ## Video Tools lower feature alignment — 2026-09-09
 
 - Source reference: production File Converter and pre-fix Video Tools at 1265 × 800, Korean, light theme.
