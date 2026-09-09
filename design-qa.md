@@ -31,6 +31,14 @@
 
 final result: passed
 
+## Video Tools lower feature alignment — 2026-09-09
+
+- Source reference: production File Converter and pre-fix Video Tools at 1265 × 800, Korean, light theme.
+- Finding (P2): the three-column container was geometrically centered, but short icon/title/copy groups were start-aligned, making the row read visually left-heavy.
+- Fix: centered each Video Tools feature card's contents on its existing equal-width column; no global File Converter styles changed.
+- Verification: desktop columns centered at x=264.5/632.5/1000.5 in a 1265px viewport; mobile cards all centered at x=187.5 with zero horizontal overflow.
+- Final result: passed.
+
 ## Video Tools QA — 2026-09-09
 
 - Source visual truth: https://convertfiles24.com/pdf-organize/?lang=ko (approved ConvertFiles24 conversion-page design family).
