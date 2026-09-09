@@ -31,6 +31,38 @@
 
 final result: passed
 
+## QR Code Generator QA — 2026-09-09
+
+- Source visual truth: the approved ConvertFiles24 File Converter/JPG-to-PDF single-card design already deployed in this repository.
+- Implementation: `http://127.0.0.1:4674/qr-code/?lang=ko`
+- Implementation screenshot: Codex in-app browser inline capture; desktop viewport 1265 × 712 CSS px at 1x density.
+- State: Korean, dark theme, generated-result interaction separately tested.
+
+**Full-view comparison evidence**
+
+- Header, centered hero, compact format diagram, 620px work card, feature section, and footer use the same shared stylesheet and visual hierarchy as the approved tool family.
+- Typography uses the same UI/display stack, weights, and muted hierarchy. Spacing, border radii, background tokens, and calm blue action color match the existing tool pages.
+- The first capture exposed Material Symbols as text; the Material Symbols library was then loaded explicitly. The post-fix capture shows real link, QR, language, theme, lock, arrow, and download icons.
+- No raster imagery is needed for this utility. The brand asset and established icon library are reused.
+
+**Focused interaction evidence**
+
+- URL input generated a 512 × 512 PNG QR code with the selected four-unit quiet margin.
+- Download href is a real PNG data URL (12,742 characters), not a fake toast or delayed placeholder.
+- EN/KO/JA/ES copy, light/dark mode, disabled empty state, character count, size and margin controls were checked.
+- Browser console errors: none.
+- Responsive CSS collapses the two setting columns and tightens the format diagram below 620px.
+
+**Findings**
+
+- No actionable P0/P1/P2 differences remain.
+
+**Follow-up Polish**
+
+- A future iteration could add SVG export, but it is outside the requested simple PNG workflow.
+
+final result: passed
+
 ## Remaining Tool Rollout QA — 2026-09-09
 
 - JPG/PNG to PDF: two PNG files produced a real two-page `images.pdf` (48.3 KB) locally and in production; no console errors.
