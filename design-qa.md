@@ -31,6 +31,21 @@
 
 final result: passed
 
+## Selected Tool Navigation QA — 2026-09-10
+
+- Scope: Image to ICO, Favicon Generator, HEIC to JPG, Image Compress, Image Resize, Image Crop, QR Code Generator, and Organize PDF only.
+- Source visual truth: the local File Converter header at `/convert/?lang=ko`.
+- Comparison evidence: source and implementation captures were reviewed together at a 1265 × 800 desktop viewport; the selected tools were also checked at a 390 × 844 mobile viewport.
+- The brand mark, 83px desktop header, 64px mobile header, navigation spacing, language indicator and EN/KO/JP/ES selector, theme control, borders, colors, and typography now match File Converter.
+- Initial P2 differences (77px desktop header and 14px mobile side inset on shared image tools) were corrected to the source measurements. Post-fix measurements show no horizontal overflow.
+- Language selection and persistence were exercised on all eight pages. Korean, Japanese, and Spanish navigation labels render correctly; light/dark theme controls update correctly.
+- Functional regression: real generated samples passed Image to ICO (95,582 bytes), Favicon ZIP (345,423 bytes), HEIC to JPG (465,256 bytes), Image Compress (165,967 bytes), Image Crop (25,217 bytes), and Image Resize (165,967 bytes).
+- QR Code Generator produced a canvas and a real PNG data URL (`qrcode.png`). Organize PDF loaded a two-page sample, rotated a page, and produced `organized.pdf` (1.1 KB).
+- The legacy broad E2E runner continued into unrelated File Converter/PDF Merge checks and stopped on outdated selectors; those pages were outside this change and were not modified.
+- DNS, domain configuration, and all non-scoped pages were left unchanged.
+
+final result: passed
+
 ## Compress PDF logo and arrow — 2026-09-09
 
 - Source: user-provided 1280 × 720 production screenshot in light mode.

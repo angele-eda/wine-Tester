@@ -39,7 +39,7 @@ function applyLanguage() {
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("convertfiles24-theme", theme);
-  $("#themeIcon").textContent = theme === "dark" ? "dark_mode" : "light_mode";
+  $("#themeIcon").textContent = theme === "dark" ? "☾" : "☀";
 }
 $("#themeButton").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#languageSelect").addEventListener("change", (event) => { language = event.target.value; localStorage.setItem("convertfiles24-language", language); const url=new URL(location.href); url.searchParams.set("lang",language); history.replaceState({},"",url); applyLanguage(); });

@@ -1,19 +1,175 @@
 <!doctype html>
 <html lang="en" data-theme="light">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>QR Code Generator | ConvertFiles24</title><meta name="description" content="Create and download a QR code privately in your browser.">
-  <link rel="canonical" href="https://convertfiles24.com/qr-code/"><link rel="icon" href="/favicon-32x32.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet"><link rel="stylesheet" href="/convert/styles.css?v=20260908-language-options-v1"><link rel="stylesheet" href="/qr-code/styles.css?v=20260909-v1">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('convertfiles24-theme')==='dark'?'dark':'light'}catch(_){}</script>
-</head>
-<body>
-<header class="site-header"><nav class="nav-shell"><a class="brand notranslate" href="/" translate="no"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9a8 8 0 0 1 14-5M18 4v5h-5M20 15a8 8 0 0 1-14 5M6 20v-5h5"/></svg></span><span>ConvertFiles24</span></a><div class="nav-actions"><a href="/#tools" data-i18n="allTools">All tools</a><a href="/privacy/" data-i18n="privacy">Privacy</a><label class="language"><span class="material-symbols-outlined">language</span><select id="languageSelect" aria-label="Language"><option value="en">EN</option><option value="ko">KO</option><option value="ja">JP</option><option value="es">ES</option></select></label><button class="theme-button" id="themeButton" aria-label="Switch theme"><span class="material-symbols-outlined" id="themeIcon">light_mode</span></button></div></nav></header>
-<main>
-  <section class="hero"><p class="eyebrow" data-i18n="eyebrow">Utility tool</p><h1 data-i18n="title">QR Code Generator</h1><p class="hero-copy" data-i18n="subtitle">Turn a link or text into a downloadable QR code.</p><div class="format-demo qr-demo"><span class="material-symbols-outlined" aria-hidden="true">link</span><span class="material-symbols-outlined demo-main" aria-hidden="true">qr_code_2</span><span>PNG</span></div><small class="format-caption" data-i18n="caption">Enter content · create QR · download PNG</small></section>
-  <section class="converter-card qr-card"><div class="field-group"><h2 data-i18n="contentLabel">QR content</h2><label class="input-wrap"><span data-i18n="contentHint">Link or text</span><textarea id="qrText" maxlength="1200" placeholder="https://convertfiles24.com/"></textarea><small><span id="charCount">0</span> / 1200</small></label></div><div class="settings-grid"><label><span data-i18n="sizeLabel">Image size</span><select id="sizeSelect"><option value="256">256 × 256 px</option><option value="512" selected>512 × 512 px</option><option value="1024">1024 × 1024 px</option></select></label><label><span data-i18n="marginLabel">Margin</span><select id="marginSelect"><option value="2">2</option><option value="4" selected>4</option><option value="6">6</option></select></label></div><div class="privacy-note"><span class="material-symbols-outlined">lock</span><div><strong data-i18n="localTitle">Processed on your device</strong><span data-i18n="localCopy">Your content is never uploaded to a server.</span></div></div><button class="convert-button" id="generateButton" disabled><span data-i18n="generate">Create QR code</span><span class="material-symbols-outlined">arrow_forward</span></button><p class="status" id="status"></p><div class="result-box" id="resultBox" hidden><div id="qrOutput" aria-label="Generated QR code"></div><a class="download-button" id="downloadButton"><span data-i18n="download">Download PNG</span><span class="material-symbols-outlined">download</span></a></div></section>
-  <section class="features"><p class="eyebrow" data-i18n="why">Why ConvertFiles24</p><h2 data-i18n="featureTitle">Simple and private QR creation</h2><div class="feature-grid"><article><span class="feature-icon">01</span><h3 data-i18n="privateTitle">Private by design</h3><p data-i18n="privateCopy">Everything stays in your browser.</p></article><article><span class="feature-icon">02</span><h3 data-i18n="fastTitle">Ready in seconds</h3><p data-i18n="fastCopy">Create a clean QR code with one click.</p></article><article><span class="feature-icon">03</span><h3 data-i18n="downloadTitle">High-quality PNG</h3><p data-i18n="downloadCopy">Choose a size suitable for screen or print.</p></article></div></section>
-</main>
-<footer><span data-i18n="copyright">© 2026 ConvertFiles24. Safe local tools.</span><nav><a href="/privacy/" data-i18n="privacyPolicy">Privacy Policy</a><a href="/terms/" data-i18n="terms">Terms</a></nav></footer>
-<script src="/assets/qrcode/qrcode.min.js"></script><script src="/qr-code/app.js?v=20260909-v1"></script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>QR Code Generator | ConvertFiles24</title>
+    <meta
+      name="description"
+      content="Create and download a QR code privately in your browser."
+    />
+    <link rel="canonical" href="https://convertfiles24.com/qr-code/" />
+    <link rel="icon" href="/favicon-32x32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="/convert/styles.css?v=20260908-language-options-v1"
+    />
+    <link rel="stylesheet" href="/qr-code/styles.css?v=20260909-v1" />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("convertfiles24-theme") === "dark"
+            ? "dark"
+            : "light";
+      } catch (_) {}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-shell">
+        <a
+          class="brand notranslate"
+          href="/"
+          translate="no"
+          aria-label="ConvertFiles24 home"
+          ><span class="brand-mark"
+            ><svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M4 9a8 8 0 0 1 14-5M18 4v5h-5M20 15a8 8 0 0 1-14 5M6 20v-5h5"
+              /></svg></span
+          ><span>ConvertFiles24</span></a
+        >
+        <div class="nav-actions">
+          <a href="/#tools" data-i18n="allTools">All tools</a
+          ><a href="/privacy/" data-i18n="privacy">Privacy</a
+          ><label class="language"
+            ><span aria-hidden="true">◎</span
+            ><select id="languageSelect" aria-label="Language">
+              <option value="en">EN</option>
+              <option value="ko">KO</option>
+              <option value="ja">JP</option>
+              <option value="es">ES</option>
+            </select></label
+          ><button
+            class="theme-button"
+            id="themeButton"
+            type="button"
+            aria-label="Switch theme"
+          >
+            <span id="themeIcon">☀</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow" data-i18n="eyebrow">Utility tool</p>
+        <h1 data-i18n="title">QR Code Generator</h1>
+        <p class="hero-copy" data-i18n="subtitle">
+          Turn a link or text into a downloadable QR code.
+        </p>
+        <div class="format-demo qr-demo">
+          <span class="material-symbols-outlined" aria-hidden="true">link</span
+          ><span class="material-symbols-outlined demo-main" aria-hidden="true"
+            >qr_code_2</span
+          ><span>PNG</span>
+        </div>
+        <small class="format-caption" data-i18n="caption"
+          >Enter content · create QR · download PNG</small
+        >
+      </section>
+      <section class="converter-card qr-card">
+        <div class="field-group">
+          <h2 data-i18n="contentLabel">QR content</h2>
+          <label class="input-wrap"
+            ><span data-i18n="contentHint">Link or text</span
+            ><textarea
+              id="qrText"
+              maxlength="1200"
+              placeholder="https://convertfiles24.com/"
+            ></textarea
+            ><small><span id="charCount">0</span> / 1200</small></label
+          >
+        </div>
+        <div class="settings-grid">
+          <label
+            ><span data-i18n="sizeLabel">Image size</span
+            ><select id="sizeSelect">
+              <option value="256">256 × 256 px</option>
+              <option value="512" selected>512 × 512 px</option>
+              <option value="1024">1024 × 1024 px</option>
+            </select></label
+          ><label
+            ><span data-i18n="marginLabel">Margin</span
+            ><select id="marginSelect">
+              <option value="2">2</option>
+              <option value="4" selected>4</option>
+              <option value="6">6</option>
+            </select></label
+          >
+        </div>
+        <div class="privacy-note">
+          <span class="material-symbols-outlined">lock</span>
+          <div>
+            <strong data-i18n="localTitle">Processed on your device</strong
+            ><span data-i18n="localCopy"
+              >Your content is never uploaded to a server.</span
+            >
+          </div>
+        </div>
+        <button class="convert-button" id="generateButton" disabled>
+          <span data-i18n="generate">Create QR code</span
+          ><span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <p class="status" id="status"></p>
+        <div class="result-box" id="resultBox" hidden>
+          <div id="qrOutput" aria-label="Generated QR code"></div>
+          <a class="download-button" id="downloadButton"
+            ><span data-i18n="download">Download PNG</span
+            ><span class="material-symbols-outlined">download</span></a
+          >
+        </div>
+      </section>
+      <section class="features">
+        <p class="eyebrow" data-i18n="why">Why ConvertFiles24</p>
+        <h2 data-i18n="featureTitle">Simple and private QR creation</h2>
+        <div class="feature-grid">
+          <article>
+            <span class="feature-icon">01</span>
+            <h3 data-i18n="privateTitle">Private by design</h3>
+            <p data-i18n="privateCopy">Everything stays in your browser.</p>
+          </article>
+          <article>
+            <span class="feature-icon">02</span>
+            <h3 data-i18n="fastTitle">Ready in seconds</h3>
+            <p data-i18n="fastCopy">Create a clean QR code with one click.</p>
+          </article>
+          <article>
+            <span class="feature-icon">03</span>
+            <h3 data-i18n="downloadTitle">High-quality PNG</h3>
+            <p data-i18n="downloadCopy">
+              Choose a size suitable for screen or print.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span data-i18n="copyright"
+        >© 2026 ConvertFiles24. Safe local tools.</span
+      >
+      <nav>
+        <a href="/privacy/" data-i18n="privacyPolicy">Privacy Policy</a
+        ><a href="/terms/" data-i18n="terms">Terms</a>
+      </nav>
+    </footer>
+    <script src="/assets/qrcode/qrcode.min.js"></script>
+    <script src="/qr-code/app.js?v=20260910-nav-v1"></script>
+  </body>
+</html>
