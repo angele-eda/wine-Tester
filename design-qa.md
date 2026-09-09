@@ -30,3 +30,16 @@
 - Test compression ratio with a large image-heavy PDF; tiny PDFs can become larger because of PDF/JPEG overhead.
 
 final result: passed
+
+## Remaining Tool Rollout QA — 2026-09-09
+
+- JPG/PNG to PDF: two PNG files produced a real two-page `images.pdf` (48.3 KB) locally and in production; no console errors.
+- Image to ICO: 256px PNG produced a real ICO (93.0 KB); download action exposed; no console errors.
+- Favicon generator: 256px PNG produced a real ZIP package (325.5 KB); download action exposed; no console errors.
+- Image compression: PNG produced a downloadable result (56.5 KB); no console errors. Tiny PNG fixtures may not shrink because the tool preserves the smaller original.
+- Image crop: PNG produced a cropped downloadable result (11.7 KB); no console errors.
+- Image resize: query-language precedence was corrected so `?lang=ko` overrides an older stored language.
+- HEIC to JPG: existing real `heic2any` pipeline and file validation retained; a genuine HEIC fixture was not available in the repository for an end-to-end conversion.
+- Shared image tools now use the same centered 620px single-card hierarchy, border, shadow, controls, responsive width, features, and footer rhythm as the approved File Converter family.
+
+final result: passed

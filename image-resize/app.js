@@ -25,7 +25,7 @@ const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio 
 const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
 const qualityInput = $("#qualityInput"), qualityOutput = $("#qualityOutput"), resizeButton = $("#resizeButton"), result = $("#result"), message = $("#message");
 let currentFile = null, image = null, ratio = 1, resultBlob = null, resultName = "";
-let language = localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
+let language = new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
 if (!translations[language]) language = "en";
 
 function t(key) { return translations[language][key] || translations.en[key] || key; }
@@ -42,7 +42,7 @@ function setTheme(theme) {
   $("#themeIcon").textContent = theme === "dark" ? "dark_mode" : "light_mode";
 }
 $("#themeButton").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-$("#languageSelect").addEventListener("change", (event) => { language = event.target.value; localStorage.setItem("convertfiles24-language", language); applyLanguage(); });
+$("#languageSelect").addEventListener("change", (event) => { language = event.target.value; localStorage.setItem("convertfiles24-language", language); const url=new URL(location.href); url.searchParams.set("lang",language); history.replaceState({},"",url); applyLanguage(); });
 
 function openPicker() { fileInput.click(); }
 dropZone.addEventListener("click", openPicker);

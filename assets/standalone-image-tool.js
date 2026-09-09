@@ -9,7 +9,7 @@
   };
   const tool = document.body.dataset.tool;
   const config = configs[tool];
-  let files = [], previewUrl = "", resultUrl = "", language = (localStorage.getItem("convertfiles24-language") || navigator.language || "en").startsWith("ko") ? 1 : 0;
+  let files = [], previewUrl = "", resultUrl = "", language = ((new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || navigator.language || "en").startsWith("ko")) ? 1 : 0;
   const ui = {
     fileInput:$("#fileInput"),dropZone:$("#dropZone"),preview:$("#preview"),previewImage:$("#previewImage"),fileList:$("#fileList"),process:$("#processButton"),status:$("#status"),download:$("#downloadLink"),settings:$("#dynamicSettings")
   };
