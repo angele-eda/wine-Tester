@@ -31,6 +31,37 @@
 
 final result: passed
 
+## Image Resize Center UI QA — 2026-09-10
+
+- Source visual truth: local File Converter at `/convert/?lang=ko`.
+- Implementation: local Image Resize at `/image-resize/?lang=ko`.
+- Screenshot evidence: source and implementation were captured and displayed together from the Codex in-app browser at the same 1265 × 712 CSS-pixel viewport and 1x density.
+- State: Korean, light mode, empty file-selection state.
+
+**Comparison history**
+
+- Initial P1: Image Resize used a large before/after illustration and a 1040px two-column workspace, while File Converter uses a compact format diagram and a centered 620px single-column card.
+- Fix: replaced the illustration with the same compact two-stack conversion diagram rhythm and rebuilt the workspace presentation as a 620px stacked card without changing resize behavior.
+- Initial P2: matching the reference width caused the longer dimension labels to wrap.
+- Fix: applied fixed compact pills, tabular numerals, reduced label size, and no-wrap treatment; the post-fix capture shows readable single-line values.
+- Responsive rules now follow the File Converter 72px mobile card spacing, 24px card width inset, compact padding, and single-column structure.
+
+**Fidelity surfaces**
+
+- Typography: display hierarchy, work-card labels, weights, and line heights match the File Converter family; longer numeric labels remain readable.
+- Spacing/layout: hero spacing, 382px diagram, 620px work card, dividers, padding, radius, border, and shadow match the reference rhythm.
+- Colors/tokens: existing shared background, surface, border, muted text, blue action, disabled, and dark-mode tokens are retained.
+- Assets: existing Material Symbols and ConvertFiles24 brand asset are retained; no placeholder imagery was added.
+- Copy: resize-specific Korean copy and dimensions remain accurate while adopting the reference structure.
+- Focused evidence: the upload area, divider, settings controls, privacy notice, and primary action now appear in one continuous centered card.
+
+**Checks**
+
+- Existing file input, dimension, aspect-ratio, format, quality, resize, and download element IDs were preserved for the working JavaScript flow.
+- No horizontal-overflow-producing fixed width remains; the diagram is capped at 100% and has a dedicated 420px compact rule.
+
+final result: passed
+
 ## Selected Tool Navigation QA — 2026-09-10
 
 - Scope: Image to ICO, Favicon Generator, HEIC to JPG, Image Compress, Image Resize, Image Crop, QR Code Generator, and Organize PDF only.

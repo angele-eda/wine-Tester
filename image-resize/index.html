@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260910-nav-v1">
+  <link rel="stylesheet" href="styles.css?v=20260910-resize-ui-v2">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('convertfiles24-theme')==='dark'?'dark':'light'}catch(_){}</script>
 </head>
 <body>
@@ -27,11 +27,12 @@
   <main>
     <section class="hero">
       <p class="section-label" data-t="imageTools">Image tools</p><h1 data-t="title">Resize Images</h1><p class="hero-copy" data-t="subtitle">Change image width and height while keeping the proportions you need.</p>
-      <div class="before-after" aria-hidden="true">
-        <div class="demo-item"><div class="demo-image demo-large"><span class="material-symbols-outlined">image</span></div><span>1920 × 1080 · 4.2 MB</span></div>
-        <div class="demo-arrow"><span class="material-symbols-outlined">arrow_forward</span></div>
-        <div class="demo-item"><div class="demo-image demo-small"><span class="material-symbols-outlined">image</span></div><span>800 × 450 · 620 KB</span></div>
+      <div class="before-after" aria-label="Image resize example">
+        <div class="demo-stack"><span>1920 × 1080</span><span>4.2 MB</span></div>
+        <div class="demo-arrow" aria-hidden="true"><span class="material-symbols-outlined">arrow_forward</span></div>
+        <div class="demo-stack"><span>800 × 450</span><span>620 KB</span></div>
       </div>
+      <small class="format-caption">JPG · PNG · WebP</small>
     </section>
 
     <section class="tool-panel" aria-labelledby="workspaceTitle">
