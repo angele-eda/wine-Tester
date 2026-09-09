@@ -31,6 +31,37 @@
 
 final result: passed
 
+## PDF Organize QA — 2026-09-09
+
+- Source visual truth: approved ConvertFiles24 PDF Merge/File Converter single-card design family.
+- Implementation: `http://127.0.0.1:4674/pdf-organize/?lang=ko`
+- Implementation screenshot: Codex in-app browser inline capture, desktop 1265 × 712 CSS px, 1x density.
+- State: Korean dark mode, two-page PDF loaded, first page rotated, order changed, organized output created.
+
+**Comparison evidence**
+
+- The shared header, centered hero, format diagram, calm-blue primary action, green download action, 720px work card, features, and footer follow the approved PDF tool hierarchy.
+- Fonts and typography reuse the established display/UI stacks and optical weights. Spacing, radii, shadows, border tokens, and dark-mode contrast are consistent with PDF Merge.
+- Material Symbols are used for page movement, rotation, removal, privacy, and actions; no placeholder or custom-drawn visual assets are present.
+- Focused page cards preserve readable thumbnails and controls. The grid collapses from three to two columns on narrow screens and the list scrolls vertically after 430px.
+
+**Primary interactions tested**
+
+- Two-page PDF recognized and rendered as two thumbnails.
+- First page rotated 90 degrees and moved after the second page.
+- Organized PDF blob created (1.1 KB), download control exposed, download event completed.
+- Browser console errors: none.
+
+**Findings**
+
+- No actionable P0/P1/P2 differences remain.
+
+**Follow-up Polish**
+
+- Drag-and-drop page reordering may be added later; the current arrow controls are clearer on mobile and fully functional.
+
+final result: passed
+
 ## QR Code Generator QA — 2026-09-09
 
 - Source visual truth: the approved ConvertFiles24 File Converter/JPG-to-PDF single-card design already deployed in this repository.
