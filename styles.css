@@ -545,6 +545,6 @@ html[data-theme="light"] .desktop-nav #themeButton:focus-visible { border-color:
 .converter-footer nav { display:flex; gap:28px; }
 .converter-footer a:hover { color:var(--primary); }
 @media (max-width:700px) {
-  .converter-footer { margin-top:84px; padding:26px 20px; align-items:flex-start; flex-direction:column; }
-  .converter-footer nav { gap:20px; }
+  .converter-footer { margin-top:84px; padding:26px 20px; align-items:center; justify-content:center; flex-direction:column; text-align:center; }
+  .converter-footer nav { justify-content:center; gap:20px; }
 }
