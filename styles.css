@@ -494,6 +494,18 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
 
 @media (max-width:600px) {
   .section-shell,.nav-shell,.footer-shell,.hero { width:min(100% - 32px,560px); }
+  .nav-shell { gap:6px; }
+  .brand { font-size:15px; }
+  .brand-mark { width:28px; height:28px; flex-basis:28px; }
+  .desktop-nav { display:flex; height:auto; margin-left:auto; gap:6px; }
+  .desktop-nav .nav-link,
+  .desktop-nav .nav-divider { display:none; }
+  .desktop-nav #themeButton { width:34px; height:34px; }
+  .desktop-nav .desktop-language { gap:3px; }
+  .desktop-nav .desktop-language select { width:40px; }
+  .mobile-menu-button { width:34px; height:34px; }
+  .mobile-menu-content .mobile-language-control,
+  .mobile-menu-content #mobileThemeButton { display:none; }
   .hero { padding:52px 0 0; }
   .hero h1 { margin-top:14px; font-size:36px; line-height:1.12; }
   .hero-copy { margin-bottom:40px; font-size:16px; }
