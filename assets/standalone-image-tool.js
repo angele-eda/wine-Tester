@@ -9,6 +9,13 @@
   };
   const tool = document.body.dataset.tool;
   const config = configs[tool];
+  const heroCaptions = {
+    "image-ico": ["JPG or PNG · convert · ICO", "JPG 또는 PNG · 변환 · ICO", "JPG または PNG · 変換 · ICO", "JPG o PNG · convertir · ICO"],
+    "favicon": ["One image · every favicon size", "이미지 한 장 · 모든 파비콘 크기", "1 枚の画像 · すべてのファビコンサイズ", "Una imagen · todos los tamaños de favicon"],
+    "heic-jpg": ["HEIC · convert · compatible JPG", "HEIC · 변환 · 호환성 높은 JPG", "HEIC · 変換 · 互換性の高い JPG", "HEIC · convertir · JPG compatible"],
+    "image-compress": ["Smaller files · clear image quality", "용량은 작게 · 화질은 선명하게", "ファイルを小さく · 画質は鮮明に", "Archivos más pequeños · imagen nítida"],
+    "image-crop": ["Choose a ratio · crop · download", "비율 선택 · 자르기 · 다운로드", "比率を選択 · 切り抜き · ダウンロード", "Elegir proporción · recortar · descargar"]
+  };
   let files = [], previewUrl = "", resultUrl = "", language = (new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || navigator.language || "en").slice(0,2).toLowerCase();
   if(!["en","ko","ja","es"].includes(language)) language="en";
   const ui = {
@@ -16,6 +23,7 @@
   };
   const text = (en,ko) => language==="ko" ? ko : en;
   function applyText(){
+    $("#heroCaption").textContent=heroCaptions[tool][({en:0,ko:1,ja:2,es:3}[language]??0)];
     const local=language==="ko"?1:0,nav={en:["All tools","Privacy","Privacy Policy","Terms of Service"],ko:["모든 도구","개인정보 보호","개인정보처리방침","이용약관"],ja:["すべてのツール","プライバシー","プライバシーポリシー","利用規約"],es:["Todas las herramientas","Privacidad","Política de privacidad","Términos de servicio"]}[language]; document.documentElement.lang=language; $("#languageSelect").value=language; $("#title").textContent=config.title[local]; $("#subtitle").textContent=config.subtitle[local]; $("#toolIcon").textContent=config.icon; $("#dropTitle").textContent=text("Choose files to get started","변환할 파일을 선택하세요"); $("#dropCopy").textContent=text("Select files from your device","기기에서 파일을 선택해 바로 작업할 수 있습니다"); $("#chooseText").textContent=text("Choose files","파일 선택"); $("#limitText").textContent=config.limit; $("#selectTitle").textContent=text("Select files","파일 선택"); $("#settingsTitle").textContent=text("Output settings","출력 설정"); $("#actionText").textContent=config.action[local]; $("#privateTitle").textContent=text("Private on-device processing","안전한 기기 내 처리"); $("#privateCopy").textContent=text("Your files are never uploaded to a server.","파일은 서버로 업로드되지 않습니다."); $("#downloadText").textContent=text("Download result","결과 다운로드"); $("#allTools").textContent=nav[0]; $("#privacyNav").textContent=nav[1]; $("#privacyFooter").textContent=nav[2]; $("#termsFooter").textContent=nav[3]; renderSettings();
   }
   function renderSettings(){
