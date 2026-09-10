@@ -494,6 +494,7 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
 
 @media (max-width:600px) {
   .section-shell,.nav-shell,.footer-shell,.hero { width:min(100% - 32px,560px); }
+  .mobile-nav { width:min(58vw,260px); }
   .nav-shell { gap:6px; }
   .brand { font-size:15px; }
   .brand-mark { width:28px; height:28px; flex-basis:28px; }
