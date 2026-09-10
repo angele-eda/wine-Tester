@@ -570,7 +570,7 @@ input[type="range"] {
 .feature-grid article {
   position: relative;
   padding: 38px 34px;
-  text-align: left;
+  text-align: center;
 }
 .feature-grid article + article::before {
   content: "";
@@ -792,12 +792,13 @@ footer {
 }
 
 .footer-shell {
+  width: min(1152px, calc(100% - 64px));
   min-height: 88px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 24px;
-  text-align: center;
+  text-align: left;
 }
 .footer-shell > .brand {
   display: none;
@@ -810,18 +811,11 @@ footer {
   justify-self: auto;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 28px;
 }
 .footer-shell nav a {
   display: inline-flex;
   align-items: center;
-}
-.footer-shell nav a + a::before {
-  content: "";
-  width: 1px;
-  height: 11px;
-  margin: 0 14px;
-  background: var(--line);
 }
 @media (max-width: 600px) {
   .feature-grid article {
@@ -832,6 +826,7 @@ footer {
     padding: 24px 0;
     flex-direction: column;
     gap: 12px;
+    text-align: center;
   }
   .footer-shell nav {
     justify-content: center;
