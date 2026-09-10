@@ -824,6 +824,9 @@ footer {
   background: var(--line);
 }
 @media (max-width: 600px) {
+  .feature-grid article {
+    text-align: center;
+  }
   .footer-shell {
     width: calc(100% - 32px);
     padding: 24px 0;
