@@ -390,17 +390,17 @@ html[data-theme="dark"] .security-picture img { filter: drop-shadow(0 8px 20px r
 :root {
   --font-ui: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: Sora, ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --bg: #151616;
-  --header: #191a1a;
-  --surface: #202121;
-  --surface-2: #252625;
-  --surface-3: #30312f;
-  --text: #f4f1e9;
-  --muted: #b9b4a9;
-  --line: #3d3d39;
-  --line-soft: rgba(231, 228, 220, .14);
-  --primary: #78a5ff;
-  --primary-strong: #0b5cff;
+  --bg: #11110f;
+  --header: #11110f;
+  --surface: #1b1a17;
+  --surface-2: #25231e;
+  --surface-3: #302e29;
+  --text: #f3f1ec;
+  --muted: #a6a196;
+  --line: #34312b;
+  --line-soft: rgba(231, 228, 220, .12);
+  --primary: #4e8eff;
+  --primary-strong: #4e8eff;
 }
 html[data-theme="light"] {
   --bg: #faf8f4;
