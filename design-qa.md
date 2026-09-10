@@ -31,6 +31,30 @@
 
 final result: passed
 
+## Selected Tool Footer QA — 2026-09-10
+
+- Scope: Image to ICO, Favicon Generator, HEIC to JPG, Image Compress, Image Resize, Image Crop, QR Code Generator, and Organize PDF.
+- Source visual truth: the ConvertFiles24 footer treatment using centered legal copy and a subtle vertical divider between legal links.
+- Implementation evidence: all eight local routes were opened in the Codex in-app browser at the same desktop viewport; representative Japanese and Spanish footer screenshots were captured after scrolling to the page bottom.
+- State: light mode with Japanese or Spanish selected to expose untranslated-footer regressions.
+
+**Findings and fixes**
+
+- P1: the five shared standalone image tools had static English legal links. Added explicit footer translation targets and EN/KO/JA/ES legal-link copy.
+- P2: footer content used different left/right/grid alignment across the eight pages. Replaced it with one centered footer rhythm on desktop and mobile.
+- P2: legal links lacked the requested visual separation. Added an 11px token-colored vertical divider with balanced 14px side spacing.
+- P2: Organize PDF inherited English copyright and legal links in JA/ES. Added translated Japanese and Spanish footer copy.
+
+**Post-fix evidence**
+
+- Spanish legal-link checks passed on all eight routes; Japanese legal links were visibly confirmed on Image to ICO.
+- Organize PDF Spanish copyright, privacy link, and terms link all changed correctly after the fix.
+- Captures show the copyright and legal navigation centered as one group, with the divider visible between the two links.
+- Mobile CSS stacks copyright above the centered legal navigation while retaining the divider and preventing horizontal drift.
+- Typography, colors, border tokens, and link hover behavior remain inherited from the existing ConvertFiles24 design system. No image assets were changed.
+
+final result: passed
+
 ## Image Resize Center UI QA — 2026-09-10
 
 - Source visual truth: local File Converter at `/convert/?lang=ko`.

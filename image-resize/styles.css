@@ -790,3 +790,47 @@ footer {
     padding: 24px 16px;
   }
 }
+
+.footer-shell {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+}
+.footer-shell > .brand {
+  display: none;
+}
+.footer-shell > p {
+  display: block;
+}
+.footer-shell nav {
+  grid-column: auto;
+  justify-self: auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.footer-shell nav a {
+  display: inline-flex;
+  align-items: center;
+}
+.footer-shell nav a + a::before {
+  content: "";
+  width: 1px;
+  height: 11px;
+  margin: 0 14px;
+  background: var(--line);
+}
+@media (max-width: 600px) {
+  .footer-shell {
+    width: calc(100% - 32px);
+    padding: 24px 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer-shell nav {
+    justify-content: center;
+  }
+}
