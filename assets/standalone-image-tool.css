@@ -1,4 +1,8 @@
 @import url("/image-resize/styles.css?v=20260910-detail-layout-v1");
+.nav-actions > a,
+.language select {
+  font-weight: 400;
+}
 .hero {
   padding-top: 78px;
 }
