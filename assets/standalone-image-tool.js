@@ -16,6 +16,12 @@
     "image-compress": ["Smaller files · clear image quality", "용량은 작게 · 화질은 선명하게", "ファイルを小さく · 画質は鮮明に", "Archivos más pequeños · imagen nítida"],
     "image-crop": ["Choose a ratio · crop · download", "비율 선택 · 자르기 · 다운로드", "比率を選択 · 切り抜き · ダウンロード", "Elegir proporción · recortar · descargar"]
   };
+  const featureCopy = {
+    en: ["Why ConvertFiles24", "Fast and private file tools", "Fast and simple", "No installation or sign-up required.", "Files stay private", "Everything is processed locally in your browser.", "Works on any device", "Use it on desktop, tablet and mobile."],
+    ko: ["ConvertFiles24를 선택하는 이유", "빠르고 안전한 이미지 작업", "빠르고 간편하게", "설치나 회원가입 없이 바로 사용할 수 있습니다.", "파일은 안전하게", "모든 작업은 브라우저에서 로컬로 처리됩니다.", "모든 기기에서 사용", "PC, 태블릿과 모바일에서 사용할 수 있습니다."],
+    ja: ["ConvertFiles24 が選ばれる理由", "高速で安全な画像ツール", "すばやく簡単", "インストールや会員登録は必要ありません。", "ファイルを安全に保護", "すべての処理はブラウザ内で行われます。", "あらゆる端末で利用可能", "PC、タブレット、モバイルで利用できます。"],
+    es: ["Por qué elegir ConvertFiles24", "Herramientas de imagen rápidas y privadas", "Rápido y sencillo", "No requiere instalación ni registro.", "Tus archivos siguen siendo privados", "Todo se procesa localmente en tu navegador.", "Funciona en cualquier dispositivo", "Úsalo en ordenador, tableta y móvil."]
+  };
   let files = [], previewUrl = "", resultUrl = "", language = (new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || navigator.language || "en").slice(0,2).toLowerCase();
   if(!["en","ko","ja","es"].includes(language)) language="en";
   const ui = {
@@ -24,6 +30,8 @@
   const text = (en,ko) => language==="ko" ? ko : en;
   function applyText(){
     $("#heroCaption").textContent=heroCaptions[tool][({en:0,ko:1,ja:2,es:3}[language]??0)];
+    const featureText=featureCopy[language]||featureCopy.en, featureSection=$(".features"), featureHeadings=featureSection.querySelectorAll("h3"), featureDescriptions=featureSection.querySelectorAll("article p");
+    featureSection.querySelector(".section-label").textContent=featureText[0]; $("#featuresTitle").textContent=featureText[1]; featureHeadings.forEach((element,index)=>element.textContent=featureText[2+index*2]); featureDescriptions.forEach((element,index)=>element.textContent=featureText[3+index*2]);
     const local=language==="ko"?1:0,nav={en:["All tools","Privacy","Privacy Policy","Terms of Service"],ko:["모든 도구","개인정보 보호","개인정보처리방침","이용약관"],ja:["すべてのツール","プライバシー","プライバシーポリシー","利用規約"],es:["Todas las herramientas","Privacidad","Política de privacidad","Términos de servicio"]}[language]; document.documentElement.lang=language; $("#languageSelect").value=language; $("#title").textContent=config.title[local]; $("#subtitle").textContent=config.subtitle[local]; $("#toolIcon").textContent=config.icon; $("#dropTitle").textContent=text("Choose files to get started","변환할 파일을 선택하세요"); $("#dropCopy").textContent=text("Select files from your device","기기에서 파일을 선택해 바로 작업할 수 있습니다"); $("#chooseText").textContent=text("Choose files","파일 선택"); $("#limitText").textContent=config.limit; $("#selectTitle").textContent=text("Select files","파일 선택"); $("#settingsTitle").textContent=text("Output settings","출력 설정"); $("#actionText").textContent=config.action[local]; $("#privateTitle").textContent=text("Private on-device processing","안전한 기기 내 처리"); $("#privateCopy").textContent=text("Your files are never uploaded to a server.","파일은 서버로 업로드되지 않습니다."); $("#downloadText").textContent=text("Download result","결과 다운로드"); $("#allTools").textContent=nav[0]; $("#privacyNav").textContent=nav[1]; $("#privacyFooter").textContent=nav[2]; $("#termsFooter").textContent=nav[3]; renderSettings();
   }
   function renderSettings(){
