@@ -506,7 +506,10 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
   .section-heading { margin-bottom:34px; }
   .section-heading h2 { font-size:26px; }
   .tool-grid { grid-template-columns:1fr; gap:16px; }
-  .tool-card { min-height:150px; padding:22px; }
+  .tool-card { min-height:150px; padding:22px; align-items:center; text-align:center; }
+  .tool-card-top { width:100%; justify-content:center; }
+  .tool-card-top .arrow { position:absolute; top:24px; right:22px; }
+  .tool-card > span:last-child { max-width:34ch; }
   .privacy-section { padding-top:84px; }
   .privacy-panel { grid-template-columns:1fr; }
   .site-footer { margin-top:84px; }
