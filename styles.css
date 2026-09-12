@@ -518,7 +518,7 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
   .trust-strip [data-benefit-action="privacy"] { grid-column:2; grid-row:1; }
   .trust-strip [data-benefit-action="free"] { grid-column:3; grid-row:1; }
   .trust-strip b { font-size:12px; }
-  .tools-section { padding-top:72px; }
+  .tools-section { padding-top:64px; }
   .section-heading { margin-bottom:34px; }
   .section-heading h2 { font-size:26px; }
   .tool-grid { grid-template-columns:1fr; gap:16px; }
