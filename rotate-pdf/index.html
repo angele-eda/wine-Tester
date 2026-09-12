@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Organize PDF | ConvertFiles24</title>
+    <title>Rotate PDF | ConvertFiles24</title>
     <meta
       name="description"
-      content="Reorder, rotate and remove PDF pages privately in your browser."
+      content="Rotate PDF pages to the direction you need, privately in your browser."
     />
-    <link rel="canonical" href="https://convertfiles24.com/pdf-organize/" />
+    <link rel="canonical" href="https://convertfiles24.com/rotate-pdf/" />
     <link rel="icon" href="/favicon-32x32.png?v=20260910-brand-v3" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,7 +20,7 @@
       rel="stylesheet"
       href="/convert/styles.css?v=20260910-detail-layout-v1"
     />
-    <link rel="stylesheet" href="/pdf-organize/styles.css?v=20260910-detail-layout-v1" />
+    <link rel="stylesheet" href="/rotate-pdf/styles.css?v=20260912-v1" />
     <style>.swap-mark{color:#fff}</style>
     <script>
       try {
@@ -31,8 +31,9 @@
       } catch (_) {}
     </script>
     <link rel="stylesheet" href="/assets/site-navigation.css?v=20260912-v7">
+    <link rel="stylesheet" href="/assets/pdf-page-tools.css?v=20260912-v1">
 </head>
-  <body>
+  <body data-pdf-tool="rotate">
     <header class="site-header">
       <nav class="nav-shell">
         <a
@@ -72,17 +73,17 @@
     <main>
       <section class="hero">
         <p class="eyebrow" data-i18n="eyebrow">PDF tool</p>
-        <h1 data-i18n="title">Organize PDF</h1>
+        <h1 data-i18n="title">Rotate PDF</h1>
         <p class="hero-copy" data-i18n="subtitle">
-          Reorder, rotate or remove pages, then download one clean PDF.
+          Rotate PDF pages to the direction you need.
         </p>
         <div class="format-demo">
           <div class="format-stack"><span>PDF 1</span><span>PDF 2</span></div>
-          <span class="swap-mark material-symbols-outlined">reorder</span>
+          <span class="swap-mark material-symbols-outlined">rotate_right</span>
           <div class="format-stack single-format"><span>PDF</span></div>
         </div>
         <small class="format-caption" data-i18n="caption"
-          >Reorder · rotate · remove pages</small
+          >Rotate pages left or right</small
         >
       </section>
       <section class="converter-card organize-card">
@@ -95,7 +96,7 @@
             hidden
           /><button class="drop-zone" id="dropZone">
             <span class="drop-title" data-i18n="dropTitle"
-              >Choose a PDF to organize</span
+              >Choose a PDF to rotate</span
             ><span class="drop-copy" data-i18n="dropCopy"
               >Select a file or drag it here</span
             ><b class="choose-button" data-i18n="choose">Choose PDF</b
@@ -131,7 +132,6 @@
           ><span class="material-symbols-outlined">download</span></a
         >
       </section>
-      <aside class="cf24-related-tools" aria-label="Related tools"><span data-cf24-label="relatedTools">Related tools</span><a href="/rotate-pdf/" data-cf24-label="rotatePdf">Rotate PDF</a><a href="/delete-pdf-pages/" data-cf24-label="deletePdfPages">Delete PDF Pages</a></aside>
       <section class="features">
         <p class="eyebrow" data-i18n="why">Why ConvertFiles24</p>
         <h2 data-i18n="featureTitle">Easy PDF page organization</h2>
@@ -165,7 +165,7 @@
     </footer>
     <script src="/assets/pdfjs/pdf.min.js"></script>
     <script src="/assets/pdf-lib/pdf-lib.min.js"></script>
-    <script src="/pdf-organize/app.js?v=20260910-footer-v3"></script>
+    <script src="/assets/pdf-page-tools.js?v=20260912-v1"></script>
     <script src="/assets/site-navigation.js?v=20260912-v4"></script>
 </body>
 </html>

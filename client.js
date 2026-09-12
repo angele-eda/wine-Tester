@@ -41,6 +41,7 @@ const mobileLanguageSelect = document.querySelector("#mobileLanguageSelect");
 const desktopNavLinks = [...document.querySelectorAll(".desktop-nav .nav-link")];
 const toolsSection = document.querySelector("#tools");
 const toolGrid = document.querySelector(".tool-grid");
+const mobilePdfToggle = document.querySelector("#mobilePdfToggle");
 const defaultToolOrder = [...toolGrid.children];
 const dialog = document.querySelector("#workspaceDialog");
 const workspaceBody = document.querySelector("#workspaceBody");
@@ -151,6 +152,7 @@ function applyLanguage(language, remember = false) {
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = tr(element.dataset.i18n);
   });
+  updateMobilePdfToggle();
   updateResponsiveWorkspaceCopy();
   if (dialog.open) document.querySelector("#workspaceTitle").textContent = tr(currentTool.nameKey);
   document.querySelector("#closeDialogButton").setAttribute("aria-label", tr("closeWorkspace"));
@@ -159,6 +161,19 @@ function applyLanguage(language, remember = false) {
   setMobileMenu(mobileMenuButton.getAttribute("aria-expanded") === "true");
   renderFiles();
 }
+
+function updateMobilePdfToggle() {
+  if (!mobilePdfToggle) return;
+  const expanded = mobilePdfToggle.getAttribute("aria-expanded") === "true";
+  mobilePdfToggle.querySelector("[data-mobile-pdf-label]").textContent = tr(expanded ? "lessPdfTools" : "morePdfTools");
+}
+
+mobilePdfToggle?.addEventListener("click", () => {
+  const expanded = mobilePdfToggle.getAttribute("aria-expanded") !== "true";
+  mobilePdfToggle.setAttribute("aria-expanded", String(expanded));
+  toolGrid.classList.toggle("mobile-pdf-expanded", expanded);
+  updateMobilePdfToggle();
+});
 
 function setMobileMenu(open) {
   mobileMenuButton.setAttribute("aria-expanded", String(open));

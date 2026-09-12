@@ -1,0 +1,12 @@
+.page-card {
+  position: relative;
+  transition: border-color .16s ease, background-color .16s ease, opacity .16s ease;
+}
+.page-card.is-selected { border-color: var(--blue); background: color-mix(in srgb,var(--blue) 8%,var(--surface-soft)); }
+.page-card.is-removed { opacity: .58; border-color: #d14343; }
+.page-actions.two { grid-template-columns: repeat(2,1fr); }
+.page-actions.one { grid-template-columns: 1fr; }
+.page-actions button.is-active { color: #fff; border-color: var(--blue); background: var(--blue); }
+.page-actions button.is-remove { color: #d14343; }
+.selection-count { margin: 10px 0 0; color: var(--subtle); font-size: 11px; text-align: center; }
+@media(max-width:640px){.page-actions button{min-width:0}.selection-count{font-size:10.5px}}

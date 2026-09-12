@@ -465,6 +465,7 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
 .arrow { color:#b8b3a6; font-size:17px; }
 .tool-card strong { margin:0; font:700 15px/1.35 var(--font-ui); }
 .tool-card > span:last-child { margin:0; color:var(--muted); font-size:13.5px; line-height:1.55; }
+.mobile-extra-toggle { display:none; }
 .popular-label { display:none; }
 
 .privacy-section { padding:140px 0 0; }
@@ -526,6 +527,11 @@ html[data-theme="dark"] .brand-mark svg { stroke:#17181c; }
   .tool-card-top { width:100%; justify-content:center; }
   .tool-card-top .arrow { position:absolute; top:24px; right:22px; }
   .tool-card > span:last-child { max-width:34ch; }
+  .tool-card.mobile-pdf-extra { display:none; }
+  .tool-grid.mobile-pdf-expanded .tool-card.mobile-pdf-extra { display:flex; }
+  .mobile-extra-toggle { grid-column:1; min-height:44px; padding:0 18px; display:flex; align-items:center; justify-content:center; gap:6px; border:1px solid var(--line); border-radius:10px; color:var(--muted); background:var(--surface); font:500 13px/1 var(--font-ui); cursor:pointer; }
+  .mobile-extra-toggle .material-symbols-outlined { font-size:18px; transition:transform .16s ease; }
+  .mobile-extra-toggle[aria-expanded="true"] .material-symbols-outlined { transform:rotate(180deg); }
   .privacy-section { padding-top:84px; }
   .privacy-panel { grid-template-columns:1fr; }
   .site-footer { margin-top:84px; }

@@ -124,6 +124,19 @@
   justify-content: flex-end;
   gap: 12px 24px;
 }
+.cf24-related-tools {
+  width: min(620px, calc(100% - 32px));
+  margin: 28px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: var(--subtle, var(--muted));
+  font-size: 12.5px;
+}
+.cf24-related-tools a { color: var(--blue, var(--primary)); text-decoration: none; }
+.cf24-related-tools a:hover { text-decoration: underline; }
 .cf24-mobile-links {
   display: grid;
   gap: 8px;

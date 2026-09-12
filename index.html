@@ -38,8 +38,8 @@
       window.addEventListener("load", () => document.documentElement.classList.add("material-symbols-ready"));
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260912-mobile-trust-layout-v3">
-  <link rel="stylesheet" href="/assets/site-navigation.css?v=20260912-v6">
+  <link rel="stylesheet" href="styles.css?v=20260912-pdf-cards-v4">
+  <link rel="stylesheet" href="/assets/site-navigation.css?v=20260912-v7">
 </head>
 <body>
   <header class="site-header">
@@ -106,7 +106,7 @@
           <span class="format-sync" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9a8 8 0 0 1 14-5M18 4v5h-5M20 15a8 8 0 0 1-14 5M6 20v-5h5"/></svg></span>
           <div class="format-stack"><span>PDF</span><span>WebP</span><span>ICO</span></div>
         </div>
-        <span class="format-caption">15 tools · JPG, PNG, WebP, HEIC, PDF, Video, Audio, ICO, QR</span>
+        <span class="format-caption">18 tools · JPG, PNG, WebP, HEIC, PDF, Video, Audio, ICO, QR</span>
       </div>
 
       <div class="trust-strip" aria-label="Key benefits">
@@ -118,8 +118,8 @@
 
     <section class="tools-section section-shell" id="tools">
       <div class="section-heading">
-        <div><span class="tools-eyebrow" data-i18n="navTools">All tools</span><div class="section-heading-title"><h2 data-i18n="chooseTitle">15 tools, one place</h2></div><p data-i18n="chooseCopy">Simple tools for everyday file work</p></div>
-        <span class="count-pill" data-i18n="toolCount">15 tools available</span>
+        <div><span class="tools-eyebrow" data-i18n="navTools">All tools</span><div class="section-heading-title"><h2 data-i18n="chooseTitle">18 tools, one place</h2></div><p data-i18n="chooseCopy">Simple tools for everyday file work</p></div>
+        <span class="count-pill" data-i18n="toolCount">18 tools available</span>
       </div>
 
       <div class="tool-grid">
@@ -180,6 +180,19 @@
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">view_module</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong data-i18n="organizeName">Organize PDF</strong><span data-i18n="organizeCopy">Reorder, rotate or remove PDF pages in one simple workspace.</span>
         </button>
+        <button class="tool-card mobile-pdf-extra" type="button" data-tool="rotate-pdf" data-page="/rotate-pdf/" data-accept="application/pdf">
+          <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">rotate_right</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
+          <strong data-i18n="rotatePdfName">Rotate PDF</strong><span data-i18n="rotatePdfCopy">Rotate individual PDF pages left or right.</span>
+        </button>
+        <button class="tool-card mobile-pdf-extra" type="button" data-tool="delete-pdf-pages" data-page="/delete-pdf-pages/" data-accept="application/pdf">
+          <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">delete</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
+          <strong data-i18n="deletePdfName">Delete PDF Pages</strong><span data-i18n="deletePdfCopy">Remove unwanted pages and save a clean PDF.</span>
+        </button>
+        <button class="tool-card mobile-pdf-extra" type="button" data-tool="extract-pdf-pages" data-page="/extract-pdf-pages/" data-accept="application/pdf">
+          <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">content_copy</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
+          <strong data-i18n="extractPdfName">Extract PDF Pages</strong><span data-i18n="extractPdfCopy">Select specific pages and save them as a new PDF.</span>
+        </button>
+        <button class="mobile-extra-toggle" id="mobilePdfToggle" type="button" aria-expanded="false"><span data-mobile-pdf-label>Show more PDF tools</span><span class="material-symbols-outlined" aria-hidden="true">expand_more</span></button>
         <button class="tool-card" type="button" data-tool="video-tools" data-page="/video-tools/" data-accept="video/*,.mov,.mkv,.avi,.webm,.m4v,.mpeg,.mpg,.3gp,.ogv">
           <span class="tool-card-top"><span class="tool-icon material-symbols-outlined">video_settings</span><span class="arrow material-symbols-outlined">arrow_forward</span></span>
           <strong data-i18n="videoName">Video Tools</strong><span data-i18n="videoCopy">Convert to MP4, compress videos, or extract MP3 audio locally.</span>
@@ -259,8 +272,8 @@
   <script src="assets/pdfjs/pdf.min.js?v=20260804-unified-tools"></script>
   <script src="assets/jszip/jszip.min.js?v=20260804-unified-tools"></script>
   <script src="assets/heic2any/heic2any.min.js?v=0.0.4"></script>
-  <script src="assets/i18n.js?v=20260902-editorial-home-v1"></script>
-  <script src="client.js?v=20260906-native-language-v1"></script>
-  <script src="/assets/site-navigation.js?v=20260912-v3"></script>
+  <script src="assets/i18n.js?v=20260912-pdf-cards-v2"></script>
+  <script src="client.js?v=20260912-pdf-cards-v2"></script>
+  <script src="/assets/site-navigation.js?v=20260912-v4"></script>
 </body>
 </html>
