@@ -69,7 +69,7 @@
     if (!header || !shell || shell.querySelector(".mobile-menu-button, .cf24-shared-mobile-button")) return;
     header.classList.add("cf24-shared-header");
     const button = document.createElement("button");
-    button.className = "cf24-shared-mobile-button"; button.type = "button"; button.setAttribute("aria-label", "Open navigation"); button.setAttribute("aria-expanded", "false"); button.textContent = "☰";
+    button.className = "cf24-shared-mobile-button"; button.type = "button"; button.setAttribute("aria-label", "Open navigation"); button.setAttribute("aria-expanded", "false"); button.innerHTML = '<span class="cf24-hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span>';
     const overlay = document.createElement("button");
     overlay.className = "cf24-shared-mobile-overlay"; overlay.type = "button"; overlay.hidden = true; overlay.setAttribute("aria-label", "Close navigation");
     const panel = document.createElement("div");

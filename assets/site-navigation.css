@@ -248,6 +248,49 @@
   .site-header.cf24-shared-header .cf24-shared-mobile-button { display: grid; }
 }
 @media (max-width: 700px) {
+  .site-header.cf24-shared-header .nav-shell {
+    gap: 6px;
+  }
+  .site-header.cf24-shared-header .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .site-header.cf24-shared-header .nav-actions .cf24-primary-nav {
+    display: none;
+  }
+  .site-header.cf24-shared-header .language {
+    gap: 3px;
+  }
+  .site-header.cf24-shared-header #languageSelect {
+    width: 40px;
+  }
+  .site-header.cf24-shared-header #themeButton,
+  .site-header.cf24-shared-header .cf24-shared-mobile-button {
+    width: 34px;
+    height: 34px;
+  }
+  .site-header.cf24-shared-header .cf24-shared-mobile-button {
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+  }
+  .site-header.cf24-shared-header .cf24-hamburger-lines {
+    width: 18px;
+    display: grid;
+    gap: 4px;
+  }
+  .site-header.cf24-shared-header .cf24-hamburger-lines i {
+    width: 18px;
+    height: 1.5px;
+    display: block;
+    border-radius: 999px;
+    background: currentColor;
+  }
+  .site-header.cf24-shared-header .cf24-shared-mobile-controls {
+    display: none;
+  }
   .site-header .brand {
     display: inline-flex;
     align-items: center;
