@@ -1,0 +1,101 @@
+.about-page { width: 100%; }
+.about-hero {
+  padding: 98px 24px 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.about-hero h1 {
+  margin: 18px 0 20px;
+  font-family: Sora, sans-serif;
+  font-size: 52px;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+.about-hero > p:last-child {
+  max-width: 650px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+.about-section {
+  width: min(920px, calc(100% - 48px));
+  margin: 0 auto 120px;
+}
+.about-section > h2 {
+  margin: 16px 0 32px;
+  font-family: Sora, sans-serif;
+  font-size: 32px;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+}
+.prose,
+.vision,
+.contact {
+  padding: 42px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.mission > .prose { margin-top: 0; }
+.prose p,
+.vision > p:last-child,
+.contact > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.prose p + p { margin-top: 16px; }
+.offer-grid,
+.reason-grid {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  list-style: none;
+}
+.offer-grid li,
+.reason-grid article {
+  min-height: 72px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.offer-grid li { color: var(--text); font-size: 15px; font-weight: 600; }
+.offer-grid li::before {
+  content: "✓";
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--blue);
+  font-size: 14px;
+}
+.reason-grid article span { color: var(--blue); font-size: 12px; font-weight: 700; }
+.reason-grid h3 { margin: 0; font-size: 15px; }
+.vision > h2,
+.contact > h2 { margin-bottom: 20px; }
+.contact { margin-bottom: 120px; text-align: center; }
+.contact .eyebrow { text-align: center; }
+@media (max-width: 700px) {
+  .about-hero { padding: 64px 22px 80px; }
+  .about-hero h1 { font-size: 36px; }
+  .about-hero > p:last-child { font-size: 16px; }
+  .about-section { width: calc(100% - 32px); margin-bottom: 80px; }
+  .about-section > h2 { font-size: 27px; }
+  .prose, .vision, .contact { padding: 28px 22px; }
+  .offer-grid, .reason-grid { grid-template-columns: 1fr; }
+  .contact { margin-bottom: 80px; }
+}
