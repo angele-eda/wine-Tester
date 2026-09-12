@@ -554,7 +554,7 @@ html[data-theme="light"] .desktop-nav #themeIcon { color:#1c1b19 !important; }
 html[data-theme="dark"] .desktop-nav #themeIcon { color:#f3f1ec !important; }
 .desktop-nav .language-symbol { color:var(--text); font:400 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif; }
 @media (min-width:901px) { .nav-shell { width:min(1152px,calc(100% - 64px)); } }
-@media (min-width:901px) { .brand { display:flex; align-items:center; gap:10px; font-family:sans-serif; font-size:16px; font-weight:700; line-height:normal; letter-spacing:normal; } }
+@media (min-width:901px) { .brand { display:flex; align-items:center; gap:10px; font-family:Sora,sans-serif; font-size:16px; font-weight:700; line-height:1; letter-spacing:-.01em; } }
 .desktop-nav .desktop-language { display:flex; align-items:center; gap:5px; }
 .desktop-nav .desktop-language select { width:46px; border:0; outline:0; color:var(--text); background:transparent; cursor:pointer; font:500 14px/1 var(--font-ui); }
 .desktop-nav .desktop-language select option,.mobile-language-control select option { color:#1b1a17; background:#e3e0d9; }
