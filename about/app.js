@@ -2,21 +2,36 @@
   const languageSelect = document.querySelector("#languageSelect");
   const themeButton = document.querySelector("#themeButton");
   const themeIcon = document.querySelector("#themeIcon");
+  const copy = {
+    en: {seoTitle:"About ConvertFiles24 | Fast, Secure File Conversion Tools",seoDescription:"Learn about ConvertFiles24, our mission, privacy-first browser processing, and simple online tools for images, PDFs, file conversion, and QR codes.",ogDescription:"Fast, secure, and privacy-focused online file conversion tools designed for everyone.",eyebrow:"Our story",title:"About ConvertFiles24",subtitle:"Fast, secure, and privacy-focused online file conversion tools designed for everyone.",missionEyebrow:"Our Mission",missionTitle:"Simple tools for everyday file work",missionOne:"ConvertFiles24 was created to provide simple, fast, and secure online file conversion tools.",missionTwo:"Our goal is to make everyday file conversions easy without unnecessary complexity.",missionThree:"Whenever possible, files are processed directly in the browser to protect user privacy.",offerEyebrow:"What We Offer",offerTitle:"Useful tools in one clean workspace",offerImage:"Image Tools",offerPdf:"PDF Tools",offerConvert:"File Conversion",offerQr:"QR Code Generator",offerFast:"Fast Browser Processing",offerNoRegistration:"No Registration Required",offerMobile:"Mobile Friendly",whyEyebrow:"Why Choose ConvertFiles24",whyTitle:"Built around speed, clarity, and privacy",whyFast:"Fast Performance",whyPrivacy:"Privacy First",whySimple:"Simple User Experience",whyFree:"Free Online Tools",whySecure:"Secure Processing",whyDevices:"Works on Desktop, Tablet and Mobile",visionEyebrow:"Our Vision",visionTitle:"More useful tools, without more complexity",visionCopy:"We are continuously expanding ConvertFiles24 by adding more useful tools while keeping the interface clean, fast, and easy to use.",contactEyebrow:"Contact",contactTitle:"Get in touch",contactCopy:"A contact email will be added here soon."},
+    ko: {seoTitle:"ConvertFiles24 소개 | 빠르고 안전한 파일 변환 도구",seoDescription:"ConvertFiles24의 목표와 개인정보 보호 중심의 브라우저 처리 방식, 이미지·PDF·파일 변환·QR 코드 도구를 알아보세요.",ogDescription:"누구나 사용할 수 있도록 설계된 빠르고 안전한 개인정보 보호 중심 온라인 파일 변환 도구입니다.",eyebrow:"우리의 이야기",title:"ConvertFiles24 소개",subtitle:"누구나 사용할 수 있도록 설계된 빠르고 안전한 개인정보 보호 중심 온라인 파일 변환 도구입니다.",missionEyebrow:"우리의 목표",missionTitle:"일상적인 파일 작업을 위한 간편한 도구",missionOne:"ConvertFiles24는 간단하고 빠르며 안전한 온라인 파일 변환 도구를 제공하기 위해 만들어졌습니다.",missionTwo:"불필요한 복잡함 없이 일상적인 파일 변환을 쉽게 만드는 것이 목표입니다.",missionThree:"사용자의 개인정보를 보호하기 위해 가능한 모든 파일을 브라우저에서 직접 처리합니다.",offerEyebrow:"제공 기능",offerTitle:"깔끔한 한 공간에서 사용하는 유용한 도구",offerImage:"이미지 도구",offerPdf:"PDF 도구",offerConvert:"파일 변환",offerQr:"QR 코드 생성기",offerFast:"빠른 브라우저 처리",offerNoRegistration:"회원가입 불필요",offerMobile:"모바일 지원",whyEyebrow:"ConvertFiles24를 선택하는 이유",whyTitle:"속도와 명확함, 개인정보 보호를 중심으로 설계",whyFast:"빠른 성능",whyPrivacy:"개인정보 보호 우선",whySimple:"간편한 사용자 경험",whyFree:"무료 온라인 도구",whySecure:"안전한 처리",whyDevices:"PC·태블릿·모바일 지원",visionEyebrow:"우리의 비전",visionTitle:"복잡함은 줄이고 유용한 도구는 더 많이",visionCopy:"깔끔하고 빠르며 사용하기 쉬운 인터페이스를 유지하면서 더 유용한 도구를 지속적으로 추가하고 있습니다.",contactEyebrow:"문의",contactTitle:"문의하기",contactCopy:"문의 이메일은 곧 추가될 예정입니다."},
+    ja: {seoTitle:"ConvertFiles24について | 高速で安全なファイル変換ツール",seoDescription:"ConvertFiles24の使命、プライバシーを重視したブラウザ処理、画像・PDF・ファイル変換・QRコードツールをご紹介します。",ogDescription:"誰でも使える、高速・安全でプライバシーを重視したオンラインファイル変換ツールです。",eyebrow:"私たちについて",title:"ConvertFiles24について",subtitle:"誰でも使える、高速・安全でプライバシーを重視したオンラインファイル変換ツールです。",missionEyebrow:"私たちの使命",missionTitle:"日常のファイル作業をシンプルに",missionOne:"ConvertFiles24は、シンプルで高速かつ安全なオンラインファイル変換ツールを提供するために作られました。",missionTwo:"不要な複雑さをなくし、日常のファイル変換を簡単にすることが目標です。",missionThree:"プライバシー保護のため、可能な限りファイルをブラウザ内で直接処理します。",offerEyebrow:"提供する機能",offerTitle:"すっきりした一つの場所に便利なツールを",offerImage:"画像ツール",offerPdf:"PDFツール",offerConvert:"ファイル変換",offerQr:"QRコード生成",offerFast:"高速なブラウザ処理",offerNoRegistration:"登録不要",offerMobile:"モバイル対応",whyEyebrow:"ConvertFiles24が選ばれる理由",whyTitle:"速度、分かりやすさ、プライバシーを重視",whyFast:"高速な処理",whyPrivacy:"プライバシー優先",whySimple:"シンプルな操作",whyFree:"無料オンラインツール",whySecure:"安全な処理",whyDevices:"PC・タブレット・モバイル対応",visionEyebrow:"私たちのビジョン",visionTitle:"複雑にせず、より便利なツールを",visionCopy:"シンプルで高速、使いやすい画面を保ちながら、便利なツールを継続的に追加しています。",contactEyebrow:"お問い合わせ",contactTitle:"お問い合わせ",contactCopy:"お問い合わせ用メールアドレスは近日追加予定です。"},
+    es: {seoTitle:"Acerca de ConvertFiles24 | Herramientas rápidas y seguras",seoDescription:"Conoce ConvertFiles24, nuestra misión, el procesamiento privado en el navegador y nuestras herramientas para imágenes, PDF, conversión y códigos QR.",ogDescription:"Herramientas de conversión de archivos rápidas, seguras y centradas en la privacidad para todos.",eyebrow:"Nuestra historia",title:"Acerca de ConvertFiles24",subtitle:"Herramientas de conversión de archivos rápidas, seguras y centradas en la privacidad para todos.",missionEyebrow:"Nuestra misión",missionTitle:"Herramientas sencillas para archivos cotidianos",missionOne:"ConvertFiles24 fue creado para ofrecer herramientas de conversión en línea sencillas, rápidas y seguras.",missionTwo:"Nuestro objetivo es facilitar las conversiones cotidianas sin complejidad innecesaria.",missionThree:"Siempre que es posible, los archivos se procesan directamente en el navegador para proteger la privacidad.",offerEyebrow:"Lo que ofrecemos",offerTitle:"Herramientas útiles en un espacio limpio",offerImage:"Herramientas de imagen",offerPdf:"Herramientas PDF",offerConvert:"Conversión de archivos",offerQr:"Generador de códigos QR",offerFast:"Procesamiento rápido en el navegador",offerNoRegistration:"Sin registro",offerMobile:"Compatible con móviles",whyEyebrow:"Por qué elegir ConvertFiles24",whyTitle:"Creado para ofrecer rapidez, claridad y privacidad",whyFast:"Alto rendimiento",whyPrivacy:"Privacidad primero",whySimple:"Experiencia sencilla",whyFree:"Herramientas gratuitas",whySecure:"Procesamiento seguro",whyDevices:"Funciona en ordenador, tableta y móvil",visionEyebrow:"Nuestra visión",visionTitle:"Más herramientas útiles, sin más complejidad",visionCopy:"Seguimos ampliando ConvertFiles24 con herramientas útiles y una interfaz limpia, rápida y fácil de usar.",contactEyebrow:"Contacto",contactTitle:"Ponte en contacto",contactCopy:"Próximamente añadiremos un correo de contacto."}
+  };
   let language = (new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || navigator.language || "en").slice(0,2).toLowerCase();
-  if (!["en","ko","ja","es"].includes(language)) language = "en";
+  if (!copy[language]) language = "en";
+  function render() {
+    const labels = copy[language];
+    document.documentElement.lang = language;
+    document.title = labels.seoTitle;
+    document.querySelector('meta[name="description"]').content = labels.seoDescription;
+    document.querySelector('meta[property="og:title"]').content = labels.seoTitle;
+    document.querySelector('meta[property="og:description"]').content = labels.ogDescription;
+    document.querySelectorAll("[data-about]").forEach(element => { element.textContent = labels[element.dataset.about]; });
+  }
   function setTheme(theme) {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("convertfiles24-theme", theme);
     themeIcon.textContent = theme === "dark" ? "☾" : "☀";
   }
   languageSelect.value = language;
-  document.documentElement.lang = language;
+  render();
   setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
   themeButton.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
   languageSelect.addEventListener("change", event => {
     language = event.target.value;
     localStorage.setItem("convertfiles24-language", language);
-    document.documentElement.lang = language;
     const url = new URL(location.href); url.searchParams.set("lang", language); history.replaceState({}, "", url);
+    render();
   });
 })();
