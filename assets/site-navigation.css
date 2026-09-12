@@ -127,6 +127,7 @@
 .cf24-mobile-links {
   display: grid;
   gap: 8px;
+  text-align: left;
 }
 .cf24-mobile-links > a,
 .cf24-mobile-menu summary,
@@ -147,7 +148,7 @@
 .cf24-mobile-dropdown {
   display: grid;
   gap: 3px;
-  padding: 8px 0 4px 14px;
+  padding: 8px 0 4px;
 }
 .cf24-mobile-dropdown a {
   padding: 7px 0;
