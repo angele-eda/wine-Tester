@@ -148,15 +148,23 @@
 .cf24-mobile-dropdown {
   display: grid;
   gap: 3px;
-  padding: 8px 0 4px;
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--surface, var(--bg)) 91%, #b5a58c 9%);
 }
 .cf24-mobile-dropdown a {
-  padding: 7px 0;
+  padding: 7px 8px;
+  border-radius: 7px;
   color: var(--muted);
   font-size: 13px;
 }
+.cf24-mobile-dropdown a[aria-current="page"] {
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface, var(--bg)) 82%, #b5a58c 18%);
+}
 .cf24-mobile-dropdown .cf24-disabled-item {
-  padding: 7px 0;
+  padding: 7px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;

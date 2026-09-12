@@ -93,6 +93,13 @@
     nav.setAttribute("aria-label", "Footer navigation");
     nav.innerHTML = `${link("privacy", "/privacy/")}${link("terms", "/terms/")}${link("cookie", "/cookie-policy")}${link("disclaimer", "/disclaimer")}${link("contact", "/contact")}`;
   }
+  function markCurrentPage() {
+    const currentPath = `${location.pathname.replace(/\/+$/, "") || "/"}/`.replace("//", "/");
+    document.querySelectorAll(".cf24-mobile-dropdown a[href]").forEach(anchor => {
+      const anchorPath = `${new URL(anchor.href, location.origin).pathname.replace(/\/+$/, "") || "/"}/`.replace("//", "/");
+      if (anchorPath === currentPath) anchor.setAttribute("aria-current", "page");
+    });
+  }
   function closeMenus(event) {
     document.querySelectorAll(".cf24-menu[open]").forEach(menuElement => {
       if (!menuElement.contains(event.target)) menuElement.removeAttribute("open");
@@ -100,7 +107,7 @@
   }
   function init() {
     if (!footerOnly) { buildDesktop(); buildMobile(); buildSharedMobile(); }
-    buildFooter(); translate();
+    buildFooter(); markCurrentPage(); translate();
     document.querySelectorAll(".cf24-menu").forEach(menuElement => menuElement.addEventListener("toggle", () => {
       if (menuElement.open) document.querySelectorAll(".cf24-menu[open]").forEach(other => { if (other !== menuElement) other.removeAttribute("open"); });
     }));
