@@ -89,6 +89,7 @@
 .contact > h2 { margin-bottom: 20px; }
 .contact { margin-bottom: 120px; text-align: center; }
 .contact .eyebrow { text-align: center; }
+.contact a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 700px) {
   .about-hero { padding: 64px 22px 80px; }
   .about-hero h1 { font-size: 36px; }

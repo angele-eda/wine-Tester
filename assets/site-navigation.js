@@ -98,7 +98,7 @@
     if (!nav) { nav = document.createElement("nav"); footer.append(nav); }
     nav.classList.add("cf24-footer-nav");
     nav.setAttribute("aria-label", "Footer navigation");
-    nav.innerHTML = `${link("privacy", "/privacy/")}${link("terms", "/terms/")}${link("cookie", "/cookie-policy")}${link("disclaimer", "/disclaimer")}${link("contact", "/contact")}`;
+    nav.innerHTML = `${link("privacy", "/privacy/")}${link("terms", "/terms/")}${link("contact", "/contact/")}`;
   }
   function markCurrentPage() {
     const currentPath = `${location.pathname.replace(/\/+$/, "") || "/"}/`.replace("//", "/");
