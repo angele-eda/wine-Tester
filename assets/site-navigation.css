@@ -101,9 +101,9 @@
 .cf24-dropdown a::before,
 .cf24-dropdown .cf24-disabled-item::before {
   content: "";
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
   border: 1px solid color-mix(in srgb, currentColor 48%, transparent);
   border-radius: 50%;
 }
@@ -113,8 +113,7 @@
 }
 .cf24-dropdown a[aria-current="page"]::before {
   border-color: var(--blue, var(--primary));
-  background: var(--blue, var(--primary));
-  box-shadow: inset 0 0 0 1.5px var(--surface, var(--bg));
+  background: radial-gradient(circle, var(--blue, var(--primary)) 0 2px, transparent 2.2px);
 }
 .cf24-dropdown .cf24-disabled-item > span[data-cf24-label]:first-of-type {
   min-width: 0;
