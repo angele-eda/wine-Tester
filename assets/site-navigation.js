@@ -102,7 +102,7 @@
   }
   function markCurrentPage() {
     const currentPath = `${location.pathname.replace(/\/+$/, "") || "/"}/`.replace("//", "/");
-    document.querySelectorAll(".cf24-mobile-dropdown a[href]").forEach(anchor => {
+    document.querySelectorAll(".cf24-dropdown a[href], .cf24-mobile-dropdown a[href]").forEach(anchor => {
       const anchorPath = `${new URL(anchor.href, location.origin).pathname.replace(/\/+$/, "") || "/"}/`.replace("//", "/");
       if (anchorPath === currentPath) anchor.setAttribute("aria-current", "page");
     });
