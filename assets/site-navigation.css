@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@700&display=swap");
 
+@media (hover: hover) and (pointer: fine) {
+  .site-header .brand .brand-mark {
+    transition: background-color 180ms ease;
+  }
+  .site-header .brand:hover .brand-mark,
+  .site-header .brand:focus-visible .brand-mark {
+    background: var(--blue, var(--primary, #0b5cff));
+  }
+  .site-header .brand:hover .brand-mark svg,
+  .site-header .brand:focus-visible .brand-mark svg {
+    stroke: #fff;
+  }
+}
+
 .cf24-primary-nav {
   display: flex;
   align-items: center;
