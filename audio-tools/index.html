@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Audio to MP3 Converter | WAV, M4A, MP4 | ConvertFiles24</title>
+  <meta name="description" content="Convert WAV or M4A to MP3, or extract MP3 audio from MP4. Choose audio quality and download privately in your browser.">
+  <link rel="canonical" href="https://convertfiles24.com/audio-tools/">
+  <link rel="icon" href="/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/convert/styles.css?v=20260910-detail-layout-v1">
+  <link rel="stylesheet" href="/video-tools/styles.css?v=20260909-v2">
+  <link rel="stylesheet" href="/audio-tools/styles.css?v=20260925-v1">
+  <link rel="stylesheet" href="/assets/site-navigation.css?v=20260913-v10">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem("convertfiles24-theme")==="dark"?"dark":"light"}catch(_){}</script>
+</head>
+<body>
+  <header class="site-header"><nav class="nav-shell">
+    <a class="brand notranslate" href="/" translate="no" aria-label="ConvertFiles24 home"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9a8 8 0 0 1 14-5M18 4v5h-5M20 15a8 8 0 0 1-14 5M6 20v-5h5"/></svg></span><span>ConvertFiles24</span></a>
+    <div class="nav-actions"><a href="/#tools">All tools</a><a href="/privacy/">Privacy</a><label class="language"><span aria-hidden="true">◎</span><select id="languageSelect" aria-label="Language"><option value="en">EN</option><option value="ko">KO</option><option value="ja">JP</option><option value="es">ES</option></select></label><button class="theme-button" id="themeButton" type="button" aria-label="Switch theme"><span id="themeIcon">☀</span></button></div>
+  </nav></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow" data-i18n="eyebrow">Audio tools</p>
+      <h1 data-i18n="title">Convert to MP3</h1>
+      <p class="hero-copy" data-i18n="subtitle">Convert WAV and M4A or extract audio from MP4, directly in your browser.</p>
+      <div class="format-demo audio-demo"><div class="format-stack"><span>WAV</span><span>M4A</span><span>MP4</span></div><span class="swap-mark material-symbols-outlined" aria-hidden="true">music_note</span><div class="format-stack"><span>MP3</span></div></div>
+      <small class="format-caption" data-i18n="caption">WAV → MP3 · M4A → MP3 · MP4 → MP3</small>
+    </section>
+    <section class="converter-card audio-card" aria-label="Audio converter">
+      <div class="mode-tabs" role="tablist" aria-label="Conversion type">
+        <button type="button" role="tab" class="active" aria-selected="true" data-mode="wav"><span class="material-symbols-outlined" aria-hidden="true">audio_file</span>WAV → MP3</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="m4a"><span class="material-symbols-outlined" aria-hidden="true">music_note</span>M4A → MP3</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="mp4"><span class="material-symbols-outlined" aria-hidden="true">movie</span>MP4 → MP3</button>
+      </div>
+      <div class="field-group">
+        <h2 id="selectLabel" data-i18n="selectLabel">Select a WAV file</h2>
+        <input id="fileInput" type="file" accept=".wav,audio/wav,audio/x-wav" hidden>
+        <button class="drop-zone" id="dropZone" type="button"><span class="material-symbols-outlined file-pick-icon" aria-hidden="true">audio_file</span><span class="drop-title" id="dropTitle" data-i18n="dropTitle">Choose a WAV file</span><span class="drop-copy" data-i18n="dropCopy">Select a file or drag it here</span><b class="choose-button" data-i18n="choose">Choose file</b><small id="limit" data-i18n="limit">WAV · up to 200 MB</small></button>
+        <div class="selected-file audio-selected" id="selected" hidden><span class="material-symbols-outlined" aria-hidden="true">audio_file</span><div><strong id="fileName"></strong><small id="fileMeta"></small></div><button id="replaceButton" type="button" data-i18n="replace">Replace</button></div>
+      </div>
+      <div class="audio-quality"><label for="qualitySelect" data-i18n="quality">MP3 quality</label><select id="qualitySelect"><option value="128">128 kbps</option><option value="192" selected>192 kbps</option><option value="256">256 kbps</option></select></div>
+      <div class="info-grid" id="infoGrid" hidden><div><span data-i18n="before">Before</span><strong id="beforeValue">—</strong></div><div><span data-i18n="estimate">Estimated time</span><strong id="estimateValue">—</strong></div><div><span data-i18n="after">After</span><strong id="afterValue">—</strong></div></div>
+      <div class="device-note" id="mobileNote" hidden><span class="material-symbols-outlined" aria-hidden="true">device_thermostat</span><div><strong data-i18n="mobileTitle">Mobile device notice</strong><span data-i18n="mobileCopy">Large files can use substantial memory and warm your device. Keep this tab open.</span></div></div>
+      <label class="large-warning" id="largeWarning" hidden><span class="material-symbols-outlined" aria-hidden="true">warning</span><span><strong data-i18n="largeTitle">Large file warning</strong><small data-i18n="largeCopy">Conversion may take several minutes and use substantial memory.</small></span><input id="largeConfirm" type="checkbox"><b data-i18n="continue">Continue</b></label>
+      <div class="privacy-note"><span class="material-symbols-outlined" aria-hidden="true">lock</span><div><strong data-i18n="privateTitle">Processed on your device</strong><span data-i18n="privateCopy">Your file is never uploaded to a server.</span></div></div>
+      <div class="progress-wrap" id="progressWrap" hidden><div class="progress-head"><span id="progressLabel">0%</span><span id="progressStage" role="status"></span></div><progress id="progressBar" max="100" value="0"></progress><button class="cancel-button" id="cancelButton" type="button"><span class="material-symbols-outlined" aria-hidden="true">close</span><span data-i18n="cancel">Cancel</span></button></div>
+      <button class="convert-button" id="processButton" type="button" disabled><span data-i18n="convert">Convert to MP3</span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+      <p class="status" id="status" role="status"></p>
+      <a class="download-button" id="downloadButton" hidden><span data-i18n="download">Download MP3</span><span class="material-symbols-outlined" aria-hidden="true">download</span></a>
+      <details class="support-note"><summary data-i18n="supportTitle">Supported files and limits</summary><p data-i18n="supportCopy">WAV, M4A, or MP4 input according to the selected tool. Maximum 200 MB. Codec support depends on the source file.</p></details>
+    </section>
+    <section class="features"><p class="eyebrow" data-i18n="why">Why ConvertFiles24</p><h2 data-i18n="featureTitle">Private browser conversion</h2><div class="feature-grid"><article><span class="feature-icon material-symbols-outlined" aria-hidden="true">shield_lock</span><h3 data-i18n="noUpload">No uploads</h3><p data-i18n="noUploadCopy">Your media stays on your device.</p></article><article><span class="feature-icon material-symbols-outlined" aria-hidden="true">tune</span><h3 data-i18n="qualityTitle">Choose quality</h3><p data-i18n="qualityCopy">Pick the MP3 bitrate that suits your needs.</p></article><article><span class="feature-icon material-symbols-outlined" aria-hidden="true">devices</span><h3 data-i18n="devices">Works in your browser</h3><p data-i18n="devicesCopy">No app or account is required.</p></article></div></section>
+  </main>
+  <footer><span>© 2026 ConvertFiles24</span><nav><a href="/privacy/" data-i18n="privacy">Privacy Policy</a><a href="/terms/" data-i18n="terms">Terms</a></nav></footer>
+  <script src="/audio-tools/app.js?v=20260925-v1"></script>
+  <script src="/assets/site-navigation.js?v=20260913-v6"></script>
+</body>
+</html>

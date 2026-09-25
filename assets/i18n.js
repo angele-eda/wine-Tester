@@ -123,4 +123,8 @@
       localFile: "procesado localmente", choosePdf: "Elige primero un archivo PDF.", chooseImage: "Elige primero una imagen JPG o PNG.", chooseCompressImage: "Elige primero una imagen JPG, PNG o WebP.", chooseHeic: "Elige primero un archivo HEIC o HEIF.", invalidDimensions: "Introduce un ancho y un alto entre 1 y 12.000 píxeles.", selectCropArea: "Selecciona un área de recorte más grande.", imageProcessError: "No se pudo procesar esta imagen.", heicConvertError: "No se pudo convertir este archivo HEIC.", mergeTwo: "Elige al menos dos archivos PDF para unir.", tryAgain: "Inténtalo de nuevo.", switchLight: "Cambiar al modo claro", switchDark: "Cambiar al modo oscuro", mobileLightMode: "Modo claro", mobileDarkMode: "Modo oscuro", openNavigation: "Abrir navegación", closeNavigation: "Cerrar navegación", closeWorkspace: "Cerrar espacio de trabajo"
     }
   };
+  Object.assign(window.CF24_I18N.en, {audioName:"Audio Tools",audioCopy:"Convert WAV or M4A to MP3, or extract MP3 audio from MP4."});
+  Object.assign(window.CF24_I18N.ko, {audioName:"오디오 도구",audioCopy:"WAV·M4A를 MP3로 변환하거나 MP4에서 오디오를 추출합니다."});
+  Object.assign(window.CF24_I18N.ja, {audioName:"音声ツール",audioCopy:"WAV・M4AをMP3に変換、MP4から音声を抽出します。"});
+  Object.assign(window.CF24_I18N.es, {audioName:"Herramientas de audio",audioCopy:"Convierte WAV o M4A a MP3 o extrae audio MP3 de un MP4."});
 })();

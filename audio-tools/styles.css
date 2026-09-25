@@ -1,0 +1,11 @@
+.audio-demo .swap-mark{color:#fff;font-size:20px}
+.audio-card{max-width:700px}
+.audio-selected{min-width:0}
+.audio-selected>.material-symbols-outlined{color:var(--blue);font-size:29px}
+.audio-selected div{flex:1}
+.audio-quality{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.audio-quality label{font-size:13px;font-weight:700}
+.audio-quality select{min-width:150px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--surface);font:inherit}
+.audio-card+.features .feature-grid article{align-items:center;text-align:center}
+@media(max-width:700px){.audio-card .mode-tabs button{font-size:11px}.audio-selected{flex-wrap:wrap}.audio-selected button{margin-left:auto}}
+@media(max-width:420px){.audio-quality{align-items:stretch;flex-direction:column}.audio-quality select{width:100%}}
