@@ -47,7 +47,7 @@
     : link(label, href, mobile);
   const menu = (key, tools, mobile = false) => `<details class="${mobile ? "cf24-mobile-menu" : "cf24-menu"}"><summary data-cf24-label="${key}">${copy.en[key]}</summary><div class="${mobile ? "cf24-mobile-dropdown" : "cf24-dropdown"}">${tools.map(tool => toolItem(tool, mobile)).join("")}</div></details>`;
   function primaryMarkup(mobile = false) {
-    return `${link("home", "/", mobile)}${menu("imageTools", imageTools, mobile)}${menu("pdfTools", pdfTools, mobile)}${link("videoTools", "/video-tools/", mobile)}${link("audioTools", "/audio-tools/", mobile)}${link("blog", "/blog", mobile)}${link("about", "/about/", mobile)}`;
+    return `${link("home", "/", mobile)}${menu("imageTools", imageTools, mobile)}${menu("pdfTools", pdfTools, mobile)}${link("videoTools", "/video-tools/", mobile)}${link("audioTools", "/audio-tools/", mobile)}${link("blog", "https://convertfiles24.wordpress.com/", mobile)}${link("about", "/about/", mobile)}`;
   }
   function translate() {
     const labels = copy[language()];
