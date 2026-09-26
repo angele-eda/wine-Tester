@@ -573,3 +573,17 @@ html[data-theme="light"] .desktop-nav #themeButton:focus-visible { border-color:
   .converter-footer { margin-top:84px; padding:26px 20px; align-items:center; justify-content:center; flex-direction:column; text-align:center; }
   .converter-footer nav { justify-content:center; gap:20px; }
 }
+
+
+/* Mobile homepage cards: compact two-column layout; desktop stays unchanged. */
+@media (max-width:600px) {
+  .tool-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .tool-card { min-width:0; min-height:150px; padding:15px 12px; align-items:center; text-align:center; gap:9px; }
+  .tool-card-top { width:100%; justify-content:center; }
+  .tool-card-top .arrow { position:absolute; top:14px; right:12px; }
+  .tool-card strong { font-size:14px; line-height:1.3; }
+  .tool-card > span:last-child { max-width:34ch; display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2; font-size:12px; line-height:1.4; }
+  .tool-card.mobile-pdf-extra { display:none; }
+  .tool-grid.mobile-pdf-expanded .tool-card.mobile-pdf-extra { display:flex; }
+  .mobile-extra-toggle { grid-column:1/-1; }
+}
