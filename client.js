@@ -278,24 +278,32 @@ freeInfoDialog?.addEventListener("click", (event) => {
 freeInfoDialog?.addEventListener("close", updateBackToTop);
 
 let backToTopHideTimer;
+let backToTopRemoveTimer;
 
 function updateBackToTop(showWhileScrolling = false) {
   const overlayOpen = mobileMenuButton.getAttribute("aria-expanded") === "true" || dialog.open || freeInfoDialog?.open;
   const canShow = window.innerWidth <= 680 && window.scrollY >= 500 && !overlayOpen;
 
   if (!canShow) {
-    backToTopButton.hidden = true;
     window.clearTimeout(backToTopHideTimer);
+    window.clearTimeout(backToTopRemoveTimer);
+    backToTopButton.classList.remove("is-idle");
+    backToTopButton.hidden = true;
     return;
   }
 
   if (!showWhileScrolling) return;
 
-  backToTopButton.hidden = false;
   window.clearTimeout(backToTopHideTimer);
+  window.clearTimeout(backToTopRemoveTimer);
+  backToTopButton.hidden = false;
+  backToTopButton.classList.remove("is-idle");
   backToTopHideTimer = window.setTimeout(() => {
-    backToTopButton.hidden = true;
-  }, 1200);
+    backToTopButton.classList.add("is-idle");
+    backToTopRemoveTimer = window.setTimeout(() => {
+      if (backToTopButton.classList.contains("is-idle")) backToTopButton.hidden = true;
+    }, 450);
+  }, 2000);
 }
 
 backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
