@@ -14,12 +14,12 @@
 }
 html[data-theme="dark"] {
   --bg: #11110f;
-  --surface: #101a2b;
-  --surface-2: #151f31;
-  --text: #eff4ff;
-  --muted: #b2bdd0;
-  --subtle: #8794aa;
-  --line: #303d52;
+  --surface: #1b1a17;
+  --surface-2: #25231e;
+  --text: #f3f1ec;
+  --muted: #a6a196;
+  --subtle: #8f8a7c;
+  --line: #34312b;
   --blue: #4e8eff;
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
 }
