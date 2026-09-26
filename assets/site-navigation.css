@@ -19,6 +19,21 @@
   align-items: center;
   gap: 26px;
 }
+.cf24-primary-nav > .cf24-media-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.cf24-primary-nav > .cf24-media-nav-link svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .cf24-primary-nav > a,
 .cf24-menu > summary {
   color: var(--text);
