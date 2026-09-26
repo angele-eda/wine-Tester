@@ -277,13 +277,29 @@ freeInfoDialog?.addEventListener("click", (event) => {
 });
 freeInfoDialog?.addEventListener("close", updateBackToTop);
 
-function updateBackToTop() {
+let backToTopHideTimer;
+
+function updateBackToTop(showWhileScrolling = false) {
   const overlayOpen = mobileMenuButton.getAttribute("aria-expanded") === "true" || dialog.open || freeInfoDialog?.open;
-  backToTopButton.hidden = window.innerWidth > 680 || window.scrollY < 500 || overlayOpen;
+  const canShow = window.innerWidth <= 680 && window.scrollY >= 500 && !overlayOpen;
+
+  if (!canShow) {
+    backToTopButton.hidden = true;
+    window.clearTimeout(backToTopHideTimer);
+    return;
+  }
+
+  if (!showWhileScrolling) return;
+
+  backToTopButton.hidden = false;
+  window.clearTimeout(backToTopHideTimer);
+  backToTopHideTimer = window.setTimeout(() => {
+    backToTopButton.hidden = true;
+  }, 1200);
 }
 
 backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-window.addEventListener("scroll", updateBackToTop, { passive: true });
+window.addEventListener("scroll", () => updateBackToTop(true), { passive: true });
 window.addEventListener("resize", updateBackToTop);
 
 function openWorkspace(toolKey, accept) {
