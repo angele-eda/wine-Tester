@@ -40,6 +40,7 @@
   const link = (key, href, mobile = false) => {
     if (!mobile && key === "videoTools") return `<a class="cf24-media-nav-link" href="${href}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="5" width="10.5" height="10" rx="2"/><path d="m13 8 4.5-2v8L13 12"/></svg><span data-cf24-label="videoNav">${copy.en.videoNav}</span></a>`;
     if (!mobile && key === "audioTools") return `<a class="cf24-media-nav-link" href="${href}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8v4m4-7v10m4-12v14m4-10v6m3-4v2"/></svg><span data-cf24-label="audioNav">${copy.en.audioNav}</span></a>`;
+    if (key === "blog") return `<a href="${href}" target="_blank" rel="noopener noreferrer" data-cf24-label="${key}">${copy.en[key]}</a>`;
     return `<a href="${href}" data-cf24-label="${key}">${copy.en[key]}</a>`;
   };
   const toolItem = ([label, href, disabled], mobile = false) => disabled
