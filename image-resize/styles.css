@@ -13,7 +13,7 @@
   --display: Sora, var(--ui);
 }
 html[data-theme="dark"] {
-  --bg: #08111f;
+  --bg: #11110f;
   --surface: #101a2b;
   --surface-2: #151f31;
   --text: #eff4ff;
