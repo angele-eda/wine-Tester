@@ -15,7 +15,7 @@
   <link rel="icon" href="/favicon-32x32.png?v=20260910-brand-v3" type="image/png">
   <link rel="stylesheet" href="/convert/styles.css?v=20260910-detail-layout-v1">
   <link rel="stylesheet" href="/assets/site-navigation.css?v=20260913-v10">
-  <link rel="stylesheet" href="/contact/styles.css?v=20260913-v1">
+  <link rel="stylesheet" href="/contact/styles.css?v=20260927-formsubmit-v1">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem("convertfiles24-theme")==="dark"?"dark":"light"}catch(_){}</script>
 </head>
 <body>
@@ -43,14 +43,24 @@
       <div class="contact-icon" aria-hidden="true">?</div>
       <p class="eyebrow" data-contact="cardEyebrow">Contact and support</p>
       <h2 id="contact-support-title" data-contact="cardTitle">Send us your question</h2>
-      <p data-contact="cardCopy">Use the ConvertFiles24 support page for bug reports, privacy questions, and general feedback. Please do not attach private or sensitive files.</p>
-      <a class="contact-button" href="https://github.com/angele-eda/wine-Tester/issues" target="_blank" rel="noopener noreferrer" data-contact="button">Open support page</a>
-      <p class="contact-note" data-contact="note">We review submitted requests and use them to improve the service.</p>
+      <p data-contact="cardCopy">Send a message to the ConvertFiles24 team. Do not include passwords or other sensitive information.</p>
+      <form class="contact-form" id="contactForm" action="https://formsubmit.co/ajax/convertfiles24@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New ConvertFiles24 contact request">
+        <input type="hidden" name="_template" value="table">
+        <label class="contact-field"><span data-contact="nameLabel">Name</span><input type="text" name="name" autocomplete="name" maxlength="100" required></label>
+        <label class="contact-field"><span data-contact="emailLabel">Email</span><input type="email" name="email" autocomplete="email" maxlength="254" required></label>
+        <label class="contact-field"><span data-contact="messageLabel">Message</span><textarea name="message" rows="6" maxlength="5000" required></textarea></label>
+        <label class="contact-honeypot" aria-hidden="true">Leave this field empty<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label>
+        <button class="contact-button" id="contactSubmit" type="submit" data-contact="button">Send message</button>
+        <p class="contact-status" id="contactStatus" role="status" aria-live="polite"></p>
+      </form>
+      <p class="contact-note" data-contact="note">Your message is sent through FormSubmit to our support email. On the first submission, approve the verification email sent to our inbox to activate delivery.</p>
+      <p class="contact-note contact-privacy"><span data-contact="privacyBefore">FormSubmit may retain submissions for up to 30 days. See its</span> <a href="https://formsubmit.co/privacy" target="_blank" rel="noopener noreferrer" data-contact="privacyLink">privacy policy</a>.</p>
     </section>
   </main>
 
   <footer><span>© 2026 ConvertFiles24.</span><nav aria-label="Footer navigation"></nav></footer>
-  <script src="/contact/app.js?v=20260913-v1"></script>
+  <script src="/contact/app.js?v=20260927-formsubmit-v1"></script>
   <script src="/assets/site-navigation.js?v=20260927-blog-newtab-v1"></script>
 </body>
 </html>

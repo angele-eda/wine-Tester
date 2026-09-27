@@ -56,6 +56,35 @@
   font-size: 15px;
   line-height: 1.7;
 }
+.contact-form {
+  max-width: 520px;
+  margin: 28px auto 18px;
+  display: grid;
+  gap: 18px;
+  text-align: left;
+}
+.contact-field { display: grid; gap: 8px; color: var(--text); font-size: 14px; font-weight: 500; }
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  font-weight: 400;
+}
+.contact-field textarea { min-height: 150px; resize: vertical; }
+.contact-field input:focus-visible,
+.contact-field textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.contact-form .contact-button { width: 100%; margin: 4px 0 0; border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+.contact-form .contact-button:disabled { cursor: wait; opacity: .65; }
+.contact-status { min-height: 1.5em; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+.contact-status.is-error { color: #c43d32; }
+.contact-status.is-success { color: #16865b; }
+.contact-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .contact-button {
   min-height: 48px;
   margin: 28px auto 18px;
@@ -72,6 +101,8 @@
 .contact-button:hover,
 .contact-button:focus-visible { background: var(--blue-dark); outline: none; }
 .contact-card .contact-note { font-size: 12px; }
+.contact-card .contact-privacy { margin-top: 8px !important; }
+.contact-privacy a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
 @media (max-width: 700px) {
   .contact-hero { padding: 64px 22px 56px; }
   .contact-hero h1 { font-size: 36px; }
