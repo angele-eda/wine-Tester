@@ -101,6 +101,8 @@
 .contact-button:hover,
 .contact-button:focus-visible { background: var(--blue-dark); outline: none; }
 .contact-card .contact-note { font-size: 12px; }
+.contact-card .contact-email { margin: 4px auto 14px; color: var(--muted); font-size: 13px; }
+.contact-email a { color: var(--blue); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .contact-card .contact-privacy { margin-top: 8px !important; }
 .contact-privacy a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
 @media (max-width: 700px) {
