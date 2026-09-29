@@ -36,6 +36,33 @@
 .mode-tabs .material-symbols-outlined {
   font-size: 20px;
 }
+.compression-quality {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+}
+.compression-quality[hidden] {
+  display: none;
+}
+.compression-quality label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.compression-quality select {
+  min-width: 170px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface-soft);
+  font: inherit;
+}
 .file-pick-icon {
   font-size: 36px;
   color: var(--subtle);
@@ -179,6 +206,14 @@
     flex-direction: column;
     gap: 3px;
     font-size: 11px;
+  }
+  .compression-quality {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .compression-quality select {
+    width: 100%;
   }
   .video-selected {
     grid-template-columns: 70px minmax(0, 1fr);
