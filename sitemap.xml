@@ -38,18 +38,6 @@
   </url>
 
   <url>
-    <loc>https://convertfiles24.com/id-photo/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://convertfiles24.com/edit/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://convertfiles24.com/convert/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -74,6 +62,12 @@
 
   <url>
     <loc>https://convertfiles24.com/image-ico/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://convertfiles24.com/favicon/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
