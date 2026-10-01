@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 
 const blogDraftSchema = {
@@ -31,12 +33,36 @@ function isValidDraft(draft) {
   );
 }
 
+function secretsMatch(received, expected) {
+  if (!received || !expected) return false;
+  const receivedBuffer = Buffer.from(received, "utf8");
+  const expectedBuffer = Buffer.from(expected, "utf8");
+  return (
+    receivedBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(receivedBuffer, expectedBuffer)
+  );
+}
+
 module.exports = async function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
 
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Method not allowed" });
+  }
+
+  const adminSecret = process.env.ADMIN_API_SECRET;
+  const authorization = request.headers.authorization || "";
+  const receivedSecret = authorization.startsWith("Bearer ")
+    ? authorization.slice("Bearer ".length)
+    : "";
+
+  if (!adminSecret) {
+    return response.status(404).json({ error: "Not found" });
+  }
+
+  if (!secretsMatch(receivedSecret, adminSecret)) {
+    return response.status(401).json({ error: "Unauthorized" });
   }
 
   if (!process.env.OPENAI_API_KEY) {
