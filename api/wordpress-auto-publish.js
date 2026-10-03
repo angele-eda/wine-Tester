@@ -1,10 +1,14 @@
 const crypto = require("crypto");
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
+const OPENAI_IMAGES_URL = "https://api.openai.com/v1/images/generations";
 const WORDPRESS_POSTS_URL =
   "https://public-api.wordpress.com/wp/v2/sites/convertfiles24.wordpress.com/posts";
+const WORDPRESS_MEDIA_URL =
+  "https://public-api.wordpress.com/wp/v2/sites/convertfiles24.wordpress.com/media";
 const RESEND_EMAILS_URL = "https://api.resend.com/emails";
 const MAX_ATTEMPTS = 2;
+const MAX_FEATURED_IMAGE_BYTES = 200 * 1024;
 
 const TRIAL_TOPICS = Object.freeze({
   "2026-10-05": {
@@ -264,6 +268,155 @@ async function generateArticle(topic, apiKey) {
   }
 }
 
+async function generateFeaturedImage(topic, article, apiKey) {
+  const response = await fetchWithRetry(
+    OPENAI_IMAGES_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-image-2.5-flare",
+        prompt: `Create one original editorial featured image for an English ConvertFiles24 article titled "${article.title}". Topic: ${topic.title}. Show a clear visual metaphor for browser-based file conversion or file handling that matches this specific topic. Use a polished modern flat illustration with subtle depth, a dark charcoal background, warm off-white details, muted gold accents, and one restrained blue accent. Landscape composition with the main subject centered and generous safe margins. No words, letters, numbers, logos, brand marks, watermarks, recognizable people, screenshots, or copyrighted characters. The image must be professional, calm, and suitable for a privacy-focused utility blog.`,
+        n: 1,
+        size: "1200x640",
+        quality: "low",
+        output_format: "jpeg",
+        output_compression: 45,
+        background: "opaque",
+        moderation: "auto",
+      }),
+    },
+    "OpenAI featured image generation",
+    90000,
+  );
+
+  if (!response.ok) {
+    throw new PublishError(
+      `OpenAI featured image generation failed after ${MAX_ATTEMPTS} attempts (HTTP ${response.status}).`,
+      "openai-image",
+    );
+  }
+
+  try {
+    const data = await response.json();
+    const encodedImage = data?.data?.[0]?.b64_json;
+    if (typeof encodedImage !== "string" || !encodedImage) {
+      throw new Error("Missing image data");
+    }
+
+    const buffer = Buffer.from(encodedImage, "base64");
+    const isJpeg = buffer.length > 3 && buffer[0] === 0xff && buffer[1] === 0xd8;
+    if (!isJpeg || buffer.length > MAX_FEATURED_IMAGE_BYTES) {
+      throw new Error("Invalid or oversized featured image");
+    }
+
+    return {
+      buffer,
+      contentType: "image/jpeg",
+      filename: `${topic.slug}.jpg`,
+      altText: `Editorial illustration for ${article.title}`.slice(0, 125),
+    };
+  } catch (error) {
+    throw new PublishError(
+      "OpenAI returned an invalid featured image or an image larger than 200 KB.",
+      "openai-image-response",
+      { cause: error },
+    );
+  }
+}
+
+async function deleteMedia(mediaId, accessToken) {
+  if (!mediaId) return;
+  const response = await fetchWithRetry(
+    `${WORDPRESS_MEDIA_URL}/${encodeURIComponent(mediaId)}?force=true`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+    "WordPress media cleanup",
+    15000,
+  );
+  if (!response.ok && response.status !== 404) {
+    throw new PublishError(
+      `WordPress media cleanup failed (HTTP ${response.status}).`,
+      "wordpress-media-cleanup",
+    );
+  }
+}
+
+async function cleanupMediaQuietly(mediaId, accessToken) {
+  try {
+    await deleteMedia(mediaId, accessToken);
+  } catch (error) {
+    console.error("Unused WordPress media could not be removed", {
+      mediaId,
+      stage: error?.stage || "wordpress-media-cleanup",
+      message: error?.publicReason || "Media cleanup failed",
+    });
+  }
+}
+
+async function uploadFeaturedImage(image, article, accessToken) {
+  const uploadResponse = await fetchWithRetry(
+    WORDPRESS_MEDIA_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": image.contentType,
+        "Content-Disposition": `attachment; filename="${image.filename}"`,
+      },
+      body: image.buffer,
+    },
+    "WordPress featured image upload",
+    30000,
+  );
+
+  const uploadedMedia = await uploadResponse.json().catch(() => ({}));
+  if (!uploadResponse.ok || !uploadedMedia?.id) {
+    throw new PublishError(
+      `WordPress featured image upload failed after ${MAX_ATTEMPTS} attempts (HTTP ${uploadResponse.status}).`,
+      "wordpress-media-upload",
+    );
+  }
+
+  const metadataResponse = await fetchWithRetry(
+    `${WORDPRESS_MEDIA_URL}/${encodeURIComponent(uploadedMedia.id)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: article.title.trim(),
+        alt_text: image.altText,
+        caption: `Featured image for ${article.title.trim()}`,
+      }),
+    },
+    "WordPress featured image metadata",
+    15000,
+  );
+
+  if (!metadataResponse.ok) {
+    await cleanupMediaQuietly(uploadedMedia.id, accessToken);
+    throw new PublishError(
+      `WordPress featured image metadata update failed (HTTP ${metadataResponse.status}).`,
+      "wordpress-media-metadata",
+    );
+  }
+
+  const media = await metadataResponse.json().catch(() => uploadedMedia);
+  return {
+    id: media.id || uploadedMedia.id,
+    sourceUrl: media.source_url || uploadedMedia.source_url || "",
+    altText: image.altText,
+  };
+}
+
 async function deleteDuplicatePost(postId, accessToken) {
   if (!postId) return;
   const response = await fetchWithRetry(
@@ -282,7 +435,7 @@ async function deleteDuplicatePost(postId, accessToken) {
   }
 }
 
-async function publishArticle(topic, article, accessToken) {
+async function publishArticle(topic, article, featuredMediaId, accessToken) {
   let lastFailure;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
@@ -299,6 +452,7 @@ async function publishArticle(topic, article, accessToken) {
           content: article.content_html.trim(),
           slug: topic.slug,
           status: "publish",
+          featured_media: featuredMediaId,
         }),
         signal: AbortSignal.timeout(12000),
       });
@@ -324,13 +478,14 @@ async function publishArticle(topic, article, accessToken) {
   );
 }
 
-function normalizePost(post, fallbackArticle, fallbackTitle) {
+function normalizePost(post, fallbackArticle, fallbackTitle, featuredImageUrl = "") {
   return {
     id: post?.id || null,
     slug: post?.slug || "",
     title: post?.title?.rendered || fallbackArticle?.title || fallbackTitle,
     content: post?.content?.rendered || fallbackArticle?.content_html || "",
     url: post?.link || "",
+    featuredImageUrl,
     publishedAt: post?.date_gmt
       ? `${post.date_gmt}Z`
       : post?.date || new Date().toISOString(),
@@ -364,15 +519,22 @@ async function sendSuccessEmail(date, post, configuration) {
   const safeTitle = escapeHtml(post.title);
   const safeUrl = escapeHtml(post.url);
   const safeTime = escapeHtml(post.publishedAt);
+  const safeImageUrl = escapeHtml(post.featuredImageUrl || "");
   const bodyHtml = post.content || "<p>No article body was returned by WordPress.</p>";
   const textBody = htmlToText(post.content);
+  const imageHtml = safeImageUrl
+    ? `<p><img src="${safeImageUrl}" alt="${safeTitle}" style="display:block;width:100%;max-width:1200px;height:auto"></p>`
+    : "";
+  const imageText = post.featuredImageUrl
+    ? `\nFeatured image: ${post.featuredImageUrl}`
+    : "";
 
   await sendEmail({
     ...configuration,
     subject: `[ConvertFiles24] Published: ${post.title}`,
     idempotencyKey: `cf24-blog-${date}-success`,
-    html: `<h1>${safeTitle}</h1><p><strong>Published URL:</strong> <a href="${safeUrl}">${safeUrl}</a></p><p><strong>Published at:</strong> ${safeTime}</p><hr>${bodyHtml}`,
-    text: `Title: ${post.title}\nPublished URL: ${post.url}\nPublished at: ${post.publishedAt}\n\n${textBody}`,
+    html: `<h1>${safeTitle}</h1><p><strong>Published URL:</strong> <a href="${safeUrl}">${safeUrl}</a></p><p><strong>Published at:</strong> ${safeTime}</p>${imageHtml}<hr>${bodyHtml}`,
+    text: `Title: ${post.title}\nPublished URL: ${post.url}\nPublished at: ${post.publishedAt}${imageText}\n\n${textBody}`,
   });
 }
 
@@ -403,11 +565,43 @@ async function runScheduledPublish(date, topic, configuration) {
     return { status: "already-published", post: normalized };
   }
 
-  const createdPost = await publishArticle(topic, article, configuration.wordpressToken);
-  let normalized = normalizePost(createdPost, article, topic.title);
+  const featuredImage = await generateFeaturedImage(topic, article, configuration.openAIKey);
+  const thirdCheck = await findExistingPost(topic.slug, configuration.wordpressToken);
+  if (thirdCheck) {
+    const normalized = normalizePost(thirdCheck, article, topic.title);
+    await sendSuccessEmail(date, normalized, configuration);
+    return { status: "already-published", post: normalized };
+  }
+
+  const media = await uploadFeaturedImage(
+    featuredImage,
+    article,
+    configuration.wordpressToken,
+  );
+  let createdPost;
+  try {
+    createdPost = await publishArticle(
+      topic,
+      article,
+      media.id,
+      configuration.wordpressToken,
+    );
+  } catch (error) {
+    await cleanupMediaQuietly(media.id, configuration.wordpressToken);
+    throw error;
+  }
+
+  let normalized = normalizePost(
+    createdPost,
+    article,
+    topic.title,
+    Number(createdPost?.featured_media) === Number(media.id) ? media.sourceUrl : "",
+  );
+  const returnedFeaturedMediaId = Number(createdPost?.featured_media || 0);
 
   if (normalized.slug !== topic.slug) {
     await deleteDuplicatePost(normalized.id, configuration.wordpressToken);
+    await cleanupMediaQuietly(media.id, configuration.wordpressToken);
     const originalPost = await findExistingPost(topic.slug, configuration.wordpressToken);
     if (!originalPost) {
       throw new PublishError(
@@ -416,6 +610,8 @@ async function runScheduledPublish(date, topic, configuration) {
       );
     }
     normalized = normalizePost(originalPost, article, topic.title);
+  } else if (returnedFeaturedMediaId && returnedFeaturedMediaId !== Number(media.id)) {
+    await cleanupMediaQuietly(media.id, configuration.wordpressToken);
   }
 
   await sendSuccessEmail(date, normalized, configuration);
@@ -511,4 +707,4 @@ module.exports = async function handler(request, response) {
   }
 };
 
-module.exports.config = { maxDuration: 60 };
+module.exports.config = { maxDuration: 300 };
