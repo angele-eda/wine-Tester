@@ -1,4 +1,5 @@
 const $ = selector => document.querySelector(selector);
+const compressAudio = Boolean(window.CF24_AUDIO_COMPRESS);
 const modes = {
   wav: {extension:"wav",accept:".wav,audio/wav,audio/x-wav",mime:["audio/wav","audio/wave","audio/x-wav","audio/vnd.wave"]},
   m4a: {extension:"m4a",accept:".m4a,audio/mp4,audio/x-m4a",mime:["audio/mp4","audio/x-m4a"]},
@@ -10,10 +11,14 @@ const copy = {
   ja:{eyebrow:"音声ツール",title:"MP3に変換",subtitle:"WAVやM4Aの変換、MP4からの音声抽出をブラウザ内で行います。",caption:"WAV → MP3 · M4A → MP3 · MP4 → MP3",selectLabel:"{type}ファイルを選択",dropTitle:"{type}ファイルを選択",dropCopy:"ファイルを選ぶか、ここにドラッグしてください",choose:"ファイルを選択",limit:"{type} · 最大200 MB",replace:"別のファイル",quality:"MP3音質",before:"変換前",estimate:"予想時間",after:"変換後",mobileTitle:"モバイル端末の注意",mobileCopy:"大きなファイルはメモリを多く使い、端末が熱くなることがあります。タブを開いたままにしてください。",largeTitle:"大容量ファイルの警告",largeCopy:"変換に数分かかり、多くのメモリを使用する場合があります。",continue:"続行",privateTitle:"端末内で処理",privateCopy:"ファイルはサーバーにアップロードされません。",cancel:"キャンセル",convert:"MP3に変換",download:"MP3をダウンロード",supportTitle:"対応ファイルと制限",supportCopy:"選択したツールに応じてWAV、M4A、MP4を入力。最大200 MB。対応コーデックは元ファイルによります。",why:"ConvertFiles24を選ぶ理由",featureTitle:"ブラウザで安全に変換",noUpload:"アップロードなし",noUploadCopy:"ファイルは端末内に残ります。",qualityTitle:"音質を選択",qualityCopy:"MP3のビットレートを選べます。",devices:"ブラウザで動作",devicesCopy:"アプリや登録は不要です。",privacy:"プライバシーポリシー",terms:"利用規約",invalid:"200 MB以下の{type}ファイルを選択してください。",empty:"ファイルが空です。別のファイルを選択してください。",loading:"音声エンジンを読み込み中…",processing:"ブラウザ内で変換中…",ready:"MP3完成 · {size} · {seconds}秒",failed:"ファイルを読み込み・変換できませんでした。有効な{type}ファイルか確認してください。",noAudio:"読み取れる音声がありません。音声付きのファイルを選んでください。",memory:"ブラウザのメモリが不足しています。小さいファイルをお試しください。",cancelled:"変換をキャンセルしました。",pending:"完了までタブを開いたままにしてください。",about:"約{time}",audioLabel:"音声ファイル"},
   es:{eyebrow:"Herramientas de audio",title:"Convertir a MP3",subtitle:"Convierte WAV y M4A o extrae el audio de MP4 directamente en tu navegador.",caption:"WAV → MP3 · M4A → MP3 · MP4 → MP3",selectLabel:"Selecciona un archivo {type}",dropTitle:"Elige un archivo {type}",dropCopy:"Selecciona un archivo o arrástralo aquí",choose:"Elegir archivo",limit:"{type} · hasta 200 MB",replace:"Cambiar",quality:"Calidad MP3",before:"Antes",estimate:"Tiempo estimado",after:"Después",mobileTitle:"Aviso para móviles",mobileCopy:"Los archivos grandes pueden usar mucha memoria y calentar el dispositivo. Mantén esta pestaña abierta.",largeTitle:"Archivo grande",largeCopy:"La conversión puede tardar varios minutos y usar mucha memoria.",continue:"Continuar",privateTitle:"Procesado en tu dispositivo",privateCopy:"El archivo no se sube a ningún servidor.",cancel:"Cancelar",convert:"Convertir a MP3",download:"Descargar MP3",supportTitle:"Archivos y límites",supportCopy:"Entrada WAV, M4A o MP4 según la herramienta elegida. Máximo 200 MB. La compatibilidad depende del códec.",why:"Por qué ConvertFiles24",featureTitle:"Conversión privada en el navegador",noUpload:"Sin subidas",noUploadCopy:"El archivo permanece en tu dispositivo.",qualityTitle:"Elige la calidad",qualityCopy:"Selecciona la tasa de bits MP3 que necesites.",devices:"Funciona en tu navegador",devicesCopy:"Sin aplicación ni cuenta.",privacy:"Política de privacidad",terms:"Términos",invalid:"Elige un archivo {type} de hasta 200 MB.",empty:"El archivo está vacío. Elige otro archivo.",loading:"Cargando el motor de audio…",processing:"Convirtiendo en tu navegador…",ready:"MP3 listo · {size} · {seconds}s",failed:"No se pudo leer o convertir el archivo. Comprueba que sea un {type} válido.",noAudio:"No se encontró audio legible. Elige un archivo con sonido.",memory:"El navegador se quedó sin memoria. Prueba con un archivo más pequeño.",cancelled:"Conversión cancelada.",pending:"Mantén esta pestaña abierta hasta que termine.",about:"Aprox. {time}",audioLabel:"Archivo de audio"}
 };
+if (compressAudio) {
+  for (const language of Object.keys(copy)) Object.assign(copy[language], window.CF24_AUDIO_COMPRESS[language]);
+}
 let lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || "en";
 if (!copy[lang]) lang = "en";
 let mode = modes[new URLSearchParams(location.search).get("mode")] ? new URLSearchParams(location.search).get("mode") : "wav";
 let file = null, outputURL = "", engine = null, running = false, completed = false, cancelled = false, duration = 0, lastLog = "", generation = 0;
+let selectionGeneration = 0, loadingEngine = null;
 const isMobile = matchMedia("(max-width:700px)").matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 const t = (key, values = {}) => (copy[lang][key] || copy.en[key] || key).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
 const fmt = bytes => bytes < 1048576 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / 1048576).toFixed(1)} MB`;
@@ -22,8 +27,8 @@ function status(key, error = false, values = {}) { $("#status").textContent = t(
 function clearOutput() { if (outputURL) URL.revokeObjectURL(outputURL); outputURL = ""; $("#downloadButton").hidden = true; $("#downloadButton").removeAttribute("href"); $("#afterValue").textContent = "—"; $("#status").textContent = ""; $("#status").className = "status"; $("#progressWrap").hidden = true; $("#progressBar").value = 0; }
 function progress(value, message) { $("#progressWrap").hidden = false; $("#progressBar").value = value; $("#progressLabel").textContent = `${value}%`; $("#progressStage").textContent = message; $("#cancelButton").hidden = value >= 100; }
 function refresh() {
-  const type = mode.toUpperCase();
-  $("#fileInput").accept = modes[mode].accept;
+  const type = compressAudio ? "MP3 / WAV / M4A" : mode.toUpperCase();
+  $("#fileInput").accept = compressAudio ? ".mp3,.wav,.m4a,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a" : modes[mode].accept;
   $("#selectLabel").textContent = t("selectLabel", {type});
   $("#dropTitle").textContent = t("dropTitle", {type});
   $("#limit").textContent = t("limit", {type});
@@ -32,6 +37,13 @@ function refresh() {
     $("#beforeValue").textContent = fmt(file.size);
     $("#fileMeta").textContent = `${fmt(file.size)} · ${duration ? clock(duration) : "—"}`;
     $("#estimateValue").textContent = t("about", {time:clock(Math.max(8, Math.max(duration || 0, file.size / 1800000) * (isMobile ? 1.8 : 1)))});
+    if (compressAudio) {
+      const expectedBytes = duration * Number($("#qualitySelect").value) * 1000 / 8;
+      $("#sizePreview").hidden = false;
+      $("#sizeEstimateValue").textContent = duration ? fmt(expectedBytes) : t("unknownDuration");
+      $("#sizeWarning").textContent = !duration ? "" : expectedBytes >= file.size * 0.95
+        ? t("sizeRisk") : t("reduction", {percent:Math.round((1 - expectedBytes / file.size) * 100)});
+    }
   }
 }
 function applyLanguage() {
@@ -41,19 +53,23 @@ function applyLanguage() {
   refresh();
 }
 function resetFile() {
+  selectionGeneration++;
   file = null; duration = 0; completed = false; clearOutput();
   $("#fileInput").value = ""; $("#selected").hidden = true; $("#dropZone").hidden = false;
   $("#infoGrid").hidden = true; $("#largeWarning").hidden = true; $("#largeConfirm").checked = false;
+  if (compressAudio) $("#sizePreview").hidden = true;
   refresh();
 }
 async function choose(candidate) {
   if (running) return;
   resetFile();
+  const selectedGeneration = selectionGeneration;
   if (!candidate) return;
-  const expected = modes[mode];
-  if (!candidate.name.toLowerCase().endsWith(`.${expected.extension}`) || candidate.size > 200 * 1048576) { status("invalid", true, {type:mode.toUpperCase()}); return; }
+  const extension = candidate.name.split(".").pop().toLowerCase();
+  const expected = compressAudio ? {extension, mime:["audio/mpeg","audio/mp3","audio/wav","audio/wave","audio/x-wav","audio/vnd.wave","audio/mp4","audio/x-m4a","application/octet-stream"]} : modes[mode];
+  if ((compressAudio ? !["mp3","wav","m4a"].includes(extension) : extension !== expected.extension) || candidate.size > 200 * 1048576) { status("invalid", true, {type:compressAudio ? "MP3 / WAV / M4A" : mode.toUpperCase()}); return; }
   if (!candidate.size) { status("empty", true); return; }
-  if (candidate.type && !expected.mime.includes(candidate.type)) { status("invalid", true, {type:mode.toUpperCase()}); return; }
+  if (candidate.type && !expected.mime.includes(candidate.type)) { status("invalid", true, {type:compressAudio ? "MP3 / WAV / M4A" : mode.toUpperCase()}); return; }
   file = candidate;
   $("#fileName").textContent = candidate.name; $("#selected").hidden = false;
   $("#dropZone").hidden = true; $("#infoGrid").hidden = false;
@@ -62,23 +78,34 @@ async function choose(candidate) {
   const media = document.createElement(mode === "mp4" ? "video" : "audio");
   const url = URL.createObjectURL(candidate);
   await new Promise(resolve => {
-    media.onloadedmetadata = () => { duration = Number.isFinite(media.duration) ? media.duration : 0; resolve(); };
+    media.onloadedmetadata = () => { if (selectedGeneration === selectionGeneration) duration = Number.isFinite(media.duration) ? media.duration : 0; resolve(); };
     media.onerror = resolve;
-    setTimeout(resolve, 1500);
+    setTimeout(resolve, compressAudio ? 5000 : 1500);
     media.src = url;
   });
   media.removeAttribute("src"); media.load(); URL.revokeObjectURL(url);
+  if (selectedGeneration !== selectionGeneration) return;
   refresh();
 }
 function loadScript(src) { return new Promise((resolve, reject) => { const script = document.createElement("script"); script.src = src; script.onload = resolve; script.onerror = reject; document.head.append(script); }); }
-async function getEngine() {
+async function getEngine(current) {
   if (engine) return engine;
   progress(2, t("loading"));
   if (!window.FFmpegWASM) await loadScript("/assets/ffmpeg/0.12.15/ffmpeg.js");
+  if (current !== generation) throw new Error("Cancelled");
   const instance = new FFmpegWASM.FFmpeg();
+  if (compressAudio) loadingEngine = instance;
   instance.on("progress", ({progress: fraction}) => { if (running && Number.isFinite(fraction)) progress(Math.max(5, Math.min(99, Math.round(fraction * 100))), t("processing")); });
   instance.on("log", ({message}) => { lastLog = (lastLog + "\n" + message).slice(-4000); });
-  await instance.load({coreURL:"/assets/ffmpeg/0.12.15/ffmpeg-core.js",wasmURL:"/assets/ffmpeg/0.12.15/ffmpeg-core.wasm"});
+  try {
+    await instance.load({coreURL:"/assets/ffmpeg/0.12.15/ffmpeg-core.js",wasmURL:"/assets/ffmpeg/0.12.15/ffmpeg-core.wasm"});
+  } catch (error) {
+    instance.terminate();
+    if (loadingEngine === instance) loadingEngine = null;
+    throw error;
+  }
+  if (current !== generation) { instance.terminate(); throw new Error("Cancelled"); }
+  if (loadingEngine === instance) loadingEngine = null;
   engine = instance;
   return instance;
 }
@@ -88,10 +115,10 @@ async function convert() {
   $("#processButton").disabled = true; $("#fileInput").disabled = true; $("#qualitySelect").disabled = true;
   document.querySelectorAll(".mode-tabs button").forEach(button => button.disabled = true);
   progress(1, t("loading")); status("pending");
-  const started = performance.now(), input = `input.${modes[mode].extension}`, output = "output.mp3";
+  const started = performance.now(), input = `input.${compressAudio ? file.name.split(".").pop().toLowerCase() : modes[mode].extension}`, output = "output.mp3";
   let ffmpeg;
   try {
-    ffmpeg = await getEngine();
+    ffmpeg = await getEngine(current);
     if (cancelled || current !== generation) return;
     await ffmpeg.writeFile(input, new Uint8Array(await file.arrayBuffer()));
     if (cancelled || current !== generation) return;
@@ -104,15 +131,15 @@ async function convert() {
     const blob = new Blob([bytes], {type:"audio/mpeg"});
     outputURL = URL.createObjectURL(blob);
     $("#downloadButton").href = outputURL;
-    $("#downloadButton").download = `${file.name.replace(/\.[^.]+$/, "")}.mp3`;
+    $("#downloadButton").download = `${file.name.replace(/\.[^.]+$/, "")}${compressAudio ? "-compressed" : ""}.mp3`;
     $("#downloadButton").hidden = false; $("#afterValue").textContent = fmt(blob.size);
     completed = true; progress(100, t("ready", {size:fmt(blob.size),seconds:((performance.now() - started) / 1000).toFixed(1)}));
     status("ready", false, {size:fmt(blob.size),seconds:((performance.now() - started) / 1000).toFixed(1)});
   } catch (error) {
     console.error("[audio-tools]", error);
-    if (!cancelled) status(/matches no streams|stream map|output file.*no streams/i.test(String(error) + lastLog) ? "noAudio" : /memory|allocation|out of bounds/i.test(String(error)) ? "memory" : "failed", true, {type:mode.toUpperCase()});
+    if (!cancelled && current === generation) status(/matches no streams|stream map|output file.*no streams/i.test(String(error) + lastLog) ? "noAudio" : /memory|allocation|out of bounds/i.test(String(error)) ? "memory" : "failed", true, {type:compressAudio ? "MP3 / WAV / M4A" : mode.toUpperCase()});
   } finally {
-    if (ffmpeg && !cancelled) { try { await ffmpeg.deleteFile(input); } catch (_) {} try { await ffmpeg.deleteFile(output); } catch (_) {} }
+    if (ffmpeg && !cancelled && current === generation) { try { await ffmpeg.deleteFile(input); } catch (_) {} try { await ffmpeg.deleteFile(output); } catch (_) {} }
     if (current === generation) {
       running = false; $("#fileInput").disabled = false; $("#qualitySelect").disabled = false;
       document.querySelectorAll(".mode-tabs button").forEach(button => button.disabled = false);
@@ -125,6 +152,7 @@ function cancel() {
   if (!running) return;
   cancelled = true; generation++;
   if (engine) { engine.terminate(); engine = null; }
+  if (loadingEngine) { loadingEngine.terminate(); loadingEngine = null; }
   running = false; $("#fileInput").disabled = false; $("#qualitySelect").disabled = false;
   document.querySelectorAll(".mode-tabs button").forEach(button => button.disabled = false);
   $("#progressWrap").hidden = true; status("cancelled"); refresh();
@@ -143,6 +171,7 @@ $("#fileInput").onchange = event => choose(event.target.files[0]);
 ["dragleave","drop"].forEach(name => $("#dropZone").addEventListener(name, event => { event.preventDefault(); event.currentTarget.classList.remove("dragging"); }));
 $("#dropZone").addEventListener("drop", event => choose(event.dataTransfer.files[0]));
 $("#largeConfirm").onchange = refresh;
+if (compressAudio) $("#qualitySelect").onchange = () => { completed = false; clearOutput(); refresh(); };
 $("#processButton").onclick = convert;
 $("#cancelButton").onclick = cancel;
 $("#languageSelect").onchange = event => { lang = event.target.value; localStorage.setItem("convertfiles24-language", lang); const url = new URL(location.href); url.searchParams.set("lang", lang); history.replaceState({}, "", url); applyLanguage(); };
