@@ -1,4 +1,4 @@
-const CACHE_NAME = "convertfiles24-pwa-v1";
+const CACHE_NAME = "convertfiles24-pwa-v2";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -8,8 +8,7 @@ const APP_SHELL = [
   "/client.js?v=20260912-pdf-cards-v2",
   "/assets/site-navigation.js?v=20260927-blog-newtab-v1",
   "/site.webmanifest",
-  "/icon-192.png?v=20260910-brand-v3",
-  "/icon-512.png?v=20260910-brand-v3",
+  "/pwa-icon.svg?v=20261007-current-logo",
   "/apple-touch-icon.png?v=20260910-brand-v3"
 ];
 
