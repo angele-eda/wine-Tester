@@ -13,6 +13,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260910-brand-v3">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#0b5cff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ConvertFiles24">
   <meta name="description" content="Private, client-side tools for everyday file work.">
   <title>ConvertFiles24 | Private File Tools</title>
   <script>
@@ -285,5 +288,12 @@
   <script src="assets/i18n.js?v=20261003-tools20-v1"></script>
   <script src="client.js?v=20260912-pdf-cards-v2"></script>
   <script src="/assets/site-navigation.js?v=20260927-blog-newtab-v1"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
