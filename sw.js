@@ -1,4 +1,4 @@
-const CACHE_NAME = "convertfiles24-pwa-v2";
+const CACHE_NAME = "convertfiles24-pwa-v3";
 const APP_SHELL = [
   "/",
   "/index.html",
@@ -8,8 +8,9 @@ const APP_SHELL = [
   "/client.js?v=20260912-pdf-cards-v2",
   "/assets/site-navigation.js?v=20260927-blog-newtab-v1",
   "/site.webmanifest",
-  "/pwa-icon.svg?v=20261007-current-logo",
-  "/apple-touch-icon.png?v=20260910-brand-v3"
+  "/pwa-icon-192-v3.png",
+  "/pwa-icon-512-v3.png",
+  "/apple-touch-icon-v3.png"
 ];
 
 self.addEventListener("install", (event) => {
