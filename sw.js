@@ -1,10 +1,10 @@
-const CACHE_NAME = "convertfiles24-pwa-v6";
+const CACHE_NAME = "convertfiles24-pwa-v7";
 const APP_SHELL = [
   "/",
   "/index.html",
   "/styles.css?v=20260912-desktop-brand-v5",
   "/assets/site-navigation.css?v=20261007-mobile-lang-v2",
-  "/assets/blog-latest.css?v=20261007-v2",
+  "/assets/blog-latest.css?v=20261007-v3",
   "/assets/i18n.js?v=20261003-tools20-v1",
   "/client.js?v=20260912-pdf-cards-v2",
   "/assets/site-navigation.js?v=20261007-mobile-lang-v2",
