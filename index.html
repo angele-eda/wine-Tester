@@ -45,6 +45,7 @@
   </script>
   <link rel="stylesheet" href="styles.css?v=20260912-desktop-brand-v5">
   <link rel="stylesheet" href="/assets/site-navigation.css?v=20260913-v10">
+  <link rel="stylesheet" href="/assets/blog-latest.css?v=20261007-v1">
 </head>
 <body>
   <header class="site-header">
@@ -212,6 +213,19 @@
         </button>
       </div>
     </section>
+    <section class="latest-blog-section section-shell" aria-labelledby="latestBlogTitle">
+      <div class="latest-blog-heading">
+        <div>
+          <span class="latest-blog-eyebrow" data-blog-copy="eyebrow">ConvertFiles24 Blog</span>
+          <h2 id="latestBlogTitle" data-blog-copy="title">Latest guides</h2>
+          <p data-blog-copy="desc">Practical tips for images, PDFs, video and audio.</p>
+        </div>
+        <a class="latest-blog-all" href="https://convertfiles24.wordpress.com/" target="_blank" rel="noopener noreferrer" data-blog-copy="all">View all posts</a>
+      </div>
+      <div class="latest-blog-grid" id="latestBlogGrid">
+        <div class="latest-blog-status" data-blog-copy="loading">Loading latest posts…</div>
+      </div>
+    </section>
 
   </main>
 
@@ -288,6 +302,7 @@
   <script src="assets/i18n.js?v=20261003-tools20-v1"></script>
   <script src="client.js?v=20260912-pdf-cards-v2"></script>
   <script src="/assets/site-navigation.js?v=20260927-blog-newtab-v1"></script>
+  <script src="/assets/blog-latest.js?v=20261007-v1"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
