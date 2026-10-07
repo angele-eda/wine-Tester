@@ -117,8 +117,75 @@
       if (!menuElement.contains(event.target)) menuElement.removeAttribute("open");
     });
   }
+  function enhanceMobileLanguagePicker() {
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
+    const select = document.querySelector("#languageSelect");
+    if (!select || select.dataset.cf24Compact === "true") return;
+    select.dataset.cf24Compact = "true";
+
+    const wrap = select.closest("label") || select.parentElement;
+    if (!wrap) return;
+    wrap.classList.add("cf24-language-compact");
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "cf24-language-trigger";
+    trigger.setAttribute("aria-haspopup", "listbox");
+    trigger.setAttribute("aria-expanded", "false");
+
+    const popover = document.createElement("div");
+    popover.className = "cf24-language-popover";
+    popover.hidden = true;
+    popover.setAttribute("role", "listbox");
+
+    ["en","ko","ja","es"].forEach(value => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "cf24-language-option";
+      button.dataset.value = value;
+      button.setAttribute("role", "option");
+      button.textContent = value === "ja" ? "JP" : value.toUpperCase();
+      button.addEventListener("click", () => {
+        select.value = value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        popover.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+        sync();
+      });
+      popover.append(button);
+    });
+
+    const sync = () => {
+      trigger.textContent = select.value === "ja" ? "JP" : (select.value || "en").toUpperCase();
+      popover.querySelectorAll(".cf24-language-option").forEach(button => {
+        const selected = button.dataset.value === select.value;
+        button.setAttribute("aria-selected", String(selected));
+        button.classList.toggle("is-selected", selected);
+      });
+    };
+
+    select.style.display = "none";
+    wrap.append(trigger, popover);
+    sync();
+
+    trigger.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const open = popover.hidden;
+      popover.hidden = !open;
+      trigger.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", event => {
+      if (!wrap.contains(event.target)) {
+        popover.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+    select.addEventListener("change", sync);
+  }
+
   function init() {
-    if (!footerOnly) { buildDesktop(); buildMobile(); buildSharedMobile(); }
+    if (!footerOnly) { buildDesktop(); buildMobile(); buildSharedMobile(); enhanceMobileLanguagePicker(); }
     buildFooter(); markCurrentPage(); translate();
     document.querySelectorAll(".cf24-menu").forEach(menuElement => menuElement.addEventListener("toggle", () => {
       if (menuElement.open) document.querySelectorAll(".cf24-menu[open]").forEach(other => { if (other !== menuElement) other.removeAttribute("open"); });
