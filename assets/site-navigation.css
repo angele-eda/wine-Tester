@@ -411,3 +411,65 @@
   .cf24-shared-mobile-panel { top: 64px; max-height: calc(100dvh - 64px); }
   .cf24-footer-nav { justify-content: center; }
 }
+
+
+/* Compact mobile language picker */
+@media (max-width: 760px) {
+  .cf24-language-compact {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  .cf24-language-trigger {
+    min-width: 44px;
+    height: 36px;
+    padding: 0 8px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .cf24-language-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+    width: 128px;
+    padding: 6px;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 14px;
+    background: var(--surface, #fff);
+    box-shadow: 0 10px 30px rgba(0,0,0,.16);
+  }
+  .cf24-language-popover[hidden] { display: none !important; }
+  .cf24-language-option {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text, #17181c);
+    text-align: left;
+    font: 600 15px/1 var(--font-ui, sans-serif);
+  }
+  .cf24-language-option.is-selected {
+    background: rgba(11,92,255,.10);
+    color: #0b5cff;
+  }
+  html[data-theme="dark"] .cf24-language-popover {
+    border-color: rgba(255,255,255,.12);
+    background: #202126;
+  }
+  html[data-theme="dark"] .cf24-language-option {
+    color: #f5f5f5;
+  }
+  html[data-theme="dark"] .cf24-language-option.is-selected {
+    background: rgba(91,145,255,.18);
+    color: #8eb5ff;
+  }
+}
