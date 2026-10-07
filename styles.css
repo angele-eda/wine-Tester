@@ -588,3 +588,20 @@ html[data-theme="light"] .desktop-nav #themeButton:focus-visible { border-color:
   .tool-grid.mobile-pdf-expanded .tool-card.mobile-pdf-extra { display:flex; }
   .mobile-extra-toggle { grid-column:1/-1; }
 }
+
+
+/* Japanese mobile hero title fix: allow natural wrapping instead of clipping. */
+@media (max-width: 600px) {
+  html[lang="ja"] .hero h1 {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 2px;
+    font-size: clamp(27px, 8.6vw, 34px);
+    line-height: 1.22;
+    letter-spacing: -.03em;
+    white-space: normal;
+    word-break: auto-phrase;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+}
