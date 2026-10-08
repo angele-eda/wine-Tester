@@ -34,7 +34,10 @@
   Object.assign(copy.ja,{relatedTools:"関連ツール",rotatePdf:"PDF を回転",deletePdfPages:"PDF ページを削除",extractPdfPages:"PDF ページを抽出"});
   Object.assign(copy.es,{relatedTools:"Herramientas relacionadas",rotatePdf:"Girar PDF",deletePdfPages:"Eliminar páginas PDF",extractPdfPages:"Extraer páginas PDF"});
   const language = () => {
-    const value = document.querySelector("#languageSelect")?.value || document.documentElement.lang || localStorage.getItem("convertfiles24-language") || "en";
+    const manual = localStorage.getItem("convertfiles24-language-mode") === "manual";
+    const saved = localStorage.getItem("convertfiles24-language");
+    const browser = (navigator.language || "en").split("-")[0].toLowerCase();
+    const value = document.querySelector("#languageSelect")?.value || document.documentElement.lang || (manual ? saved : browser) || "en";
     return copy[value] ? value : "en";
   };
   const link = (key, href, mobile = false) => {
@@ -93,7 +96,7 @@
     overlay.addEventListener("click", close); panel.querySelector(".cf24-shared-mobile-close").addEventListener("click", close); panel.querySelectorAll("a").forEach(anchor => anchor.addEventListener("click", close));
     const desktopLanguage = document.querySelector("#languageSelect"), mobileLanguage = panel.querySelector("#mobileLanguageSelect");
     mobileLanguage.value = desktopLanguage?.value || language();
-    mobileLanguage.addEventListener("change", () => { if (desktopLanguage) { desktopLanguage.value = mobileLanguage.value; desktopLanguage.dispatchEvent(new Event("change", {bubbles:true})); } else { localStorage.setItem("convertfiles24-language", mobileLanguage.value); document.documentElement.lang = mobileLanguage.value; translate(); } });
+    mobileLanguage.addEventListener("change", () => { if (desktopLanguage) { desktopLanguage.value = mobileLanguage.value; desktopLanguage.dispatchEvent(new Event("change", {bubbles:true})); } else { localStorage.setItem("convertfiles24-language", mobileLanguage.value); localStorage.setItem("convertfiles24-language-mode","manual"); document.documentElement.lang = mobileLanguage.value; translate(); } });
     panel.querySelector(".cf24-shared-mobile-theme").addEventListener("click", () => document.querySelector("#themeButton")?.click());
   }
   function buildFooter() {
