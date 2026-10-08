@@ -25,8 +25,15 @@ const widthInput = $("#widthInput"), heightInput = $("#heightInput"), keepRatio 
 const scaleInput = $("#scaleInput"), scaleOutput = $("#scaleOutput");
 const qualityInput = $("#qualityInput"), qualityOutput = $("#qualityOutput"), resizeButton = $("#resizeButton"), result = $("#result"), message = $("#message");
 let currentFile = null, image = null, ratio = 1, resultBlob = null, resultName = "";
-let language = new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || (navigator.language || "en").slice(0,2);
-if (!translations[language]) language = "en";
+const urlLanguage = (new URLSearchParams(location.search).get("lang") || "").slice(0,2);
+const savedLanguage = (localStorage.getItem("convertfiles24-language") || "").slice(0,2);
+const languageMode = localStorage.getItem("convertfiles24-language-mode");
+const browserLanguage = (navigator.language || "en").slice(0,2);
+let language = translations[urlLanguage]
+  ? urlLanguage
+  : (languageMode === "manual" && translations[savedLanguage]
+    ? savedLanguage
+    : (translations[browserLanguage] ? browserLanguage : "en"));
 
 function t(key) { return translations[language][key] || translations.en[key] || key; }
 function applyLanguage() {
@@ -42,7 +49,7 @@ function setTheme(theme) {
   $("#themeIcon").textContent = theme === "dark" ? "☾" : "☀";
 }
 $("#themeButton").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-$("#languageSelect").addEventListener("change", (event) => { language = event.target.value; localStorage.setItem("convertfiles24-language", language); const url=new URL(location.href); url.searchParams.set("lang",language); history.replaceState({},"",url); applyLanguage(); });
+$("#languageSelect").addEventListener("change", (event) => { language = event.target.value; localStorage.setItem("convertfiles24-language", language); localStorage.setItem("convertfiles24-language-mode","manual"); const url=new URL(location.href); url.searchParams.set("lang",language); history.replaceState({},"",url); applyLanguage(); });
 
 function openPicker() { fileInput.click(); }
 dropZone.addEventListener("click", openPicker);
