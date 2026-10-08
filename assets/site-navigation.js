@@ -184,8 +184,33 @@
     select.addEventListener("change", sync);
   }
 
+  function protectTechnicalTerms() {
+    const exactTechnicalToken = /^(?:JPG|JPEG|PNG|WebP|HEIC|HEIF|PDF|ICO|SVG|GIF|BMP|TIFF|MP3|WAV|M4A|MP4|MOV|MKV|AVI|WEBM|ZIP|QR|EN|KO|JP|ES)$/i;
+    const mark = root => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(node => {
+        const value = (node.nodeValue || "").trim();
+        if (!exactTechnicalToken.test(value)) return;
+        const parent = node.parentElement;
+        if (!parent || parent.closest(".notranslate,[translate='no']")) return;
+        parent.classList.add("notranslate");
+        parent.setAttribute("translate","no");
+      });
+    };
+    mark(document.body);
+    const observer = new MutationObserver(records => {
+      records.forEach(record => record.addedNodes.forEach(node => {
+        if (node.nodeType === 1) mark(node);
+      }));
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
+
   function init() {
     if (!footerOnly) { buildDesktop(); buildMobile(); buildSharedMobile(); enhanceMobileLanguagePicker(); }
+    protectTechnicalTerms();
     buildFooter(); markCurrentPage(); translate();
     document.querySelectorAll(".cf24-menu").forEach(menuElement => menuElement.addEventListener("toggle", () => {
       if (menuElement.open) document.querySelectorAll(".cf24-menu[open]").forEach(other => { if (other !== menuElement) other.removeAttribute("open"); });
