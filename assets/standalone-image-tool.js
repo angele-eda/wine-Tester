@@ -22,8 +22,13 @@
     ja: ["ConvertFiles24 が選ばれる理由", "高速で安全な画像ツール", "すばやく簡単", "インストールや会員登録は必要ありません。", "ファイルを安全に保護", "すべての処理はブラウザ内で行われます。", "あらゆる端末で利用可能", "PC、タブレット、モバイルで利用できます。"],
     es: ["Por qué elegir ConvertFiles24", "Herramientas de imagen rápidas y privadas", "Rápido y sencillo", "No requiere instalación ni registro.", "Tus archivos siguen siendo privados", "Todo se procesa localmente en tu navegador.", "Funciona en cualquier dispositivo", "Úsalo en ordenador, tableta y móvil."]
   };
-  let files = [], previewUrl = "", resultUrl = "", language = (new URLSearchParams(location.search).get("lang") || localStorage.getItem("convertfiles24-language") || navigator.language || "en").slice(0,2).toLowerCase();
-  if(!["en","ko","ja","es"].includes(language)) language="en";
+  let files = [], previewUrl = "", resultUrl = "";
+  const supportedLanguages=["en","ko","ja","es"];
+  const urlLanguage=(new URLSearchParams(location.search).get("lang")||"").slice(0,2).toLowerCase();
+  const savedLanguage=(localStorage.getItem("convertfiles24-language")||"").slice(0,2).toLowerCase();
+  const languageMode=localStorage.getItem("convertfiles24-language-mode");
+  const browserLanguage=(navigator.language||"en").slice(0,2).toLowerCase();
+  let language=supportedLanguages.includes(urlLanguage)?urlLanguage:(languageMode==="manual"&&supportedLanguages.includes(savedLanguage)?savedLanguage:(supportedLanguages.includes(browserLanguage)?browserLanguage:"en"));
   const ui = {
     fileInput:$("#fileInput"),dropZone:$("#dropZone"),preview:$("#preview"),previewImage:$("#previewImage"),fileList:$("#fileList"),process:$("#processButton"),status:$("#status"),download:$("#downloadLink"),settings:$("#dynamicSettings")
   };
@@ -44,7 +49,7 @@
   }
   function qualityMarkup(value){return `<label class="scale-field"><span><span>${text("Quality","품질","画質","Calidad")}</span><output id="qualityValue">${value}%</output></span><input id="qualityRange" type="range" min="40" max="100" value="${value}"></label>`}
   function setTheme(theme){document.documentElement.dataset.theme=theme;localStorage.setItem("convertfiles24-theme",theme);$("#themeIcon").textContent=theme==="dark"?"☾":"☀"}
-  $("#themeButton").addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark")); $("#languageSelect").addEventListener("change",e=>{language=e.target.value;localStorage.setItem("convertfiles24-language",language);const u=new URL(location.href);u.searchParams.set("lang",language);history.replaceState({},"",u);applyText()});
+  $("#themeButton").addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark")); $("#languageSelect").addEventListener("change",e=>{language=e.target.value;localStorage.setItem("convertfiles24-language",language);localStorage.setItem("convertfiles24-language-mode","manual");const u=new URL(location.href);u.searchParams.set("lang",language);history.replaceState({},"",u);applyText()});
   ui.fileInput.accept=config.accept; ui.fileInput.multiple=config.multiple; ui.dropZone.addEventListener("click",()=>ui.fileInput.click()); $("#replaceButton").addEventListener("click",()=>ui.fileInput.click()); ui.fileInput.addEventListener("change",()=>selectFiles([...ui.fileInput.files])); ["dragenter","dragover"].forEach(n=>ui.dropZone.addEventListener(n,e=>{e.preventDefault();ui.dropZone.classList.add("dragover")})); ["dragleave","drop"].forEach(n=>ui.dropZone.addEventListener(n,e=>{e.preventDefault();ui.dropZone.classList.remove("dragover")})); ui.dropZone.addEventListener("drop",e=>selectFiles([...e.dataTransfer.files]));
   async function selectFiles(list){
     clearResult(); const max=config.multiple?(tool==="image-compress"?30:20):1; const valid=list.slice(0,max).filter(file=>file.size<=25*1024*1024&&matches(file)); if(!valid.length){showError(text("Choose a supported file under 25 MB.","25MB 이하의 지원 파일을 선택하세요.","25MB以下の対応ファイルを選択してください。","Elige un archivo compatible de menos de 25 MB."));return} files=valid; ui.dropZone.hidden=true; ui.process.disabled=false; renderFiles();
