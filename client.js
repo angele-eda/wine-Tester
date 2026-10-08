@@ -14,11 +14,15 @@ const tools = {
 };
 
 const translations = window.CF24_I18N || {};
-let currentLanguage = localStorage.getItem("convertfiles24-language");
-if (!translations[currentLanguage]) {
-  const browserLanguage = (navigator.language || "en").split("-")[0].toLowerCase();
-  currentLanguage = translations[browserLanguage] ? browserLanguage : "en";
-}
+const urlLanguage = new URLSearchParams(location.search).get("lang");
+const savedLanguage = localStorage.getItem("convertfiles24-language");
+const languageMode = localStorage.getItem("convertfiles24-language-mode");
+const browserLanguage = (navigator.language || "en").split("-")[0].toLowerCase();
+let currentLanguage = translations[urlLanguage]
+  ? urlLanguage
+  : (languageMode === "manual" && translations[savedLanguage]
+    ? savedLanguage
+    : (translations[browserLanguage] ? browserLanguage : "en"));
 
 function tr(key, variables = {}) {
   let value = translations[currentLanguage]?.[key] || translations.en?.[key] || key;
@@ -147,6 +151,7 @@ function applyLanguage(language, remember = false) {
   currentLanguage = translations[language] ? language : "en";
   document.documentElement.lang = currentLanguage;
   if (remember) localStorage.setItem("convertfiles24-language", currentLanguage);
+  localStorage.setItem("convertfiles24-language-mode", "manual");
   languageSelect.value = currentLanguage;
   mobileLanguageSelect.value = currentLanguage;
   document.querySelectorAll("[data-i18n]").forEach((element) => {
