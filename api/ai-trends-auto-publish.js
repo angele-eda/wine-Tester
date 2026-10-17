@@ -126,7 +126,7 @@ module.exports = async function handler(req, res) {
     if (![article.title, article.excerpt, article.content_html].every(x => typeof x === "string" && x.trim())) {
       throw new Error("Incomplete generated article");
     }
-    if (/<\\s*(script|iframe|style|img|form)\\b/i.test(article.content_html)) {
+    if (/<\s*(script|iframe|style|img|form)\b/i.test(article.content_html)) {
       throw new Error("Unsafe generated HTML");
     }
     const created = await request(API, {
