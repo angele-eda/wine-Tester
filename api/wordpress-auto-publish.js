@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const futureTopic = require("./cf24-future-topics");
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const OPENAI_IMAGES_URL = "https://api.openai.com/v1/images/generations";
@@ -8,7 +9,7 @@ const WORDPRESS_MEDIA_URL =
   "https://public-api.wordpress.com/wp/v2/sites/convertfiles24.wordpress.com/media";
 const RESEND_EMAILS_URL = "https://api.resend.com/emails";
 const MAX_ATTEMPTS = 2;
-const MAX_FEATURED_IMAGE_BYTES = 200 * 1024;
+const MAX_FEATURED_IMAGE_BYTES = 1024 * 1024;
 
 const TRIAL_TOPICS = Object.freeze({
   "2026-10-05": {
@@ -156,9 +157,9 @@ function getConfiguration() {
     reportFrom: "BLOG_REPORT_FROM_EMAIL",
     reportTo: "BLOG_REPORT_TO_EMAIL",
   };
-  const missing = Object.entries(values)
-    .filter(([, value]) => !value)
-    .map(([name]) => environmentNames[name]);
+  const missing = ["openAIKey", "wordpressToken"]
+    .filter((name) => !values[name])
+    .map((name) => environmentNames[name]);
   return { ...values, missing };
 }
 
@@ -222,7 +223,7 @@ async function generateArticle(topic, apiKey) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-5.6-luna",
+        model: process.env.BLOG_TEXT_MODEL || "gpt-5-mini",
         store: false,
         reasoning: { effort: "low" },
         instructions:
@@ -278,13 +279,13 @@ async function generateFeaturedImage(topic, article, apiKey) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-image-2.5-flare",
+        model: process.env.BLOG_IMAGE_MODEL || "gpt-image-1-mini",
         prompt: `Create one original editorial featured image for an English ConvertFiles24 article titled "${article.title}". Topic: ${topic.title}. Show a clear visual metaphor for browser-based file conversion or file handling that matches this specific topic. Use a polished modern flat illustration with subtle depth, a dark charcoal background, warm off-white details, muted gold accents, and one restrained blue accent. Landscape composition with the main subject centered and generous safe margins. No words, letters, numbers, logos, brand marks, watermarks, recognizable people, screenshots, or copyrighted characters. The image must be professional, calm, and suitable for a privacy-focused utility blog.`,
         n: 1,
-        size: "1200x640",
+        size: "1536x1024",
         quality: "low",
         output_format: "jpeg",
-        output_compression: 45,
+        output_compression: 35,
         background: "opaque",
         moderation: "auto",
       }),
@@ -516,6 +517,7 @@ async function sendEmail({ resendKey, reportFrom, reportTo, subject, html, text,
 }
 
 async function sendSuccessEmail(date, post, configuration) {
+  if (!configuration.resendKey || !configuration.reportFrom || !configuration.reportTo) return;
   const safeTitle = escapeHtml(post.title);
   const safeUrl = escapeHtml(post.url);
   const safeTime = escapeHtml(post.publishedAt);
@@ -539,6 +541,7 @@ async function sendSuccessEmail(date, post, configuration) {
 }
 
 async function sendFailureEmail(date, reason, configuration) {
+  if (!configuration.resendKey || !configuration.reportFrom || !configuration.reportTo) return;
   const occurredAt = new Date().toISOString();
   await sendEmail({
     ...configuration,
@@ -565,19 +568,23 @@ async function runScheduledPublish(date, topic, configuration) {
     return { status: "already-published", post: normalized };
   }
 
-  const featuredImage = await generateFeaturedImage(topic, article, configuration.openAIKey);
+  let media = { id: 0, sourceUrl: "" };
+  try {
+    const featuredImage = await generateFeaturedImage(topic, article, configuration.openAIKey);
+    media = await uploadFeaturedImage(featuredImage, article, configuration.wordpressToken);
+  } catch (error) {
+    console.error("Featured image failed; continuing with text-only article", {
+      date, stage: error?.stage || "featured-image",
+      message: error?.publicReason || "Image not available",
+    });
+  }
   const thirdCheck = await findExistingPost(topic.slug, configuration.wordpressToken);
   if (thirdCheck) {
+    if (media.id) await cleanupMediaQuietly(media.id, configuration.wordpressToken);
     const normalized = normalizePost(thirdCheck, article, topic.title);
     await sendSuccessEmail(date, normalized, configuration);
     return { status: "already-published", post: normalized };
   }
-
-  const media = await uploadFeaturedImage(
-    featuredImage,
-    article,
-    configuration.wordpressToken,
-  );
   let createdPost;
   try {
     createdPost = await publishArticle(
@@ -630,25 +637,20 @@ module.exports = async function handler(request, response) {
     return response.status(401).json({ error: "Unauthorized" });
   }
 
-  if (process.env.AUTO_PUBLISH_ENABLED !== "true") {
+  if (process.env.AUTO_PUBLISH_ENABLED === "false") {
     return response.status(200).json({ ok: true, status: "disabled" });
   }
 
   const { date, weekday } = getKoreanDateInfo();
-  const topic = TRIAL_TOPICS[date];
-  const validTrialDate =
-    date.startsWith("2026-10-") &&
-    (weekday === "Mon" || weekday === "Thu") &&
-    Boolean(topic) &&
-    TRIAL_DATES.indexOf(date) >= 0 &&
-    TRIAL_DATES.indexOf(date) < 8;
+  const topic = TRIAL_TOPICS[date] || futureTopic(date, weekday);
+  const validTrialDate = (weekday === "Mon" || weekday === "Thu") && Boolean(topic);
 
   if (!validTrialDate) {
     return response.status(200).json({
       ok: true,
       status: "skipped",
       date,
-      reason: "Outside the eight October 2026 Monday/Thursday publishing dates",
+      reason: "Outside the Monday/Thursday publishing schedule",
     });
   }
 
