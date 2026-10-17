@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { createFeaturedImage, removeImage } = require("./ai-trends-image");
 
 const SITE = "aicreatortrends.wordpress.com";
 const API = `https://public-api.wordpress.com/wp/v2/sites/${SITE}/posts`;
@@ -63,6 +64,7 @@ async function sendReport(subject, message) {
   const from = process.env.BLOG_REPORT_FROM_EMAIL;
   const to = process.env.BLOG_REPORT_TO_EMAIL;
   if (!key || !from || !to) return;
+  try {
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST", headers: {
       Authorization: `Bearer ${key}`, "Content-Type": "application/json"
@@ -71,6 +73,9 @@ async function sendReport(subject, message) {
     signal: AbortSignal.timeout(10000)
   });
   if (!r.ok) console.error("Email report failed", r.status);
+  } catch (error) {
+    console.error("Email report unavailable", error.message);
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -80,7 +85,7 @@ module.exports = async function handler(req, res) {
   const { date, weekday } = seoul();
   if (weekday !== "Mon" && weekday !== "Thu") return res.status(200).json({ status: "skipped" });
 
-  const token = process.env.WORDPRESS_ACCESS_TOKEN;
+  const token = process.env.AI_TRENDS_WORDPRESS_ACCESS_TOKEN || process.env.WORDPRESS_ACCESS_TOKEN;
   const aiKey = process.env.OPENAI_API_KEY;
   if (!token || !aiKey) {
     console.error("AI blog publisher missing WORDPRESS_ACCESS_TOKEN or OPENAI_API_KEY");
@@ -129,19 +134,68 @@ module.exports = async function handler(req, res) {
     if (/<\s*(script|iframe|style|img|form)\b/i.test(article.content_html)) {
       throw new Error("Unsafe generated HTML");
     }
-    const created = await request(API, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`, "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title: article.title, excerpt: article.excerpt,
-        content: article.content_html, slug, status: "publish"
-      })
-    }, 20000);
-    console.info("AI Trends article published", { date, postId: created.id, url: created.link });
-    await sendReport(`[AI & Creator Trends] Published: ${article.title}`, `Published ${date}: ${created.link}`);
-    return res.status(200).json({ status: "published", date, postId: created.id, url: created.link });
+    // Image is optional: never block the article when a model or upload fails.
+    let media = null;
+    try {
+      media = await createFeaturedImage(article, slug, token, aiKey);
+    } catch (imageError) {
+      console.error("AI Trends image unavailable; publishing article without image", {
+        date, reason: imageError.message
+      });
+    }
+
+    // A second instance might have published while the image was being generated.
+    const beforePublish = await request(`${API}?slug=${slug}&per_page=1`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }, 12000);
+    if (beforePublish.length) {
+      if (media) await removeImage(media.id, token);
+      return res.status(200).json({ status: "already-published", url: beforePublish[0].link });
+    }
+
+    let created;
+    try {
+      created = await request(API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title: article.title, excerpt: article.excerpt,
+          content: article.content_html, slug, status: "publish",
+          featured_media: media ? media.id : 0
+        })
+      }, 20000);
+    } catch (publishError) {
+      // Recover a successful publish after an ambiguous timeout, avoiding duplicates.
+      let recovered = [];
+      try {
+        recovered = await request(`${API}?slug=${slug}&per_page=1`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }, 12000);
+      } catch (_) { /* Preserve the original publish error. */ }
+      if (!recovered.length) {
+        if (media) await removeImage(media.id, token);
+        throw publishError;
+      }
+      created = recovered[0];
+    }
+
+    const imageStatus = !media ? "text-only" :
+      Number(created.featured_media) === Number(media.id) ? "attached" : "attachment-unconfirmed";
+    if (imageStatus === "attachment-unconfirmed") {
+      console.error("AI Trends post published but featured image attachment unconfirmed", {
+        date, postId: created.id, mediaId: media.id
+      });
+    }
+    console.info("AI Trends article published", { date, postId: created.id, url: created.link, imageStatus });
+    await sendReport(
+      `[AI & Creator Trends] Published: ${article.title}`,
+      `Published ${date}: ${created.link}\nFeatured image: ${imageStatus}`
+    );
+    return res.status(200).json({
+      status: "published", date, postId: created.id, url: created.link, imageStatus
+    });
   } catch (error) {
     console.error("AI Trends scheduled publishing failed", { date, error: error.message });
     await sendReport(`[AI & Creator Trends] Publishing failed ${date}`, error.message);
