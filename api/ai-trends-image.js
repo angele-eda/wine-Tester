@@ -43,8 +43,19 @@ async function generateImage(article, slug, apiKey) {
       buffer[0] !== 0xff || buffer[1] !== 0xd8) {
     throw new Error("Image generation returned invalid or oversized JPEG");
   }
+
+  // OpenAI supplies 1536x1024 (3:2); crop centrally to exactly 1536x864 (16:9).
+  // Require Sharp lazily: missing image dependencies must not stop text publishing.
+  const sharp = require("sharp");
+  const croppedBuffer = await sharp(buffer)
+    .resize(1536, 864, { fit: "cover", position: "centre" })
+    .jpeg({ quality: 72, progressive: true })
+    .toBuffer();
+  if (croppedBuffer.length < 1000 || croppedBuffer.length > MAX_IMAGE_BYTES) {
+    throw new Error("Invalid or oversized 16:9 featured image");
+  }
   return {
-    buffer,
+    buffer: croppedBuffer,
     filename: slug + ".jpg",
     altText: ("Editorial illustration: " + article.title).slice(0, 125)
   };
