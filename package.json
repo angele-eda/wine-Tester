@@ -1,0 +1,9 @@
+{
+  "name": "convertfiles24-cloud-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ConvertFiles24 and AI Creator Trends cloud publishing functions",
+  "dependencies": {
+    "sharp": "^0.34.5"
+  }
+}
